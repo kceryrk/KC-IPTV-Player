@@ -1,0 +1,17 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.ipk
+*.zip
+
+# Local editor files
+.vscode/
+
+# Logs
+*.log
+
+# Secrets / environment
+.env
+.env.*
