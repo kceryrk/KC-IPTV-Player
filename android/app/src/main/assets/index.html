@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>KC IPTV PLAYER</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+
+  <!-- VISUELE NUMMER ZAP OVERLAY -->
+  <div id="numZapOverlay" class="num-zap-overlay-center hidden">
+    <div class="num-zap-badge">
+      <span class="num-zap-label">KANAAL ZAP</span>
+      <span id="numZapText" class="num-zap-number">#1</span>
+      <div class="num-zap-progress"></div>
+    </div>
+  </div>
+
+  <!-- LOADING SPINNER OVERLAY -->
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="loading-spinner"></div>
+    <div id="loadingText" class="loading-text">Yükleniyor...</div>
+  </div>
+
+  <!-- ERROR / OFFLINE MODAL -->
+  <div id="errorModal" class="error-modal hidden">
+    <div class="error-card">
+      <div class="error-icon">⚠️</div>
+      <h3 id="errorTitle">Bağlantı Hatası</h3>
+      <p id="errorDesc">Sunucuya bağlanılamadı veya internet bağlantısı yok.</p>
+      <button id="errorRetryBtn" class="error-btn">Tekrar Dene</button>
+    </div>
+  </div>
+
+  <!-- SERIES EPISODE PICKER MODAL -->
+  <div id="seriesModal" class="series-modal hidden">
+    <div class="series-modal-content">
+      <div class="series-modal-header">
+        <h2 id="seriesModalTitle">Dizi Bölümleri</h2>
+        <button id="seriesModalClose" class="osd-exit-btn">✕</button>
+      </div>
+      <div class="series-season-tabs" id="seriesSeasonTabs"></div>
+      <div class="series-episodes-grid" id="seriesEpisodesGrid"></div>
+    </div>
+  </div>
+
+  <!-- YOUTUBE STYLE DOUBLE TAP RIPPLES -->
+  <div id="ytRippleLeft" class="yt-ripple-badge left hidden">⏪ -<span id="skipSecLeft">10</span>s</div>
+  <div id="ytRippleRight" class="yt-ripple-badge right hidden">+<span id="skipSecRight">10</span>s ⏩</div>
+
+  <!-- SPEED BADGE -->
+  <div id="speedBadge" class="speed-badge hidden">⚡ 2x Hız</div>
+
+  <!-- INLOG / SPLASH PAGINA -->
+  <div id="loginPage" class="login-container">
+    <div id="autoLoginSplash" class="splash-content hidden">
+      <div class="splash-logo">KC IPTV PLAYER</div>
+      <div class="splash-spinner"></div>
+      <div class="splash-text">Verbinden met IPTV server...</div>
+    </div>
+
+    <form id="loginForm" class="login-card">
+      <h2 class="login-title">KC IPTV PLAYER</h2>
+      <div class="form-group">
+        <label for="serverUrl">Sunucu URL</label>
+        <input type="text" id="serverUrl" value="http://neptunpro26.xyz:8080" class="focusable" tabindex="1" required>
+      </div>
+      <div class="form-group">
+        <label for="username">Kullanıcı Adı</label>
+        <input type="text" id="username" value="neptunn688" class="focusable" tabindex="2" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Şifre</label>
+        <input type="password" id="password" value="REDACTED" class="focusable" tabindex="3" required>
+      </div>
+      <button type="submit" id="loginBtn" class="login-btn focusable" tabindex="4">Giriş Yap</button>
+      <div id="loginStatus" class="login-status"></div>
+    </form>
+  </div>
+
+  <!-- HOOFD APPLICATIE -->
+  <div id="appPage" class="hidden">
+    <header class="app-header">
+      <div class="logo">
+        <span>KC IPTV PLAYER</span>
+        <span id="headerModeIndicator" class="header-mode-badge">★ FAVORİLER</span>
+      </div>
+    </header>
+
+    <div class="tv-grid">
+      <!-- KOLOM 0: MODUS -->
+      <div class="col-nav" id="colModus" data-col="0">
+        <div class="tab-label">MODUS</div>
+        <div class="col-content-wrapper">
+          <div class="col-title">MOD</div>
+          <ul class="nav-list" id="modusList">
+            <li class="nav-item focusable active" data-modus="favorites" tabindex="0">★ Favoriler</li>
+            <li class="nav-item focusable" data-modus="live" tabindex="0">📺 Canlı TV</li>
+            <li class="nav-item focusable" data-modus="vod" tabindex="0">🎬 Filmler</li>
+            <li class="nav-item focusable" data-modus="series" tabindex="0">🍿 Diziler</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- KOLOM 1: REGIO -->
+      <div class="col-nav collapsed" id="colRegions" data-col="1">
+        <div class="tab-label">REGIO</div>
+        <div class="col-content-wrapper">
+          <div class="col-title">BÖLGE</div>
+          <ul class="nav-list" id="regionList"></ul>
+        </div>
+      </div>
+
+      <!-- KOLOM 2: CATEGORIE -->
+      <div class="col-nav collapsed" id="colCategories" data-col="2">
+        <div class="tab-label">CATEGORIE</div>
+        <div class="col-content-wrapper">
+          <div class="col-title">KATEGORİ</div>
+          <ul class="nav-list" id="categoryList"></ul>
+        </div>
+        <button id="trapezoidToggleBtn" class="trapezoid-toggle-btn" title="Menüyü Aç/Kapat">☰</button>
+      </div>
+
+      <!-- KOLOM 3: INHOUD -->
+      <div class="col-nav channel-panel" id="colContent" data-col="3">
+        <div class="tab-label">KANALLAR</div>
+        <div class="col-content-wrapper">
+          <div class="col-title" id="contentTitle">KANALLAR</div>
+          <div id="channelList" class="channel-grid"></div>
+        </div>
+      </div>
+
+      <!-- RECHTS: PREVIEW SPELER & EPG -->
+      <div class="player-wrapper" id="playerWrapper">
+        <video id="videoPlayer" autoplay playsinline></video>
+        
+        <!-- VOD PAUSE OVERLAY ICON -->
+        <div id="vodPauseIcon" class="vod-pause-overlay hidden">
+          <div class="vod-pause-circle">⏸</div>
+        </div>
+
+        <!-- LIVE TV EPG PANEL -->
+        <div class="epg-preview-panel" id="epgPreviewPanel">
+          <div class="epg-row current">
+            <span class="epg-time" id="epgCurrTime">--:--</span>
+            <span id="epgCurrTitle">Canlı Yayın</span>
+          </div>
+          <div class="epg-row">
+            <span class="epg-time" id="epgNextTime">--:--</span>
+            <span id="epgNextTitle">Sonraki Yayın Yok</span>
+          </div>
+        </div>
+
+        <!-- LIVE TV LIQUID GLASS OSD -->
+        <div class="osd-overlay hidden" id="osdContainer">
+          <div class="osd-channel-badge">
+            <img id="osdLogo" class="osd-logo hidden" alt="Logo">
+            <div id="osdLogoFallback" class="osd-logo-fallback">TV</div>
+          </div>
+          <div class="osd-details">
+            <div class="osd-title-row">
+              <h2 id="osdChannelTitle">1. TRT 1</h2>
+              <div class="osd-title-right">
+                <span class="osd-clock" id="osdClock">00:00</span>
+                <button id="osdExitBtn" class="osd-exit-btn" title="Vollbild Beenden">✕</button>
+              </div>
+            </div>
+            <div class="osd-epg-info">
+              <div class="osd-epg-row active-epg">
+                <span class="osd-epg-time" id="osdEpgCurrTime">--:--</span>
+                <span id="osdEpgCurrTitle">Yayın Bilgisi Yükleniyor...</span>
+              </div>
+              <div class="osd-epg-row">
+                <span class="osd-epg-time" id="osdEpgNextTime">--:--</span>
+                <span id="osdEpgNextTitle">Sonraki Program Yok</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VOD LIQUID GLASS OSD -->
+        <div class="vod-osd-overlay hidden" id="vodOsdContainer">
+          <div class="vod-osd-header">
+            <h2 id="vodOsdTitle">Film Adı</h2>
+            <div class="osd-title-right">
+              <button id="vodSkipBtn" class="vod-skip-badge" title="Atlama Süresi">⚙️ 10s</button>
+              <span class="vod-osd-clock" id="vodOsdClock">00:00</span>
+              <button id="vodOsdExitBtn" class="osd-exit-btn" title="Vollbild Beenden">✕</button>
+            </div>
+          </div>
+          <div class="vod-progress-bar-container" id="vodProgressBarContainer">
+            <div class="vod-progress-bar" id="vodProgressBar"></div>
+          </div>
+          <div class="vod-osd-controls">
+            <span id="vodCurrentTime">00:00:00</span>
+            <span class="vod-hint">Çift tıkla: ±10s | Basılı tut: 2x Hız | Tek tık: Durdur</span>
+            <span id="vodDuration">00:00:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

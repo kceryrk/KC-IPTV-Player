@@ -8,6 +8,18 @@ Thumbs.db
 
 # Local editor files
 .vscode/
+.idea/
+
+# Android build artifacts
+android/.gradle/
+android/**/build/
+android/local.properties
+android/.idea/
+android/.kotlin/
+android/**/.cxx/
+android/**/captures/
+android/**/release/
+android/*.iml
 
 # Logs
 *.log
