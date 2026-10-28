@@ -12,7 +12,7 @@
   <!-- VISUELE NUMMER ZAP OVERLAY IN HET MIDDEN VAN HET SCHERM -->
   <div id="numZapOverlay" class="num-zap-overlay-center hidden">
     <div class="num-zap-badge">
-      <span class="num-zap-label">KANAAL ZAP</span>
+      <span class="num-zap-label" data-i18n="channelZap">KANAAL ZAP</span>
       <span id="numZapText" class="num-zap-number">#1</span>
       <div class="num-zap-progress"></div>
     </div>
@@ -23,24 +23,24 @@
     <div id="autoLoginSplash" class="splash-content hidden">
       <div class="splash-logo">KC IPTV PLAYER</div>
       <div class="splash-spinner"></div>
-      <div class="splash-text">Verbinden met IPTV server...</div>
+      <div class="splash-text" data-i18n="connecting">Verbinden met IPTV server...</div>
     </div>
 
     <form id="loginForm" class="login-card">
       <h2 class="login-title">KC IPTV PLAYER</h2>
       <div class="form-group">
-        <label for="serverUrl">Sunucu URL</label>
+        <label for="serverUrl" data-i18n="serverUrl">Sunucu URL</label>
         <input type="text" id="serverUrl" value="http://neptunpro26.xyz:8080" class="focusable" tabindex="1" required>
       </div>
       <div class="form-group">
-        <label for="username">Kullanıcı Adı</label>
+        <label for="username" data-i18n="username">Kullanıcı Adı</label>
         <input type="text" id="username" value="neptunn688" class="focusable" tabindex="2" required>
       </div>
       <div class="form-group">
-        <label for="password">Şifre</label>
+        <label for="password" data-i18n="password">Şifre</label>
         <input type="password" id="password" value="REDACTED" class="focusable" tabindex="3" required>
       </div>
-      <button type="submit" id="loginBtn" class="login-btn focusable" tabindex="4">Giriş Yap</button>
+      <button type="submit" id="loginBtn" class="login-btn focusable" data-i18n="login" tabindex="4">Giriş Yap</button>
       <div id="loginStatus" class="login-status"></div>
     </form>
   </div>
@@ -52,37 +52,100 @@
         <span>KC IPTV PLAYER</span>
         <span id="headerModeIndicator" class="header-mode-badge">★ FAVORİLER</span>
       </div>
+
+      <div class="app-header-actions">
+        <button id="settingsButton" class="settings-button focusable" type="button" tabindex="0" aria-expanded="false" aria-controls="settingsPanel">⚙ Settings</button>
+        <div id="settingsPanel" class="settings-panel hidden" role="menu" data-i18n-aria="settings" aria-label="App settings">
+          <div class="settings-group">
+            <span class="settings-label" data-i18n="language">Language</span>
+            <div class="settings-row">
+              <button class="settings-item focusable" data-setting="language" data-value="en" type="button" tabindex="0">English</button>
+              <button class="settings-item focusable" data-setting="language" data-value="tr" type="button" tabindex="0">Türkçe</button>
+              <button class="settings-item focusable" data-setting="language" data-value="nl" type="button" tabindex="0">Nederlands</button>
+              <button class="settings-item focusable" data-setting="language" data-value="fr" type="button" tabindex="0">Français</button>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <label class="settings-toggle" for="autoplayNextToggle">
+              <span data-i18n="autoplayNext">Play next episode automatically</span>
+              <input id="autoplayNextToggle" class="focusable" type="checkbox" tabindex="0">
+            </label>
+            <button class="settings-item focusable" data-setting="customization" data-i18n="customization" type="button" tabindex="0">Customization</button>
+            <button class="settings-item focusable" data-setting="switchProfile" data-i18n="switchProfile" type="button" tabindex="0">Switch profile</button>
+            <button class="settings-item focusable close" data-setting="close" data-i18n="close" type="button" tabindex="0">Close menu</button>
+          </div>
+        </div>
+      </div>
+
+      <section id="customizationPage" class="customization-page hidden" data-i18n-aria="customization" aria-label="Customization">
+        <header class="customization-header">
+          <button id="customizationBack" class="settings-item focusable" data-i18n="back" type="button" tabindex="0">Back</button>
+          <h1 data-i18n="customization">Customization</h1>
+        </header>
+        <div class="customization-content">
+          <section class="customization-section">
+            <h2 data-i18n="accentColor">Accent color</h2>
+            <div class="color-swatch-group" role="group" data-i18n-aria="accentColor" aria-label="Accent color">
+              <button class="color-swatch focusable" data-color-role="accent" data-color="#e50914" data-i18n-aria="colorRed" data-i18n-title="colorRed" aria-label="Red" title="Red" tabindex="0"></button>
+              <button class="color-swatch focusable" data-color-role="accent" data-color="#00a8e8" data-i18n-aria="colorBlue" data-i18n-title="colorBlue" aria-label="Blue" title="Blue" tabindex="0"></button>
+              <button class="color-swatch focusable" data-color-role="accent" data-color="#26a269" data-i18n-aria="colorGreen" data-i18n-title="colorGreen" aria-label="Green" title="Green" tabindex="0"></button>
+              <button class="color-swatch focusable" data-color-role="accent" data-color="#d33682" data-i18n-aria="colorRose" data-i18n-title="colorRose" aria-label="Rose" title="Rose" tabindex="0"></button>
+              <button class="color-swatch focusable" data-color-role="accent" data-color="#f07818" data-i18n-aria="colorOrange" data-i18n-title="colorOrange" aria-label="Orange" title="Orange" tabindex="0"></button>
+            </div>
+          </section>
+          <section class="customization-section">
+            <h2 data-i18n="highlightColor">Highlight color</h2>
+            <div class="color-swatch-group" role="group" data-i18n-aria="highlightColor" aria-label="Highlight color">
+              <button class="color-swatch focusable" data-color-role="highlight" data-color="#ffd700" data-i18n-aria="colorGold" data-i18n-title="colorGold" aria-label="Gold" title="Gold" tabindex="0"></button>
+              <button class="color-swatch focusable" data-color-role="highlight" data-color="#00d6c9" data-i18n-aria="colorTurquoise" data-i18n-title="colorTurquoise" aria-label="Turquoise" title="Turquoise" tabindex="0"></button>
+              <button class="color-swatch focusable" data-color-role="highlight" data-color="#91d32a" data-i18n-aria="colorLime" data-i18n-title="colorLime" aria-label="Lime" title="Lime" tabindex="0"></button>
+              <button class="color-swatch focusable" data-color-role="highlight" data-color="#ff8a00" data-i18n-aria="colorOrange" data-i18n-title="colorOrange" aria-label="Orange" title="Orange" tabindex="0"></button>
+              <button class="color-swatch focusable" data-color-role="highlight" data-color="#65a9ff" data-i18n-aria="colorSky" data-i18n-title="colorSky" aria-label="Sky blue" title="Sky blue" tabindex="0"></button>
+            </div>
+          </section>
+          <section class="customization-section">
+            <h2 data-i18n="backgroundImage">Background image URL</h2>
+            <div class="background-image-controls">
+              <input id="backgroundImageInput" class="focusable" type="url" data-i18n-placeholder="backgroundPlaceholder" placeholder="https://example.com/image.jpg" tabindex="0">
+              <button id="applyBackgroundButton" class="settings-item focusable" data-i18n="apply" type="button" tabindex="0">Apply</button>
+              <button id="clearBackgroundButton" class="settings-item focusable" data-i18n="removeBackground" type="button" tabindex="0">Remove image</button>
+            </div>
+          </section>
+          <button id="customizationDone" class="settings-item focusable" data-i18n="done" type="button" tabindex="0">Done</button>
+        </div>
+      </section>
     </header>
 
     <div class="tv-grid">
       <!-- KOLOM 0: MODUS -->
       <div class="col-nav" id="colModus" data-col="0">
-        <div class="tab-label">MODUS</div>
+        <div class="tab-label" data-i18n="modes">MODUS</div>
         <div class="col-content-wrapper">
-          <div class="col-title">MOD</div>
+          <div class="col-title" data-i18n="modes">MOD</div>
           <ul class="nav-list" id="modusList">
-            <li class="nav-item focusable active" data-modus="favorites" tabindex="0">★ Favoriler</li>
-            <li class="nav-item focusable" data-modus="live" tabindex="0">📺 Canlı TV</li>
-            <li class="nav-item focusable" data-modus="vod" tabindex="0">🎬 Filmler</li>
-            <li class="nav-item focusable" data-modus="series" tabindex="0">🍿 Diziler</li>
+            <li class="nav-item focusable active" data-modus="favorites" data-i18n="modeFavorites" tabindex="0">★ Favoriler</li>
+            <li class="nav-item focusable" data-modus="live" data-i18n="modeLive" tabindex="0">📺 Canlı TV</li>
+            <li class="nav-item focusable" data-modus="vod" data-i18n="modeMovies" tabindex="0">🎬 Filmler</li>
+            <li class="nav-item focusable" data-modus="series" data-i18n="modeSeries" tabindex="0">🍿 Diziler</li>
           </ul>
         </div>
       </div>
 
       <!-- KOLOM 1: REGIO -->
       <div class="col-nav collapsed" id="colRegions" data-col="1">
-        <div class="tab-label">REGIO</div>
+        <div class="tab-label" data-i18n="region">REGIO</div>
         <div class="col-content-wrapper">
-          <div class="col-title">BÖLGE</div>
+          <div class="col-title" data-i18n="region">BÖLGE</div>
           <ul class="nav-list" id="regionList"></ul>
         </div>
       </div>
 
       <!-- KOLOM 2: CATEGORIE -->
       <div class="col-nav collapsed" id="colCategories" data-col="2">
-        <div class="tab-label">CATEGORIE</div>
+        <div class="tab-label" data-i18n="categories">CATEGORIE</div>
         <div class="col-content-wrapper">
-          <div class="col-title">KATEGORİ</div>
+          <div class="col-title" data-i18n="categories">KATEGORİ</div>
           <ul class="nav-list" id="categoryList"></ul>
         </div>
       </div>
@@ -103,16 +166,22 @@
         <div id="vodPauseIcon" class="vod-pause-overlay hidden">
           <div class="vod-pause-circle">⏸</div>
         </div>
+        <div id="vodPlaybackControls" class="vod-playback-controls hidden">
+          <button class="vod-control focusable" data-vod-control="previous" type="button" tabindex="0"><span aria-hidden="true">|◀</span><span data-i18n="previous">Previous</span></button>
+          <button class="vod-control focusable" data-vod-control="toggle" type="button" tabindex="0"><span id="vodPlayPauseIcon" aria-hidden="true">⏸</span><span data-i18n="playPause">Pause / play</span></button>
+          <button class="vod-control focusable" data-vod-control="next" type="button" tabindex="0"><span aria-hidden="true">▶|</span><span data-i18n="next">Next</span></button>
+        </div>
+        <div id="vodSeekPreview" class="scrub-overlay hidden" aria-live="polite"></div>
 
         <!-- LIVE TV EPG PANEL -->
         <div class="epg-preview-panel" id="epgPreviewPanel">
           <div class="epg-row current">
             <span class="epg-time" id="epgCurrTime">--:--</span>
-            <span id="epgCurrTitle">Canlı Yayın</span>
+            <span id="epgCurrTitle" data-i18n="liveNow">Canlı Yayın</span>
           </div>
           <div class="epg-row">
             <span class="epg-time" id="epgNextTime">--:--</span>
-            <span id="epgNextTitle">Sonraki Yayın Yok</span>
+            <span id="epgNextTitle" data-i18n="noNextProgram">Sonraki Yayın Yok</span>
           </div>
         </div>
 
@@ -125,19 +194,21 @@
           <div class="osd-details">
             <div class="osd-title-row">
               <h2 id="osdChannelTitle">1. TRT 1</h2>
-              <span class="osd-clock" id="osdClock">00:00</span>
             </div>
             <div class="osd-epg-info">
               <div class="osd-epg-row active-epg">
                 <span class="osd-epg-time" id="osdEpgCurrTime">--:--</span>
-                <span id="osdEpgCurrTitle">Yayın Bilgisi Yükleniyor...</span>
+                <span id="osdEpgCurrTitle" data-i18n="liveNow">Yayın Bilgisi Yükleniyor...</span>
               </div>
               <div class="osd-epg-row">
                 <span class="osd-epg-time" id="osdEpgNextTime">--:--</span>
-                <span id="osdEpgNextTitle">Sonraki Program Yok</span>
+                <span id="osdEpgNextTitle" data-i18n="noNextProgram">Sonraki Program Yok</span>
               </div>
             </div>
           </div>
+        </div>
+        <div class="osd-clock-bubble hidden" id="osdClockBubble" aria-label="Clock">
+          <span class="osd-clock" id="osdClock">00:00</span>
         </div>
 
         <!-- VOD LIQUID GLASS OSD -->
@@ -151,7 +222,7 @@
           </div>
           <div class="vod-osd-controls">
             <span id="vodCurrentTime">00:00:00</span>
-            <span class="vod-hint">OK: Menu | Pause: Pauzeer | ⬅/➡: Spoelen</span>
+            <span class="vod-hint" data-i18n="vodHint">OK: Menu | Pause: Pauzeer | ⬅/➡: Spoelen</span>
             <span id="vodDuration">00:00:00</span>
           </div>
         </div>

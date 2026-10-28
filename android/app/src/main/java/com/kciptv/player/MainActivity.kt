@@ -1,7 +1,15 @@
 package com.kciptv.player
 
+import android.content.Context
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
+import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -26,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         webView = findViewById(R.id.webView)
+        webView.addJavascriptInterface(ExternalPlayerInterface(this), "AndroidExternalPlayer")
 
         val webSettings: WebSettings = webView.settings
         @Suppress("SetJavaScriptEnabled")
@@ -75,6 +84,36 @@ class MainActivity : AppCompatActivity() {
         })
 
         webView.loadUrl("file:///android_asset/index.html")
+    }
+
+    class ExternalPlayerInterface(private val context: Context) {
+        @JavascriptInterface
+        fun copyToClipboard(text: String) {
+            Handler(Looper.getMainLooper()).post {
+                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText("Playlist URL", text))
+            }
+        }
+
+        @JavascriptInterface
+        fun openPlayer(url: String) {
+            Handler(Looper.getMainLooper()).post {
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        setDataAndType(Uri.parse(url), "video/*")
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        context.startActivity(intent)
+                    } catch (ex: Exception) {}
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
