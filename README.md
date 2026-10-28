@@ -1,6 +1,6 @@
 # KC IPTV Player
 
-A modern webOS IPTV app for browsing live TV channels, managing favorites, and navigating content on LG Smart TVs.
+A modern webOS IPTV app for browsing live TV channels, managing favorites, and navigating content on LG Smart TVs. An android version is now supported in releases, download the apk and install!
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/kceryrk/KC-IPTV-Player/main/icon.png" alt="KC IPTV Player icon" width="180" />
@@ -20,16 +20,19 @@ KC IPTV Player is a lightweight IPTV app built for webOS devices. It gives users
 ## Features
 
 - Live TV channel list
-- Favorite channel toggle with star button
-- Favorite channel reordering
-- Quick channel zap by number
+- Xtream API
+- Favorite channel toggle with star button (yellow button)
+- Favorite channel reordering (red button)
+- Quick channel zap by number support
 - Live EPG information display
 - Channel logo support
+- Movies and Series have poster support with grid navigation
 - Fullscreen playback mode
 - Region and category filtering
 - Multi-language support
 - webOS packaging support via .ipk
-- Private GitHub backup and version tracking
+- Open full screen automatically in favorites and ready for zapping trough channels like cable tv!
+- Page up and down buttons supported!
 
 ## Screenshots
 
@@ -39,7 +42,7 @@ KC IPTV Player is a lightweight IPTV app built for webOS devices. It gives users
 
 ## Download the latest release
 
-Download the latest packaged .ipk for webOS here:
+Download the latest packaged .ipk for webOS here, apk also available:
 
 - GitHub Releases: https://github.com/kceryrk/KC-IPTV-Player/releases
 
@@ -66,8 +69,9 @@ ares-install --device your_tv_ip com.iptv.webosapp_1.2.4_all.ipk
 ```
 
 Replace `your_tv_ip` with the IP address of your LG TV.
+Check LG Developer website for more information.
 
-### Option 3: Install using a USB drive
+### Option 3: Install using a USB drive (not confirmed)
 
 1. Copy the `.ipk` file to a USB stick.
 2. Plug the USB stick into the LG TV.
