@@ -36,6 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginPage = document.getElementById("loginPage");
   const appPage = document.getElementById("appPage");
   const loginForm = document.getElementById("loginForm");
+  const hintBar = document.getElementById("hintBar");
+  const searchPanel = document.getElementById("searchPanel");
+  const searchInput = document.getElementById("searchInput");
+  const searchResults = document.getElementById("searchResults");
+  const searchEmpty = document.getElementById("searchEmpty");
   const loginBtn = document.getElementById("loginBtn");
   const autoLoginSplash = document.getElementById("autoLoginSplash");
   const loginStatus = document.getElementById("loginStatus");
@@ -96,16 +101,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentLoginState = "failed";
   const appTranslations = {
     en: {
-      settings: "Settings", language: "Language", autoplayNext: "Play next episode automatically", customization: "Customization", switchProfile: "Switch profile", resetApp: "Reset app", close: "Close menu", back: "Back", accentColor: "Accent color", highlightColor: "Highlight color", backgroundImage: "Background image URL", apply: "Apply", removeBackground: "Remove image", done: "Done", previous: "Previous", next: "Next", playPause: "Pause / play", serverUrl: "Server URL", username: "Username", password: "Password", login: "Sign in", connecting: "Connecting to IPTV server...", loginFailed: "Login failed.", modes: "MODES", modeFavorites: "★ Favorites", modeLive: "📺 Live TV", modeMovies: "🎬 Movies", modeSeries: "🍿 Series", region: "REGION", categories: "CATEGORIES", allRegions: "🌍 All regions", channels: "CHANNELS", movies: "MOVIES", series: "SERIES", liveNow: "Live TV", noNextProgram: "No upcoming program", vodHint: "Up: controls | Play/Pause: toggle | Left/Right: seek", backToSeries: "← Back to series", noEpisodes: "No episodes found", loadingEpisodes: "Loading episodes...", unableLoad: "Unable to load episodes", favoritesRemoved: "Removed from favorites", favoritesAdded: "Added to favorites", moveOnlyFavorites: "Move mode is only available in Favorites", moveStarted: "Move mode started", positionSaved: "Position saved", channelNotFound: "Channel #{number} not found", autoplay: "Autoplay next episode", colors: "Colors", backgroundApplied: "Background updated", backgroundRemoved: "Background removed", invalidBackground: "Enter a valid HTTP or HTTPS image URL", previousEpisode: "Previous episode", nextEpisode: "Next episode", profileChanged: "Profile changed", appReset: "App reset", zapped: "Playing channel #{number}: {title}", colorRed: "Red", colorBlue: "Blue", colorGreen: "Green", colorRose: "Rose", colorOrange: "Orange", colorGold: "Gold", colorTurquoise: "Turquoise", colorLime: "Lime", colorSky: "Sky blue"
+      settings: "Settings", language: "Language", autoplayNext: "Play next episode automatically", customization: "Customization", switchProfile: "Change source", resetApp: "Reset app", close: "Close menu", back: "Back", accentColor: "Accent color", highlightColor: "Highlight color", backgroundImage: "Background image URL", apply: "Apply", removeBackground: "Remove image", done: "Done", previous: "Previous", next: "Next", playPause: "Pause / play", serverUrl: "Server URL", username: "Username", password: "Password", login: "Sign in", connecting: "Connecting to IPTV server...", loginFailed: "Login failed.", modes: "MODES", modeFavorites: "★ Favorites", modeLive: "📺 Live TV", modeMovies: "🎬 Movies", modeSeries: "🍿 Series", region: "REGION", categories: "CATEGORIES", allRegions: "🌍 All regions", channels: "CHANNELS", movies: "MOVIES", series: "SERIES", liveNow: "Live TV", noNextProgram: "No upcoming program", vodHint: "Up: controls | Play/Pause: toggle | Left/Right: seek", backToSeries: "← Back to series", noEpisodes: "No episodes found", loadingEpisodes: "Loading episodes...", unableLoad: "Unable to load episodes", favoritesRemoved: "Removed from favorites", favoritesAdded: "Added to favorites", moveOnlyFavorites: "Move mode is only available in Favorites", moveStarted: "Move mode started", positionSaved: "Position saved", channelNotFound: "Channel #{number} not found", autoplay: "Autoplay next episode", colors: "Colors", backgroundApplied: "Background updated", backgroundRemoved: "Background removed", invalidBackground: "Enter a valid HTTP or HTTPS image URL", previousEpisode: "Previous episode", nextEpisode: "Next episode", profileChanged: "Profile changed", appReset: "App reset", zapped: "Playing channel #{number}: {title}", colorRed: "Red", colorBlue: "Blue", colorGreen: "Green", colorRose: "Rose", colorOrange: "Orange", colorGold: "Gold", colorTurquoise: "Turquoise", colorLime: "Lime", colorSky: "Sky blue"
     },
     tr: {
-      settings: "Ayarlar", language: "Dil", autoplayNext: "Sonraki bölümü otomatik oynat", customization: "Özelleştirme", switchProfile: "Profili değiştir", resetApp: "Uygulamayı sıfırla", close: "Menüyü kapat", back: "Geri", accentColor: "Vurgu rengi", highlightColor: "Öne çıkan renk", backgroundImage: "Arka plan görseli URL'si", apply: "Uygula", removeBackground: "Görseli kaldır", done: "Tamam", previous: "Önceki", next: "Sonraki", playPause: "Duraklat / oynat", serverUrl: "Sunucu URL'si", username: "Kullanıcı adı", password: "Şifre", login: "Giriş yap", connecting: "IPTV sunucusuna bağlanılıyor...", loginFailed: "Giriş başarısız.", modes: "MODLAR", modeFavorites: "★ Favoriler", modeLive: "📺 Canlı TV", modeMovies: "🎬 Filmler", modeSeries: "🍿 Diziler", region: "BÖLGE", categories: "KATEGORİLER", allRegions: "🌍 Tüm bölgeler", channels: "KANALLAR", movies: "FİLMLER", series: "DİZİLER", liveNow: "Canlı yayın", noNextProgram: "Sonraki program yok", vodHint: "Yukarı: kontroller | Oynat/Duraklat: değiştir | Sol/Sağ: sar", backToSeries: "← Dizi listesine dön", noEpisodes: "Bölüm bulunamadı", loadingEpisodes: "Bölümler yükleniyor...", unableLoad: "Bölümler yüklenemedi", favoritesRemoved: "Favorilerden çıkarıldı", favoritesAdded: "Favorilere eklendi", moveOnlyFavorites: "Taşıma modu yalnızca Favorilerde kullanılabilir", moveStarted: "Taşıma başladı", positionSaved: "Sıralama kaydedildi", channelNotFound: "#{number} numaralı kanal bulunamadı", autoplay: "Sonraki bölümü otomatik oynat", colors: "Renkler", backgroundApplied: "Arka plan güncellendi", backgroundRemoved: "Arka plan kaldırıldı", invalidBackground: "Geçerli bir HTTP veya HTTPS görsel URL'si girin", previousEpisode: "Önceki bölüm", nextEpisode: "Sonraki bölüm", profileChanged: "Profil değiştirildi", appReset: "Uygulama sıfırlandı", zapped: "Kanal #{number} açılıyor: {title}", colorRed: "Kırmızı", colorBlue: "Mavi", colorGreen: "Yeşil", colorRose: "Pembe", colorOrange: "Turuncu", colorGold: "Altın", colorTurquoise: "Turkuaz", colorLime: "Fıstık yeşili", colorSky: "Gök mavisi"
+      settings: "Ayarlar", language: "Dil", autoplayNext: "Sonraki bölümü otomatik oynat", customization: "Özelleştirme", switchProfile: "Kaynağı değiştir", resetApp: "Uygulamayı sıfırla", close: "Menüyü kapat", back: "Geri", accentColor: "Vurgu rengi", highlightColor: "Öne çıkan renk", backgroundImage: "Arka plan görseli URL'si", apply: "Uygula", removeBackground: "Görseli kaldır", done: "Tamam", previous: "Önceki", next: "Sonraki", playPause: "Duraklat / oynat", serverUrl: "Sunucu URL'si", username: "Kullanıcı adı", password: "Şifre", login: "Giriş yap", connecting: "IPTV sunucusuna bağlanılıyor...", loginFailed: "Giriş başarısız.", modes: "MODLAR", modeFavorites: "★ Favoriler", modeLive: "📺 Canlı TV", modeMovies: "🎬 Filmler", modeSeries: "🍿 Diziler", region: "BÖLGE", categories: "KATEGORİLER", allRegions: "🌍 Tüm bölgeler", channels: "KANALLAR", movies: "FİLMLER", series: "DİZİLER", liveNow: "Canlı yayın", noNextProgram: "Sonraki program yok", vodHint: "Yukarı: kontroller | Oynat/Duraklat: değiştir | Sol/Sağ: sar", backToSeries: "← Dizi listesine dön", noEpisodes: "Bölüm bulunamadı", loadingEpisodes: "Bölümler yükleniyor...", unableLoad: "Bölümler yüklenemedi", favoritesRemoved: "Favorilerden çıkarıldı", favoritesAdded: "Favorilere eklendi", moveOnlyFavorites: "Taşıma modu yalnızca Favorilerde kullanılabilir", moveStarted: "Taşıma başladı", positionSaved: "Sıralama kaydedildi", channelNotFound: "#{number} numaralı kanal bulunamadı", autoplay: "Sonraki bölümü otomatik oynat", colors: "Renkler", backgroundApplied: "Arka plan güncellendi", backgroundRemoved: "Arka plan kaldırıldı", invalidBackground: "Geçerli bir HTTP veya HTTPS görsel URL'si girin", previousEpisode: "Önceki bölüm", nextEpisode: "Sonraki bölüm", profileChanged: "Profil değiştirildi", appReset: "Uygulama sıfırlandı", zapped: "Kanal #{number} açılıyor: {title}", colorRed: "Kırmızı", colorBlue: "Mavi", colorGreen: "Yeşil", colorRose: "Pembe", colorOrange: "Turuncu", colorGold: "Altın", colorTurquoise: "Turkuaz", colorLime: "Fıstık yeşili", colorSky: "Gök mavisi"
     },
     nl: {
-      settings: "Instellingen", language: "Taal", autoplayNext: "Volgende aflevering automatisch afspelen", customization: "Aanpassen", switchProfile: "Profiel wisselen", resetApp: "App resetten", close: "Menu sluiten", back: "Terug", accentColor: "Accentkleur", highlightColor: "Markeringskleur", backgroundImage: "URL van achtergrondafbeelding", apply: "Toepassen", removeBackground: "Afbeelding verwijderen", done: "Gereed", previous: "Vorige", next: "Volgende", playPause: "Pauzeren / afspelen", serverUrl: "Server-URL", username: "Gebruikersnaam", password: "Wachtwoord", login: "Inloggen", connecting: "Verbinden met IPTV-server...", loginFailed: "Inloggen mislukt.", modes: "MODI", modeFavorites: "★ Favorieten", modeLive: "📺 Live-tv", modeMovies: "🎬 Films", modeSeries: "🍿 Series", region: "REGIO", categories: "CATEGORIEËN", allRegions: "🌍 Alle regio's", channels: "KANALEN", movies: "FILMS", series: "SERIES", liveNow: "Live-uitzending", noNextProgram: "Geen volgend programma", vodHint: "Omhoog: bediening | Afspelen/Pauze: wisselen | Links/Rechts: zoeken", backToSeries: "← Terug naar series", noEpisodes: "Geen afleveringen gevonden", loadingEpisodes: "Afleveringen laden...", unableLoad: "Afleveringen laden mislukt", favoritesRemoved: "Verwijderd uit favorieten", favoritesAdded: "Toegevoegd aan favorieten", moveOnlyFavorites: "Verplaatsen kan alleen in Favorieten", moveStarted: "Verplaatsen gestart", positionSaved: "Positie opgeslagen", channelNotFound: "Kanaal #{number} niet gevonden", autoplay: "Volgende aflevering automatisch afspelen", colors: "Kleuren", backgroundApplied: "Achtergrond bijgewerkt", backgroundRemoved: "Achtergrond verwijderd", invalidBackground: "Voer een geldige HTTP- of HTTPS-afbeeldings-URL in", previousEpisode: "Vorige aflevering", nextEpisode: "Volgende aflevering", profileChanged: "Profiel gewijzigd", appReset: "App gereset", zapped: "Kanaal #{number} wordt afgespeeld: {title}", colorRed: "Rood", colorBlue: "Blauw", colorGreen: "Groen", colorRose: "Roze", colorOrange: "Oranje", colorGold: "Goud", colorTurquoise: "Turquoise", colorLime: "Limoen", colorSky: "Hemelsblauw"
+      settings: "Instellingen", language: "Taal", autoplayNext: "Volgende aflevering automatisch afspelen", customization: "Aanpassen", switchProfile: "Bron wijzigen", resetApp: "App resetten", close: "Menu sluiten", back: "Terug", accentColor: "Accentkleur", highlightColor: "Markeringskleur", backgroundImage: "URL van achtergrondafbeelding", apply: "Toepassen", removeBackground: "Afbeelding verwijderen", done: "Gereed", previous: "Vorige", next: "Volgende", playPause: "Pauzeren / afspelen", serverUrl: "Server-URL", username: "Gebruikersnaam", password: "Wachtwoord", login: "Inloggen", connecting: "Verbinden met IPTV-server...", loginFailed: "Inloggen mislukt.", modes: "MODI", modeFavorites: "★ Favorieten", modeLive: "📺 Live-tv", modeMovies: "🎬 Films", modeSeries: "🍿 Series", region: "REGIO", categories: "CATEGORIEËN", allRegions: "🌍 Alle regio's", channels: "KANALEN", movies: "FILMS", series: "SERIES", liveNow: "Live-uitzending", noNextProgram: "Geen volgend programma", vodHint: "Omhoog: bediening | Afspelen/Pauze: wisselen | Links/Rechts: zoeken", backToSeries: "← Terug naar series", noEpisodes: "Geen afleveringen gevonden", loadingEpisodes: "Afleveringen laden...", unableLoad: "Afleveringen laden mislukt", favoritesRemoved: "Verwijderd uit favorieten", favoritesAdded: "Toegevoegd aan favorieten", moveOnlyFavorites: "Verplaatsen kan alleen in Favorieten", moveStarted: "Verplaatsen gestart", positionSaved: "Positie opgeslagen", channelNotFound: "Kanaal #{number} niet gevonden", autoplay: "Volgende aflevering automatisch afspelen", colors: "Kleuren", backgroundApplied: "Achtergrond bijgewerkt", backgroundRemoved: "Achtergrond verwijderd", invalidBackground: "Voer een geldige HTTP- of HTTPS-afbeeldings-URL in", previousEpisode: "Vorige aflevering", nextEpisode: "Volgende aflevering", profileChanged: "Profiel gewijzigd", appReset: "App gereset", zapped: "Kanaal #{number} wordt afgespeeld: {title}", colorRed: "Rood", colorBlue: "Blauw", colorGreen: "Groen", colorRose: "Roze", colorOrange: "Oranje", colorGold: "Goud", colorTurquoise: "Turquoise", colorLime: "Limoen", colorSky: "Hemelsblauw"
     },
     fr: {
-      settings: "Paramètres", language: "Langue", autoplayNext: "Lire automatiquement l’épisode suivant", customization: "Personnalisation", switchProfile: "Changer de profil", resetApp: "Réinitialiser l’application", close: "Fermer le menu", back: "Retour", accentColor: "Couleur d’accentuation", highlightColor: "Couleur de surbrillance", backgroundImage: "URL de l’image d’arrière-plan", apply: "Appliquer", removeBackground: "Supprimer l’image", done: "Terminé", previous: "Précédent", next: "Suivant", playPause: "Pause / lecture", serverUrl: "URL du serveur", username: "Nom d’utilisateur", password: "Mot de passe", login: "Connexion", connecting: "Connexion au serveur IPTV...", loginFailed: "Échec de la connexion.", modes: "MODES", modeFavorites: "★ Favoris", modeLive: "📺 TV en direct", modeMovies: "🎬 Films", modeSeries: "🍿 Séries", region: "RÉGION", categories: "CATÉGORIES", allRegions: "🌍 Toutes les régions", channels: "CHAÎNES", movies: "FILMS", series: "SÉRIES", liveNow: "En direct", noNextProgram: "Aucun programme suivant", vodHint: "Haut : commandes | Lecture/Pause : basculer | Gauche/Droite : avancer", backToSeries: "← Retour aux séries", noEpisodes: "Aucun épisode trouvé", loadingEpisodes: "Chargement des épisodes...", unableLoad: "Impossible de charger les épisodes", favoritesRemoved: "Retiré des favoris", favoritesAdded: "Ajouté aux favoris", moveOnlyFavorites: "Le déplacement est réservé aux Favoris", moveStarted: "Déplacement commencé", positionSaved: "Position enregistrée", channelNotFound: "Chaîne #{number} introuvable", autoplay: "Lire automatiquement l’épisode suivant", colors: "Couleurs", backgroundApplied: "Arrière-plan mis à jour", backgroundRemoved: "Arrière-plan supprimé", invalidBackground: "Saisissez une URL d’image HTTP ou HTTPS valide", previousEpisode: "Épisode précédent", nextEpisode: "Épisode suivant", profileChanged: "Profil modifié", appReset: "Application réinitialisée", zapped: "Lecture de la chaîne #{number} : {title}", colorRed: "Rouge", colorBlue: "Bleu", colorGreen: "Vert", colorRose: "Rose", colorOrange: "Orange", colorGold: "Or", colorTurquoise: "Turquoise", colorLime: "Citron vert", colorSky: "Bleu ciel"
+      settings: "Paramètres", language: "Langue", autoplayNext: "Lire automatiquement l’épisode suivant", customization: "Personnalisation", switchProfile: "Changer de source", resetApp: "Réinitialiser l’application", close: "Fermer le menu", back: "Retour", accentColor: "Couleur d’accentuation", highlightColor: "Couleur de surbrillance", backgroundImage: "URL de l’image d’arrière-plan", apply: "Appliquer", removeBackground: "Supprimer l’image", done: "Terminé", previous: "Précédent", next: "Suivant", playPause: "Pause / lecture", serverUrl: "URL du serveur", username: "Nom d’utilisateur", password: "Mot de passe", login: "Connexion", connecting: "Connexion au serveur IPTV...", loginFailed: "Échec de la connexion.", modes: "MODES", modeFavorites: "★ Favoris", modeLive: "📺 TV en direct", modeMovies: "🎬 Films", modeSeries: "🍿 Séries", region: "RÉGION", categories: "CATÉGORIES", allRegions: "🌍 Toutes les régions", channels: "CHAÎNES", movies: "FILMS", series: "SÉRIES", liveNow: "En direct", noNextProgram: "Aucun programme suivant", vodHint: "Haut : commandes | Lecture/Pause : basculer | Gauche/Droite : avancer", backToSeries: "← Retour aux séries", noEpisodes: "Aucun épisode trouvé", loadingEpisodes: "Chargement des épisodes...", unableLoad: "Impossible de charger les épisodes", favoritesRemoved: "Retiré des favoris", favoritesAdded: "Ajouté aux favoris", moveOnlyFavorites: "Le déplacement est réservé aux Favoris", moveStarted: "Déplacement commencé", positionSaved: "Position enregistrée", channelNotFound: "Chaîne #{number} introuvable", autoplay: "Lire automatiquement l’épisode suivant", colors: "Couleurs", backgroundApplied: "Arrière-plan mis à jour", backgroundRemoved: "Arrière-plan supprimé", invalidBackground: "Saisissez une URL d’image HTTP ou HTTPS valide", previousEpisode: "Épisode précédent", nextEpisode: "Épisode suivant", profileChanged: "Profil modifié", appReset: "Application réinitialisée", zapped: "Lecture de la chaîne #{number} : {title}", colorRed: "Rouge", colorBlue: "Bleu", colorGreen: "Vert", colorRose: "Rose", colorOrange: "Orange", colorGold: "Or", colorTurquoise: "Turquoise", colorLime: "Citron vert", colorSky: "Bleu ciel"
     }
   };
 
@@ -114,10 +119,10 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.assign(appTranslations.nl, { backgroundPlaceholder: "https://example.com/image.jpg", moveBanner: "VERPLAATSEN: Gebruik Omhoog/Omlaag om te sorteren, druk op Rood om op te slaan", season: "Seizoen {number}", episode: "Aflevering {number}", channelZap: "KANAAL ZAPPEN" });
   Object.assign(appTranslations.fr, { backgroundPlaceholder: "https://example.com/image.jpg", moveBanner: "DÉPLACEMENT : utilisez Haut/Bas pour réorganiser, appuyez sur Rouge pour enregistrer", season: "Saison {number}", episode: "Épisode {number}", channelZap: "CHANGEMENT DE CHAÎNE" });
 
-  Object.assign(appTranslations.en, { providerLogin: "Provider login", loginMethod: "Login method", xtreamCodes: "Xtream Codes", m3uPlaylist: "M3U playlist URL", m3uUrl: "Playlist URL", loggingIn: "Logging in", loggedIn: "Logged in", loginRequired: "Login failed", noSavedProfile: "No saved profile. Enter your provider details.", invalidCredentials: "The provider rejected the username or password.", playlistUnavailable: "The playlist could not be loaded.", playlistInvalid: "The URL did not return a valid M3U playlist.", loginErrorToast: "Login failed: {reason}" });
-  Object.assign(appTranslations.tr, { providerLogin: "Sağlayıcı girişi", loginMethod: "Giriş yöntemi", xtreamCodes: "Xtream Codes", m3uPlaylist: "M3U oynatma listesi URL'si", m3uUrl: "Oynatma listesi URL'si", loggingIn: "Giriş yapılıyor", loggedIn: "Giriş başarılı", loginRequired: "Giriş başarısız", noSavedProfile: "Kayıtlı profil yok. Sağlayıcı bilgilerini girin.", invalidCredentials: "Sağlayıcı kullanıcı adı veya parolayı kabul etmedi.", playlistUnavailable: "Oynatma listesi yüklenemedi.", playlistInvalid: "URL geçerli bir M3U oynatma listesi döndürmedi.", loginErrorToast: "Giriş başarısız: {reason}" });
-  Object.assign(appTranslations.nl, { providerLogin: "Provider aanmelden", loginMethod: "Aanmeldmethode", xtreamCodes: "Xtream Codes", m3uPlaylist: "M3U-afspeellijst-URL", m3uUrl: "Afspeellijst-URL", loggingIn: "Aanmelden", loggedIn: "Aangemeld", loginRequired: "Aanmelden mislukt", noSavedProfile: "Geen opgeslagen profiel. Vul je providergegevens in.", invalidCredentials: "De provider heeft de gebruikersnaam of het wachtwoord geweigerd.", playlistUnavailable: "De afspeellijst kon niet worden geladen.", playlistInvalid: "De URL bevat geen geldige M3U-afspeellijst.", loginErrorToast: "Aanmelden mislukt: {reason}" });
-  Object.assign(appTranslations.fr, { providerLogin: "Connexion au fournisseur", loginMethod: "Méthode de connexion", xtreamCodes: "Xtream Codes", m3uPlaylist: "URL de playlist M3U", m3uUrl: "URL de la playlist", loggingIn: "Connexion en cours", loggedIn: "Connecté", loginRequired: "Échec de connexion", noSavedProfile: "Aucun profil enregistré. Saisissez vos identifiants fournisseur.", invalidCredentials: "Le fournisseur a refusé le nom d’utilisateur ou le mot de passe.", playlistUnavailable: "Impossible de charger la playlist.", playlistInvalid: "L’URL ne renvoie pas une playlist M3U valide.", loginErrorToast: "Échec de connexion : {reason}" });
+  Object.assign(appTranslations.en, { providerLogin: "Provider login", loginMethod: "Login method", xtreamCodes: "Xtream (Movies & Series)", m3uPlaylist: "M3U playlist (Live TV)", m3uUrl: "Playlist URL", loggingIn: "Logging in", loggedIn: "Logged in", loginRequired: "Login failed", noSavedProfile: "No saved profile. Enter your provider details.", invalidCredentials: "The provider rejected the username or password.", playlistUnavailable: "The playlist could not be loaded.", playlistInvalid: "The URL did not return a valid M3U playlist.", loginErrorToast: "Login failed: {reason}" });
+  Object.assign(appTranslations.tr, { providerLogin: "Sağlayıcı girişi", loginMethod: "Giriş yöntemi", xtreamCodes: "Xtream (Film ve Dizi)", m3uPlaylist: "M3U listesi (Canlı TV)", m3uUrl: "Oynatma listesi URL'si", loggingIn: "Giriş yapılıyor", loggedIn: "Giriş başarılı", loginRequired: "Giriş başarısız", noSavedProfile: "Kayıtlı profil yok. Sağlayıcı bilgilerini girin.", invalidCredentials: "Sağlayıcı kullanıcı adı veya parolayı kabul etmedi.", playlistUnavailable: "Oynatma listesi yüklenemedi.", playlistInvalid: "URL geçerli bir M3U oynatma listesi döndürmedi.", loginErrorToast: "Giriş başarısız: {reason}" });
+  Object.assign(appTranslations.nl, { providerLogin: "Provider aanmelden", loginMethod: "Aanmeldmethode", xtreamCodes: "Xtream (Films & Series)", m3uPlaylist: "M3U-afspeellijst (Live-tv)", m3uUrl: "Afspeellijst-URL", loggingIn: "Aanmelden", loggedIn: "Aangemeld", loginRequired: "Aanmelden mislukt", noSavedProfile: "Geen opgeslagen profiel. Vul je providergegevens in.", invalidCredentials: "De provider heeft de gebruikersnaam of het wachtwoord geweigerd.", playlistUnavailable: "De afspeellijst kon niet worden geladen.", playlistInvalid: "De URL bevat geen geldige M3U-afspeellijst.", loginErrorToast: "Aanmelden mislukt: {reason}" });
+  Object.assign(appTranslations.fr, { providerLogin: "Connexion au fournisseur", loginMethod: "Méthode de connexion", xtreamCodes: "Xtream (Films et séries)", m3uPlaylist: "Playlist M3U (TV en direct)", m3uUrl: "URL de la playlist", loggingIn: "Connexion en cours", loggedIn: "Connecté", loginRequired: "Échec de connexion", noSavedProfile: "Aucun profil enregistré. Saisissez vos identifiants fournisseur.", invalidCredentials: "Le fournisseur a refusé le nom d’utilisateur ou le mot de passe.", playlistUnavailable: "Impossible de charger la playlist.", playlistInvalid: "L’URL ne renvoie pas une playlist M3U valide.", loginErrorToast: "Échec de connexion : {reason}" });
   Object.assign(appTranslations.en, { streamPlaybackFailed: "This stream could not be played. Try the provider's HLS URL or a compatible stream format." });
   Object.assign(appTranslations.tr, { streamPlaybackFailed: "Bu yayın oynatılamadı. Sağlayıcının HLS URL'sini veya uyumlu bir yayın biçimini deneyin." });
   Object.assign(appTranslations.nl, { streamPlaybackFailed: "Deze stream kan niet worden afgespeeld. Probeer de HLS-URL van de provider of een compatibel formaat." });
@@ -130,7 +135,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     return text;
   }
+  Object.assign(appTranslations.en, {"hintFavorite": "Favorite", "hintReorder": "Reorder", "hintHide": "Hide category", "hintSearch": "Search", "searchTitle": "Search channels", "searchPlaceholder": "Type a channel name", "searchNoResults": "No channels found", "categoryHidden": "Category hidden", "resetHidden": "Show hidden categories", "hiddenReset": "Hidden categories restored", "refreshInterval": "Refresh lists", "refreshOff": "Off"});
+  Object.assign(appTranslations.tr, {"hintFavorite": "Favori", "hintReorder": "Sırala", "hintHide": "Kategoriyi gizle", "hintSearch": "Ara", "searchTitle": "Kanal ara", "searchPlaceholder": "Kanal adını yazın", "searchNoResults": "Kanal bulunamadı", "categoryHidden": "Kategori gizlendi", "resetHidden": "Gizli kategorileri göster", "hiddenReset": "Gizli kategoriler geri yüklendi", "refreshInterval": "Listeleri yenile", "refreshOff": "Kapalı"});
+  Object.assign(appTranslations.nl, {"hintFavorite": "Favoriet", "hintReorder": "Verplaatsen", "hintHide": "Categorie verbergen", "hintSearch": "Zoeken", "searchTitle": "Zoek kanalen", "searchPlaceholder": "Typ een kanaalnaam", "searchNoResults": "Geen kanalen gevonden", "categoryHidden": "Categorie verborgen", "resetHidden": "Verborgen categorieën tonen", "hiddenReset": "Verborgen categorieën hersteld", "refreshInterval": "Lijsten vernieuwen", "refreshOff": "Uit"});
+  Object.assign(appTranslations.fr, {"hintFavorite": "Favori", "hintReorder": "Déplacer", "hintHide": "Masquer la catégorie", "hintSearch": "Rechercher", "searchTitle": "Rechercher des chaînes", "searchPlaceholder": "Saisissez un nom de chaîne", "searchNoResults": "Aucune chaîne trouvée", "categoryHidden": "Catégorie masquée", "resetHidden": "Afficher les catégories masquées", "hiddenReset": "Catégories masquées restaurées", "refreshInterval": "Actualiser les listes", "refreshOff": "Désactivé"});
   let autoplayNext = store.getItem("iptv_autoplay_next") === "true";
+  let refreshTimer = null;
+  let movingRegion = null;
+  let focusContentWhenReady = false;
+  const columnMemory = {};
+  const regionOrderCache = { live: [], vod: [] };
+  let regionPrefs = { fav: { live: [], vod: [] }, hidden: { live: [], vod: [] }, order: { live: [], vod: [] } };
+  try {
+    const savedRegionPrefs = JSON.parse(store.getItem("iptv_region_prefs") || "{}");
+    Object.keys(regionPrefs).forEach((group) => {
+      ["live", "vod"].forEach((kind) => {
+        if (savedRegionPrefs[group] && Array.isArray(savedRegionPrefs[group][kind])) regionPrefs[group][kind] = savedRegionPrefs[group][kind].map(String);
+      });
+    });
+  } catch (error) {}
+  let refreshHours = parseInt(store.getItem("iptv_refresh_hours") || "0", 10) || 0;
+  let hiddenCategories = { live: [], vod: [], series: [] };
+  try {
+    const savedHidden = JSON.parse(store.getItem("iptv_hidden_cats") || "{}");
+    Object.keys(hiddenCategories).forEach((kind) => {
+      if (Array.isArray(savedHidden[kind])) hiddenCategories[kind] = savedHidden[kind].map(String);
+    });
+  } catch (error) {}
   let currentEpisodeId = null;
   let seekPreviewTime = null;
   let seekTimer = null;
@@ -145,6 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let currentAuth = null;
+  let xtreamAuth = null;
   let allStreams = [];
   let vodStreams = [];
   let vodCategories = [];
@@ -154,6 +186,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentVodItems = [];
   let currentVodMovieId = null;
   let allCategories = [];
+  let favoritesNs = "";
+
   function readFavorites(key) {
     try {
       const saved = JSON.parse(store.getItem(key));
@@ -165,13 +199,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function saveFavorites(list) {
     const serialized = JSON.stringify(list);
-    store.setItem("iptv_favorites", serialized);
-    store.setItem("iptv_favorites_backup", serialized);
+    store.setItem("iptv_favorites" + favoritesNs, serialized);
+    store.setItem("iptv_favorites_backup" + favoritesNs, serialized);
   }
 
   function loadFavorites() {
-    const primary = readFavorites("iptv_favorites");
-    const backup = readFavorites("iptv_favorites_backup");
+    const primary = readFavorites("iptv_favorites" + favoritesNs);
+    const backup = readFavorites("iptv_favorites_backup" + favoritesNs);
     const saved = primary !== null ? primary : (backup || []);
     saveFavorites(saved);
     return saved;
@@ -210,7 +244,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (loginStatus) {
       const stateKeys = { failed: "loginFailed", logging: "loggingIn", "logged-in": "loggedIn" };
       loginStatus.textContent = t(stateKeys[state] || "loginFailed");
-      if (state === "logged-in" && currentAuth) loginStatus.textContent += currentAuth.provider === "m3u" ? " · M3U" : " · Xtream";
+      const sources = [];
+      if (currentAuth) sources.push("M3U");
+      if (xtreamAuth) sources.push("Xtream");
+      if (state === "logged-in" && sources.length) loginStatus.textContent += " · " + sources.join(" + ");
     }
     if (state === "failed") toggleLoginPanel(true, true);
   }
@@ -265,6 +302,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const items = settingsPanel.querySelectorAll(".settings-item[data-setting='language']");
     items.forEach(item => {
       const isActive = item.dataset.value === currentLang;
+      item.classList.toggle("active", isActive);
+      item.setAttribute("aria-pressed", String(isActive));
+    });
+    settingsPanel.querySelectorAll(".settings-item[data-setting='refresh']").forEach(item => {
+      const isActive = item.dataset.value === String(refreshHours);
       item.classList.toggle("active", isActive);
       item.setAttribute("aria-pressed", String(isActive));
     });
@@ -401,12 +443,25 @@ document.addEventListener("DOMContentLoaded", () => {
       case "customization":
         showCustomizationPage(true);
         return;
+      case "refresh":
+        refreshHours = parseInt(value, 10) || 0;
+        store.setItem("iptv_refresh_hours", String(refreshHours));
+        updateSettingsSelection();
+        scheduleListRefresh();
+        showToast(`${t("refreshInterval")}: ${refreshHours ? refreshHours + " h" : t("refreshOff")}`);
+        return;
+      case "resetHidden":
+        hiddenCategories = { live: [], vod: [], series: [] };
+        regionPrefs.hidden = { live: [], vod: [] };
+        saveHiddenCategories();
+        saveRegionPrefs();
+        if (currentModus !== "favorites") setupRegions();
+        showToast(t("hiddenReset"));
+        return;
       case "switchProfile":
-        store.removeItem("iptv_profile");
-        currentAuth = null;
-        showLoginPage();
-        showToast(t("profileChanged"));
-        break;
+        toggleSettingsMenu(false);
+        toggleLoginPanel(true, true);
+        return;
       case "close":
       default:
         toggleSettingsMenu(false);
@@ -416,14 +471,32 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleSettingsMenu(false);
   }
 
-  function cleanTitle(str) {
+  const QUALITY_TAGS = ["HD", "FHD", "UHD", "4K"];
+  const TITLE_TAGS = ["HEVC", "VIP", "UHD", "FHD", "HD", "SD", "4K", "H265", "H264"];
+
+  // Tags listed in `keep` stay visible in the cleaned title.
+  function cleanTitle(str, keep) {
     if (!str) return "";
-    return str
-      .replace(/\([^)]*\)/g, "")
-      .replace(/^[A-Z0-9]{2,5}\s*:\s*/i, "")
-      .replace(/\b(HEVC|VIP|FHD|HD|SD|4K|H265|H264)\b/gi, "")
-      .replace(/\s{2,}/g, " ")
-      .trim();
+    const kept = keep || [];
+    const tags = TITLE_TAGS.filter((tag) => kept.indexOf(tag) === -1);
+    let text = str.replace(/\([^)]*\)/g, "").replace(/^[A-Z0-9]{2,5}\s*:\s*/i, "");
+    if (tags.length) text = text.replace(new RegExp("\\b(" + tags.join("|") + ")\\b", "gi"), "");
+    return text.replace(/\s{2,}/g, " ").trim();
+  }
+
+  function compareText(a, b) {
+    try {
+      return a.localeCompare(b, currentLang, { sensitivity: "base" });
+    } catch (error) {
+      return a < b ? -1 : a > b ? 1 : 0;
+    }
+  }
+
+  // UHD/4K first, then HD/FHD, then the rest; ties keep the provider's order.
+  function qualityRank(name) {
+    if (/\b(UHD|4K)\b/i.test(name)) return 0;
+    if (/\b(FHD|HD)\b/i.test(name)) return 1;
+    return 2;
   }
 
   function extractRegionFromCategory(catName, isVod) {
@@ -462,7 +535,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = Math.floor(seconds % 60);
-    return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    const two = (n) => (n < 10 ? "0" : "") + n;
+    return `${two(h)}:${two(m)}:${two(s)}`;
   }
 
   const loginDraftFields = { method: loginMethod, server: serverUrlInput, username: usernameInput, password: passwordInput, m3u: m3uUrlInput };
@@ -483,6 +557,13 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       if (loginMethod) loginMethod.dispatchEvent(new Event("change"));
     } catch (error) {}
+    // Saved defaults beat the draft so a TV-keyboard typo can't stick.
+    const defaults = window.KC_DEFAULT_LOGIN;
+    if (defaults && defaults.server && defaults.username && defaults.password) {
+      if (serverUrlInput) serverUrlInput.value = defaults.server;
+      if (usernameInput) usernameInput.value = defaults.username;
+      if (passwordInput) passwordInput.value = defaults.password;
+    }
   }
 
   Object.keys(loginDraftFields).forEach((name) => {
@@ -495,55 +576,116 @@ document.addEventListener("DOMContentLoaded", () => {
   function initProfile() {
     showAppPage();
     restoreLoginDraft();
-    const saved = store.getItem("iptv_profile");
-    if (saved) {
-      try {
-        currentAuth = JSON.parse(saved);
-        if (currentAuth.provider === "m3u") {
-          if (loginMethod) loginMethod.value = "m3u";
-          if (m3uUrlInput) m3uUrlInput.value = currentAuth.playlistUrl || "";
-          if (m3uLoginFields) m3uLoginFields.classList.remove("hidden");
-          if (xtreamLoginFields) xtreamLoginFields.classList.add("hidden");
-          const cachedFavorites = loadFavoriteCache();
-          if (cachedFavorites.length > 0 && favorites.length > 0) {
-            // Show favorites from the cache now; the full playlist refreshes behind it.
-            allStreams = cachedFavorites;
-            allCategories = [];
-            currentLiveRegion = "ALL";
-            setLoginState("logging");
-            switchModus("favorites");
-            if (currentActiveStreams.length > 0) {
-              const first = currentActiveStreams[0];
-              playStream(first.stream_id, first.name, first.stream_icon, 0, first.url);
-              activeerFitScreen();
-            }
-            login(currentAuth.playlistUrl, "", "", true, "m3u", true);
-          } else {
-            login(currentAuth.playlistUrl, "", "", true, "m3u");
-          }
-        } else {
-          if (loginMethod) loginMethod.value = "xtream";
-          if (serverUrlInput) serverUrlInput.value = currentAuth.server || "";
-          if (usernameInput) usernameInput.value = currentAuth.username || "";
-          if (passwordInput) passwordInput.value = currentAuth.password || "";
-          login(currentAuth.server, currentAuth.username, currentAuth.password, true, "xtream");
-        }
-        return;
-      } catch (e) {
-        setLoginState("failed");
-        showLoginError(e.message);
-      }
+    let liveProfile = null;
+    let vodProfile = null;
+    try { liveProfile = JSON.parse(store.getItem("iptv_profile") || "null"); } catch (error) {}
+    try { vodProfile = JSON.parse(store.getItem("iptv_xtream_profile") || "null"); } catch (error) {}
+
+    // Older versions saved Xtream as the single profile; it now only serves Movies and Series.
+    if (liveProfile && liveProfile.provider === "xtream") {
+      vodProfile = vodProfile || { server: liveProfile.server, username: liveProfile.username, password: liveProfile.password };
+      store.setItem("iptv_xtream_profile", JSON.stringify(vodProfile));
+      store.removeItem("iptv_profile");
+      liveProfile = null;
     }
+
     const defaults = window.KC_DEFAULT_LOGIN;
-    if (!saved && defaults && defaults.server && defaults.username && defaults.password) {
-      if (serverUrlInput) serverUrlInput.value = defaults.server;
-      if (usernameInput) usernameInput.value = defaults.username;
-      if (passwordInput) passwordInput.value = defaults.password;
-      login(defaults.server, defaults.username, defaults.password, true, "xtream");
-      return;
+    if (!vodProfile && defaults && defaults.server && defaults.username && defaults.password) {
+      vodProfile = { server: defaults.server, username: defaults.username, password: defaults.password };
     }
-    setLoginState("failed");
-    if (!saved) setLoginErrorMessage(t("noSavedProfile"));
+    if (vodProfile) {
+      if (serverUrlInput) serverUrlInput.value = vodProfile.server || "";
+      if (usernameInput) usernameInput.value = vodProfile.username || "";
+      if (passwordInput) passwordInput.value = vodProfile.password || "";
+    }
+
+    if (liveProfile && liveProfile.provider === "m3u") {
+      currentAuth = liveProfile;
+      setFavoritesProvider("m3u");
+      if (m3uUrlInput) m3uUrlInput.value = currentAuth.playlistUrl || "";
+      const cachedFavorites = loadFavoriteCache();
+      const fastStart = cachedFavorites.length > 0 && favorites.length > 0;
+      if (fastStart) {
+        // Show favorites from the cache now; the full playlist refreshes behind it.
+        allStreams = cachedFavorites;
+        allCategories = [];
+        currentLiveRegion = "ALL";
+        setLoginState("logging");
+        switchModus("favorites");
+        if (currentActiveStreams.length > 0) {
+          const first = currentActiveStreams[0];
+          playStream(first.stream_id, first.name, first.stream_icon, 0, first.url);
+          activeerFitScreen();
+        }
+      }
+      login(currentAuth.playlistUrl, "", "", true, "m3u", fastStart);
+    } else {
+      if (loginMethod) {
+        loginMethod.value = "m3u";
+        loginMethod.dispatchEvent(new Event("change"));
+      }
+      setLoginState("failed");
+      setLoginErrorMessage(t("noSavedProfile"));
+    }
+
+    if (vodProfile) loginXtream(vodProfile.server, vodProfile.username, vodProfile.password, true);
+  }
+
+  async function loginXtream(server, username, password, background = false) {
+    if (loginErrorToast) loginErrorToast.classList.add("hidden");
+    if (loginBtn) loginBtn.disabled = true;
+    if (!background) setLoginState("logging");
+
+    try {
+      if (!server || !username || !password) throw new Error(t("invalidCredentials"));
+      const apiBase = `${server.replace(/\/+$/, "")}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+      const fetchApi = async (action) => {
+        const result = await requestText(apiBase + (action ? `&action=${action}` : ""));
+        if (result.status === 200 && result.body.trim()) {
+          try { return JSON.parse(result.body); } catch (error) {}
+        }
+        throw new Error(`${t("playlistUnavailable")} (HTTP ${result.status}${result.failed ? " " + result.failed : ""}, ${result.body.length}B, ${action || "auth"})`);
+      };
+      const optionalList = async (action) => {
+        try {
+          const value = await fetchApi(action);
+          return Array.isArray(value) ? value : [];
+        } catch (error) {
+          return [];
+        }
+      };
+
+      try {
+        const account = await fetchApi("");
+        if (account && account.user_info && Number(account.user_info.auth) === 0) throw new Error(t("invalidCredentials"));
+      } catch (error) {
+        if (error.message === t("invalidCredentials")) throw error;
+      }
+      const vodCats = await optionalList("get_vod_categories");
+      const seriesCats = await optionalList("get_series_categories");
+      if (!vodCats.length && !seriesCats.length) throw new Error(t("invalidCredentials"));
+
+      vodCategories = vodCats;
+      seriesCategories = seriesCats;
+      vodStreams = [];
+      seriesStreams = [];
+      Object.keys(loadedCategories).forEach((key) => { delete loadedCategories[key]; });
+      xtreamAuth = { server, username, password };
+      store.setItem("iptv_xtream_profile", JSON.stringify({ server, username, password }));
+      setLoginState("logged-in");
+      if (background) {
+        if (currentModus === "vod" || currentModus === "series") setupRegions();
+      } else {
+        showAppPage();
+        showToast(t("loggedIn"));
+      }
+    } catch (error) {
+      setLoginState(currentAuth ? "logged-in" : "failed");
+      showLoginError(error.message || t("playlistUnavailable"));
+      toggleLoginPanel(true);
+    } finally {
+      if (loginBtn) loginBtn.disabled = false;
+    }
   }
 
   function showLoginPage() {
@@ -580,6 +722,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (loginPanelClose) loginPanelClose.addEventListener("click", () => toggleLoginPanel(false));
+
+  const loginTestBtn = document.getElementById("loginTestBtn");
+  if (loginTestBtn) {
+    loginTestBtn.addEventListener("click", () => {
+      if (loginMethod && loginMethod.value === "m3u") {
+        showToast(t("playlistUnavailable"));
+        return;
+      }
+      runApiProbe(serverUrlInput.value.trim(), usernameInput.value.trim(), passwordInput.value);
+    });
+  }
 
   if (loginMethod) {
     loginMethod.addEventListener("change", () => {
@@ -648,6 +801,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const streams = [];
     const categoryNames = new Set();
     let pending = null;
+    let entryCount = 0;
 
     text.split(/\r?\n/).forEach(line => {
       const trimmed = line.trim();
@@ -660,10 +814,14 @@ document.addEventListener("DOMContentLoaded", () => {
           stream_icon: logoMatch ? logoMatch[1] : "",
           category_id: groupMatch && groupMatch[1] ? groupMatch[1] : "M3U"
         };
-        categoryNames.add(pending.category_id);
       } else if (trimmed && !trimmed.startsWith("#") && pending) {
-        const streamId = String(streams.length + 1);
-        streams.push(Object.assign({}, pending, { stream_id: streamId, url: trimmed }));
+        // Ids follow the entry position so saved favorites keep matching after movies are skipped.
+        entryCount += 1;
+        const isVodEntry = /\/(movie|series)\//i.test(trimmed) || /\.(mp4|mkv|avi)(?:[?#]|$)/i.test(trimmed);
+        if (!isVodEntry) {
+          categoryNames.add(pending.category_id);
+          streams.push(Object.assign({}, pending, { stream_id: String(entryCount), url: trimmed }));
+        }
         pending = null;
       }
     });
@@ -674,23 +832,145 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
+  function setFavoritesProvider(provider) {
+    const ns = provider === "xtream" ? "_xtream" : "";
+    if (ns === favoritesNs) return;
+    favoritesNs = ns;
+    favorites = loadFavorites();
+  }
+
   function cacheFavoriteStreams() {
     const wanted = {};
     favorites.forEach((id) => { wanted[String(id)] = true; });
-    const subset = allStreams.filter((s) => wanted[String(s.stream_id)]);
-    store.setItem("iptv_fav_cache", JSON.stringify(subset));
+    const kept = {};
+    loadFavoriteCache().forEach((s) => { if (wanted[String(s.stream_id)]) kept[String(s.stream_id)] = s; });
+    allStreams.forEach((s) => { if (wanted[String(s.stream_id)]) kept[String(s.stream_id)] = s; });
+    store.setItem("iptv_fav_cache" + favoritesNs, JSON.stringify(Object.keys(kept).map((id) => kept[id])));
   }
 
   function loadFavoriteCache() {
     try {
-      const list = JSON.parse(store.getItem("iptv_fav_cache") || "[]");
+      const list = JSON.parse(store.getItem("iptv_fav_cache" + favoritesNs) || "[]");
       return Array.isArray(list) ? list : [];
     } catch (error) {
       return [];
     }
   }
 
+  // XHR instead of fetch: the TV's fetch returned empty bodies for this provider.
+  function requestText(url, timeout = 60000) {
+    return new Promise((resolve) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.timeout = timeout;
+      xhr.onload = () => resolve({ status: xhr.status, body: xhr.responseText || "" });
+      xhr.onerror = () => resolve({ status: 0, body: "", failed: "network" });
+      xhr.ontimeout = () => resolve({ status: 0, body: "", failed: "timeout" });
+      xhr.send();
+    });
+  }
+
+  // Xtream lists are fetched one category at a time; whole catalogs are too big for the TV.
+  const loadedCategories = {};
+  const pendingCategoryLoads = {};
+
+  function loadXtreamCategory(kind, categoryId) {
+    const key = `${kind}:${categoryId}`;
+    if (loadedCategories[key]) return Promise.resolve(true);
+    if (pendingCategoryLoads[key]) return pendingCategoryLoads[key];
+    const action = { live: "get_live_streams", vod: "get_vod_streams", series: "get_series" }[kind];
+    const url = `${xtreamAuth.server.replace(/\/+$/, "")}/player_api.php?username=${encodeURIComponent(xtreamAuth.username)}&password=${encodeURIComponent(xtreamAuth.password)}&action=${action}&category_id=${encodeURIComponent(categoryId)}`;
+    pendingCategoryLoads[key] = (async () => {
+      try {
+        for (let attempt = 0; attempt < 2; attempt++) {
+          const result = await requestText(url);
+          let list = null;
+          if (result.status === 200 && result.body.trim()) {
+            try { list = JSON.parse(result.body); } catch (error) {}
+          }
+          if (!Array.isArray(list)) continue;
+          if (kind === "live") {
+            const known = {};
+            allStreams.forEach((s) => { known[String(s.stream_id)] = true; });
+            list.forEach((s) => { if (!known[String(s.stream_id)]) allStreams.push(s); });
+          } else if (kind === "vod") {
+            vodStreams = vodStreams.concat(list);
+          } else {
+            seriesStreams = seriesStreams.concat(list);
+          }
+          loadedCategories[key] = true;
+          return true;
+        }
+        return false;
+      } finally {
+        delete pendingCategoryLoads[key];
+      }
+    })();
+    return pendingCategoryLoads[key];
+  }
+
+  // Temporary diagnostic: shows what the TV really receives from the Xtream API.
+  async function runApiProbe(server, username, password) {
+    const box = document.createElement("div");
+    box.style.cssText = "position:fixed;left:20px;bottom:20px;z-index:9999;max-width:90vw;padding:16px 20px;background:rgba(0,0,0,0.92);border:2px solid #ffd200;color:#fff;font:22px/1.4 monospace;white-space:pre-wrap";
+    box.textContent = "API probe running...";
+    document.body.appendChild(box);
+    const base = `${server.replace(/\/+$/, "")}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+    const tests = [["account", ""], ["live_cat", "&action=get_live_categories"], ["vod_cat", "&action=get_vod_categories"]];
+    const lines = [];
+    const show = () => { box.textContent = "API probe\n" + lines.join("\n"); };
+    const describe = (label, started, status, body) => `${label}: HTTP ${status}, ${body.length}B, ${Date.now() - started}ms, "${body.slice(0, 24).replace(/\s+/g, " ")}"`;
+    for (const [name, suffix] of tests) {
+      const url = base + suffix;
+      let started = Date.now();
+      try {
+        const result = await new Promise((resolve) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("GET", url, true);
+          xhr.timeout = 30000;
+          xhr.onload = () => resolve({ status: xhr.status, body: xhr.responseText || "" });
+          xhr.onerror = () => resolve({ status: "net-error", body: "" });
+          xhr.ontimeout = () => resolve({ status: "timeout", body: "" });
+          xhr.send();
+        });
+        lines.push(describe(`${name} xhr`, started, result.status, result.body));
+      } catch (error) {
+        lines.push(`${name} xhr: ${error.message}`);
+      }
+      started = Date.now();
+      try {
+        const response = await fetch(url);
+        const body = await response.text();
+        lines.push(describe(`${name} fetch`, started, response.status, body));
+      } catch (error) {
+        lines.push(`${name} fetch: ${error.message}`);
+      }
+      show();
+    }
+    const playlistStart = Date.now();
+    await new Promise((resolve) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", `${server.replace(/\/+$/, "")}/get.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&type=m3u_plus&output=ts`, true);
+      xhr.timeout = 30000;
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 2) {
+          lines.push(`playlist: HTTP ${xhr.status}, ${xhr.getResponseHeader("content-length") || "?"}B, ${Date.now() - playlistStart}ms`);
+          xhr.abort();
+          resolve();
+        }
+      };
+      xhr.onerror = () => { lines.push("playlist: net-error"); resolve(); };
+      xhr.ontimeout = () => { lines.push("playlist: timeout"); resolve(); };
+      xhr.send();
+    });
+    lines.push(`login: ${username} / ${password.length} chars / ${password.charAt(0)}...${password.slice(-1)}`);
+    lines.push("(closes in 40s)");
+    show();
+    setTimeout(() => box.remove(), 40000);
+  }
+
   async function login(server, username, password, isAuto = false, provider = "xtream", background = false) {
+    if (provider === "xtream") return loginXtream(server, username, password, background);
     if (loginErrorToast) loginErrorToast.classList.add("hidden");
     if (loginBtn) loginBtn.disabled = true;
     setLoginState("logging");
@@ -699,86 +979,19 @@ document.addEventListener("DOMContentLoaded", () => {
       let startMode = "favorites";
       if (provider === "m3u") {
         if (!server) throw new Error(t("playlistUnavailable"));
-        const response = await fetch(server);
-        if (!response.ok) throw new Error(`${t("playlistUnavailable")} (${response.status})`);
-        const content = await response.text();
+        const response = await requestText(server, 180000);
+        if (response.status !== 200) throw new Error(`${t("playlistUnavailable")} (${response.status || response.failed})`);
+        const content = response.body;
         if (content.replace(/^\s+/, "").indexOf("#EXTM3U") !== 0) throw new Error(t("playlistInvalid"));
         const playlist = parseM3UPlaylist(content);
         if (playlist.streams.length === 0) throw new Error(t("playlistInvalid"));
 
         allStreams = playlist.streams;
         allCategories = playlist.categories;
-        vodStreams = [];
-        vodCategories = [];
-        seriesStreams = [];
-        seriesCategories = [];
+        setFavoritesProvider("m3u");
         currentAuth = { provider: "m3u", playlistUrl: server };
         currentLiveRegion = "ALL";
         startMode = "favorites";
-      } else {
-        if (!server || !username || !password) throw new Error(t("invalidCredentials"));
-        const credentials = new URLSearchParams({ username, password });
-        const apiBase = `${server.replace(/\/+$/, "")}/player_api.php?${credentials}`;
-        // Some providers return an empty body on the first or oversized request.
-        // XHR instead of fetch: the TV's fetch returned empty bodies for this provider.
-        const requestText = (url) => new Promise((resolve) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open("GET", url, true);
-          xhr.timeout = 120000;
-          xhr.onload = () => resolve({ status: xhr.status, body: xhr.responseText || "" });
-          xhr.onerror = () => resolve({ status: 0, body: "", failed: "network" });
-          xhr.ontimeout = () => resolve({ status: 0, body: "", failed: "timeout" });
-          xhr.send();
-        });
-        const fetchApi = async (action) => {
-          let info = "";
-          for (let attempt = 0; attempt < 1; attempt++) {
-            const result = await requestText(apiBase + (action ? `&action=${action}` : ""));
-            if (result.status === 200 && result.body.trim()) {
-              try { return JSON.parse(result.body); } catch (error) { info = `bad JSON, ${result.body.length}B: ${result.body.slice(0, 30)}`; }
-            } else {
-              info = `HTTP ${result.status}${result.failed ? " " + result.failed : ""}, ${result.body.length}B`;
-            }
-            await new Promise((resolve) => setTimeout(resolve, 800));
-          }
-          throw new Error(`${t("playlistUnavailable")} (${info}, ${action || "auth"})`);
-        };
-
-        // This provider's account reply can arrive empty on the TV, so it only counts when it parses.
-        try {
-          const account = await fetchApi("");
-          if (account && account.user_info && Number(account.user_info.auth) === 0) throw new Error(t("invalidCredentials"));
-        } catch (error) {
-          if (error.message === t("invalidCredentials")) throw error;
-        }
-        const categories = await fetchApi("get_live_categories");
-        if (!Array.isArray(categories)) throw new Error(t("invalidCredentials"));
-        const streams = await fetchApi("get_live_streams");
-        if (!Array.isArray(streams)) throw new Error(t("invalidCredentials"));
-
-        allCategories = categories;
-        allStreams = streams;
-        currentAuth = { provider: "xtream", server, username, password };
-        try {
-          const vodCatRes = await fetch(`${server}/player_api.php?${credentials}&action=get_vod_categories`);
-          const vodStreamRes = await fetch(`${server}/player_api.php?${credentials}&action=get_vod_streams`);
-          vodCategories = vodCatRes.ok ? await vodCatRes.json() : [];
-          vodStreams = vodStreamRes.ok ? await vodStreamRes.json() : [];
-        } catch (error) {
-          vodCategories = [];
-          vodStreams = [];
-        }
-        try {
-          const seriesCatRes = await fetch(`${server}/player_api.php?${credentials}&action=get_series_categories`);
-          const seriesRes = await fetch(`${server}/player_api.php?${credentials}&action=get_series`);
-          const seriesCatData = seriesCatRes.ok ? await seriesCatRes.json() : [];
-          const seriesData = seriesRes.ok ? await seriesRes.json() : [];
-          seriesCategories = Array.isArray(seriesCatData) ? seriesCatData : [];
-          seriesStreams = Array.isArray(seriesData) ? seriesData : [];
-        } catch (error) {
-          seriesCategories = [];
-          seriesStreams = [];
-        }
       }
 
       store.setItem("iptv_profile", JSON.stringify(currentAuth));
@@ -798,11 +1011,6 @@ document.addEventListener("DOMContentLoaded", () => {
         activeerFitScreen();
       }
     } catch (error) {
-      if (provider === "xtream" && server && username && password) {
-        // The TV can't read this provider's API, but its M3U playlist works.
-        const params = new URLSearchParams({ username, password, type: "m3u_plus", output: "ts" });
-        return login(`${server.replace(/\/+$/, "")}/get.php?${params}`, "", "", isAuto, "m3u", background);
-      }
       setLoginState("failed");
       showLoginError(error.message || t("playlistUnavailable"));
       toggleLoginPanel(true);
@@ -825,6 +1033,16 @@ document.addEventListener("DOMContentLoaded", () => {
     isFitScreen = false;
     document.body.classList.remove("speler-fit-screen");
     if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
+    if (currentModus === "live" || currentModus === "favorites") {
+      setTimeout(() => {
+        const card = channelList.querySelector(`[data-stream-id="${currentPlayingStreamId}"]`)
+          || channelList.querySelector(".channel-card.active")
+          || channelList.querySelector(".channel-card");
+        if (card) {
+          setElementFocus(card);
+        }
+      }, 50);
+    }
     if (currentModus === "vod" || currentModus === "series") {
       playerWrapper.classList.add("hidden");
       setTimeout(() => {
@@ -856,7 +1074,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function setupRegions() {
+  function setupRegions(keepCategories) {
     if (!regionList) return;
     const isVod = (currentModus === "vod" || currentModus === "series");
     const categoriesToUse = currentModus === "series"
@@ -876,31 +1094,211 @@ document.addEventListener("DOMContentLoaded", () => {
       else currentLiveRegion = currentActiveRegion;
     }
 
+    const kind = isVod ? "vod" : "live";
     const topRegions = ["TR", "NL", "BE", "PL", "EXYU"];
-    const activeTop = topRegions.filter(r => regions.has(r));
-    const otherRegions = Array.from(regions).filter(r => !topRegions.includes(r)).sort();
-    
-    regionList.innerHTML = `<li class="nav-item focusable" data-region="ALL" tabindex="0">${t("allRegions")}</li>`;
+    const base = topRegions.filter(r => regions.has(r)).concat(Array.from(regions).filter(r => !topRegions.includes(r)).sort());
+    const manual = regionPrefs.order[kind];
+    let visible = base
+      .filter(r => regionPrefs.hidden[kind].indexOf(r) === -1)
+      .map((r, i) => ({ r, i, m: manual.indexOf(r) }))
+      .sort((x, y) => {
+        if (x.m === -1 && y.m === -1) return x.i - y.i;
+        if (x.m === -1) return 1;
+        if (y.m === -1) return -1;
+        return x.m - y.m;
+      })
+      .map(entry => entry.r);
+    const favoriteRegions = visible.filter(r => regionPrefs.fav[kind].indexOf(r) !== -1);
+    visible = favoriteRegions.concat(visible.filter(r => favoriteRegions.indexOf(r) === -1));
+    regionOrderCache[kind] = visible;
 
-    activeTop.forEach(reg => {
+    if (currentActiveRegion !== "ALL" && visible.indexOf(currentActiveRegion) === -1) {
+      currentActiveRegion = "ALL";
+      if (isVod) currentVodRegion = currentActiveRegion;
+      else currentLiveRegion = currentActiveRegion;
+    }
+
+    regionList.innerHTML = `<li class="nav-item focusable${currentActiveRegion === "ALL" ? " active" : ""}" data-region="ALL" tabindex="0">${t("allRegions")}</li>`;
+
+    visible.forEach(reg => {
       const li = document.createElement("li");
-      li.className = "nav-item focusable" + (reg === currentActiveRegion ? " active" : "");
+      li.className = "nav-item focusable" + (reg === currentActiveRegion ? " active" : "") + (movingRegion === reg ? " moving-region" : "");
       li.dataset.region = reg;
       li.tabIndex = 0;
-      li.textContent = `⭐ ${reg}`;
+      const marker = favoriteRegions.indexOf(reg) !== -1 ? "\u2665 " : (topRegions.includes(reg) ? "\u2B50 " : "");
+      li.textContent = marker + reg;
       regionList.appendChild(li);
     });
+    const activeRegionItem = regionList.querySelector(".active");
+    if (activeRegionItem) centerInList(activeRegionItem, true);
 
-    otherRegions.forEach(reg => {
+    if (!keepCategories) filterCategories();
+  }
+
+  function regionKind() {
+    return (currentModus === "vod" || currentModus === "series") ? "vod" : "live";
+  }
+
+  function saveRegionPrefs() {
+    store.setItem("iptv_region_prefs", JSON.stringify(regionPrefs));
+  }
+
+  function focusRegion(region) {
+    const li = regionList.querySelector(`[data-region="${escapeAttr(region)}"]`);
+    if (li) setElementFocus(li);
+  }
+
+  function toggleRegionFavorite(region) {
+    const list = regionPrefs.fav[regionKind()];
+    const position = list.indexOf(region);
+    if (position >= 0) list.splice(position, 1);
+    else list.push(region);
+    saveRegionPrefs();
+    setupRegions(true);
+    focusRegion(region);
+  }
+
+  function hideRegion(region) {
+    const kind = regionKind();
+    const items = Array.from(regionList.querySelectorAll("li"));
+    const position = items.findIndex(li => li.dataset.region === region);
+    regionPrefs.hidden[kind].push(region);
+    saveRegionPrefs();
+    const wasActive = (kind === "vod" ? currentVodRegion : currentLiveRegion) === region;
+    setupRegions(!wasActive);
+    const remaining = regionList.querySelectorAll("li");
+    if (remaining.length) setElementFocus(remaining[Math.min(position, remaining.length - 1)]);
+    showToast(t("categoryHidden"));
+  }
+
+  function toggleRegionMove(region) {
+    movingRegion = movingRegion === region ? null : region;
+    setupRegions(true);
+    focusRegion(region);
+    showToast(movingRegion ? t("moveStarted") : t("positionSaved"));
+  }
+
+  function stepRegion(delta) {
+    const kind = regionKind();
+    const order = regionOrderCache[kind].slice();
+    const position = order.indexOf(movingRegion);
+    const target = position + delta;
+    if (position < 0 || target < 0 || target >= order.length) return;
+    const isFavorite = (r) => regionPrefs.fav[kind].indexOf(r) !== -1;
+    if (isFavorite(order[position]) !== isFavorite(order[target])) return;
+    const swapped = order[position];
+    order[position] = order[target];
+    order[target] = swapped;
+    regionPrefs.order[kind] = order;
+    saveRegionPrefs();
+    setupRegions(true);
+    focusRegion(movingRegion);
+  }
+
+  function categoryKind() {
+    return currentModus === "series" ? "series" : currentModus === "vod" ? "vod" : "live";
+  }
+
+  function saveHiddenCategories() {
+    store.setItem("iptv_hidden_cats", JSON.stringify(hiddenCategories));
+  }
+
+  function scheduleListRefresh() {
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = null;
+    if (refreshHours > 0) refreshTimer = setInterval(runListRefresh, refreshHours * 3600000);
+  }
+
+  function runListRefresh() {
+    // A 24 MB download during playback can stall the stream, so wait for the list screen.
+    if (isFitScreen) {
+      setTimeout(runListRefresh, 600000);
+      return;
+    }
+    if (currentAuth && currentAuth.provider === "m3u") login(currentAuth.playlistUrl, "", "", true, "m3u", true);
+    if (xtreamAuth) loginXtream(xtreamAuth.server, xtreamAuth.username, xtreamAuth.password, true);
+  }
+
+  function updateHintBar(element) {
+    if (!hintBar) return;
+    const inCategories = !!(element && element.closest && element.closest("#categoryList"));
+    const inContent = !!(element && element.closest && element.closest("#channelList"));
+    const regionItem = element && element.closest ? element.closest("#regionList li") : null;
+    const inRegions = !!(regionItem && regionItem.dataset.region !== "ALL");
+    const liveLike = currentModus === "live" || currentModus === "favorites";
+    const show = (name, on) => {
+      const hint = hintBar.querySelector(`[data-hint="${name}"]`);
+      if (hint) hint.classList.toggle("hidden", !on);
+    };
+    show("fav", (inContent && liveLike) || inRegions);
+    show("reorder", (inContent && currentModus === "favorites") || inRegions);
+    show("hide", inCategories || inRegions);
+    show("search", liveLike);
+  }
+
+  let searchHits = [];
+  let searchTimer = null;
+
+  function openSearch() {
+    if (!searchPanel) return;
+    searchPanel.classList.remove("hidden");
+    searchInput.value = "";
+    renderSearchResults();
+    setElementFocus(searchInput);
+  }
+
+  function closeSearch() {
+    if (!searchPanel) return;
+    searchPanel.classList.add("hidden");
+    searchInput.blur();
+    const card = channelList.querySelector(".channel-card.active") || channelList.querySelector(".channel-card");
+    setElementFocus(card || document.querySelector("#modusList [data-modus='favorites']"));
+  }
+
+  function renderSearchResults() {
+    const words = searchInput.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    searchHits = [];
+    if (words.length > 0 && words.join("").length >= 2) {
+      for (let i = 0; i < allStreams.length && searchHits.length < 50; i++) {
+        const name = String(allStreams[i].name || "").toLowerCase();
+        if (words.every((word) => name.indexOf(word) !== -1)) searchHits.push(allStreams[i]);
+      }
+    }
+    searchResults.innerHTML = "";
+    searchHits.forEach((stream, index) => {
       const li = document.createElement("li");
-      li.className = "nav-item focusable" + (reg === currentActiveRegion ? " active" : "");
-      li.dataset.region = reg;
+      li.className = "channel-card focusable";
       li.tabIndex = 0;
-      li.textContent = reg;
-      regionList.appendChild(li);
+      li.dataset.index = index;
+      const name = document.createElement("span");
+      name.className = "channel-name";
+      name.textContent = cleanTitle(stream.name, QUALITY_TAGS);
+      li.appendChild(name);
+      searchResults.appendChild(li);
     });
+    if (searchEmpty) searchEmpty.classList.toggle("hidden", searchHits.length > 0 || searchInput.value.trim().length < 2);
+  }
 
-    filterCategories();
+  function playSearchResult(index) {
+    const stream = searchHits[index];
+    if (!stream) return;
+    currentActiveStreams = searchHits.slice();
+    closeSearch();
+    playStream(stream.stream_id, stream.name, stream.stream_icon, index, stream.url);
+    activeerFitScreen();
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      if (searchTimer) clearTimeout(searchTimer);
+      searchTimer = setTimeout(renderSearchResults, 200);
+    });
+  }
+  if (searchResults) {
+    searchResults.addEventListener("click", (e) => {
+      const li = e.target.closest("li");
+      if (li) playSearchResult(parseInt(li.dataset.index, 10));
+    });
   }
 
   function filterCategories() {
@@ -913,24 +1311,34 @@ document.addEventListener("DOMContentLoaded", () => {
       : (isVod ? vodCategories : allCategories);
     const activeRegion = isVod ? currentVodRegion : currentLiveRegion;
 
+    const hiddenIds = hiddenCategories[categoryKind()];
     const filtered = categoriesToUse.filter(cat => {
+      if (hiddenIds.indexOf(String(cat.category_id)) !== -1) return false;
       if (activeRegion === "ALL") return true;
       const catRegion = extractRegionFromCategory(cat.category_name, isVod);
       return catRegion === activeRegion;
     });
+
+    const labelled = filtered.map((cat) => ({ cat, label: cleanTitle(cat.category_name, ["HEVC", "VIP"]) }));
+    labelled.sort((a, b) => compareText(a.label, b.label));
+    const sortedCategories = labelled.map((entry) => entry.cat);
+    filtered.length = 0;
+    sortedCategories.forEach((cat) => filtered.push(cat));
 
     filtered.forEach((cat, index) => {
       const li = document.createElement("li");
       li.className = "nav-item focusable" + (index === 0 ? " active" : "");
       li.dataset.catId = cat.category_id;
       li.tabIndex = 0;
-      li.textContent = cleanTitle(cat.category_name);
+      li.textContent = cleanTitle(cat.category_name, ["HEVC", "VIP"]);
       categoryList.appendChild(li);
     });
 
     if (filtered.length > 0) {
       currentCategoryId = filtered[0].category_id;
       filterChannels();
+    } else if (channelList) {
+      channelList.innerHTML = "";
     }
   }
 
@@ -978,7 +1386,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const episodeTitle = document.createElement("span");
         episodeTitle.className = "episode-title";
         episodeTitle.textContent = card.dataset.title;
-        card.append(episodeNumber, episodeTitle);
+        card.appendChild(episodeNumber);
+        card.appendChild(episodeTitle);
         channelList.appendChild(card);
       });
     });
@@ -986,7 +1395,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function openSeries(seriesCard) {
     const seriesId = seriesCard.dataset.seriesId;
-    if (!seriesId || !currentAuth) return;
+    if (!seriesId || !xtreamAuth) return;
 
     selectedSeries = { id: seriesId, title: seriesCard.dataset.title, seasons: [] };
     channelList.innerHTML = "";
@@ -997,10 +1406,10 @@ document.addEventListener("DOMContentLoaded", () => {
     channelList.appendChild(loading);
 
     try {
-      const url = `${currentAuth.server}/player_api.php?username=${currentAuth.username}&password=${currentAuth.password}&action=get_series_info&series_id=${encodeURIComponent(seriesId)}`;
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Series details unavailable");
-      const info = await response.json();
+      const url = `${xtreamAuth.server}/player_api.php?username=${xtreamAuth.username}&password=${xtreamAuth.password}&action=get_series_info&series_id=${encodeURIComponent(seriesId)}`;
+      const response = await requestText(url);
+      if (response.status !== 200 || !response.body.trim()) throw new Error("Series details unavailable");
+      const info = JSON.parse(response.body);
       const episodes = info.episodes || {};
       const seasonKeys = Array.isArray(episodes) ? ["Episodes"] : Object.keys(episodes).sort((a, b) => Number(a) - Number(b));
 
@@ -1018,13 +1427,57 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       selectedSeries = null;
       filterChannels();
-      showToast(t("unableLoad"));
+      showToast(`${t("unableLoad")}: ${error && error.message ? error.message : error}`);
     }
   }
+
+  // Posters load only near the viewport; thousands of image requests stall the TV.
+  function loadVisiblePosters() {
+    const height = window.innerHeight || 720;
+    const images = channelList ? channelList.querySelectorAll("img[data-src]") : [];
+    for (let i = 0; i < images.length; i++) {
+      const img = images[i];
+      const rect = img.getBoundingClientRect();
+      if (rect.bottom > -height * 0.5 && rect.top < height * 1.5) {
+        const src = img.getAttribute("data-src");
+        img.removeAttribute("data-src");
+        if (src) img.src = src;
+      }
+    }
+  }
+
+  let posterScrollTimer = null;
+  document.addEventListener("scroll", () => {
+    if (posterScrollTimer) return;
+    posterScrollTimer = setTimeout(() => {
+      posterScrollTimer = null;
+      loadVisiblePosters();
+    }, 150);
+  }, true);
 
   function filterChannels() {
     if (!channelList) return;
     channelList.innerHTML = "";
+
+    const loadKind = currentModus === "vod" ? "vod"
+      : (currentModus === "series" && !selectedSeries) ? "series" : null;
+    if (loadKind && xtreamAuth && currentCategoryId !== null
+        && !loadedCategories[`${loadKind}:${currentCategoryId}`]) {
+      const requestedModus = currentModus;
+      const requestedCategory = currentCategoryId;
+      const note = document.createElement(channelList.tagName === "UL" ? "li" : "div");
+      note.className = "season-heading";
+      note.textContent = t("connecting");
+      channelList.appendChild(note);
+      loadXtreamCategory(loadKind, requestedCategory).then((ok) => {
+        if (!ok) {
+          loadedCategories[`${loadKind}:${requestedCategory}`] = true;
+          showToast(t("playlistUnavailable"));
+        }
+        if (currentModus === requestedModus && currentCategoryId === requestedCategory) filterChannels();
+      });
+      return;
+    }
 
     if (currentModus === "vod" || currentModus === "series") {
       playerWrapper.classList.add("hidden");
@@ -1055,15 +1508,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const displayTitle = cleanTitle(item.name || item.title || "");
         div.dataset.title = displayTitle;
 
-        const posterSrc = item.stream_icon || item.cover || "https://picsum.photos/300/450?movie=" + idx;
+        const posterSrc = item.stream_icon || item.cover || "";
         div.innerHTML = `
-          <img src="${posterSrc}" class="poster-img" onerror="this.src='https://picsum.photos/300/450?movie=${idx}';">
+          <img data-src="${posterSrc}" class="poster-img" alt="" onerror="this.style.visibility='hidden'">
           <div class="poster-info">
             <div class="poster-title">${displayTitle}</div>
           </div>
         `;
         channelList.appendChild(div);
       });
+      setTimeout(loadVisiblePosters, 0);
+      applyPendingFocus();
       return;
     }
 
@@ -1074,7 +1529,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     currentActiveStreams = currentModus === "favorites" 
       ? favorites.map(id => allStreams.find(s => s.stream_id.toString() === id.toString())).filter(Boolean)
-      : allStreams.filter(s => s.category_id === currentCategoryId);
+      : allStreams.filter(s => s.category_id === currentCategoryId)
+          .map((s, position) => ({ s, position, rank: qualityRank(s.name || "") }))
+          .sort((a, b) => a.rank - b.rank || a.position - b.position)
+          .map((entry) => entry.s);
 
     currentActiveStreams.forEach((s, idx) => {
       const isFav = favorites.includes(s.stream_id.toString());
@@ -1099,11 +1557,14 @@ document.addEventListener("DOMContentLoaded", () => {
       li.innerHTML = `
         <span class="channel-number">${numStr}</span>
         ${logoHtml}
-        <span class="channel-name">${cleanTitle(s.name)}</span>
+        <span class="channel-name">${cleanTitle(s.name, currentModus === "favorites" ? [] : QUALITY_TAGS)}</span>
         ${starSvg}
       `;
       channelList.appendChild(li);
     });
+    const activeCard = channelList.querySelector(".channel-card.active");
+    if (activeCard) centerInList(activeCard, true);
+    applyPendingFocus();
   }
 
   function switchModus(modus) {
@@ -1128,6 +1589,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!streamId) return;
     const sId = streamId.toString();
     const idx = favorites.indexOf(sId);
+    const focusedNow = document.activeElement;
+    const wasInList = !!(focusedNow && focusedNow.closest && focusedNow.closest("#channelList"));
+    const listPosition = wasInList ? Array.prototype.indexOf.call(channelList.children, focusedNow) : -1;
     if (idx >= 0) {
       favorites.splice(idx, 1);
       showToast(`⭐ ${t("favoritesRemoved")}`);
@@ -1138,6 +1602,12 @@ document.addEventListener("DOMContentLoaded", () => {
     saveFavorites(favorites);
     cacheFavoriteStreams();
     filterChannels();
+    if (wasInList) {
+      const cards = channelList.querySelectorAll(".focusable");
+      const sameCard = channelList.querySelector(`[data-stream-id="${escapeAttr(sId)}"]`);
+      const target = sameCard || cards[Math.max(0, Math.min(cards.length - 1, listPosition))];
+      if (target) setElementFocus(target);
+    }
   }
 
   function toggleMoveMode(streamId) {
@@ -1173,40 +1643,26 @@ document.addEventListener("DOMContentLoaded", () => {
       const targetCard = document.querySelector(`#channelList [data-stream-id="${movingStreamId}"]`);
       if (targetCard) {
         setElementFocus(targetCard);
-        targetCard.scrollIntoView({ block: "nearest", behavior: "smooth" });
       }
     }
   }
 
-  async function fetchEPGData(streamId) {
-    if (!streamId || !currentAuth || currentAuth.provider === "m3u") return;
+  // M3U channels carry the Xtream stream id in their URL, so the Xtream API can supply the guide.
+  function epgStreamIdFor(streamId) {
+    if (!xtreamAuth) return null;
+    const stream = allStreams.find((s) => String(s.stream_id) === String(streamId));
+    if (!stream || !stream.url) return null;
     try {
-      const res = await fetch(`${currentAuth.server}/player_api.php?username=${currentAuth.username}&password=${currentAuth.password}&action=get_short_epg&stream_id=${streamId}&limit=3`);
-      const data = await res.json();
-      if (data && data.epg_listings && data.epg_listings.length > 0) {
-        const epgs = data.epg_listings;
-        const b64 = (str) => { try { return decodeURIComponent(escape(atob(str))); } catch(e) { return str; } };
+      const streamUrl = new URL(stream.url);
+      if (streamUrl.origin !== new URL(xtreamAuth.server).origin) return null;
+      const match = streamUrl.pathname.match(/\/(\d+)(?:\.\w+)?$/);
+      return match ? match[1] : null;
+    } catch (error) {
+      return null;
+    }
+  }
 
-        const cTitle = b64(epgs[0].title || t("liveNow"));
-        const cTime = `${epgs[0].start ? epgs[0].start.substring(11,16) : ""} - ${epgs[0].end ? epgs[0].end.substring(11,16) : ""}`;
-
-        document.getElementById("epgCurrTitle").textContent = cTitle;
-        document.getElementById("epgCurrTime").textContent = cTime;
-        if (osdEpgCurrTitle) osdEpgCurrTitle.textContent = cTitle;
-        if (osdEpgCurrTime) osdEpgCurrTime.textContent = cTime;
-
-        if (epgs[1]) {
-          const nTitle = b64(epgs[1].title || t("noNextProgram"));
-          const nTime = `${epgs[1].start ? epgs[1].start.substring(11,16) : ""}`;
-          document.getElementById("epgNextTitle").textContent = nTitle;
-          document.getElementById("epgNextTime").textContent = nTime;
-          if (osdEpgNextTitle) osdEpgNextTitle.textContent = nTitle;
-          if (osdEpgNextTime) osdEpgNextTime.textContent = nTime;
-        }
-        return;
-      }
-    } catch(e) {}
-    
+  function resetEpgTexts() {
     document.getElementById("epgCurrTitle").textContent = t("liveNow");
     document.getElementById("epgCurrTime").textContent = "--:--";
     document.getElementById("epgNextTitle").textContent = t("noNextProgram");
@@ -1218,7 +1674,93 @@ document.addEventListener("DOMContentLoaded", () => {
     if (osdEpgNextTime) osdEpgNextTime.textContent = "--:--";
   }
 
+  async function fetchEPGData(streamId) {
+    resetEpgTexts();
+    const epgId = epgStreamIdFor(streamId);
+    if (!epgId) return;
+    try {
+      const result = await requestText(`${xtreamAuth.server.replace(/\/+$/, "")}/player_api.php?username=${encodeURIComponent(xtreamAuth.username)}&password=${encodeURIComponent(xtreamAuth.password)}&action=get_short_epg&stream_id=${epgId}&limit=3`, 15000);
+      if (result.status !== 200 || !result.body.trim()) return;
+      // Ignore a late reply for a channel the user already left.
+      if (String(currentPlayingStreamId) !== String(streamId)) return;
+      const data = JSON.parse(result.body);
+      if (!data || !data.epg_listings || data.epg_listings.length === 0) return;
+      const epgs = data.epg_listings;
+      const b64 = (str) => { try { return decodeURIComponent(escape(atob(str))); } catch (e) { return str; } };
+      const pad2 = (n) => (n < 10 ? "0" : "") + n;
+      const clock = (listing, field) => {
+        const stamp = Number(listing[field + "_timestamp"]);
+        if (stamp) {
+          const d = new Date(stamp * 1000);
+          return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+        }
+        return listing[field] ? listing[field].substring(11, 16) : "";
+      };
+
+      const cTitle = b64(epgs[0].title || t("liveNow"));
+      const cTime = `${clock(epgs[0], "start")} - ${clock(epgs[0], "end")}`;
+      document.getElementById("epgCurrTitle").textContent = cTitle;
+      document.getElementById("epgCurrTime").textContent = cTime;
+      if (osdEpgCurrTitle) osdEpgCurrTitle.textContent = cTitle;
+      if (osdEpgCurrTime) osdEpgCurrTime.textContent = cTime;
+
+      if (epgs[1]) {
+        const nTitle = b64(epgs[1].title || t("noNextProgram"));
+        const nTime = clock(epgs[1], "start");
+        document.getElementById("epgNextTitle").textContent = nTitle;
+        document.getElementById("epgNextTime").textContent = nTime;
+        if (osdEpgNextTitle) osdEpgNextTitle.textContent = nTitle;
+        if (osdEpgNextTime) osdEpgNextTime.textContent = nTime;
+      }
+    } catch (error) {}
+  }
+
+  let lastLive = null;
+  let liveReconnectTimer = null;
+  let liveReconnectAttempts = 0;
+  let watchdogTime = -1;
+  let watchdogTicks = 0;
+
+  function scheduleLiveReconnect() {
+    if (!lastLive || liveReconnectTimer) return;
+    liveReconnectAttempts += 1;
+    const delay = Math.min(2000 * liveReconnectAttempts, 10000);
+    liveReconnectTimer = setTimeout(() => {
+      liveReconnectTimer = null;
+      if (!lastLive) return;
+      const s = lastLive;
+      playStream(s.streamId, s.name, s.icon, s.index, s.directUrl, true);
+    }, delay);
+  }
+
+  // Live streams that freeze without raising an error are restarted after ~12s.
+  setInterval(() => {
+    if (!lastLive || liveReconnectTimer || video.paused) {
+      watchdogTicks = 0;
+      return;
+    }
+    if (video.currentTime === watchdogTime) {
+      watchdogTicks += 1;
+      if (watchdogTicks >= 3) {
+        watchdogTicks = 0;
+        scheduleLiveReconnect();
+      }
+    } else {
+      watchdogTime = video.currentTime;
+      watchdogTicks = 0;
+    }
+  }, 4000);
+
+  video.addEventListener("playing", () => { liveReconnectAttempts = 0; });
+  video.addEventListener("error", () => { if (lastLive) scheduleLiveReconnect(); });
+  video.addEventListener("ended", () => { if (lastLive) scheduleLiveReconnect(); });
+
   function destroyStreamPlayers() {
+    lastLive = null;
+    if (liveReconnectTimer) {
+      clearTimeout(liveReconnectTimer);
+      liveReconnectTimer = null;
+    }
     if (hlsPlayer) {
       hlsPlayer.destroy();
       hlsPlayer = null;
@@ -1243,7 +1785,7 @@ document.addEventListener("DOMContentLoaded", () => {
     video.muted = false;
     video.volume = 1.0;
 
-    const directMovieUrl = `${currentAuth.server}/movie/${currentAuth.username}/${currentAuth.password}/${streamId}.${ext || 'mp4'}`;
+    const directMovieUrl = `${xtreamAuth.server}/movie/${xtreamAuth.username}/${xtreamAuth.password}/${streamId}.${ext || 'mp4'}`;
 
     video.pause();
     video.removeAttribute("src");
@@ -1268,11 +1810,11 @@ document.addEventListener("DOMContentLoaded", () => {
     video.pause();
     video.removeAttribute("src");
     video.load();
-    video.src = `${currentAuth.server}/series/${currentAuth.username}/${currentAuth.password}/${episodeId}.${ext || "mp4"}`;
+    video.src = `${xtreamAuth.server}/series/${xtreamAuth.username}/${xtreamAuth.password}/${episodeId}.${ext || "mp4"}`;
     video.play().catch(console.error);
   }
 
-  function playStream(streamId, name, icon, index, directUrl = "") {
+  function playStream(streamId, name, icon, index, directUrl = "", isReconnect = false) {
     if (index !== undefined) currentStreamIndex = index;
     currentPlayingStreamId = String(streamId);
 
@@ -1282,16 +1824,20 @@ document.addEventListener("DOMContentLoaded", () => {
       activeLi.classList.add("active");
     }
 
-    const numStr = (currentStreamIndex + 1).toString();
-    updateLiveOSDData(numStr, name, icon);
-    showLiveOSD();
-    fetchEPGData(streamId);
+    if (!isReconnect) {
+      const numStr = (currentStreamIndex + 1).toString();
+      updateLiveOSDData(numStr, name, icon);
+      showLiveOSD();
+      fetchEPGData(streamId);
+      liveReconnectAttempts = 0;
+    }
 
     const streamUrl = directUrl || `${currentAuth.server}/live/${currentAuth.username}/${currentAuth.password}/${streamId}.m3u8`;
     const isTransportStream = Boolean(directUrl && /\.ts(?:$|[?#])/i.test(directUrl));
     const hlsUrl = isTransportStream ? streamUrl.replace(/\.ts(?=([?#]|$))/i, ".m3u8") : streamUrl;
 
     destroyStreamPlayers();
+    lastLive = { streamId, name, icon, index, directUrl };
 
     video.muted = false;
     video.volume = 1.0;
@@ -1300,7 +1846,7 @@ document.addEventListener("DOMContentLoaded", () => {
       mpegTsPlayer = mpegts.createPlayer({ type: "mpegts", isLive: true, url: streamUrl });
       mpegTsPlayer.on(mpegts.Events.ERROR, (type, detail) => {
         console.error("MPEG-TS playback error", type, detail);
-        showToast(t("streamPlaybackFailed"));
+        scheduleLiveReconnect();
       });
       mpegTsPlayer.attachMediaElement(video);
       mpegTsPlayer.load();
@@ -1313,6 +1859,9 @@ document.addEventListener("DOMContentLoaded", () => {
       hlsPlayer.loadSource(hlsUrl);
       hlsPlayer.attachMedia(video);
       hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(console.error));
+      hlsPlayer.on(Hls.Events.ERROR, (event, data) => {
+        if (data && data.fatal) scheduleLiveReconnect();
+      });
     } else {
       video.src = hlsUrl;
       video.play().catch(console.error);
@@ -1384,7 +1933,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function seriesEpisodes() {
     if (!selectedSeries || !selectedSeries.seasons) return [];
-    return selectedSeries.seasons.flatMap(season => season.episodes || []);
+    return selectedSeries.seasons.reduce((all, season) => all.concat(season.episodes || []), []);
   }
 
   function playAdjacentVod(direction) {
@@ -1457,20 +2006,140 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function escapeAttr(value) {
+    return String(value).replace(/["\\]/g, "\\$&");
+  }
+
+  // Remember the last focused item per column so returning lands where the user left.
+  function rememberFocus(element, column) {
+    if (!column || !column.id) return;
+    const keys = [["data-region", "region"], ["data-cat-id", "catId"], ["data-modus", "modus"], ["data-stream-id", "streamId"], ["data-series-id", "seriesId"]];
+    for (let i = 0; i < keys.length; i++) {
+      if (element.dataset[keys[i][1]] !== undefined) {
+        columnMemory[column.id] = { element, attr: keys[i][0], value: element.dataset[keys[i][1]] };
+        return;
+      }
+    }
+    columnMemory[column.id] = { element };
+  }
+
+  function recallFocus(column) {
+    const memory = columnMemory[column.id];
+    if (memory) {
+      if (memory.element && document.body.contains(memory.element)) return memory.element;
+      if (memory.attr) {
+        const found = column.querySelector(`[${memory.attr}="${escapeAttr(memory.value)}"]`);
+        if (found) return found;
+      }
+    }
+    return column.querySelector(".focusable.active") || column.querySelector(".focusable");
+  }
+
+  function enterColumn(index) {
+    const ids = ["colModus", "colRegions", "colCategories", "colContent"];
+    const column = document.getElementById(ids[index]);
+    if (!column) return false;
+    const target = recallFocus(column);
+    if (!target) {
+      if (index === 3 && Object.keys(pendingCategoryLoads).length > 0) focusContentWhenReady = true;
+      return false;
+    }
+    setElementFocus(target);
+    return true;
+  }
+
+  function applyPendingFocus() {
+    if (!focusContentWhenReady) return;
+    focusContentWhenReady = false;
+    const first = channelList.querySelector(".focusable");
+    if (first) setElementFocus(first);
+  }
+
+  function pickFallbackFocus() {
+    const visible = (el) => !!el && document.body.contains(el) && el.getClientRects().length > 0;
+    if (visible(lastFocusedPoster)) return lastFocusedPoster;
+    const candidates = [
+      channelList.querySelector(".channel-card.active"),
+      channelList.querySelector(".focusable"),
+      document.querySelector(".tv-grid .nav-item.active"),
+      document.querySelector(".tv-grid .focusable")
+    ];
+    for (let i = 0; i < candidates.length; i++) {
+      if (visible(candidates[i])) return candidates[i];
+    }
+    return document.querySelector(".focusable");
+  }
+
+  function animateScroll(container, target, instant) {
+    const max = container.scrollHeight - container.clientHeight;
+    const to = Math.max(0, Math.min(max, target));
+    if (container._scrollFrame) cancelAnimationFrame(container._scrollFrame);
+    if (instant) {
+      container.scrollTop = to;
+      return;
+    }
+    const from = container.scrollTop;
+    const started = Date.now();
+    const step = () => {
+      const progress = Math.min(1, (Date.now() - started) / 140);
+      container.scrollTop = from + (to - from) * (1 - Math.pow(1 - progress, 3));
+      if (progress < 1) container._scrollFrame = requestAnimationFrame(step);
+    };
+    step();
+  }
+
+  function markWheel(container, element) {
+    (container._wheelItems || []).forEach((item) => item.classList.remove("wheel-0", "wheel-1", "wheel-2", "wheel-3"));
+    const marked = [element];
+    element.classList.add("wheel-0");
+    let before = element;
+    let after = element;
+    for (let distance = 1; distance <= 3; distance++) {
+      before = before && before.previousElementSibling;
+      after = after && after.nextElementSibling;
+      if (before) { before.classList.add("wheel-" + distance); marked.push(before); }
+      if (after) { after.classList.add("wheel-" + distance); marked.push(after); }
+    }
+    container._wheelItems = marked;
+  }
+
+  // Vertical lists behave like a picker wheel: the focused row stays in the middle.
+  function centerInList(element, instant) {
+    const container = element.parentElement;
+    if (!container) return;
+    const isWheel = (container.classList.contains("nav-list") && container.id !== "modusList") || container.classList.contains("channel-grid");
+    if (!isWheel || container.clientHeight === 0) return;
+    const pad = Math.max(0, Math.round(container.clientHeight / 2 - element.offsetHeight / 2));
+    if (container._wheelPad !== pad) {
+      container.style.paddingTop = pad + "px";
+      container.style.paddingBottom = pad + "px";
+      container._wheelPad = pad;
+    }
+    container.classList.add("wheel");
+    markWheel(container, element);
+    const offset = (element.getBoundingClientRect().top + element.offsetHeight / 2) - (container.getBoundingClientRect().top + container.clientHeight / 2);
+    animateScroll(container, container.scrollTop + offset, instant);
+  }
+
   function setElementFocus(element) {
     if (!element) return;
-    document.querySelectorAll(".focusable").forEach(el => el.classList.remove("focused"));
+    document.querySelectorAll(".focused").forEach(el => el.classList.remove("focused"));
     element.classList.add("focused");
-    element.focus();
 
-    if (element.classList.contains("grid-item")) {
-      lastFocusedPoster = element;
-    }
-
+    // Expand the column first: a collapsed column is display:none and cannot take focus.
     const parentCol = element.closest(".col-nav");
     if (parentCol && parentCol.dataset.col !== undefined) {
       setColumnFocus(parseInt(parentCol.dataset.col, 10));
     }
+    element.focus();
+
+    if (element.classList.contains("grid-item")) {
+      lastFocusedPoster = element;
+      setTimeout(loadVisiblePosters, 300);
+    }
+    rememberFocus(element, parentCol);
+    centerInList(element, false);
+    updateHintBar(element);
   }
 
   function moveFocusByDirection(current, direction, scope) {
@@ -1515,13 +2184,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentIndex = parseInt(parentCol.dataset.col, 10);
 
     if (direction === "left") {
-      let targetIndex = (currentModus === "favorites") ? 0 : currentIndex - 1;
-      if (targetIndex >= 0 && targetIndex < cols.length) {
-        setColumnFocus(targetIndex);
-        const targetCol = document.getElementById(cols[targetIndex]);
-        const firstFocusable = targetCol ? targetCol.querySelector(".focusable") : null;
-        if (firstFocusable) setElementFocus(firstFocusable);
-      }
+      const targetIndex = (currentModus === "favorites") ? 0 : currentIndex - 1;
+      if (targetIndex >= 0 && targetIndex < cols.length) enterColumn(targetIndex);
       return;
     }
 
@@ -1530,10 +2194,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (currentModus === "favorites" && targetIndex === 1) {
         targetIndex = 3;
       }
-      setColumnFocus(targetIndex);
-      const targetCol = document.getElementById(cols[targetIndex]);
-      const firstFocusable = targetCol ? targetCol.querySelector(".focusable") : null;
-      if (firstFocusable) setElementFocus(firstFocusable);
+      enterColumn(targetIndex);
     }
   }
 
@@ -1571,9 +2232,7 @@ document.addEventListener("DOMContentLoaded", () => {
       setElementFocus(target);
       target.scrollIntoView({ block: "nearest", behavior: "smooth" });
     } else if (direction === "left") {
-      const catCol = document.getElementById("colCategories");
-      const activeCat = catCol ? catCol.querySelector(".focusable.active") || catCol.querySelector(".focusable") : null;
-      if (activeCat) setElementFocus(activeCat);
+      enterColumn(2);
     }
   }
 
@@ -1716,6 +2375,27 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (searchPanel && !searchPanel.classList.contains("hidden")) {
+      const hits = Array.from(searchResults.querySelectorAll(".channel-card"));
+      const hitIndex = hits.indexOf(focused);
+      if (e.key === "Escape" || key === 27 || e.key === "Back" || key === 461) {
+        e.preventDefault();
+        closeSearch();
+      } else if (isDown) {
+        e.preventDefault();
+        const next = hits[hitIndex + 1];
+        if (next) setElementFocus(next);
+      } else if (isUp) {
+        e.preventDefault();
+        if (hitIndex > 0) setElementFocus(hits[hitIndex - 1]);
+        else if (hitIndex === 0) setElementFocus(searchInput);
+      } else if (isEnter && hitIndex >= 0) {
+        e.preventDefault();
+        playSearchResult(parseInt(focused.dataset.index, 10));
+      }
+      return;
+    }
+
     if (customizationPage && !customizationPage.classList.contains("hidden")) {
       if (e.key === "Escape" || key === 27 || e.key === "Back" || key === 461) {
         e.preventDefault();
@@ -1732,7 +2412,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (settingsPanel && !settingsPanel.classList.contains("hidden")) {
-      const settingsItems = Array.from(settingsPanel.querySelectorAll(".settings-item, #autoplayNextToggle"));
+      const settingsItems = Array.from(settingsPanel.querySelectorAll(".settings-item, #autoplayNextToggle")).filter((el) => {
+        const row = el.closest(".settings-row");
+        if (!row || el === focused) return true;
+        if (row.contains(focused)) return false;
+        return el === (row.querySelector(".settings-item.active") || row.querySelector(".settings-item"));
+      });
       const settingsIndex = settingsItems.indexOf(focused);
       if (e.key === "Escape" || key === 27 || e.key === "Back" || key === 461) {
         e.preventDefault();
@@ -1747,7 +2432,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       if (isLeft || isRight) {
-        const languageItems = Array.from(settingsPanel.querySelectorAll("[data-setting='language']"));
+        const focusedRow = focused && focused.closest ? focused.closest(".settings-row") : null;
+        const languageItems = focusedRow ? Array.from(focusedRow.querySelectorAll(".settings-item")) : [];
         const languageIndex = languageItems.indexOf(focused);
         if (languageIndex >= 0) {
           e.preventDefault();
@@ -1765,7 +2451,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const isVodMode = currentModus === "vod" || currentModus === "series";
-    if (vodPlaybackControls && !vodPlaybackControls.classList.contains("hidden") && isVodMode) {
+    if (vodPlaybackControls && !vodPlaybackControls.classList.contains("hidden") && isVodMode && vodPlaybackControls.contains(focused)) {
       if (e.key === "Escape" || key === 27 || e.key === "Back" || key === 461 || isDown) {
         e.preventDefault();
         vodPlaybackControls.classList.add("hidden");
@@ -1793,9 +2479,16 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    const focusedRegionItem = focused && focused.closest ? focused.closest("#regionList li") : null;
+    const regionCode = focusedRegionItem && focusedRegionItem.dataset.region !== "ALL" ? focusedRegionItem.dataset.region : null;
+
     // GELE KNOP HANDLER (FAVORIET TOGGLE - KEY 405)
     if (isYellow) {
       e.preventDefault();
+      if (regionCode) {
+        toggleRegionFavorite(regionCode);
+        return;
+      }
       let targetStreamId = null;
       if (focused && focused.dataset && focused.dataset.streamId) {
         targetStreamId = focused.dataset.streamId;
@@ -1809,6 +2502,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // RODE KNOP HANDLER (VERPLAATS MODUS TOGGLE - KEY 403)
     if (isRed) {
       e.preventDefault();
+      if (regionCode) {
+        toggleRegionMove(regionCode);
+        return;
+      }
       let targetStreamId = null;
       if (focused && focused.dataset && focused.dataset.streamId) {
         targetStreamId = focused.dataset.streamId;
@@ -1816,6 +2513,34 @@ document.addEventListener("DOMContentLoaded", () => {
         targetStreamId = currentActiveStreams[currentStreamIndex].stream_id;
       }
       if (targetStreamId) toggleMoveMode(targetStreamId);
+      return;
+    }
+
+    // BLAUWE KNOP: HIDE CATEGORY
+    if (isBlue) {
+      e.preventDefault();
+      if (regionCode) {
+        hideRegion(regionCode);
+        return;
+      }
+      const item = focused && focused.closest ? focused.closest("#categoryList li") : null;
+      if (item && item.dataset.catId) {
+        const items = Array.from(categoryList.querySelectorAll("li"));
+        const index = items.indexOf(item);
+        hiddenCategories[categoryKind()].push(String(item.dataset.catId));
+        saveHiddenCategories();
+        filterCategories();
+        const remaining = categoryList.querySelectorAll("li");
+        if (remaining.length > 0) setElementFocus(remaining[Math.min(index, remaining.length - 1)]);
+        showToast(t("categoryHidden"));
+      }
+      return;
+    }
+
+    // GROENE KNOP: SEARCH
+    if (isGreen && !isFitScreen && (currentModus === "live" || currentModus === "favorites")) {
+      e.preventDefault();
+      openSearch();
       return;
     }
 
@@ -1894,6 +2619,54 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     
+    if (movingRegion && (isUp || isDown || isEnter)) {
+      e.preventDefault();
+      if (isEnter) {
+        const done = movingRegion;
+        movingRegion = null;
+        setupRegions(true);
+        focusRegion(done);
+      } else {
+        stepRegion(isUp ? -1 : 1);
+      }
+      return;
+    }
+
+    // BACK: step out one level at a time, and leave the app from the first column
+    if (e.key === "Back" || e.key === "Escape" || key === 461 || key === 27) {
+      e.preventDefault();
+      if (movingRegion) {
+        const done = movingRegion;
+        movingRegion = null;
+        setupRegions(true);
+        focusRegion(done);
+        return;
+      }
+      if (movingStreamId) {
+        toggleMoveMode(movingStreamId);
+        return;
+      }
+      if (selectedSeries) {
+        selectedSeries = null;
+        filterChannels();
+        setElementFocus(channelList.querySelector(".poster-card"));
+        return;
+      }
+      const column = focused && focused.closest ? focused.closest(".col-nav") : null;
+      if (!column) {
+        setElementFocus(document.querySelector("#modusList [data-modus='favorites']"));
+      } else if (column.id !== "colModus") {
+        navigateColumn(focused, "left");
+      } else if (window.webOS && typeof webOS.platformBack === "function") {
+        webOS.platformBack();
+      } else if (window.webOSSystem && typeof webOSSystem.platformBack === "function") {
+        webOSSystem.platformBack();
+      } else {
+        window.close();
+      }
+      return;
+    }
+
     // VERPLAATS MODUS IN FAVORİETEN
     if (movingStreamId && currentModus === "favorites") {
       if (isUp) {
@@ -1918,7 +2691,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           }
           setElementFocus(target);
-          target.scrollIntoView({ block: "nearest", behavior: "smooth" });
         }
         return;
       }
@@ -1933,14 +2705,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           }
           setElementFocus(target);
-          target.scrollIntoView({ block: "nearest", behavior: "smooth" });
         }
         return;
       }
 
     // MENU NAVIGATIE
     if (!focused || !focused.classList.contains("focusable")) {
-      const fallback = lastFocusedPoster || document.querySelector("#channelList .channel-card.active") || document.querySelector(".focusable");
+      const fallback = pickFallbackFocus();
       if (fallback) {
         setElementFocus(fallback);
         focused = fallback;
@@ -1965,7 +2736,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (prev) {
         setElementFocus(prev);
-        prev.scrollIntoView({ block: "nearest", behavior: "smooth" });
       }
       return;
     }
@@ -1978,7 +2748,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (next) {
         setElementFocus(next);
-        next.scrollIntoView({ block: "nearest", behavior: "smooth" });
       }
       return;
     }
@@ -2009,4 +2778,5 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   initProfile();
+  scheduleListRefresh();
 });
