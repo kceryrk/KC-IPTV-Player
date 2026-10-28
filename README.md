@@ -3,7 +3,8 @@
 A modern webOS IPTV app for browsing live TV channels, managing favorites, and navigating content on LG Smart TVs. An android version is now supported in releases, download the apk and install!
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/kceryrk/KC-IPTV-Player/main/icon.png" alt="KC IPTV Player icon" width="180" />
+  <img src="https://github.com/kceryrk/KC-IPTV-Player/blob/main/webos/icon.png" alt="KC IPTV Player icon" width="180" />
+  
 </p>
 
 ## Overview
