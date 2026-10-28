@@ -25,5 +25,6 @@ android/*.iml
 *.log
 
 # Secrets / environment
+webos/credentials.local.js
 .env
 .env.*

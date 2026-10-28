@@ -263,7 +263,134 @@ body, html {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  min-width: 260px;
+  min-width: 390px;
+  gap: 12px;
+}
+
+.header-clock {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.login-status-wrap {
+  position: relative;
+}
+
+.login-state-button {
+  min-width: 172px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: #101116;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.login-state-dot {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(var(--accent-rgb),0.7);
+}
+
+.login-state-button[data-state="logging"] .login-state-dot {
+  background: var(--highlight);
+  box-shadow: 0 0 10px rgba(var(--highlight-rgb),0.7);
+}
+
+.login-state-button[data-state="logged-in"] .login-state-dot {
+  background: #26a269;
+  box-shadow: 0 0 10px rgba(38,162,105,0.7);
+}
+
+.login-panel {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  width: 720px;
+  max-width: 92vw;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px;
+  background: rgba(8,9,13,0.97);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  box-shadow: 0 18px 42px rgba(0,0,0,0.78);
+  z-index: 2100;
+}
+
+.login-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.login-panel-header h2 {
+  color: var(--highlight);
+  font-size: 1.5rem;
+}
+
+.login-panel-close {
+  width: 40px;
+  height: 40px;
+  background: #15151d;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 1.6rem;
+}
+
+.login-panel label {
+  color: #ddd;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.login-panel input,
+.login-panel select {
+  width: 100%;
+  min-height: 68px;
+  padding: 12px 16px;
+  background: #111219;
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1.6rem;
+}
+
+.login-method-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-inline-toast {
+  padding: 10px 12px;
+  background: rgba(var(--accent-rgb),0.16);
+  border-left: 4px solid var(--accent);
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1.35;
+}
+
+.login-state-button.focused {
+  outline: 3px solid var(--highlight);
+  outline-offset: 3px;
 }
 
 .settings-button {
@@ -578,6 +705,27 @@ body.favorites-mode #colCategories {
 }
 
 @media (max-width: 899px) {
+  .app-header-actions {
+    min-width: 0;
+  }
+
+  .header-clock {
+    display: none;
+  }
+
+  .login-state-button {
+    min-width: 48px;
+  }
+
+  .login-state-button #loginStatus {
+    display: none;
+  }
+
+  .login-panel {
+    right: -56px;
+    width: 92vw;
+  }
+
   .poster-card {
     flex-basis: calc((100% - 20px) / 2);
   }
@@ -1057,7 +1205,10 @@ body.speler-fit-screen .epg-preview-panel {
 
 .customization-page {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 3000;
   display: flex;
   flex-direction: column;

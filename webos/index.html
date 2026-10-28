@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KC IPTV PLAYER</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js"></script>
 </head>
 <body>
 
@@ -18,42 +19,48 @@
     </div>
   </div>
 
-  <!-- INLOG / SPLASH PAGINA -->
-  <div id="loginPage" class="login-container">
-    <div id="autoLoginSplash" class="splash-content hidden">
-      <div class="splash-logo">KC IPTV PLAYER</div>
-      <div class="splash-spinner"></div>
-      <div class="splash-text" data-i18n="connecting">Verbinden met IPTV server...</div>
-    </div>
-
-    <form id="loginForm" class="login-card">
-      <h2 class="login-title">KC IPTV PLAYER</h2>
-      <div class="form-group">
-        <label for="serverUrl" data-i18n="serverUrl">Sunucu URL</label>
-        <input type="text" id="serverUrl" value="http://neptunpro26.xyz:8080" class="focusable" tabindex="1" required>
-      </div>
-      <div class="form-group">
-        <label for="username" data-i18n="username">Kullanıcı Adı</label>
-        <input type="text" id="username" value="neptunn688" class="focusable" tabindex="2" required>
-      </div>
-      <div class="form-group">
-        <label for="password" data-i18n="password">Şifre</label>
-        <input type="password" id="password" value="REDACTED" class="focusable" tabindex="3" required>
-      </div>
-      <button type="submit" id="loginBtn" class="login-btn focusable" data-i18n="login" tabindex="4">Giriş Yap</button>
-      <div id="loginStatus" class="login-status"></div>
-    </form>
-  </div>
-
   <!-- HOOFD APPLICATIE -->
-  <div id="appPage" class="hidden">
+  <div id="appPage">
     <header class="app-header">
       <div class="logo">
         <span>KC IPTV PLAYER</span>
         <span id="headerModeIndicator" class="header-mode-badge">★ FAVORİLER</span>
       </div>
 
+      <div id="headerClock" class="header-clock">00:00</div>
+
       <div class="app-header-actions">
+        <div class="login-status-wrap">
+          <button id="loginStateButton" class="login-state-button focusable" data-state="failed" type="button" tabindex="0" aria-expanded="false" aria-controls="loginForm">
+            <span class="login-state-dot" aria-hidden="true"></span>
+            <span id="loginStatus" data-i18n="loginFailed">Login failed</span>
+          </button>
+          <form id="loginForm" class="login-panel hidden">
+            <div class="login-panel-header">
+              <h2 data-i18n="providerLogin">Provider login</h2>
+              <button id="loginPanelClose" class="login-panel-close" type="button" data-i18n-aria="close">×</button>
+            </div>
+            <label for="loginMethod" data-i18n="loginMethod">Login method</label>
+            <select id="loginMethod" class="focusable" tabindex="0">
+              <option value="xtream" data-i18n="xtreamCodes">Xtream Codes</option>
+              <option value="m3u" data-i18n="m3uPlaylist">M3U playlist URL</option>
+            </select>
+            <div id="xtreamLoginFields" class="login-method-fields">
+              <label for="serverUrl" data-i18n="serverUrl">Server URL</label>
+              <input type="url" id="serverUrl" class="focusable" autocomplete="url" tabindex="0">
+              <label for="username" data-i18n="username">Username</label>
+              <input type="text" id="username" class="focusable" autocomplete="username" tabindex="0">
+              <label for="password" data-i18n="password">Password</label>
+              <input type="password" id="password" class="focusable" autocomplete="current-password" tabindex="0">
+            </div>
+            <div id="m3uLoginFields" class="login-method-fields hidden">
+              <label for="m3uUrl" data-i18n="m3uUrl">Playlist URL</label>
+              <input type="url" id="m3uUrl" class="focusable" autocomplete="url" tabindex="0">
+            </div>
+            <div id="loginErrorToast" class="login-inline-toast hidden" role="status" aria-live="polite"></div>
+            <button type="submit" id="loginBtn" class="login-btn focusable" data-i18n="login" tabindex="0">Sign in</button>
+          </form>
+        </div>
         <button id="settingsButton" class="settings-button focusable" type="button" tabindex="0" aria-expanded="false" aria-controls="settingsPanel">⚙ Settings</button>
         <div id="settingsPanel" class="settings-panel hidden" role="menu" data-i18n-aria="settings" aria-label="App settings">
           <div class="settings-group">
@@ -230,6 +237,7 @@
     </div>
   </div>
 
+  <script src="credentials.local.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

@@ -1,4 +1,33 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Disk storage can throw on TVs; memory keeps the session working when it does.
+  const store = (() => {
+    const memory = {};
+    let disk = null;
+    try {
+      disk = window.localStorage;
+      disk.getItem("iptv_probe");
+    } catch (error) {
+      disk = null;
+    }
+    return {
+      getItem(key) {
+        try {
+          const value = disk ? disk.getItem(key) : null;
+          if (value !== null) return value;
+        } catch (error) {}
+        return Object.prototype.hasOwnProperty.call(memory, key) ? memory[key] : null;
+      },
+      setItem(key, value) {
+        memory[key] = String(value);
+        try { if (disk) disk.setItem(key, String(value)); } catch (error) {}
+      },
+      removeItem(key) {
+        delete memory[key];
+        try { if (disk) disk.removeItem(key); } catch (error) {}
+      }
+    };
+  })();
+
   // Probeer webOS fullscreen API direct bij opstarten
   if (window.webOS && window.webOS.fullScreen) {
     try { window.webOS.fullScreen(true); } catch(e) {}
@@ -7,8 +36,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginPage = document.getElementById("loginPage");
   const appPage = document.getElementById("appPage");
   const loginForm = document.getElementById("loginForm");
+  const loginBtn = document.getElementById("loginBtn");
   const autoLoginSplash = document.getElementById("autoLoginSplash");
   const loginStatus = document.getElementById("loginStatus");
+  const loginStateButton = document.getElementById("loginStateButton");
+  const loginPanelClose = document.getElementById("loginPanelClose");
+  const loginErrorToast = document.getElementById("loginErrorToast");
+  const loginMethod = document.getElementById("loginMethod");
+  const m3uUrlInput = document.getElementById("m3uUrl");
+  const xtreamLoginFields = document.getElementById("xtreamLoginFields");
+  const m3uLoginFields = document.getElementById("m3uLoginFields");
+  const headerClock = document.getElementById("headerClock");
 
   const serverUrlInput = document.getElementById("serverUrl");
   const usernameInput = document.getElementById("username");
@@ -54,7 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Dynamic UI feedback elementen
   let toastMsg = document.getElementById("toastMsg") || createUIElement("toastMsg", "toast-msg");
   let moveBanner = document.getElementById("moveBanner") || createUIElement("moveBanner", "move-banner hidden", "🔴 VERPLAATS-MODUS ACTIEF: Gebruik ⬆/⬇ om te verplaatsen, druk ROOD om te bewaren");
-  let currentLang = localStorage.getItem("iptv_lang") || "tr";
+  let currentLang = store.getItem("iptv_lang") || "tr";
+  let currentLoginState = "failed";
   const appTranslations = {
     en: {
       settings: "Settings", language: "Language", autoplayNext: "Play next episode automatically", customization: "Customization", switchProfile: "Switch profile", resetApp: "Reset app", close: "Close menu", back: "Back", accentColor: "Accent color", highlightColor: "Highlight color", backgroundImage: "Background image URL", apply: "Apply", removeBackground: "Remove image", done: "Done", previous: "Previous", next: "Next", playPause: "Pause / play", serverUrl: "Server URL", username: "Username", password: "Password", login: "Sign in", connecting: "Connecting to IPTV server...", loginFailed: "Login failed.", modes: "MODES", modeFavorites: "★ Favorites", modeLive: "📺 Live TV", modeMovies: "🎬 Movies", modeSeries: "🍿 Series", region: "REGION", categories: "CATEGORIES", allRegions: "🌍 All regions", channels: "CHANNELS", movies: "MOVIES", series: "SERIES", liveNow: "Live TV", noNextProgram: "No upcoming program", vodHint: "Up: controls | Play/Pause: toggle | Left/Right: seek", backToSeries: "← Back to series", noEpisodes: "No episodes found", loadingEpisodes: "Loading episodes...", unableLoad: "Unable to load episodes", favoritesRemoved: "Removed from favorites", favoritesAdded: "Added to favorites", moveOnlyFavorites: "Move mode is only available in Favorites", moveStarted: "Move mode started", positionSaved: "Position saved", channelNotFound: "Channel #{number} not found", autoplay: "Autoplay next episode", colors: "Colors", backgroundApplied: "Background updated", backgroundRemoved: "Background removed", invalidBackground: "Enter a valid HTTP or HTTPS image URL", previousEpisode: "Previous episode", nextEpisode: "Next episode", profileChanged: "Profile changed", appReset: "App reset", zapped: "Playing channel #{number}: {title}", colorRed: "Red", colorBlue: "Blue", colorGreen: "Green", colorRose: "Rose", colorOrange: "Orange", colorGold: "Gold", colorTurquoise: "Turquoise", colorLime: "Lime", colorSky: "Sky blue"
@@ -75,6 +114,15 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.assign(appTranslations.nl, { backgroundPlaceholder: "https://example.com/image.jpg", moveBanner: "VERPLAATSEN: Gebruik Omhoog/Omlaag om te sorteren, druk op Rood om op te slaan", season: "Seizoen {number}", episode: "Aflevering {number}", channelZap: "KANAAL ZAPPEN" });
   Object.assign(appTranslations.fr, { backgroundPlaceholder: "https://example.com/image.jpg", moveBanner: "DÉPLACEMENT : utilisez Haut/Bas pour réorganiser, appuyez sur Rouge pour enregistrer", season: "Saison {number}", episode: "Épisode {number}", channelZap: "CHANGEMENT DE CHAÎNE" });
 
+  Object.assign(appTranslations.en, { providerLogin: "Provider login", loginMethod: "Login method", xtreamCodes: "Xtream Codes", m3uPlaylist: "M3U playlist URL", m3uUrl: "Playlist URL", loggingIn: "Logging in", loggedIn: "Logged in", loginRequired: "Login failed", noSavedProfile: "No saved profile. Enter your provider details.", invalidCredentials: "The provider rejected the username or password.", playlistUnavailable: "The playlist could not be loaded.", playlistInvalid: "The URL did not return a valid M3U playlist.", loginErrorToast: "Login failed: {reason}" });
+  Object.assign(appTranslations.tr, { providerLogin: "Sağlayıcı girişi", loginMethod: "Giriş yöntemi", xtreamCodes: "Xtream Codes", m3uPlaylist: "M3U oynatma listesi URL'si", m3uUrl: "Oynatma listesi URL'si", loggingIn: "Giriş yapılıyor", loggedIn: "Giriş başarılı", loginRequired: "Giriş başarısız", noSavedProfile: "Kayıtlı profil yok. Sağlayıcı bilgilerini girin.", invalidCredentials: "Sağlayıcı kullanıcı adı veya parolayı kabul etmedi.", playlistUnavailable: "Oynatma listesi yüklenemedi.", playlistInvalid: "URL geçerli bir M3U oynatma listesi döndürmedi.", loginErrorToast: "Giriş başarısız: {reason}" });
+  Object.assign(appTranslations.nl, { providerLogin: "Provider aanmelden", loginMethod: "Aanmeldmethode", xtreamCodes: "Xtream Codes", m3uPlaylist: "M3U-afspeellijst-URL", m3uUrl: "Afspeellijst-URL", loggingIn: "Aanmelden", loggedIn: "Aangemeld", loginRequired: "Aanmelden mislukt", noSavedProfile: "Geen opgeslagen profiel. Vul je providergegevens in.", invalidCredentials: "De provider heeft de gebruikersnaam of het wachtwoord geweigerd.", playlistUnavailable: "De afspeellijst kon niet worden geladen.", playlistInvalid: "De URL bevat geen geldige M3U-afspeellijst.", loginErrorToast: "Aanmelden mislukt: {reason}" });
+  Object.assign(appTranslations.fr, { providerLogin: "Connexion au fournisseur", loginMethod: "Méthode de connexion", xtreamCodes: "Xtream Codes", m3uPlaylist: "URL de playlist M3U", m3uUrl: "URL de la playlist", loggingIn: "Connexion en cours", loggedIn: "Connecté", loginRequired: "Échec de connexion", noSavedProfile: "Aucun profil enregistré. Saisissez vos identifiants fournisseur.", invalidCredentials: "Le fournisseur a refusé le nom d’utilisateur ou le mot de passe.", playlistUnavailable: "Impossible de charger la playlist.", playlistInvalid: "L’URL ne renvoie pas une playlist M3U valide.", loginErrorToast: "Échec de connexion : {reason}" });
+  Object.assign(appTranslations.en, { streamPlaybackFailed: "This stream could not be played. Try the provider's HLS URL or a compatible stream format." });
+  Object.assign(appTranslations.tr, { streamPlaybackFailed: "Bu yayın oynatılamadı. Sağlayıcının HLS URL'sini veya uyumlu bir yayın biçimini deneyin." });
+  Object.assign(appTranslations.nl, { streamPlaybackFailed: "Deze stream kan niet worden afgespeeld. Probeer de HLS-URL van de provider of een compatibel formaat." });
+  Object.assign(appTranslations.fr, { streamPlaybackFailed: "Impossible de lire ce flux. Essayez l’URL HLS du fournisseur ou un format compatible." });
+
   function t(key, values = {}) {
     let text = (appTranslations[currentLang] && appTranslations[currentLang][key]) || appTranslations.en[key] || key;
     Object.keys(values).forEach(name => {
@@ -82,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     return text;
   }
-  let autoplayNext = localStorage.getItem("iptv_autoplay_next") === "true";
+  let autoplayNext = store.getItem("iptv_autoplay_next") === "true";
   let currentEpisodeId = null;
   let seekPreviewTime = null;
   let seekTimer = null;
@@ -108,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let allCategories = [];
   function readFavorites(key) {
     try {
-      const saved = JSON.parse(localStorage.getItem(key));
+      const saved = JSON.parse(store.getItem(key));
       return Array.isArray(saved) ? saved.map(String) : null;
     } catch (error) {
       return null;
@@ -117,8 +165,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function saveFavorites(list) {
     const serialized = JSON.stringify(list);
-    localStorage.setItem("iptv_favorites", serialized);
-    localStorage.setItem("iptv_favorites_backup", serialized);
+    store.setItem("iptv_favorites", serialized);
+    store.setItem("iptv_favorites_backup", serialized);
   }
 
   function loadFavorites() {
@@ -140,6 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentPlayingStreamId = null;
   let currentActiveStreams = [];
   let hlsPlayer = null;
+  let mpegTsPlayer = null;
   let osdTimeout = null;
   let vodOsdTimeout = null;
   let isFitScreen = false;
@@ -153,6 +202,45 @@ document.addEventListener("DOMContentLoaded", () => {
     toastMsg.textContent = text;
     toastMsg.classList.add("show");
     setTimeout(() => toastMsg.classList.remove("show"), 2500);
+  }
+
+  function setLoginState(state) {
+    currentLoginState = state;
+    if (loginStateButton) loginStateButton.dataset.state = state;
+    if (loginStatus) {
+      const stateKeys = { failed: "loginFailed", logging: "loggingIn", "logged-in": "loggedIn" };
+      loginStatus.textContent = t(stateKeys[state] || "loginFailed");
+      if (state === "logged-in" && currentAuth) loginStatus.textContent += currentAuth.provider === "m3u" ? " · M3U" : " · Xtream";
+    }
+    if (state === "failed") toggleLoginPanel(true, true);
+  }
+
+  function showLoginError(message) {
+    setLoginErrorMessage(t("loginErrorToast", { reason: message || t("playlistUnavailable") }));
+    showToast(t("loginErrorToast", { reason: message || t("playlistUnavailable") }));
+  }
+
+  function setLoginErrorMessage(message) {
+    if (loginErrorToast) {
+      if (!message) {
+        loginErrorToast.textContent = "";
+        loginErrorToast.classList.add("hidden");
+        return;
+      }
+      loginErrorToast.textContent = message;
+      loginErrorToast.classList.remove("hidden");
+    }
+  }
+
+  function toggleLoginPanel(show, focusInput = false) {
+    if (!loginForm || !loginStateButton) return;
+    const shouldShow = show === undefined ? loginForm.classList.contains("hidden") : show;
+    loginForm.classList.toggle("hidden", !shouldShow);
+    loginStateButton.setAttribute("aria-expanded", String(shouldShow));
+    if (shouldShow && focusInput) {
+      const firstInput = loginForm.querySelector(".focusable:not([type='hidden'])");
+      if (firstInput) setElementFocus(firstInput);
+    }
   }
 
   function toggleSettingsMenu(forceOpen = null) {
@@ -184,7 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function applyAppLanguage(lang) {
     currentLang = appTranslations[lang] ? lang : "en";
-    localStorage.setItem("iptv_lang", currentLang);
+    store.setItem("iptv_lang", currentLang);
     document.documentElement.lang = currentLang;
     updateSettingsSelection();
     document.querySelectorAll("[data-i18n]").forEach(element => {
@@ -219,7 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function loadThemeConfig() {
     try {
-      const saved = JSON.parse(localStorage.getItem("iptv_theme") || "{}");
+      const saved = JSON.parse(store.getItem("iptv_theme") || "{}");
       let backgroundImage = "";
       if (typeof saved.backgroundImage === "string" && saved.backgroundImage) {
         const parsed = new URL(saved.backgroundImage);
@@ -263,7 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
         appPage.style.backgroundImage = "none";
       }
     }
-    localStorage.setItem("iptv_theme", JSON.stringify(themeConfig));
+    store.setItem("iptv_theme", JSON.stringify(themeConfig));
   }
 
   function updateThemeColor(role, color) {
@@ -314,7 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
         showCustomizationPage(true);
         return;
       case "switchProfile":
-        localStorage.removeItem("iptv_profile");
+        store.removeItem("iptv_profile");
         currentAuth = null;
         showLoginPage();
         showToast(t("profileChanged"));
@@ -349,12 +437,15 @@ document.addEventListener("DOMContentLoaded", () => {
     return "";
   }
 
-  setInterval(() => {
+  const updateClocks = () => {
     const now = new Date();
     const clockStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (headerClock) headerClock.textContent = clockStr;
     if (osdClock) osdClock.textContent = clockStr;
     if (vodOsdClock) vodOsdClock.textContent = clockStr;
-  }, 1000);
+  };
+  updateClocks();
+  setInterval(updateClocks, 1000);
 
   video.addEventListener("timeupdate", () => {
     if (video.duration && isFinite(video.duration)) {
@@ -374,40 +465,96 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
   }
 
+  const loginDraftFields = { method: loginMethod, server: serverUrlInput, username: usernameInput, password: passwordInput, m3u: m3uUrlInput };
+
+  function saveLoginDraft() {
+    const draft = {};
+    Object.keys(loginDraftFields).forEach((name) => {
+      if (loginDraftFields[name]) draft[name] = loginDraftFields[name].value;
+    });
+    store.setItem("iptv_login_draft", JSON.stringify(draft));
+  }
+
+  function restoreLoginDraft() {
+    try {
+      const draft = JSON.parse(store.getItem("iptv_login_draft") || "{}");
+      Object.keys(loginDraftFields).forEach((name) => {
+        if (loginDraftFields[name] && typeof draft[name] === "string" && draft[name]) loginDraftFields[name].value = draft[name];
+      });
+      if (loginMethod) loginMethod.dispatchEvent(new Event("change"));
+    } catch (error) {}
+  }
+
+  Object.keys(loginDraftFields).forEach((name) => {
+    const field = loginDraftFields[name];
+    if (!field) return;
+    field.addEventListener("input", saveLoginDraft);
+    field.addEventListener("change", saveLoginDraft);
+  });
+
   function initProfile() {
-    const saved = localStorage.getItem("iptv_profile");
+    showAppPage();
+    restoreLoginDraft();
+    const saved = store.getItem("iptv_profile");
     if (saved) {
       try {
         currentAuth = JSON.parse(saved);
-        if (serverUrlInput) serverUrlInput.value = currentAuth.server;
-        if (usernameInput) usernameInput.value = currentAuth.username;
-        if (passwordInput) passwordInput.value = currentAuth.password;
-
-        if (autoLoginSplash) autoLoginSplash.classList.remove("hidden");
-        if (loginForm) loginForm.classList.add("hidden");
-
-        login(currentAuth.server, currentAuth.username, currentAuth.password, true);
+        if (currentAuth.provider === "m3u") {
+          if (loginMethod) loginMethod.value = "m3u";
+          if (m3uUrlInput) m3uUrlInput.value = currentAuth.playlistUrl || "";
+          if (m3uLoginFields) m3uLoginFields.classList.remove("hidden");
+          if (xtreamLoginFields) xtreamLoginFields.classList.add("hidden");
+          const cachedFavorites = loadFavoriteCache();
+          if (cachedFavorites.length > 0 && favorites.length > 0) {
+            // Show favorites from the cache now; the full playlist refreshes behind it.
+            allStreams = cachedFavorites;
+            allCategories = [];
+            currentLiveRegion = "ALL";
+            setLoginState("logging");
+            switchModus("favorites");
+            if (currentActiveStreams.length > 0) {
+              const first = currentActiveStreams[0];
+              playStream(first.stream_id, first.name, first.stream_icon, 0, first.url);
+              activeerFitScreen();
+            }
+            login(currentAuth.playlistUrl, "", "", true, "m3u", true);
+          } else {
+            login(currentAuth.playlistUrl, "", "", true, "m3u");
+          }
+        } else {
+          if (loginMethod) loginMethod.value = "xtream";
+          if (serverUrlInput) serverUrlInput.value = currentAuth.server || "";
+          if (usernameInput) usernameInput.value = currentAuth.username || "";
+          if (passwordInput) passwordInput.value = currentAuth.password || "";
+          login(currentAuth.server, currentAuth.username, currentAuth.password, true, "xtream");
+        }
         return;
       } catch (e) {
-        localStorage.removeItem("iptv_profile");
+        setLoginState("failed");
+        showLoginError(e.message);
       }
     }
-    showLoginPage();
+    const defaults = window.KC_DEFAULT_LOGIN;
+    if (!saved && defaults && defaults.server && defaults.username && defaults.password) {
+      if (serverUrlInput) serverUrlInput.value = defaults.server;
+      if (usernameInput) usernameInput.value = defaults.username;
+      if (passwordInput) passwordInput.value = defaults.password;
+      login(defaults.server, defaults.username, defaults.password, true, "xtream");
+      return;
+    }
+    setLoginState("failed");
+    if (!saved) setLoginErrorMessage(t("noSavedProfile"));
   }
 
   function showLoginPage() {
-    if (loginPage) loginPage.classList.remove("hidden");
-    if (autoLoginSplash) autoLoginSplash.classList.add("hidden");
-    if (loginForm) loginForm.classList.remove("hidden");
-    if (appPage) appPage.classList.add("hidden");
-    setTimeout(() => {
-      if (serverUrlInput) setElementFocus(serverUrlInput);
-    }, 100);
+    showAppPage();
+    setLoginState("failed");
+    toggleLoginPanel(true, true);
   }
 
   function showAppPage() {
-    if (loginPage) loginPage.classList.add("hidden");
     if (appPage) appPage.classList.remove("hidden");
+    toggleLoginPanel(false);
     setElementFocus(document.querySelector("#modusList [data-modus='favorites']"));
   }
 
@@ -422,6 +569,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const setting = btn.dataset.setting;
       const value = btn.dataset.value || null;
       handleSettingsAction(setting, value);
+    });
+  }
+
+  if (loginStateButton) {
+    loginStateButton.addEventListener("click", () => {
+      const shouldOpen = loginForm.classList.contains("hidden");
+      toggleLoginPanel(shouldOpen, shouldOpen);
+    });
+  }
+
+  if (loginPanelClose) loginPanelClose.addEventListener("click", () => toggleLoginPanel(false));
+
+  if (loginMethod) {
+    loginMethod.addEventListener("change", () => {
+      const useM3u = loginMethod.value === "m3u";
+      if (m3uLoginFields) m3uLoginFields.classList.toggle("hidden", !useM3u);
+      if (xtreamLoginFields) xtreamLoginFields.classList.toggle("hidden", useM3u);
+      setLoginErrorMessage("");
     });
   }
 
@@ -440,7 +605,7 @@ document.addEventListener("DOMContentLoaded", () => {
     autoplayNextToggle.checked = autoplayNext;
     autoplayNextToggle.addEventListener("change", () => {
       autoplayNext = autoplayNextToggle.checked;
-      localStorage.setItem("iptv_autoplay_next", String(autoplayNext));
+      store.setItem("iptv_autoplay_next", String(autoplayNext));
     });
   }
 
@@ -468,64 +633,181 @@ document.addEventListener("DOMContentLoaded", () => {
   if (loginForm) {
     loginForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      let server = serverUrlInput.value.trim();
-      if (server.endsWith("/")) server = server.slice(0, -1);
-      login(server, usernameInput.value.trim(), passwordInput.value.trim(), false);
+      if (loginMethod && loginMethod.value === "m3u") {
+        login(m3uUrlInput.value.trim(), "", "", false, "m3u");
+      } else {
+        let server = serverUrlInput.value.trim();
+        if (server && !/^https?:\/\//i.test(server)) server = `http://${server}`;
+        server = server.replace(/\/+$/, "");
+        login(server, usernameInput.value.trim(), passwordInput.value.trim(), false, "xtream");
+      }
     });
   }
 
-  async function login(server, username, password, isAuto) {
-    if (loginStatus) loginStatus.textContent = t("connecting");
+  function parseM3UPlaylist(text) {
+    const streams = [];
+    const categoryNames = new Set();
+    let pending = null;
+
+    text.split(/\r?\n/).forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith("#EXTINF:")) {
+        const groupMatch = trimmed.match(/group-title="([^"]*)"/i);
+        const logoMatch = trimmed.match(/tvg-logo="([^"]*)"/i);
+        const comma = trimmed.indexOf(",");
+        pending = {
+          name: comma >= 0 ? trimmed.slice(comma + 1).trim() : "Channel",
+          stream_icon: logoMatch ? logoMatch[1] : "",
+          category_id: groupMatch && groupMatch[1] ? groupMatch[1] : "M3U"
+        };
+        categoryNames.add(pending.category_id);
+      } else if (trimmed && !trimmed.startsWith("#") && pending) {
+        const streamId = String(streams.length + 1);
+        streams.push(Object.assign({}, pending, { stream_id: streamId, url: trimmed }));
+        pending = null;
+      }
+    });
+
+    return {
+      streams,
+      categories: Array.from(categoryNames).map(name => ({ category_id: name, category_name: name }))
+    };
+  }
+
+  function cacheFavoriteStreams() {
+    const wanted = {};
+    favorites.forEach((id) => { wanted[String(id)] = true; });
+    const subset = allStreams.filter((s) => wanted[String(s.stream_id)]);
+    store.setItem("iptv_fav_cache", JSON.stringify(subset));
+  }
+
+  function loadFavoriteCache() {
+    try {
+      const list = JSON.parse(store.getItem("iptv_fav_cache") || "[]");
+      return Array.isArray(list) ? list : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  async function login(server, username, password, isAuto = false, provider = "xtream", background = false) {
+    if (loginErrorToast) loginErrorToast.classList.add("hidden");
+    if (loginBtn) loginBtn.disabled = true;
+    setLoginState("logging");
 
     try {
-      const catRes = await fetch(`${server}/player_api.php?username=${username}&password=${password}&action=get_live_categories`);
-      if (!catRes.ok) throw new Error("Server error");
+      let startMode = "favorites";
+      if (provider === "m3u") {
+        if (!server) throw new Error(t("playlistUnavailable"));
+        const response = await fetch(server);
+        if (!response.ok) throw new Error(`${t("playlistUnavailable")} (${response.status})`);
+        const content = await response.text();
+        if (content.replace(/^\s+/, "").indexOf("#EXTM3U") !== 0) throw new Error(t("playlistInvalid"));
+        const playlist = parseM3UPlaylist(content);
+        if (playlist.streams.length === 0) throw new Error(t("playlistInvalid"));
 
-      allCategories = await catRes.json();
-      currentAuth = { server, username, password };
-      
-      localStorage.setItem("iptv_profile", JSON.stringify(currentAuth));
-      showAppPage();
-
-      const streamRes = await fetch(`${server}/player_api.php?username=${username}&password=${password}&action=get_live_streams`);
-      allStreams = await streamRes.json();
-
-      try {
-        const vodCatRes = await fetch(`${server}/player_api.php?username=${username}&password=${password}&action=get_vod_categories`);
-        vodCategories = await vodCatRes.json();
-        const vodStreamRes = await fetch(`${server}/player_api.php?username=${username}&password=${password}&action=get_vod_streams`);
-        vodStreams = await vodStreamRes.json();
-      } catch(e) {}
-
-      try {
-        const seriesCatRes = await fetch(`${server}/player_api.php?username=${username}&password=${password}&action=get_series_categories`);
-        const categories = await seriesCatRes.json();
-        seriesCategories = Array.isArray(categories) ? categories : [];
-      } catch(e) {
-        seriesCategories = [];
-      }
-
-      try {
-        const seriesRes = await fetch(`${server}/player_api.php?username=${username}&password=${password}&action=get_series`);
-        const series = await seriesRes.json();
-        seriesStreams = Array.isArray(series) ? series : [];
-      } catch(e) {
+        allStreams = playlist.streams;
+        allCategories = playlist.categories;
+        vodStreams = [];
+        vodCategories = [];
         seriesStreams = [];
+        seriesCategories = [];
+        currentAuth = { provider: "m3u", playlistUrl: server };
+        currentLiveRegion = "ALL";
+        startMode = "favorites";
+      } else {
+        if (!server || !username || !password) throw new Error(t("invalidCredentials"));
+        const credentials = new URLSearchParams({ username, password });
+        const apiBase = `${server.replace(/\/+$/, "")}/player_api.php?${credentials}`;
+        // Some providers return an empty body on the first or oversized request.
+        // XHR instead of fetch: the TV's fetch returned empty bodies for this provider.
+        const requestText = (url) => new Promise((resolve) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("GET", url, true);
+          xhr.timeout = 120000;
+          xhr.onload = () => resolve({ status: xhr.status, body: xhr.responseText || "" });
+          xhr.onerror = () => resolve({ status: 0, body: "", failed: "network" });
+          xhr.ontimeout = () => resolve({ status: 0, body: "", failed: "timeout" });
+          xhr.send();
+        });
+        const fetchApi = async (action) => {
+          let info = "";
+          for (let attempt = 0; attempt < 1; attempt++) {
+            const result = await requestText(apiBase + (action ? `&action=${action}` : ""));
+            if (result.status === 200 && result.body.trim()) {
+              try { return JSON.parse(result.body); } catch (error) { info = `bad JSON, ${result.body.length}B: ${result.body.slice(0, 30)}`; }
+            } else {
+              info = `HTTP ${result.status}${result.failed ? " " + result.failed : ""}, ${result.body.length}B`;
+            }
+            await new Promise((resolve) => setTimeout(resolve, 800));
+          }
+          throw new Error(`${t("playlistUnavailable")} (${info}, ${action || "auth"})`);
+        };
+
+        // This provider's account reply can arrive empty on the TV, so it only counts when it parses.
+        try {
+          const account = await fetchApi("");
+          if (account && account.user_info && Number(account.user_info.auth) === 0) throw new Error(t("invalidCredentials"));
+        } catch (error) {
+          if (error.message === t("invalidCredentials")) throw error;
+        }
+        const categories = await fetchApi("get_live_categories");
+        if (!Array.isArray(categories)) throw new Error(t("invalidCredentials"));
+        const streams = await fetchApi("get_live_streams");
+        if (!Array.isArray(streams)) throw new Error(t("invalidCredentials"));
+
+        allCategories = categories;
+        allStreams = streams;
+        currentAuth = { provider: "xtream", server, username, password };
+        try {
+          const vodCatRes = await fetch(`${server}/player_api.php?${credentials}&action=get_vod_categories`);
+          const vodStreamRes = await fetch(`${server}/player_api.php?${credentials}&action=get_vod_streams`);
+          vodCategories = vodCatRes.ok ? await vodCatRes.json() : [];
+          vodStreams = vodStreamRes.ok ? await vodStreamRes.json() : [];
+        } catch (error) {
+          vodCategories = [];
+          vodStreams = [];
+        }
+        try {
+          const seriesCatRes = await fetch(`${server}/player_api.php?${credentials}&action=get_series_categories`);
+          const seriesRes = await fetch(`${server}/player_api.php?${credentials}&action=get_series`);
+          const seriesCatData = seriesCatRes.ok ? await seriesCatRes.json() : [];
+          const seriesData = seriesRes.ok ? await seriesRes.json() : [];
+          seriesCategories = Array.isArray(seriesCatData) ? seriesCatData : [];
+          seriesStreams = Array.isArray(seriesData) ? seriesData : [];
+        } catch (error) {
+          seriesCategories = [];
+          seriesStreams = [];
+        }
       }
 
-      setupRegions();
-      switchModus("favorites");
+      store.setItem("iptv_profile", JSON.stringify(currentAuth));
+      cacheFavoriteStreams();
+      setLoginState("logged-in");
+      if (background) {
+        setupRegions();
+        if (currentModus === "favorites") filterChannels();
+        return;
+      }
+      showAppPage();
+      switchModus(startMode);
 
-      // AUTOMATISCH VOLSCHERM AFSPELEN BIJ HET OPENEN VAN DE APP
       if (currentActiveStreams.length > 0) {
-        playStream(currentActiveStreams[0].stream_id, currentActiveStreams[0].name, currentActiveStreams[0].stream_icon, 0);
+        const firstStream = currentActiveStreams[0];
+        playStream(firstStream.stream_id, firstStream.name, firstStream.stream_icon, 0, firstStream.url);
         activeerFitScreen();
       }
-
-    } catch (err) {
-      if (isAuto) localStorage.removeItem("iptv_profile");
-      if (loginStatus) loginStatus.textContent = t("loginFailed");
-      showLoginPage();
+    } catch (error) {
+      if (provider === "xtream" && server && username && password) {
+        // The TV can't read this provider's API, but its M3U playlist works.
+        const params = new URLSearchParams({ username, password, type: "m3u_plus", output: "ts" });
+        return login(`${server.replace(/\/+$/, "")}/get.php?${params}`, "", "", isAuto, "m3u", background);
+      }
+      setLoginState("failed");
+      showLoginError(error.message || t("playlistUnavailable"));
+      toggleLoginPanel(true);
+    } finally {
+      if (loginBtn) loginBtn.disabled = false;
     }
   }
 
@@ -802,6 +1084,7 @@ document.addEventListener("DOMContentLoaded", () => {
       li.dataset.streamId = s.stream_id;
       li.dataset.index = idx;
       li.dataset.streamIcon = s.stream_icon || "";
+      li.dataset.streamUrl = s.url || "";
       li.tabIndex = 0;
 
       const numStr = (idx + 1).toString();
@@ -853,6 +1136,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showToast(`⭐ ${t("favoritesAdded")}`);
     }
     saveFavorites(favorites);
+    cacheFavoriteStreams();
     filterChannels();
   }
 
@@ -895,7 +1179,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function fetchEPGData(streamId) {
-    if (!streamId || !currentAuth) return;
+    if (!streamId || !currentAuth || currentAuth.provider === "m3u") return;
     try {
       const res = await fetch(`${currentAuth.server}/player_api.php?username=${currentAuth.username}&password=${currentAuth.password}&action=get_short_epg&stream_id=${streamId}&limit=3`);
       const data = await res.json();
@@ -934,6 +1218,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (osdEpgNextTime) osdEpgNextTime.textContent = "--:--";
   }
 
+  function destroyStreamPlayers() {
+    if (hlsPlayer) {
+      hlsPlayer.destroy();
+      hlsPlayer = null;
+    }
+    if (mpegTsPlayer) {
+      mpegTsPlayer.destroy();
+      mpegTsPlayer = null;
+    }
+  }
+
   function playVodMovie(streamId, title, ext) {
     currentVodMovieId = String(streamId);
     currentEpisodeId = null;
@@ -943,10 +1238,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
     showVodOSD();
 
-    if (hlsPlayer) {
-      hlsPlayer.destroy();
-      hlsPlayer = null;
-    }
+    destroyStreamPlayers();
 
     video.muted = false;
     video.volume = 1.0;
@@ -969,10 +1261,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
     showVodOSD();
 
-    if (hlsPlayer) {
-      hlsPlayer.destroy();
-      hlsPlayer = null;
-    }
+    destroyStreamPlayers();
 
     video.muted = false;
     video.volume = 1.0;
@@ -983,7 +1272,7 @@ document.addEventListener("DOMContentLoaded", () => {
     video.play().catch(console.error);
   }
 
-  function playStream(streamId, name, icon, index) {
+  function playStream(streamId, name, icon, index, directUrl = "") {
     if (index !== undefined) currentStreamIndex = index;
     currentPlayingStreamId = String(streamId);
 
@@ -998,23 +1287,34 @@ document.addEventListener("DOMContentLoaded", () => {
     showLiveOSD();
     fetchEPGData(streamId);
 
-    const streamUrl = `${currentAuth.server}/live/${currentAuth.username}/${currentAuth.password}/${streamId}.m3u8`;
+    const streamUrl = directUrl || `${currentAuth.server}/live/${currentAuth.username}/${currentAuth.password}/${streamId}.m3u8`;
+    const isTransportStream = Boolean(directUrl && /\.ts(?:$|[?#])/i.test(directUrl));
+    const hlsUrl = isTransportStream ? streamUrl.replace(/\.ts(?=([?#]|$))/i, ".m3u8") : streamUrl;
 
-    if (hlsPlayer) {
-      hlsPlayer.destroy();
-      hlsPlayer = null;
-    }
+    destroyStreamPlayers();
 
     video.muted = false;
     video.volume = 1.0;
 
-    if (window.Hls && Hls.isSupported()) {
+    if (isTransportStream && window.mpegts && mpegts.isSupported()) {
+      mpegTsPlayer = mpegts.createPlayer({ type: "mpegts", isLive: true, url: streamUrl });
+      mpegTsPlayer.on(mpegts.Events.ERROR, (type, detail) => {
+        console.error("MPEG-TS playback error", type, detail);
+        showToast(t("streamPlaybackFailed"));
+      });
+      mpegTsPlayer.attachMediaElement(video);
+      mpegTsPlayer.load();
+      Promise.resolve(mpegTsPlayer.play()).catch(error => {
+        console.error(error);
+        showToast(t("streamPlaybackFailed"));
+      });
+    } else if (window.Hls && Hls.isSupported() && /\.m3u8(?:$|[?#])/i.test(hlsUrl)) {
       hlsPlayer = new Hls({ enableWorker: true });
-      hlsPlayer.loadSource(streamUrl);
+      hlsPlayer.loadSource(hlsUrl);
       hlsPlayer.attachMedia(video);
       hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(console.error));
     } else {
-      video.src = streamUrl;
+      video.src = hlsUrl;
       video.play().catch(console.error);
     }
   }
@@ -1150,7 +1450,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const targetIdx = parseInt(num, 10) - 1;
     if (targetIdx >= 0 && targetIdx < currentActiveStreams.length) {
       const target = currentActiveStreams[targetIdx];
-      playStream(target.stream_id, target.name, target.stream_icon, targetIdx);
+      playStream(target.stream_id, target.name, target.stream_icon, targetIdx, target.url);
       showToast(`📺 ${t("zapped", { number: num, title: cleanTitle(target.name) })}`);
     } else {
       showToast(`⚠️ ${t("channelNotFound", { number: num })}`);
@@ -1359,7 +1659,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         const nameEl = li.querySelector(".channel-name");
         const idx = parseInt(li.dataset.index || "0", 10);
-        playStream(li.dataset.streamId, nameEl ? nameEl.textContent : li.textContent, li.dataset.streamIcon, idx);
+        playStream(li.dataset.streamId, nameEl ? nameEl.textContent : li.textContent, li.dataset.streamIcon, idx, li.dataset.streamUrl);
       }
     });
   }
@@ -1391,24 +1691,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let focused = document.activeElement;
 
-    // INLOGSCHERM HANDLER
-    if (loginPage && !loginPage.classList.contains("hidden")) {
-      const loginFocusables = Array.from(loginForm.querySelectorAll(".focusable"));
-      let currentIdx = loginFocusables.indexOf(focused);
-
-      if (isDown) {
+    // Login panel: step through visible fields in order
+    if (loginForm && !loginForm.classList.contains("hidden") && loginForm.contains(focused)) {
+      const fields = Array.from(loginForm.querySelectorAll(".focusable")).filter((el) => el.offsetParent !== null);
+      const idx = fields.indexOf(focused);
+      if (isDown || isUp) {
         e.preventDefault();
-        let nextIdx = (currentIdx + 1) % loginFocusables.length;
-        setElementFocus(loginFocusables[nextIdx]);
-      } else if (isUp) {
+        const step = isDown ? 1 : -1;
+        const next = Math.max(0, Math.min(fields.length - 1, idx + step));
+        setElementFocus(fields[next]);
+      } else if ((isLeft || isRight) && focused === loginMethod) {
         e.preventDefault();
-        let prevIdx = (currentIdx - 1 + loginFocusables.length) % loginFocusables.length;
-        setElementFocus(loginFocusables[prevIdx]);
-      } else if (isEnter && focused) {
-        if (focused.tagName === "BUTTON" || focused.type === "submit") {
-          e.preventDefault();
-          loginForm.requestSubmit();
-        }
+        const count = loginMethod.options.length;
+        loginMethod.selectedIndex = (loginMethod.selectedIndex + (isRight ? 1 : -1) + count) % count;
+        loginMethod.dispatchEvent(new Event("change"));
+      } else if (isEnter && focused === loginBtn) {
+        e.preventDefault();
+        loginForm.requestSubmit ? loginForm.requestSubmit() : loginBtn.click();
+      } else if (e.key === "Escape" || key === 27 || e.key === "Back" || key === 461) {
+        e.preventDefault();
+        toggleLoginPanel(false);
+        setElementFocus(loginStateButton);
       }
       return;
     }
@@ -1577,12 +1880,12 @@ document.addEventListener("DOMContentLoaded", () => {
           e.preventDefault();
           currentStreamIndex = (currentStreamIndex + 1) % currentActiveStreams.length;
           const target = currentActiveStreams[currentStreamIndex];
-          playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex);
+          playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.url);
         } else if (isDown || isPageDown) {
           e.preventDefault();
           currentStreamIndex = (currentStreamIndex - 1 + currentActiveStreams.length) % currentActiveStreams.length;
           const target = currentActiveStreams[currentStreamIndex];
-          playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex);
+          playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.url);
         } else if (isLeft || isEnter || e.key === "Back" || key === 461) {
           e.preventDefault();
           deactiveerFitScreen();
