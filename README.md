@@ -66,7 +66,7 @@ You can also find the packaged app in the release assets as:
 If you are using the webOS CLI tools, run:
 
 ```bash
-ares-install --device your_tv_ip com.iptv.webosapp_1.2.4_all.ipk
+ares-install --device your_tv_ip KCIPTVPLAYER_1.2.11.ipk
 ```
 
 Replace `your_tv_ip` with the IP address of your LG TV.
