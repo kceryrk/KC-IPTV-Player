@@ -49,7 +49,7 @@ Download the latest packaged .ipk for webOS here, apk also available:
 
 You can also find the packaged app in the release assets as:
 
-- `com.iptv.webosapp_1.2.4_all.ipk`
+- `com.iptv.webosapp_1.2.xx_all.ipk`
 
 ## Installation on webOS TV
 
@@ -80,19 +80,10 @@ Check LG Developer website for more information.
 4. Select the `.ipk` file.
 5. Confirm installation.
 
-## Project structure
+## Known limitations
 
-```text
-KC-IPTV-Player/
-├── appinfo.json
-├── index.html
-├── main.js
-├── style.css
-├── icon.png
-├── largeicon.png
-├── README.md
-└── .gitignore
-```
+Android: No audio sometimes for movies and series 
+webos: difficulty implementing series playback
 
 ## Notes
 
@@ -105,7 +96,7 @@ This project is intended for:
 
 ## Version
 
-- Current version: 1.2.4
+- Current version: 1.2.11
 
 ## License
 
