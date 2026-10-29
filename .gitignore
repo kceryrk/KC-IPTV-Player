@@ -26,5 +26,6 @@ android/*.iml
 
 # Secrets / environment
 webos/credentials.local.js
+tizen/credentials.local.js
 .env
 .env.*
