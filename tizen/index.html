@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KC IPTV PLAYER</title>
   <link rel="stylesheet" href="style.css">
-  <script async src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script async src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js"></script>
+  <script src="libs-loader.js"></script>
 </head>
 <body>
 
@@ -41,69 +40,80 @@
               <button id="loginPanelClose" class="login-panel-close" type="button" data-i18n-aria="close">×</button>
             </div>
             <label for="loginMethod" data-i18n="loginMethod">Login method</label>
-            <select id="loginMethod" class="focusable" tabindex="0">
-              <option value="xtream" data-i18n="xtreamCodes">Xtream (Movies &amp; Series)</option>
-              <option value="m3u" data-i18n="m3uPlaylist">M3U playlist (Live TV)</option>
-            </select>
+            <div class="source-switch">
+              <span class="source-switch-arrow" aria-hidden="true">‹</span>
+              <select id="loginMethod" class="focusable" tabindex="0">
+                <option value="xtream">Xtream</option>
+                <option value="m3u">M3U</option>
+              </select>
+              <span class="source-switch-arrow" aria-hidden="true">›</span>
+            </div>
+            <div class="login-actions">
+              <button type="submit" id="loginBtn" class="login-btn focusable" data-i18n="login" tabindex="0">Sign in</button>
+              <button type="button" id="loginTestBtn" class="login-btn focusable" tabindex="0">Test connection</button>
+            </div>
             <div id="xtreamLoginFields" class="login-method-fields">
               <label for="serverUrl" data-i18n="serverUrl">Server URL</label>
               <input type="url" id="serverUrl" class="focusable" autocomplete="url" tabindex="0">
-              <label for="username" data-i18n="username">Username</label>
-              <input type="text" id="username" class="focusable" autocomplete="username" tabindex="0">
-              <label for="password" data-i18n="password">Password</label>
-              <input type="password" id="password" class="focusable" autocomplete="current-password" tabindex="0">
+              <div class="login-row">
+                <div class="login-row-field">
+                  <label for="username" data-i18n="username">Username</label>
+                  <input type="text" id="username" class="focusable" autocomplete="username" tabindex="0">
+                </div>
+                <div class="login-row-field">
+                  <label for="password" data-i18n="password">Password</label>
+                  <input type="password" id="password" class="focusable" autocomplete="current-password" tabindex="0">
+                </div>
+              </div>
             </div>
             <div id="m3uLoginFields" class="login-method-fields hidden">
+              <label for="m3uProfile" data-i18n="m3uProfiles">Saved playlists</label>
+              <select id="m3uProfile" class="focusable" tabindex="0"></select>
+              <label for="m3uProfileName" data-i18n="m3uProfileName">Playlist name</label>
+              <input type="text" id="m3uProfileName" class="focusable" tabindex="0">
               <label for="m3uUrl" data-i18n="m3uUrl">Playlist URL</label>
               <input type="url" id="m3uUrl" class="focusable" autocomplete="url" tabindex="0">
             </div>
             <div id="loginErrorToast" class="login-inline-toast hidden" role="status" aria-live="polite"></div>
-            <button type="submit" id="loginBtn" class="login-btn focusable" data-i18n="login" tabindex="0">Sign in</button>
-            <button type="button" id="loginTestBtn" class="login-btn focusable" tabindex="0">Test connection</button>
           </form>
         </div>
         <button id="settingsButton" class="settings-button focusable" type="button" tabindex="0" aria-expanded="false" aria-controls="settingsPanel">⚙ Settings</button>
         <div id="settingsPanel" class="settings-panel hidden" role="menu" data-i18n-aria="settings" aria-label="App settings">
           <div class="settings-group">
-            <span class="settings-label" data-i18n="language">Language</span>
             <div class="settings-row">
-              <button class="settings-item focusable" data-setting="language" data-value="en" type="button" tabindex="0">English</button>
-              <button class="settings-item focusable" data-setting="language" data-value="tr" type="button" tabindex="0">Türkçe</button>
-              <button class="settings-item focusable" data-setting="language" data-value="nl" type="button" tabindex="0">Nederlands</button>
-              <button class="settings-item focusable" data-setting="language" data-value="fr" type="button" tabindex="0">Français</button>
-            </div>
-          </div>
-
-          <div class="settings-group">
-            <span class="settings-label" data-i18n="refreshInterval">Refresh lists</span>
-            <div class="settings-row">
-              <button class="settings-item focusable" data-setting="refresh" data-value="0" data-i18n="refreshOff" type="button" tabindex="0">Off</button>
-              <button class="settings-item focusable" data-setting="refresh" data-value="3" type="button" tabindex="0">3 h</button>
-              <button class="settings-item focusable" data-setting="refresh" data-value="6" type="button" tabindex="0">6 h</button>
-              <button class="settings-item focusable" data-setting="refresh" data-value="12" type="button" tabindex="0">12 h</button>
-              <button class="settings-item focusable" data-setting="refresh" data-value="24" type="button" tabindex="0">24 h</button>
+              <button class="settings-item focusable" data-setting="language" data-value="cycle" type="button" tabindex="0">🌐 🇬🇧 EN</button>
+              <button class="settings-item focusable" data-setting="refreshCycle" data-value="cycle" type="button" tabindex="0">🔄 Off</button>
             </div>
           </div>
 
           <div class="settings-group">
             <label class="settings-toggle" for="autoplayNextToggle">
-              <span data-i18n="autoplayNext">Play next episode automatically</span>
+              <span>⏭ <span data-i18n="autoplayNext">Play next episode automatically</span></span>
               <input id="autoplayNextToggle" class="focusable" type="checkbox" tabindex="0">
             </label>
-            <button class="settings-item focusable" data-setting="customization" data-i18n="customization" type="button" tabindex="0">Customization</button>
-            <button class="settings-item focusable" data-setting="resetHidden" data-i18n="resetHidden" type="button" tabindex="0">Show hidden categories</button>
-            <button class="settings-item focusable" data-setting="switchProfile" data-i18n="switchProfile" type="button" tabindex="0">Change source</button>
-            <button class="settings-item focusable close" data-setting="close" data-i18n="close" type="button" tabindex="0">Close menu</button>
+            <button class="settings-item focusable" data-setting="customization" type="button" tabindex="0">🎨 <span data-i18n="customization">Customization</span></button>
+            <button class="settings-item focusable" data-setting="resetHidden" type="button" tabindex="0">🙈 <span data-i18n="resetHidden">Show hidden categories</span></button>
+            <button class="settings-item focusable" data-setting="switchProfile" type="button" tabindex="0">🔀 <span data-i18n="switchProfile">Change source</span></button>
+            <button class="settings-item focusable close" data-setting="close" type="button" tabindex="0">✖ <span data-i18n="close">Close menu</span></button>
           </div>
         </div>
       </div>
 
       <section id="customizationPage" class="customization-page hidden" data-i18n-aria="customization" aria-label="Customization">
         <header class="customization-header">
-          <button id="customizationBack" class="settings-item focusable" data-i18n="back" type="button" tabindex="0">Back</button>
           <h1 data-i18n="customization">Customization</h1>
         </header>
+        <div class="customization-body">
+          <nav class="customization-nav">
+            <div class="customization-nav-list">
+              <button class="settings-item focusable customization-tab active" data-tab="color" type="button" tabindex="0">🎨 <span data-i18n="colorTab">Color</span></button>
+              <button class="settings-item focusable customization-tab" data-tab="background" type="button" tabindex="0">🖼️ <span data-i18n="backgroundTab">Background</span></button>
+              <button class="settings-item focusable customization-tab" data-tab="clock" type="button" tabindex="0">🕐 <span data-i18n="clockTab">Clock</span></button>
+              <button id="customizationDone" class="settings-item focusable" data-i18n="done" type="button" tabindex="0">✔ Done</button>
+            </div>
+          </nav>
         <div class="customization-content">
+          <div class="customization-pane" data-pane="color">
           <section class="customization-section">
             <h2 data-i18n="accentColor">Accent color</h2>
             <div class="color-swatch-group" role="group" data-i18n-aria="accentColor" aria-label="Accent color">
@@ -124,6 +134,17 @@
               <button class="color-swatch focusable" data-color-role="highlight" data-color="#65a9ff" data-i18n-aria="colorSky" data-i18n-title="colorSky" aria-label="Sky blue" title="Sky blue" tabindex="0"></button>
             </div>
           </section>
+          </div>
+          <div class="customization-pane hidden" data-pane="background">
+          <section class="customization-section">
+            <h2 data-i18n="presetBackgrounds">Presets</h2>
+            <div class="background-presets" role="group">
+              <button class="background-preset focusable" data-preset="backgrounds/aurora.svg" style="background-image:url('backgrounds/aurora.svg')" aria-label="Aurora" type="button" tabindex="0"></button>
+              <button class="background-preset focusable" data-preset="backgrounds/ocean.svg" style="background-image:url('backgrounds/ocean.svg')" aria-label="Ocean" type="button" tabindex="0"></button>
+              <button class="background-preset focusable" data-preset="backgrounds/sunset.svg" style="background-image:url('backgrounds/sunset.svg')" aria-label="Sunset" type="button" tabindex="0"></button>
+              <button class="background-preset focusable" data-preset="backgrounds/midnight.svg" style="background-image:url('backgrounds/midnight.svg')" aria-label="Midnight" type="button" tabindex="0"></button>
+            </div>
+          </section>
           <section class="customization-section">
             <h2 data-i18n="backgroundImage">Background image URL</h2>
             <div class="background-image-controls">
@@ -132,7 +153,14 @@
               <button id="clearBackgroundButton" class="settings-item focusable" data-i18n="removeBackground" type="button" tabindex="0">Remove image</button>
             </div>
           </section>
-          <button id="customizationDone" class="settings-item focusable" data-i18n="done" type="button" tabindex="0">Done</button>
+          </div>
+          <div class="customization-pane hidden" data-pane="clock">
+          <section class="customization-section">
+            <h2 data-i18n="clockFormat">Clock format</h2>
+            <button id="clockFormatButton" class="settings-item focusable" type="button" tabindex="0">🕐 12 h</button>
+          </section>
+          </div>
+        </div>
         </div>
       </section>
     </header>

@@ -46,6 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const m3uUrlInput = document.getElementById("m3uUrl");
   const xtreamLoginFields = document.getElementById("xtreamLoginFields");
   const m3uLoginFields = document.getElementById("m3uLoginFields");
+  const m3uProfileSelect = document.getElementById("m3uProfile");
+  const m3uProfileNameInput = document.getElementById("m3uProfileName");
   const headerClock = document.getElementById("headerClock");
 
   const serverUrlInput = document.getElementById("serverUrl");
@@ -118,6 +120,19 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.assign(appTranslations.tr, { providerLogin: "Sağlayıcı girişi", loginMethod: "Giriş yöntemi", xtreamCodes: "Xtream (Film ve Dizi)", m3uPlaylist: "M3U listesi (Canlı TV)", m3uUrl: "Oynatma listesi URL'si", loggingIn: "Giriş yapılıyor", loggedIn: "Giriş başarılı", loginRequired: "Giriş başarısız", noSavedProfile: "Kayıtlı profil yok. Sağlayıcı bilgilerini girin.", invalidCredentials: "Sağlayıcı kullanıcı adı veya parolayı kabul etmedi.", playlistUnavailable: "Oynatma listesi yüklenemedi.", playlistInvalid: "URL geçerli bir M3U oynatma listesi döndürmedi.", loginErrorToast: "Giriş başarısız: {reason}" });
   Object.assign(appTranslations.nl, { providerLogin: "Provider aanmelden", loginMethod: "Aanmeldmethode", xtreamCodes: "Xtream (Films & Series)", m3uPlaylist: "M3U-afspeellijst (Live-tv)", m3uUrl: "Afspeellijst-URL", loggingIn: "Aanmelden", loggedIn: "Aangemeld", loginRequired: "Aanmelden mislukt", noSavedProfile: "Geen opgeslagen profiel. Vul je providergegevens in.", invalidCredentials: "De provider heeft de gebruikersnaam of het wachtwoord geweigerd.", playlistUnavailable: "De afspeellijst kon niet worden geladen.", playlistInvalid: "De URL bevat geen geldige M3U-afspeellijst.", loginErrorToast: "Aanmelden mislukt: {reason}" });
   Object.assign(appTranslations.fr, { providerLogin: "Connexion au fournisseur", loginMethod: "Méthode de connexion", xtreamCodes: "Xtream (Films et séries)", m3uPlaylist: "Playlist M3U (TV en direct)", m3uUrl: "URL de la playlist", loggingIn: "Connexion en cours", loggedIn: "Connecté", loginRequired: "Échec de connexion", noSavedProfile: "Aucun profil enregistré. Saisissez vos identifiants fournisseur.", invalidCredentials: "Le fournisseur a refusé le nom d’utilisateur ou le mot de passe.", playlistUnavailable: "Impossible de charger la playlist.", playlistInvalid: "L’URL ne renvoie pas une playlist M3U valide.", loginErrorToast: "Échec de connexion : {reason}" });
+  Object.assign(appTranslations.en, { m3uProfiles: "Saved playlists", m3uProfileNew: "+ New playlist", m3uProfileName: "Playlist name", generateM3uPrompt: "Generate the M3U playlist from your Xtream login?" });
+  Object.assign(appTranslations.tr, { m3uProfiles: "Kayıtlı listeler", m3uProfileNew: "+ Yeni liste", m3uProfileName: "Liste adı", generateM3uPrompt: "M3U listesi Xtream girişinizden oluşturulsun mu?" });
+  Object.assign(appTranslations.nl, { m3uProfiles: "Opgeslagen afspeellijsten", m3uProfileNew: "+ Nieuwe afspeellijst", m3uProfileName: "Naam afspeellijst", generateM3uPrompt: "Zal de M3U-afspeellijst maken op basis van je Xtream-login?" });
+  Object.assign(appTranslations.fr, { m3uProfiles: "Playlists enregistrées", m3uProfileNew: "+ Nouvelle playlist", m3uProfileName: "Nom de la playlist", generateM3uPrompt: "Générer la playlist M3U à partir de votre connexion Xtream ?" });
+  Object.assign(appTranslations.en, { presetBackgrounds: "Presets" });
+  Object.assign(appTranslations.tr, { presetBackgrounds: "Hazır arka planlar" });
+  Object.assign(appTranslations.nl, { presetBackgrounds: "Voorinstellingen" });
+  Object.assign(appTranslations.fr, { presetBackgrounds: "Préréglages" });
+  Object.assign(appTranslations.en, { m3uGenerateXtream: "⚡ Generate from Xtream", clockFormat: "Clock format", colorTab: "Color", backgroundTab: "Background", clockTab: "Clock" });
+  Object.assign(appTranslations.tr, { m3uGenerateXtream: "⚡ Xtream'den oluştur", clockFormat: "Saat biçimi", colorTab: "Renk", backgroundTab: "Arka plan", clockTab: "Saat" });
+  Object.assign(appTranslations.nl, { m3uGenerateXtream: "⚡ Genereren uit Xtream", clockFormat: "Klokweergave", colorTab: "Kleur", backgroundTab: "Achtergrond", clockTab: "Klok" });
+  Object.assign(appTranslations.fr, { m3uGenerateXtream: "⚡ Générer depuis Xtream", clockFormat: "Format de l'horloge", colorTab: "Couleur", backgroundTab: "Arrière-plan", clockTab: "Horloge" });
+  const languageOptions = { en: "🇬🇧", tr: "🇹🇷", nl: "🇳🇱", fr: "🇫🇷" };
   Object.assign(appTranslations.en, { streamPlaybackFailed: "This stream could not be played. Try the provider's HLS URL or a compatible stream format." });
   Object.assign(appTranslations.tr, { streamPlaybackFailed: "Bu yayın oynatılamadı. Sağlayıcının HLS URL'sini veya uyumlu bir yayın biçimini deneyin." });
   Object.assign(appTranslations.nl, { streamPlaybackFailed: "Deze stream kan niet worden afgespeeld. Probeer de HLS-URL van de provider of een compatibel formaat." });
@@ -198,10 +213,32 @@ document.addEventListener("DOMContentLoaded", () => {
     store.setItem("iptv_favorites_backup" + favoritesNs, serialized);
   }
 
+  // M3U entries get an ID from their name and URL, so favorites survive playlist refreshes.
+  function stableStreamId(name, url) {
+    const text = `${name}|${url}`;
+    let hash = 5381;
+    for (let i = 0; i < text.length; i++) hash = ((hash << 5) + hash + text.charCodeAt(i)) | 0;
+    return "m" + (hash >>> 0).toString(36);
+  }
+
+  // Adds the favorites listed in credentials.local.js once, after the M3U playlist loads.
+  function seedM3uFavorites(streams) {
+    const defaults = window.KC_DEFAULT_LOGIN;
+    if (favoritesNs !== "" || !defaults || !Array.isArray(defaults.m3uFavorites)) return;
+    if (store.getItem("iptv_m3u_favorites_seeded")) return;
+    const wanted = new Set(defaults.m3uFavorites.map(name => String(name).trim().toLowerCase()));
+    const ids = streams.filter(s => wanted.has(String(s.name).trim().toLowerCase())).map(s => String(s.stream_id));
+    favorites = Array.from(new Set(favorites.concat(ids)));
+    saveFavorites(favorites);
+    store.setItem("iptv_m3u_favorites_seeded", "1");
+  }
+
   function loadFavorites() {
     const primary = readFavorites("iptv_favorites" + favoritesNs);
     const backup = readFavorites("iptv_favorites_backup" + favoritesNs);
-    const saved = primary !== null ? primary : (backup || []);
+    const defaults = window.KC_DEFAULT_LOGIN && Array.isArray(window.KC_DEFAULT_LOGIN.favorites) ? window.KC_DEFAULT_LOGIN.favorites : null;
+    const seed = favoritesNs === "_xtream" && primary === null && backup === null && defaults ? defaults.map(String) : null;
+    const saved = primary !== null ? primary : (backup || seed || []);
     saveFavorites(saved);
     return saved;
   }
@@ -292,19 +329,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function nextLanguage(lang) {
+    const codes = Object.keys(languageOptions);
+    return codes[(codes.indexOf(lang) + 1) % codes.length];
+  }
+
   function updateSettingsSelection() {
     if (!settingsPanel) return;
-    const items = settingsPanel.querySelectorAll(".settings-item[data-setting='language']");
-    items.forEach(item => {
-      const isActive = item.dataset.value === currentLang;
-      item.classList.toggle("active", isActive);
-      item.setAttribute("aria-pressed", String(isActive));
-    });
-    settingsPanel.querySelectorAll(".settings-item[data-setting='refresh']").forEach(item => {
-      const isActive = item.dataset.value === String(refreshHours);
-      item.classList.toggle("active", isActive);
-      item.setAttribute("aria-pressed", String(isActive));
-    });
+    const refreshButton = settingsPanel.querySelector(".settings-item[data-setting='refreshCycle']");
+    if (refreshButton) refreshButton.textContent = `🔄 ${refreshHours ? refreshHours + " h" : t("refreshOff")}`;
+    updateFavoritesTab();
   }
 
   function applyAppLanguage(lang) {
@@ -312,6 +346,8 @@ document.addEventListener("DOMContentLoaded", () => {
     store.setItem("iptv_lang", currentLang);
     document.documentElement.lang = currentLang;
     updateSettingsSelection();
+    const languageButton = settingsPanel && settingsPanel.querySelector(".settings-item[data-setting='language']");
+    if (languageButton) languageButton.textContent = `${languageOptions[currentLang]} ${currentLang.toUpperCase()}`;
     document.querySelectorAll("[data-i18n]").forEach(element => {
       element.textContent = t(element.dataset.i18n);
     });
@@ -342,21 +378,33 @@ document.addEventListener("DOMContentLoaded", () => {
     if (moveBanner) moveBanner.textContent = t("moveBanner");
   }
 
+  const DEFAULT_BACKGROUND = "backgrounds/aurora.svg";
+
+  function normalizeBackgroundSource(value) {
+    const url = String(value || "").trim();
+    if (!url) return "";
+    if (/^backgrounds\/[\w-]+\.svg$/.test(url)) return url;
+    try {
+      const parsed = new URL(url);
+      return parsed.protocol === "https:" || parsed.protocol === "http:" ? parsed.href : "";
+    } catch (error) {
+      return "";
+    }
+  }
+
   function loadThemeConfig() {
     try {
       const saved = JSON.parse(store.getItem("iptv_theme") || "{}");
-      let backgroundImage = "";
-      if (typeof saved.backgroundImage === "string" && saved.backgroundImage) {
-        const parsed = new URL(saved.backgroundImage);
-        if (parsed.protocol === "https:" || parsed.protocol === "http:") backgroundImage = parsed.href;
-      }
+      const backgroundImage = saved.backgroundImage === undefined
+        ? DEFAULT_BACKGROUND
+        : normalizeBackgroundSource(saved.backgroundImage);
       return {
         accent: /^#[0-9a-f]{6}$/i.test(saved.accent || "") ? saved.accent : "#e50914",
         highlight: /^#[0-9a-f]{6}$/i.test(saved.highlight || "") ? saved.highlight : "#ffd700",
         backgroundImage
       };
     } catch (error) {
-      return { accent: "#e50914", highlight: "#ffd700", backgroundImage: "" };
+      return { accent: "#e50914", highlight: "#ffd700", backgroundImage: DEFAULT_BACKGROUND };
     }
   }
 
@@ -377,15 +425,19 @@ document.addEventListener("DOMContentLoaded", () => {
       swatch.setAttribute("aria-pressed", String(selected));
     });
     if (backgroundImageInput) backgroundImageInput.value = themeConfig.backgroundImage;
+    document.querySelectorAll(".background-preset").forEach(preset => {
+      preset.classList.toggle("selected", preset.dataset.preset === themeConfig.backgroundImage);
+    });
 
     if (appPage) {
       if (themeConfig.backgroundImage) {
-        const imageUrl = new URL(themeConfig.backgroundImage);
-        appPage.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.66)), url("${imageUrl.href}")`;
+        appPage.style.backgroundImage = `url("${themeConfig.backgroundImage}")`;
         appPage.style.backgroundSize = "cover";
         appPage.style.backgroundPosition = "center";
+        document.body.classList.add("kc-has-bg");
       } else {
         appPage.style.backgroundImage = "none";
+        document.body.classList.remove("kc-has-bg");
       }
     }
     store.setItem("iptv_theme", JSON.stringify(themeConfig));
@@ -402,17 +454,34 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!url) {
       themeConfig.backgroundImage = "";
     } else {
-      try {
-        const parsed = new URL(url);
-        if (parsed.protocol !== "https:" && parsed.protocol !== "http:") throw new Error("Unsupported image URL");
-        themeConfig.backgroundImage = parsed.href;
-      } catch (error) {
+      const normalized = normalizeBackgroundSource(url);
+      if (!normalized) {
         showToast(t("invalidBackground"));
         return;
       }
+      themeConfig.backgroundImage = normalized;
     }
     applyThemeConfig();
     showToast(t(url ? "backgroundApplied" : "backgroundRemoved"));
+  }
+
+  function centerCustomizationNav(item) {
+    const nav = customizationPage && customizationPage.querySelector(".customization-nav");
+    const list = nav && nav.querySelector(".customization-nav-list");
+    if (!item || !list) return;
+    nav.scrollTop = 0;
+    const offset = nav.clientHeight / 2 - (item.offsetTop + item.offsetHeight / 2);
+    list.style.transform = `translateY(${offset}px)`;
+  }
+
+  function showCustomizationTab(name) {
+    if (!customizationPage) return;
+    customizationPage.querySelectorAll(".customization-tab").forEach(tab => {
+      tab.classList.toggle("active", tab.dataset.tab === name);
+    });
+    customizationPage.querySelectorAll(".customization-pane").forEach(pane => {
+      pane.classList.toggle("hidden", pane.dataset.pane !== name);
+    });
   }
 
   function showCustomizationPage(show) {
@@ -421,7 +490,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (show) {
       toggleSettingsMenu(false);
       customizationPage.classList.remove("hidden");
-      setElementFocus(customizationPage.querySelector(".color-swatch"));
+      showCustomizationTab("color");
+      setElementFocus(customizationPage.querySelector(".customization-tab"));
     } else {
       settingsPanel.classList.remove("hidden");
       settingsButton.setAttribute("aria-expanded", "true");
@@ -431,20 +501,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function handleSettingsAction(action, value = null) {
     switch (action) {
-      case "language":
-        applyAppLanguage(value);
-        showToast(`🌐 ${value.toUpperCase()}`);
+      case "language": {
+        const next = appTranslations[value] ? value : nextLanguage(currentLang);
+        applyAppLanguage(next);
+        showToast(`${languageOptions[next]} ${next.toUpperCase()}`);
         return;
+      }
       case "customization":
         showCustomizationPage(true);
         return;
-      case "refresh":
-        refreshHours = parseInt(value, 10) || 0;
+      case "refreshCycle": {
+        const options = [0, 3, 6, 12, 24];
+        refreshHours = options[(options.indexOf(refreshHours) + 1) % options.length];
         store.setItem("iptv_refresh_hours", String(refreshHours));
         updateSettingsSelection();
         scheduleListRefresh();
         showToast(`${t("refreshInterval")}: ${refreshHours ? refreshHours + " h" : t("refreshOff")}`);
         return;
+      }
       case "resetHidden":
         hiddenCategories = { live: [], vod: [], series: [] };
         regionPrefs.hidden = { live: [], vod: [] };
@@ -479,21 +553,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return text.replace(/\s{2,}/g, " ").trim();
   }
 
-  function compareText(a, b) {
-    try {
-      return a.localeCompare(b, currentLang, { sensitivity: "base" });
-    } catch (error) {
-      return a < b ? -1 : a > b ? 1 : 0;
-    }
-  }
-
-  // UHD/4K first, then HD/FHD, then the rest; ties keep the provider's order.
-  function qualityRank(name) {
-    if (/\b(UHD|4K)\b/i.test(name)) return 0;
-    if (/\b(FHD|HD)\b/i.test(name)) return 1;
-    return 2;
-  }
-
   function extractRegionFromCategory(catName, isVod) {
     if (!catName) return "";
     if (isVod) {
@@ -505,13 +564,21 @@ document.addEventListener("DOMContentLoaded", () => {
     return "";
   }
 
+  let clock24h = store.getItem("iptv_clock_24h") === "1";
+
+  function updateClockFormatButton() {
+    const button = document.getElementById("clockFormatButton");
+    if (button) button.textContent = `🕐 ${clock24h ? "24" : "12"} h`;
+  }
+
   const updateClocks = () => {
     const now = new Date();
-    const clockStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const clockStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: !clock24h });
     if (headerClock) headerClock.textContent = clockStr;
     if (osdClock) osdClock.textContent = clockStr;
     if (vodOsdClock) vodOsdClock.textContent = clockStr;
   };
+  updateClockFormatButton();
   updateClocks();
   setInterval(updateClocks, 1000);
 
@@ -569,9 +636,78 @@ document.addEventListener("DOMContentLoaded", () => {
     field.addEventListener("change", saveLoginDraft);
   });
 
+  function buildXtreamM3uUrl(server, username, password) {
+    return `${server}/get.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&type=m3u_plus&output=ts`;
+  }
+
+  function normalizeServerUrl(value) {
+    let server = value.trim();
+    if (server && !/^https?:\/\//i.test(server)) server = `http://${server}`;
+    return server.replace(/\/+$/, "");
+  }
+
+  function getM3uProfiles() {
+    try { return JSON.parse(store.getItem("iptv_m3u_profiles") || "[]").filter(p => p && p.url); } catch (error) { return []; }
+  }
+
+  const XTREAM_OPTION = "__xtream__";
+
+  function updateFavoritesTab() {
+    const tab = document.querySelector("#modusList [data-modus='favorites']");
+    if (!tab) return;
+    const hasFavorites = favorites.length > 0;
+    tab.classList.toggle("hidden", !hasFavorites);
+    if (!hasFavorites && currentModus === "favorites") switchModus("live");
+  }
+
+  function renderM3uProfileOptions(selectedUrl = "") {
+    if (!m3uProfileSelect) return;
+    const profiles = getM3uProfiles();
+    m3uProfileSelect.innerHTML = "";
+    const newOption = document.createElement("option");
+    newOption.value = "";
+    newOption.textContent = t("m3uProfileNew");
+    m3uProfileSelect.appendChild(newOption);
+    if (serverUrlInput && usernameInput && passwordInput && serverUrlInput.value.trim() && usernameInput.value.trim() && passwordInput.value.trim()) {
+      const generateOption = document.createElement("option");
+      generateOption.value = XTREAM_OPTION;
+      generateOption.textContent = t("m3uGenerateXtream");
+      m3uProfileSelect.appendChild(generateOption);
+    }
+    profiles.forEach(profile => {
+      const option = document.createElement("option");
+      option.value = profile.url;
+      option.textContent = profile.name;
+      m3uProfileSelect.appendChild(option);
+    });
+    m3uProfileSelect.value = profiles.some(p => p.url === selectedUrl) ? selectedUrl : "";
+  }
+
+  function saveM3uProfile(url, name = "") {
+    if (!url) return;
+    const profiles = getM3uProfiles();
+    const existing = profiles.find(p => p.url === url);
+    if (existing) {
+      if (name) existing.name = name;
+    } else {
+      profiles.push({ name: name || `${t("m3uProfiles")} ${profiles.length + 1}`, url });
+    }
+    store.setItem("iptv_m3u_profiles", JSON.stringify(profiles));
+    renderM3uProfileOptions(url);
+  }
+
+  function buildXtreamPlaylistFromForm() {
+    const server = normalizeServerUrl(serverUrlInput.value);
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
+    if (!server || !username || !password) return "";
+    return buildXtreamM3uUrl(server, username, password);
+  }
+
   function initProfile() {
     showAppPage();
     restoreLoginDraft();
+    renderM3uProfileOptions();
     let liveProfile = null;
     let vodProfile = null;
     try { liveProfile = JSON.parse(store.getItem("iptv_profile") || "null"); } catch (error) {}
@@ -599,6 +735,7 @@ document.addEventListener("DOMContentLoaded", () => {
       currentAuth = liveProfile;
       setFavoritesProvider("m3u");
       if (m3uUrlInput) m3uUrlInput.value = currentAuth.playlistUrl || "";
+      saveM3uProfile(currentAuth.playlistUrl);
       const cachedFavorites = loadFavoriteCache();
       const fastStart = cachedFavorites.length > 0 && favorites.length > 0;
       if (fastStart) {
@@ -735,7 +872,34 @@ document.addEventListener("DOMContentLoaded", () => {
       const useM3u = loginMethod.value === "m3u";
       if (m3uLoginFields) m3uLoginFields.classList.toggle("hidden", !useM3u);
       if (xtreamLoginFields) xtreamLoginFields.classList.toggle("hidden", useM3u);
+      if (useM3u) renderM3uProfileOptions(m3uUrlInput ? m3uUrlInput.value.trim() : "");
       setLoginErrorMessage("");
+    });
+  }
+
+  if (m3uProfileSelect) {
+    m3uProfileSelect.addEventListener("change", () => {
+      if (m3uProfileSelect.value === XTREAM_OPTION) {
+        if (m3uUrlInput) m3uUrlInput.value = buildXtreamPlaylistFromForm();
+        if (m3uProfileNameInput && !m3uProfileNameInput.value.trim()) m3uProfileNameInput.value = "Xtream";
+        saveLoginDraft();
+        return;
+      }
+      const url = m3uProfileSelect.value;
+      const profile = getM3uProfiles().find(p => p.url === url);
+      if (m3uUrlInput) m3uUrlInput.value = url;
+      if (m3uProfileNameInput) m3uProfileNameInput.value = profile ? profile.name : "";
+      saveLoginDraft();
+    });
+  }
+
+  const clockFormatButton = document.getElementById("clockFormatButton");
+  if (clockFormatButton) {
+    clockFormatButton.addEventListener("click", () => {
+      clock24h = !clock24h;
+      store.setItem("iptv_clock_24h", clock24h ? "1" : "0");
+      updateClockFormatButton();
+      updateClocks();
     });
   }
 
@@ -765,15 +929,23 @@ document.addEventListener("DOMContentLoaded", () => {
         updateThemeColor(swatch.dataset.colorRole, swatch.dataset.color);
       }
     });
+    customizationPage.querySelectorAll(".customization-tab").forEach(tab => {
+      tab.addEventListener("focus", () => showCustomizationTab(tab.dataset.tab));
+      tab.addEventListener("click", () => showCustomizationTab(tab.dataset.tab));
+    });
+    customizationPage.querySelectorAll(".customization-nav .settings-item").forEach(item => {
+      item.addEventListener("focus", () => centerCustomizationNav(item));
+    });
+    customizationPage.querySelectorAll(".background-preset").forEach(preset => {
+      preset.addEventListener("click", () => updateBackgroundImage(preset.dataset.preset));
+    });
   }
 
   const applyBackgroundButton = document.getElementById("applyBackgroundButton");
   const clearBackgroundButton = document.getElementById("clearBackgroundButton");
-  const customizationBack = document.getElementById("customizationBack");
   const customizationDone = document.getElementById("customizationDone");
   if (applyBackgroundButton) applyBackgroundButton.addEventListener("click", () => updateBackgroundImage(backgroundImageInput.value));
   if (clearBackgroundButton) clearBackgroundButton.addEventListener("click", () => updateBackgroundImage(""));
-  if (customizationBack) customizationBack.addEventListener("click", () => showCustomizationPage(false));
   if (customizationDone) customizationDone.addEventListener("click", () => showCustomizationPage(false));
 
   applyThemeConfig();
@@ -785,10 +957,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (loginMethod && loginMethod.value === "m3u") {
         login(m3uUrlInput.value.trim(), "", "", false, "m3u");
       } else {
-        let server = serverUrlInput.value.trim();
-        if (server && !/^https?:\/\//i.test(server)) server = `http://${server}`;
-        server = server.replace(/\/+$/, "");
-        login(server, usernameInput.value.trim(), passwordInput.value.trim(), false, "xtream");
+        const server = normalizeServerUrl(serverUrlInput.value);
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+        if (m3uUrlInput) {
+          m3uUrlInput.value = buildXtreamM3uUrl(server, username, password);
+          saveLoginDraft();
+        }
+        login(server, username, password, false, "xtream");
       }
     });
   }
@@ -797,7 +973,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const streams = [];
     const categoryNames = new Set();
     let pending = null;
-    let entryCount = 0;
 
     text.split(/\r?\n/).forEach(line => {
       const trimmed = line.trim();
@@ -811,12 +986,10 @@ document.addEventListener("DOMContentLoaded", () => {
           category_id: groupMatch && groupMatch[1] ? groupMatch[1] : "M3U"
         };
       } else if (trimmed && !trimmed.startsWith("#") && pending) {
-        // Ids follow the entry position so saved favorites keep matching after movies are skipped.
-        entryCount += 1;
         const isVodEntry = /\/(movie|series)\//i.test(trimmed) || /\.(mp4|mkv|avi)(?:[?#]|$)/i.test(trimmed);
         if (!isVodEntry) {
           categoryNames.add(pending.category_id);
-          streams.push(Object.assign({}, pending, { stream_id: String(entryCount), url: trimmed }));
+          streams.push(Object.assign({}, pending, { stream_id: stableStreamId(pending.name, trimmed), url: trimmed }));
         }
         pending = null;
       }
@@ -985,13 +1158,17 @@ document.addEventListener("DOMContentLoaded", () => {
         allStreams = playlist.streams;
         allCategories = playlist.categories;
         setFavoritesProvider("m3u");
+        seedM3uFavorites(playlist.streams);
         currentAuth = { provider: "m3u", playlistUrl: server };
         currentLiveRegion = "ALL";
         startMode = "favorites";
       }
 
       store.setItem("iptv_profile", JSON.stringify(currentAuth));
+      if (provider === "m3u") saveM3uProfile(server, m3uProfileNameInput ? m3uProfileNameInput.value.trim() : "");
       cacheFavoriteStreams();
+      if (!favorites.length && startMode === "favorites") startMode = "live";
+      updateFavoritesTab();
       setLoginState("logged-in");
       if (background) {
         setupRegions();
@@ -1324,12 +1501,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return true;
     });
 
-    const labelled = filtered.map((cat) => ({ cat, label: cleanTitle(cat.category_name, ["HEVC", "VIP"]) }));
-    labelled.sort((a, b) => compareText(a.label, b.label));
-    const sortedCategories = labelled.map((entry) => entry.cat);
-    filtered.length = 0;
-    sortedCategories.forEach((cat) => filtered.push(cat));
-
     filtered.forEach((cat, index) => {
       const li = document.createElement("li");
       li.className = "nav-item focusable" + (index === 0 ? " active" : "");
@@ -1534,10 +1705,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     currentActiveStreams = currentModus === "favorites" 
       ? favorites.map(id => allStreams.find(s => s.stream_id.toString() === id.toString())).filter(Boolean)
-      : allStreams.filter(s => s.category_id === currentCategoryId)
-          .map((s, position) => ({ s, position, rank: qualityRank(s.name || "") }))
-          .sort((a, b) => a.rank - b.rank || a.position - b.position)
-          .map((entry) => entry.s);
+      : allStreams.filter(s => s.category_id === currentCategoryId);
 
     currentActiveStreams.forEach((s, idx) => {
       const isFav = favorites.includes(s.stream_id.toString());
@@ -1607,6 +1775,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     saveFavorites(favorites);
     cacheFavoriteStreams();
+    updateFavoritesTab();
     filterChannels();
     if (wasInList) {
       const cards = channelList.querySelectorAll(".focusable");
@@ -1820,7 +1989,8 @@ document.addEventListener("DOMContentLoaded", () => {
     video.play().catch(console.error);
   }
 
-  function playStream(streamId, name, icon, index, directUrl = "", isReconnect = false) {
+  async function playStream(streamId, name, icon, index, directUrl = "", isReconnect = false) {
+    if (window.kcLibsReady) await window.kcLibsReady;
     if (index !== undefined) currentStreamIndex = index;
     currentPlayingStreamId = String(streamId);
 
@@ -2137,6 +2307,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (parentCol && parentCol.dataset.col !== undefined) {
       setColumnFocus(parseInt(parentCol.dataset.col, 10));
     }
+    // Centre the list before focusing so the focus box never paints at the old position.
+    centerInList(element, true);
     element.focus();
 
     if (element.classList.contains("grid-item")) {
@@ -2144,7 +2316,6 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(loadVisiblePosters, 300);
     }
     rememberFocus(element, parentCol);
-    centerInList(element, false);
     updateHintBar(element);
   }
 
