@@ -6,6 +6,11 @@ Thumbs.db
 *.ipk
 *.zip
 
+# Backups & Handover notes
+*backup*.js
+*[Hh]andover*.md
+HANDOVER-*.md
+
 # Local editor files
 .vscode/
 .idea/
@@ -21,11 +26,19 @@ android/**/captures/
 android/**/release/
 android/*.iml
 
+# Tizen build artifacts
+tizen/.buildResult/
+tizen/.manifest.tmp
+tizen/author-signature.xml
+tizen/signature1.xml
+
 # Logs
 *.log
 
 # Secrets / environment
 webos/credentials.local.js
 tizen/credentials.local.js
+android/**/credentials.local.js
+credentials.local.js
 .env
 .env.*

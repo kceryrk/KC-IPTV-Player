@@ -1720,6 +1720,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let liveReconnectAttempts = 0;
   let watchdogTime = -1;
   let watchdogTicks = 0;
+  let nativeFallbackPending = false; // true while testing native before Hls.js/mpegts fallback
 
   function scheduleLiveReconnect() {
     if (!lastLive || liveReconnectTimer) return;
@@ -1752,7 +1753,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 4000);
 
   video.addEventListener("playing", () => { liveReconnectAttempts = 0; });
-  video.addEventListener("error", () => { if (lastLive) scheduleLiveReconnect(); });
+  video.addEventListener("error", () => { if (lastLive && !nativeFallbackPending) scheduleLiveReconnect(); });
   video.addEventListener("ended", () => { if (lastLive) scheduleLiveReconnect(); });
 
   function destroyStreamPlayers() {
@@ -1832,39 +1833,68 @@ document.addEventListener("DOMContentLoaded", () => {
       liveReconnectAttempts = 0;
     }
 
-    const streamUrl = directUrl || `${currentAuth.server}/live/${currentAuth.username}/${currentAuth.password}/${streamId}.m3u8`;
+    const auth = xtreamAuth || currentAuth;
+    const streamUrl = directUrl || (auth && auth.server ? `${auth.server.replace(/\/+$/, "")}/live/${auth.username}/${auth.password}/${streamId}.m3u8` : "");
     const isTransportStream = Boolean(directUrl && /\.ts(?:$|[?#])/i.test(directUrl));
     const hlsUrl = isTransportStream ? streamUrl.replace(/\.ts(?=([?#]|$))/i, ".m3u8") : streamUrl;
 
     destroyStreamPlayers();
     lastLive = { streamId, name, icon, index, directUrl };
 
-    video.muted = false;
-    video.volume = 1.0;
+    // Try native playback first — the webOS TV browser handles HLS natively without
+    // going through MSE/Hls.js, so segment requests carry no Origin header and avoid
+    // CORS rejections from strict IPTV servers.  Mute first to satisfy the browser's
+    // autoplay policy, then unmute immediately after the video starts.
+    function tryNative(url, onFail) {
+      nativeFallbackPending = true;
+      video.src = url;
+      video.muted = true;
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.then === "function") {
+        playPromise.then(() => {
+          nativeFallbackPending = false;
+          video.muted = false;
+          video.volume = 1.0;
+        }).catch(err => {
+          nativeFallbackPending = false;
+          console.warn("Native video playback failed:", err);
+          video.removeAttribute("src");
+          video.load();
+          if (typeof onFail === "function") onFail();
+        });
+      } else {
+        // Synchronous play (older webOS) — just unmute.
+        nativeFallbackPending = false;
+        video.muted = false;
+        video.volume = 1.0;
+      }
+    }
 
-    if (isTransportStream && window.mpegts && mpegts.isSupported()) {
-      mpegTsPlayer = mpegts.createPlayer({ type: "mpegts", isLive: true, url: streamUrl });
-      mpegTsPlayer.on(mpegts.Events.ERROR, (type, detail) => {
-        console.error("MPEG-TS playback error", type, detail);
-        scheduleLiveReconnect();
+    if (hlsUrl) {
+      tryNative(hlsUrl, () => {
+        // Native failed — fall back to Hls.js for .m3u8, then mpegts.js for .ts.
+        if (window.Hls && Hls.isSupported() && /\.m3u8(?:$|[?#])/i.test(hlsUrl)) {
+          hlsPlayer = new Hls({ enableWorker: true });
+          hlsPlayer.loadSource(hlsUrl);
+          hlsPlayer.attachMedia(video);
+          hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(console.error));
+          hlsPlayer.on(Hls.Events.ERROR, (event, data) => {
+            if (data && data.fatal) scheduleLiveReconnect();
+          });
+        } else if (isTransportStream && window.mpegts && mpegts.isSupported()) {
+          mpegTsPlayer = mpegts.createPlayer({ type: "mpegts", isLive: true, url: streamUrl });
+          mpegTsPlayer.on(mpegts.Events.ERROR, (type, detail) => {
+            console.error("MPEG-TS playback error", type, detail);
+            scheduleLiveReconnect();
+          });
+          mpegTsPlayer.attachMediaElement(video);
+          mpegTsPlayer.load();
+          Promise.resolve(mpegTsPlayer.play()).catch(err => {
+            console.error(err);
+            showToast(t("streamPlaybackFailed"));
+          });
+        }
       });
-      mpegTsPlayer.attachMediaElement(video);
-      mpegTsPlayer.load();
-      Promise.resolve(mpegTsPlayer.play()).catch(error => {
-        console.error(error);
-        showToast(t("streamPlaybackFailed"));
-      });
-    } else if (window.Hls && Hls.isSupported() && /\.m3u8(?:$|[?#])/i.test(hlsUrl)) {
-      hlsPlayer = new Hls({ enableWorker: true });
-      hlsPlayer.loadSource(hlsUrl);
-      hlsPlayer.attachMedia(video);
-      hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(console.error));
-      hlsPlayer.on(Hls.Events.ERROR, (event, data) => {
-        if (data && data.fatal) scheduleLiveReconnect();
-      });
-    } else {
-      video.src = hlsUrl;
-      video.play().catch(console.error);
     }
   }
 

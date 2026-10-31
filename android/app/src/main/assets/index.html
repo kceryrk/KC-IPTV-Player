@@ -5,119 +5,253 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KC IPTV PLAYER</title>
   <link rel="stylesheet" href="style.css">
-  <script async src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
 
-  <!-- VISUELE NUMMER ZAP OVERLAY IN HET MIDDEN VAN HET SCHERM -->
-  <div id="numZapOverlay" class="num-zap-overlay-center hidden">
-    <div class="num-zap-badge">
-      <span class="num-zap-label" data-i18n="channelZap">KANAAL ZAP</span>
-      <span id="numZapText" class="num-zap-number">#1</span>
-      <div class="num-zap-progress"></div>
-    </div>
-  </div>
-
-  <!-- INLOG / SPLASH PAGINA -->
-  <div id="loginPage" class="login-container">
-    <div id="autoLoginSplash" class="splash-content hidden">
-      <div class="splash-logo">KC IPTV PLAYER</div>
-      <div class="splash-spinner"></div>
-      <div class="splash-text" data-i18n="connecting">Verbinden met IPTV server...</div>
-    </div>
-
-    <form id="loginForm" class="login-card">
-      <h2 class="login-title">KC IPTV PLAYER</h2>
-      <div class="form-group">
-        <label for="serverUrl" data-i18n="serverUrl">Sunucu URL</label>
-        <input type="text" id="serverUrl" value="http://neptunpro26.xyz:8080" class="focusable" tabindex="1" required>
-      </div>
-      <div class="form-group">
-        <label for="username" data-i18n="username">Kullanıcı Adı</label>
-        <input type="text" id="username" value="neptunn688" class="focusable" tabindex="2" required>
-      </div>
-      <div class="form-group">
-        <label for="password" data-i18n="password">Şifre</label>
-        <input type="password" id="password" value="REDACTED" class="focusable" tabindex="3" required>
-      </div>
-      <button type="submit" id="loginBtn" class="login-btn focusable" data-i18n="login" tabindex="4">Giriş Yap</button>
-      <div id="loginStatus" class="login-status"></div>
-    </form>
-  </div>
-
   <!-- HOOFD APPLICATIE -->
-  <div id="appPage" class="hidden">
+  <div id="appPage">
     <header class="app-header">
       <div class="logo">
+        <button id="headerBackBtn" class="header-back-btn focusable" type="button" tabindex="0" title="Back" aria-label="Back">‹</button>
         <span>KC IPTV PLAYER</span>
         <span id="headerModeIndicator" class="header-mode-badge">★ FAVORİLER</span>
       </div>
 
-      <div class="app-header-actions">
-        <button id="settingsButton" class="settings-button focusable" type="button" tabindex="0" aria-expanded="false" aria-controls="settingsPanel">⚙ Settings</button>
-        <div id="settingsPanel" class="settings-panel hidden" role="menu" data-i18n-aria="settings" aria-label="App settings">
-          <div class="settings-group">
-            <span class="settings-label" data-i18n="language">Language</span>
-            <div class="settings-row">
-              <button class="settings-item focusable" data-setting="language" data-value="en" type="button" tabindex="0">English</button>
-              <button class="settings-item focusable" data-setting="language" data-value="tr" type="button" tabindex="0">Türkçe</button>
-              <button class="settings-item focusable" data-setting="language" data-value="nl" type="button" tabindex="0">Nederlands</button>
-              <button class="settings-item focusable" data-setting="language" data-value="fr" type="button" tabindex="0">Français</button>
-            </div>
-          </div>
+      <div id="headerClock" class="header-clock">00:00</div>
 
-          <div class="settings-group">
-            <label class="settings-toggle" for="autoplayNextToggle">
-              <span data-i18n="autoplayNext">Play next episode automatically</span>
-              <input id="autoplayNextToggle" class="focusable" type="checkbox" tabindex="0">
-            </label>
-            <button class="settings-item focusable" data-setting="customization" data-i18n="customization" type="button" tabindex="0">Customization</button>
-            <label class="settings-toggle" for="androidExternalPlayerToggle">
-              <span data-i18n="androidExternalPlayer">Use Android external player</span>
-              <input id="androidExternalPlayerToggle" class="focusable" type="checkbox" tabindex="0">
-            </label>
-            <button class="settings-item focusable" data-setting="copyPlaylist" data-i18n="copyPlaylist" type="button" tabindex="0">Copy playlist URL</button>
-            <button class="settings-item focusable" data-setting="switchProfile" data-i18n="switchProfile" type="button" tabindex="0">Switch profile</button>
-            <button class="settings-item focusable close" data-setting="close" data-i18n="close" type="button" tabindex="0">Close menu</button>
-          </div>
-        </div>
+      <div class="app-header-actions">
+        <button id="settingsButton" class="settings-button focusable" type="button" tabindex="0" aria-expanded="false" aria-controls="settingsPage">⚙ Settings</button>
       </div>
 
-      <section id="customizationPage" class="customization-page hidden" data-i18n-aria="customization" aria-label="Customization">
+      <section id="settingsPage" class="customization-page hidden" data-i18n-aria="settings" aria-label="Settings">
         <header class="customization-header">
-          <button id="customizationBack" class="settings-item focusable" data-i18n="back" type="button" tabindex="0">Back</button>
-          <h1 data-i18n="customization">Customization</h1>
+          <button id="settingsBack" class="settings-item focusable" data-i18n="back" type="button" tabindex="0">Back</button>
+          <h1 data-i18n="settings">Settings</h1>
         </header>
-        <div class="customization-content">
-          <section class="customization-section">
-            <h2 data-i18n="accentColor">Accent color</h2>
-            <div class="color-swatch-group" role="group" data-i18n-aria="accentColor" aria-label="Accent color">
-              <button class="color-swatch focusable" data-color-role="accent" data-color="#e50914" data-i18n-aria="colorRed" data-i18n-title="colorRed" aria-label="Red" title="Red" tabindex="0"></button>
-              <button class="color-swatch focusable" data-color-role="accent" data-color="#00a8e8" data-i18n-aria="colorBlue" data-i18n-title="colorBlue" aria-label="Blue" title="Blue" tabindex="0"></button>
-              <button class="color-swatch focusable" data-color-role="accent" data-color="#26a269" data-i18n-aria="colorGreen" data-i18n-title="colorGreen" aria-label="Green" title="Green" tabindex="0"></button>
-              <button class="color-swatch focusable" data-color-role="accent" data-color="#d33682" data-i18n-aria="colorRose" data-i18n-title="colorRose" aria-label="Rose" title="Rose" tabindex="0"></button>
-              <button class="color-swatch focusable" data-color-role="accent" data-color="#f07818" data-i18n-aria="colorOrange" data-i18n-title="colorOrange" aria-label="Orange" title="Orange" tabindex="0"></button>
+        <div class="customization-body">
+          <nav class="customization-nav">
+            <div class="customization-nav-list">
+              <button class="settings-item focusable customization-tab active" data-tab="general" type="button" tabindex="0">🌐 <span data-i18n="generalTab">General</span></button>
+              <button class="settings-item focusable customization-tab" data-tab="playback" type="button" tabindex="0">▶ <span data-i18n="playbackTab">Playback</span></button>
+              <button class="settings-item focusable customization-tab" data-tab="customization" type="button" tabindex="0">🎨 <span data-i18n="customization">Customization</span></button>
+              <button class="settings-item focusable customization-tab" data-tab="profile" type="button" tabindex="0">🔀 <span data-i18n="profileTab">Source</span></button>
+              <button id="settingsDone" class="settings-item focusable" data-i18n="done" type="button" tabindex="0">✔ Done</button>
             </div>
-          </section>
-          <section class="customization-section">
-            <h2 data-i18n="highlightColor">Highlight color</h2>
-            <div class="color-swatch-group" role="group" data-i18n-aria="highlightColor" aria-label="Highlight color">
-              <button class="color-swatch focusable" data-color-role="highlight" data-color="#ffd700" data-i18n-aria="colorGold" data-i18n-title="colorGold" aria-label="Gold" title="Gold" tabindex="0"></button>
-              <button class="color-swatch focusable" data-color-role="highlight" data-color="#00d6c9" data-i18n-aria="colorTurquoise" data-i18n-title="colorTurquoise" aria-label="Turquoise" title="Turquoise" tabindex="0"></button>
-              <button class="color-swatch focusable" data-color-role="highlight" data-color="#91d32a" data-i18n-aria="colorLime" data-i18n-title="colorLime" aria-label="Lime" title="Lime" tabindex="0"></button>
-              <button class="color-swatch focusable" data-color-role="highlight" data-color="#ff8a00" data-i18n-aria="colorOrange" data-i18n-title="colorOrange" aria-label="Orange" title="Orange" tabindex="0"></button>
-              <button class="color-swatch focusable" data-color-role="highlight" data-color="#65a9ff" data-i18n-aria="colorSky" data-i18n-title="colorSky" aria-label="Sky blue" title="Sky blue" tabindex="0"></button>
+          </nav>
+          <div class="customization-content">
+            <div class="customization-pane" data-pane="general">
+              <section class="customization-section">
+                <h2 data-i18n="language">Language</h2>
+                <div class="settings-row">
+                  <button class="settings-item focusable" data-setting="language" data-value="en" type="button" tabindex="0">English</button>
+                  <button class="settings-item focusable" data-setting="language" data-value="tr" type="button" tabindex="0">Türkçe</button>
+                  <button class="settings-item focusable" data-setting="language" data-value="nl" type="button" tabindex="0">Nederlands</button>
+                  <button class="settings-item focusable" data-setting="language" data-value="fr" type="button" tabindex="0">Français</button>
+                </div>
+              </section>
+
+              <section class="customization-section">
+                <h2 data-i18n="uiScale">Interface scale</h2>
+                <div class="settings-row">
+                  <button class="settings-item focusable" data-setting="uiScale" data-value="compact" type="button" tabindex="0" data-i18n="uiScaleCompact">Compact</button>
+                  <button class="settings-item focusable" data-setting="uiScale" data-value="default" type="button" tabindex="0" data-i18n="uiScaleDefault">Normal</button>
+                  <button class="settings-item focusable" data-setting="uiScale" data-value="large" type="button" tabindex="0" data-i18n="uiScaleLarge">Large</button>
+                </div>
+              </section>
+
+              <section class="customization-section">
+                <h2 data-i18n="menuStyle">Menu display mode</h2>
+                <div class="settings-row">
+                  <button class="settings-item focusable" data-setting="singleMenu" data-value="true" type="button" tabindex="0" data-i18n="menuOneAtATime">One menu open at a time</button>
+                  <button class="settings-item focusable" data-setting="singleMenu" data-value="false" type="button" tabindex="0" data-i18n="menuAllVisible">Multi-column cascading</button>
+                </div>
+              </section>
+
+              <section class="customization-section">
+                <h2 data-i18n="refreshInterval">Refresh lists</h2>
+                <div class="settings-row">
+                  <button class="settings-item focusable" data-setting="refreshCycle" data-value="0" type="button" tabindex="0">Off</button>
+                  <button class="settings-item focusable" data-setting="refreshCycle" data-value="3" type="button" tabindex="0">3h</button>
+                  <button class="settings-item focusable" data-setting="refreshCycle" data-value="6" type="button" tabindex="0">6h</button>
+                  <button class="settings-item focusable" data-setting="refreshCycle" data-value="12" type="button" tabindex="0">12h</button>
+                  <button class="settings-item focusable" data-setting="refreshCycle" data-value="24" type="button" tabindex="0">24h</button>
+                </div>
+              </section>
+
+              <section class="customization-section">
+                <button class="settings-item focusable" data-setting="resetHidden" type="button" tabindex="0">🙈 <span data-i18n="resetHidden">Show hidden categories</span></button>
+              </section>
             </div>
-          </section>
-          <section class="customization-section">
-            <h2 data-i18n="backgroundImage">Background image URL</h2>
-            <div class="background-image-controls">
-              <input id="backgroundImageInput" class="focusable" type="url" data-i18n-placeholder="backgroundPlaceholder" placeholder="https://example.com/image.jpg" tabindex="0">
-              <button id="applyBackgroundButton" class="settings-item focusable" data-i18n="apply" type="button" tabindex="0">Apply</button>
-              <button id="clearBackgroundButton" class="settings-item focusable" data-i18n="removeBackground" type="button" tabindex="0">Remove image</button>
+
+            <div class="customization-pane hidden" data-pane="playback">
+              <section class="customization-section">
+                <label class="settings-toggle" for="autoplayNextToggle">
+                  <span>⏭ <span data-i18n="autoplayNext">Play next episode automatically</span></span>
+                  <input id="autoplayNextToggle" class="focusable" type="checkbox" tabindex="0">
+                </label>
+                <label class="settings-toggle" for="androidExternalPlayerToggle">
+                  <span>▶ <span data-i18n="androidExternalPlayer">Use Android external player</span></span>
+                  <input id="androidExternalPlayerToggle" class="focusable" type="checkbox" tabindex="0">
+                </label>
+              </section>
             </div>
-          </section>
-          <button id="customizationDone" class="settings-item focusable" data-i18n="done" type="button" tabindex="0">Done</button>
+
+            <div class="customization-pane hidden" data-pane="customization">
+              <section class="customization-section">
+                <h2 data-i18n="materialTheme">Material You palette</h2>
+                <div class="settings-row">
+                  <button class="settings-item focusable" data-setting="materialPalette" data-value="dynamic-blue" type="button" tabindex="0">Deep Blue</button>
+                  <button class="settings-item focusable" data-setting="materialPalette" data-value="dynamic-purple" type="button" tabindex="0">Lavender Iris</button>
+                  <button class="settings-item focusable" data-setting="materialPalette" data-value="dynamic-teal" type="button" tabindex="0">Ocean Teal</button>
+                  <button class="settings-item focusable" data-setting="materialPalette" data-value="dynamic-green" type="button" tabindex="0">Sage Green</button>
+                  <button class="settings-item focusable" data-setting="materialPalette" data-value="dynamic-amber" type="button" tabindex="0">Sunset Amber</button>
+                  <button class="settings-item focusable" data-setting="materialPalette" data-value="dynamic-crimson" type="button" tabindex="0">Crimson</button>
+                </div>
+              </section>
+
+              <section class="customization-section">
+                <h2 data-i18n="accentColor">Accent color</h2>
+                <div class="color-swatch-group" role="group" data-i18n-aria="accentColor" aria-label="Accent color">
+                  <button class="color-swatch focusable" data-color-role="accent" data-color="#a8c7fa" data-i18n-aria="colorSky" data-i18n-title="colorSky" aria-label="Sky" title="Sky" tabindex="0"></button>
+                  <button class="color-swatch focusable" data-color-role="accent" data-color="#d0bcff" data-i18n-aria="colorRose" data-i18n-title="colorRose" aria-label="Lavender" title="Lavender" tabindex="0"></button>
+                  <button class="color-swatch focusable" data-color-role="accent" data-color="#7bdcb5" data-i18n-aria="colorTurquoise" data-i18n-title="colorTurquoise" aria-label="Teal" title="Teal" tabindex="0"></button>
+                  <button class="color-swatch focusable" data-color-role="accent" data-color="#b4c5ff" data-i18n-aria="colorBlue" data-i18n-title="colorBlue" aria-label="Blue" title="Blue" tabindex="0"></button>
+                  <button class="color-swatch focusable" data-color-role="accent" data-color="#ffb4ab" data-i18n-aria="colorRed" data-i18n-title="colorRed" aria-label="Red" title="Red" tabindex="0"></button>
+                  <button class="color-swatch focusable" data-color-role="accent" data-color="#ffd080" data-i18n-aria="colorGold" data-i18n-title="colorGold" aria-label="Gold" title="Gold" tabindex="0"></button>
+                </div>
+              </section>
+
+              <section class="customization-section">
+                <h2 data-i18n="highlightColor">Highlight color</h2>
+                <div class="color-swatch-group" role="group" data-i18n-aria="highlightColor" aria-label="Highlight color">
+                  <button class="color-swatch focusable" data-color-role="highlight" data-color="#ffd700" data-i18n-aria="colorGold" data-i18n-title="colorGold" aria-label="Gold" title="Gold" tabindex="0"></button>
+                  <button class="color-swatch focusable" data-color-role="highlight" data-color="#00d6c9" data-i18n-aria="colorTurquoise" data-i18n-title="colorTurquoise" aria-label="Turquoise" title="Turquoise" tabindex="0"></button>
+                  <button class="color-swatch focusable" data-color-role="highlight" data-color="#a8c7fa" data-i18n-aria="colorSky" data-i18n-title="colorSky" aria-label="Sky" title="Sky" tabindex="0"></button>
+                  <button class="color-swatch focusable" data-color-role="highlight" data-color="#d0bcff" data-i18n-aria="colorRose" data-i18n-title="colorRose" aria-label="Lavender" title="Lavender" tabindex="0"></button>
+                  <button class="color-swatch focusable" data-color-role="highlight" data-color="#91d32a" data-i18n-aria="colorLime" data-i18n-title="colorLime" aria-label="Lime" title="Lime" tabindex="0"></button>
+                  <button class="color-swatch focusable" data-color-role="highlight" data-color="#ff8a00" data-i18n-aria="colorOrange" data-i18n-title="colorOrange" aria-label="Orange" title="Orange" tabindex="0"></button>
+                </div>
+              </section>
+
+              <section class="customization-section">
+                <h2 data-i18n="presetBackgrounds">Presets</h2>
+                <div class="background-presets" role="group">
+                  <button class="background-preset focusable" data-preset="backgrounds/aurora.svg" style="background-image:url('backgrounds/aurora.svg')" aria-label="Aurora" type="button" tabindex="0"></button>
+                  <button class="background-preset focusable" data-preset="backgrounds/ocean.svg" style="background-image:url('backgrounds/ocean.svg')" aria-label="Ocean" type="button" tabindex="0"></button>
+                  <button class="background-preset focusable" data-preset="backgrounds/sunset.svg" style="background-image:url('backgrounds/sunset.svg')" aria-label="Sunset" type="button" tabindex="0"></button>
+                  <button class="background-preset focusable" data-preset="backgrounds/midnight.svg" style="background-image:url('backgrounds/midnight.svg')" aria-label="Midnight" type="button" tabindex="0"></button>
+                </div>
+              </section>
+
+              <section class="customization-section">
+                <h2 data-i18n="backgroundImage">Background image URL</h2>
+                <div class="background-image-controls">
+                  <input id="backgroundImageInput" class="focusable" type="url" data-i18n-placeholder="backgroundPlaceholder" placeholder="https://example.com/image.jpg" tabindex="0">
+                  <button id="applyBackgroundButton" class="settings-item focusable" data-i18n="apply" type="button" tabindex="0">Apply</button>
+                  <button id="clearBackgroundButton" class="settings-item focusable" data-i18n="removeBackground" type="button" tabindex="0">Remove image</button>
+                </div>
+              </section>
+
+              <section class="customization-section">
+                <h2 data-i18n="clockFormat">Clock format</h2>
+                <button id="clockFormatButton" class="settings-item focusable" type="button" tabindex="0">🕐 12 h</button>
+              </section>
+            </div>
+
+            <div class="customization-pane hidden" data-pane="profile">
+              <form id="loginForm" class="login-settings-form">
+                <div class="login-panel-header">
+                  <h2 data-i18n="providerLogin">Provider login</h2>
+                  <div class="source-switch">
+                    <span class="source-switch-arrow" aria-hidden="true">‹</span>
+                    <select id="loginMethod" class="focusable" tabindex="0">
+                      <option value="xtream">Xtream</option>
+                      <option value="m3u">M3U</option>
+                    </select>
+                    <span class="source-switch-arrow" aria-hidden="true">›</span>
+                  </div>
+                </div>
+
+                <div id="xtreamLoginFields" class="login-method-fields">
+                  <div class="login-field-group">
+                    <label for="serverUrl" data-i18n="serverUrl">Server URL</label>
+                    <input type="url" id="serverUrl" class="focusable" autocomplete="url" placeholder="http://example.com:8080" tabindex="0">
+                  </div>
+                  <div class="login-row">
+                    <div class="login-row-field">
+                      <label for="username" data-i18n="username">Username</label>
+                      <input type="text" id="username" class="focusable" autocomplete="username" tabindex="0">
+                    </div>
+                    <div class="login-row-field">
+                      <label for="password" data-i18n="password">Password</label>
+                      <input type="password" id="password" class="focusable" autocomplete="current-password" tabindex="0">
+                    </div>
+                  </div>
+                </div>
+
+                <div id="m3uLoginFields" class="login-method-fields hidden">
+                  <div class="login-field-group">
+                    <label for="m3uProfile" data-i18n="m3uProfiles">Saved playlists</label>
+                    <select id="m3uProfile" class="focusable" tabindex="0"></select>
+                  </div>
+                  <div class="login-row">
+                    <div class="login-row-field">
+                      <label for="m3uProfileName" data-i18n="m3uProfileName">Playlist name</label>
+                      <input type="text" id="m3uProfileName" class="focusable" tabindex="0">
+                    </div>
+                    <div class="login-row-field">
+                      <label for="m3uUrl" data-i18n="m3uUrl">Playlist URL</label>
+                      <input type="url" id="m3uUrl" class="focusable" autocomplete="url" placeholder="http://..." tabindex="0">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="login-actions">
+                  <button type="submit" id="loginBtn" class="login-btn primary focusable" data-i18n="login" tabindex="0">Sign in</button>
+                  <button type="button" id="loginTestBtn" class="login-btn secondary focusable" tabindex="0">
+                    <span id="testBtnSpinner" class="btn-infinity-spinner hidden"></span>
+                    <span id="testBtnText">Test connection</span>
+                  </button>
+                </div>
+
+                <!-- XTREAM ACCOUNT INFO & DIAGNOSTIC CARD -->
+                <div id="accountInfoCard" class="account-info-card hidden">
+                  <div class="account-card-header">
+                    <div class="account-badge" id="accountStatusBadge">Aktif</div>
+                    <div class="account-expires-badge" id="accountExpiresBadge">--</div>
+                  </div>
+                  <div class="account-card-grid">
+                    <div class="account-card-item">
+                      <span class="account-item-label">Bitiş Tarihi</span>
+                      <span class="account-item-value" id="accountExpDate">--</span>
+                    </div>
+                    <div class="account-card-item">
+                      <span class="account-item-label">Kalan Süre</span>
+                      <span class="account-item-value highlight" id="accountTimeLeft">--</span>
+                    </div>
+                    <div class="account-card-item">
+                      <span class="account-item-label">Bağlantılar</span>
+                      <span class="account-item-value" id="accountConnections">--</span>
+                    </div>
+                    <div class="account-card-item">
+                      <span class="account-item-label">Hesap Türü</span>
+                      <span class="account-item-value" id="accountType">--</span>
+                    </div>
+                    <div class="account-card-item full-width">
+                      <span class="account-item-label">Sunucu & Formatlar</span>
+                      <span class="account-item-value" id="accountServerDetails">--</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="loginErrorToast" class="login-inline-toast hidden" role="status" aria-live="polite"></div>
+                <div id="loginStatus" class="login-status"></div>
+              </form>
+              <section class="customization-section" style="margin-top: 20px;">
+                <button class="settings-item focusable" data-setting="copyPlaylist" type="button" tabindex="0">📋 <span data-i18n="copyPlaylist">Copy playlist URL</span></button>
+              </section>
+            </div>
+          </div>
         </div>
       </section>
     </header>
@@ -151,6 +285,7 @@
         <div class="tab-label" data-i18n="categories">CATEGORIE</div>
         <div class="col-content-wrapper">
           <div class="col-title" data-i18n="categories">KATEGORİ</div>
+          <input type="search" id="categorySearch" class="category-search" placeholder="Kategori ara" autocomplete="off">
           <ul class="nav-list" id="categoryList"></ul>
         </div>
       </div>
@@ -165,7 +300,25 @@
 
       <!-- RECHTS: PREVIEW SPELER & EPG -->
       <div class="player-wrapper" id="playerWrapper">
-        <video id="videoPlayer" autoplay></video>
+        <video id="videoPlayer" autoplay playsinline webkit-playsinline poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></video>
+
+        <!-- INFINITY LOADING ANIMATION OVERLAY -->
+        <div id="playerLoadingOverlay" class="player-loading-overlay hidden">
+          <div class="infinity-loader-wrap">
+            <svg class="infinity-loader" viewBox="0 0 100 60" width="80" height="48" aria-hidden="true">
+              <defs>
+                <linearGradient id="infinityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="var(--md-sys-color-primary, #a8c7fa)" />
+                  <stop offset="50%" stop-color="var(--highlight, #ffd700)" />
+                  <stop offset="100%" stop-color="var(--accent, #7bdcb5)" />
+                </linearGradient>
+              </defs>
+              <path class="infinity-bg" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+              <path class="infinity-path" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+            </svg>
+            <div id="playerLoadingText" class="player-loading-text">Yükleniyor...</div>
+          </div>
+        </div>
         
         <!-- VOD PAUSE OVERLAY ICON -->
         <div id="vodPauseIcon" class="vod-pause-overlay hidden">
@@ -199,6 +352,14 @@
           <div class="osd-details">
             <div class="osd-title-row">
               <h2 id="osdChannelTitle">1. TRT 1</h2>
+              <div class="osd-actions">
+                <button id="osdExternalPlayerBtn" class="osd-action-btn focusable" type="button" tabindex="0" title="Harici Oynatıcıda Aç" aria-label="Harici Oynatıcıda Aç">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                </button>
+                <button id="osdFavBtn" class="osd-fav-btn focusable" type="button" tabindex="0" title="Toggle Favorite" aria-label="Toggle Favorite">
+                  <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </button>
+              </div>
             </div>
             <div class="osd-epg-info">
               <div class="osd-epg-row active-epg">
@@ -227,14 +388,35 @@
           </div>
           <div class="vod-osd-controls">
             <span id="vodCurrentTime">00:00:00</span>
-            <span class="vod-hint" data-i18n="vodHint">OK: Menu | Pause: Pauzeer | ⬅/➡: Spoelen</span>
+            <span class="vod-hint" data-i18n="vodHint">Back: Exit | Pause: Pause | ◀/▶: Seek</span>
             <span id="vodDuration">00:00:00</span>
           </div>
         </div>
       </div>
     </div>
+
+    <footer id="hintBar" class="hint-bar">
+      <span class="hint hidden" data-hint="fav"><span data-i18n="hintFavorite">Favorite</span></span>
+      <span class="hint hidden" data-hint="hide"><span data-i18n="hintHide">Hide category</span></span>
+      <span class="hint hidden" data-hint="search"><span data-i18n="hintSearch">Search</span></span>
+      <span class="hint" id="hintBackBtn" style="cursor:pointer;"><i class="hint-key back">&#8617;</i><span data-i18n="back">Back</span></span>
+    </footer>
   </div>
 
+  <div id="searchPanel" class="search-panel hidden">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 data-i18n="searchTitle">Search channels</h2>
+      <button id="searchCloseBtn" class="settings-item focusable" style="padding:6px 14px;" type="button" tabindex="0">✕</button>
+    </div>
+    <input id="searchInput" class="focusable" type="text" tabindex="0" data-i18n-placeholder="searchPlaceholder" placeholder="Type a channel name">
+    <ul id="searchResults" class="search-results"></ul>
+    <div id="searchEmpty" class="search-empty hidden" data-i18n="searchNoResults">No channels found</div>
+  </div>
+
+  <script src="tizen-platform.js"></script>
+  <script src="hls.min.js"></script>
+  <script src="mpegts.min.js"></script>
+  <script src="credentials.local.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
