@@ -75,7 +75,7 @@ tizen/
   - *Status:* Not yet confirmed. The root cause of the "buttons stop working" issue is unconfirmed.
 - **Loader too small and choppy**
   - *Cause:* 80×48 px with an eased cubic-bezier animation.
-  - *Fix:* 200×120 px, stroke 8, linear 1.6 s animation (`.infinity-loader`, `.infinity-path`).
+  - *Fix:* Replaced with the CodePen "Infinity Loader" (aaroniker/MzoXaZ), `.infinity` variant, in `#playerLoading` (`.infinity-loader`, `.infinity`). Four stacked copies with staggered lag, shrinking and fading toward the tail, form the trail. Period is 2.8 s. The Chrome-only goo-filter variant was left out to keep TV rendering light.
   - *Status:* Not yet confirmed on TV.
 - **Channels spun forever with no error**
   - *Cause:* `#playerLoading` only hid on `playing`/`canplay`. Errors were never shown.

@@ -41,10 +41,10 @@
         <div class="customization-body">
           <nav class="customization-nav">
             <div class="customization-nav-list">
+              <button class="settings-item focusable customization-tab" data-tab="source" type="button" tabindex="0">🔀 <span data-i18n="profileTab">Source</span></button>
               <button class="settings-item focusable customization-tab active" data-tab="general" type="button" tabindex="0">🌐 <span data-i18n="generalTab">General</span></button>
               <button class="settings-item focusable customization-tab" data-tab="playback" type="button" tabindex="0">▶ <span data-i18n="playbackTab">Playback</span></button>
               <button class="settings-item focusable customization-tab" data-tab="customization" type="button" tabindex="0">🎨 <span data-i18n="customization">Customization</span></button>
-              <button class="settings-item focusable customization-tab" data-tab="source" type="button" tabindex="0">🔀 <span data-i18n="profileTab">Source</span></button>
               <button id="settingsDone" class="settings-item focusable" data-i18n="done" type="button" tabindex="0">✔ Done</button>
             </div>
           </nav>
@@ -221,17 +221,28 @@
 
         <!-- CHANNEL LOADING OVERLAY -->
         <div id="playerLoading" class="player-loading hidden">
-          <svg class="infinity-loader" viewBox="0 0 100 60" width="80" height="48" aria-hidden="true">
-            <defs>
-              <linearGradient id="infinityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop class="infinity-stop-start" offset="0%" />
-                <stop class="infinity-stop-mid" offset="50%" />
-                <stop class="infinity-stop-end" offset="100%" />
-              </linearGradient>
-            </defs>
-            <path class="infinity-bg" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
-            <path class="infinity-path" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
-          </svg>
+          <div class="infinity-loader" aria-hidden="true">
+            <div class="infinity" style="--lag: 0.21s; --s: 0.55; --o: 0.2;">
+              <div><span></span></div>
+              <div><span></span></div>
+              <div><span></span></div>
+            </div>
+            <div class="infinity" style="--lag: 0.14s; --s: 0.7; --o: 0.4;">
+              <div><span></span></div>
+              <div><span></span></div>
+              <div><span></span></div>
+            </div>
+            <div class="infinity" style="--lag: 0.07s; --s: 0.85; --o: 0.7;">
+              <div><span></span></div>
+              <div><span></span></div>
+              <div><span></span></div>
+            </div>
+            <div class="infinity" style="--lag: 0s; --s: 1; --o: 1;">
+              <div><span></span></div>
+              <div><span></span></div>
+              <div><span></span></div>
+            </div>
+          </div>
         </div>
         
         <!-- VOD PAUSE OVERLAY ICON -->
