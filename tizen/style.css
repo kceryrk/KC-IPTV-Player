@@ -326,20 +326,25 @@ body.kc-has-bg .col-content-wrapper {
 }
 
 .login-panel {
-  position: absolute;
-  top: 60px;
-  right: 0;
-  width: 720px;
-  max-width: 92vw;
+  position: static;
+  width: 100%;
+  max-width: none;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 28px;
-  background: rgba(8,9,13,0.97);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 10px;
-  box-shadow: 0 18px 42px rgba(0,0,0,0.78);
-  z-index: 2100;
+  padding: 16px 0 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+.login-section {
+  gap: 12px;
+}
+
+.login-section .login-state-button {
+  width: 100%;
+  justify-content: flex-start;
 }
 
 .login-panel-header {
@@ -457,6 +462,8 @@ body.kc-has-bg .col-content-wrapper {
   top: 60px;
   width: 720px;
   max-width: 92vw;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
   background: rgba(10, 12, 18, 0.96);
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: 10px;
@@ -918,6 +925,52 @@ video {
 }
 
 /* VOD PAUSE OVERLAY ICON */
+.player-loading {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 99998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.infinity-loader {
+  width: 200px;
+  height: 120px;
+  overflow: visible;
+}
+
+.infinity-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.infinity-path {
+  fill: none;
+  stroke: url(#infinityGrad);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 65 175;
+  stroke-dashoffset: 0;
+  animation: infinityDash 1.6s linear infinite;
+}
+
+.infinity-stop-start { stop-color: #a8c7fa; }
+.infinity-stop-mid { stop-color: var(--highlight); }
+.infinity-stop-end { stop-color: var(--accent); }
+
+@keyframes infinityDash {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -240; }
+}
+
 .vod-pause-overlay {
   position: absolute;
   top: 50%;
@@ -1387,6 +1440,61 @@ body.speler-fit-screen .epg-preview-panel {
 
 .customization-pane.hidden {
   display: none;
+}
+
+.customization-pane[data-pane="source"] {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 1040px;
+}
+
+.customization-pane[data-pane="source"] .login-state-button {
+  width: fit-content;
+  min-height: 56px;
+  font-size: 1.5rem;
+}
+
+.customization-pane[data-pane="source"] .login-panel label {
+  margin-top: 10px;
+}
+
+.customization-pane[data-pane="source"] .login-panel input,
+.customization-pane[data-pane="source"] .login-panel select {
+  max-width: 960px;
+}
+
+.customization-pane[data-pane="source"] #loginBtn {
+  width: fit-content;
+  min-width: 260px;
+  min-height: 60px;
+  font-size: 1.5rem;
+}
+
+.login-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 960px;
+}
+
+.login-progress-track {
+  height: 14px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.login-progress-bar {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.login-progress-text {
+  color: #ddd;
+  font-size: 1.4rem;
 }
 
 .background-presets {

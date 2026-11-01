@@ -29,91 +29,52 @@
       <div id="headerClock" class="header-clock">00:00</div>
 
       <div class="app-header-actions">
-        <div class="login-status-wrap">
-          <button id="loginStateButton" class="login-state-button focusable" data-state="failed" type="button" tabindex="0" aria-expanded="false" aria-controls="loginForm">
-            <span class="login-state-dot" aria-hidden="true"></span>
-            <span id="loginStatus" data-i18n="loginFailed">Login failed</span>
-          </button>
-          <form id="loginForm" class="login-panel hidden">
-            <div class="login-panel-header">
-              <h2 data-i18n="providerLogin">Provider login</h2>
-              <button id="loginPanelClose" class="login-panel-close" type="button" data-i18n-aria="close">×</button>
-            </div>
-            <label for="loginMethod" data-i18n="loginMethod">Login method</label>
-            <div class="source-switch">
-              <span class="source-switch-arrow" aria-hidden="true">‹</span>
-              <select id="loginMethod" class="focusable" tabindex="0">
-                <option value="xtream">Xtream</option>
-                <option value="m3u">M3U</option>
-              </select>
-              <span class="source-switch-arrow" aria-hidden="true">›</span>
-            </div>
-            <div class="login-actions">
-              <button type="submit" id="loginBtn" class="login-btn focusable" data-i18n="login" tabindex="0">Sign in</button>
-              <button type="button" id="loginTestBtn" class="login-btn focusable" tabindex="0">Test connection</button>
-            </div>
-            <div id="xtreamLoginFields" class="login-method-fields">
-              <label for="serverUrl" data-i18n="serverUrl">Server URL</label>
-              <input type="url" id="serverUrl" class="focusable" autocomplete="url" tabindex="0">
-              <div class="login-row">
-                <div class="login-row-field">
-                  <label for="username" data-i18n="username">Username</label>
-                  <input type="text" id="username" class="focusable" autocomplete="username" tabindex="0">
-                </div>
-                <div class="login-row-field">
-                  <label for="password" data-i18n="password">Password</label>
-                  <input type="password" id="password" class="focusable" autocomplete="current-password" tabindex="0">
-                </div>
-              </div>
-            </div>
-            <div id="m3uLoginFields" class="login-method-fields hidden">
-              <label for="m3uProfile" data-i18n="m3uProfiles">Saved playlists</label>
-              <select id="m3uProfile" class="focusable" tabindex="0"></select>
-              <label for="m3uProfileName" data-i18n="m3uProfileName">Playlist name</label>
-              <input type="text" id="m3uProfileName" class="focusable" tabindex="0">
-              <label for="m3uUrl" data-i18n="m3uUrl">Playlist URL</label>
-              <input type="url" id="m3uUrl" class="focusable" autocomplete="url" tabindex="0">
-            </div>
-            <div id="loginErrorToast" class="login-inline-toast hidden" role="status" aria-live="polite"></div>
-          </form>
-        </div>
         <button id="settingsButton" class="settings-button focusable" type="button" tabindex="0" aria-expanded="false" aria-controls="settingsPanel">⚙ Settings</button>
-        <div id="settingsPanel" class="settings-panel hidden" role="menu" data-i18n-aria="settings" aria-label="App settings">
-          <div class="settings-group">
-            <div class="settings-row">
-              <button class="settings-item focusable" data-setting="language" data-value="cycle" type="button" tabindex="0">🌐 🇬🇧 EN</button>
-              <button class="settings-item focusable" data-setting="refreshCycle" data-value="cycle" type="button" tabindex="0">🔄 Off</button>
-            </div>
-          </div>
-
-          <div class="settings-group">
-            <label class="settings-toggle" for="autoplayNextToggle">
-              <span>⏭ <span data-i18n="autoplayNext">Play next episode automatically</span></span>
-              <input id="autoplayNextToggle" class="focusable" type="checkbox" tabindex="0">
-            </label>
-            <button class="settings-item focusable" data-setting="customization" type="button" tabindex="0">🎨 <span data-i18n="customization">Customization</span></button>
-            <button class="settings-item focusable" data-setting="resetHidden" type="button" tabindex="0">🙈 <span data-i18n="resetHidden">Show hidden categories</span></button>
-            <button class="settings-item focusable" data-setting="switchProfile" type="button" tabindex="0">🔀 <span data-i18n="switchProfile">Change source</span></button>
-            <button class="settings-item focusable close" data-setting="close" type="button" tabindex="0">✖ <span data-i18n="close">Close menu</span></button>
-          </div>
-        </div>
+        
       </div>
 
-      <section id="customizationPage" class="customization-page hidden" data-i18n-aria="customization" aria-label="Customization">
+      <section id="settingsPage" class="customization-page hidden" data-i18n-aria="settings" aria-label="Settings">
         <header class="customization-header">
-          <h1 data-i18n="customization">Customization</h1>
+          <button id="settingsBack" class="settings-item focusable" data-i18n="back" type="button" tabindex="0">Back</button>
+          <h1 data-i18n="settings">Settings</h1>
         </header>
         <div class="customization-body">
           <nav class="customization-nav">
             <div class="customization-nav-list">
-              <button class="settings-item focusable customization-tab active" data-tab="color" type="button" tabindex="0">🎨 <span data-i18n="colorTab">Color</span></button>
-              <button class="settings-item focusable customization-tab" data-tab="background" type="button" tabindex="0">🖼️ <span data-i18n="backgroundTab">Background</span></button>
-              <button class="settings-item focusable customization-tab" data-tab="clock" type="button" tabindex="0">🕐 <span data-i18n="clockTab">Clock</span></button>
-              <button id="customizationDone" class="settings-item focusable" data-i18n="done" type="button" tabindex="0">✔ Done</button>
+              <button class="settings-item focusable customization-tab active" data-tab="general" type="button" tabindex="0">🌐 <span data-i18n="generalTab">General</span></button>
+              <button class="settings-item focusable customization-tab" data-tab="playback" type="button" tabindex="0">▶ <span data-i18n="playbackTab">Playback</span></button>
+              <button class="settings-item focusable customization-tab" data-tab="customization" type="button" tabindex="0">🎨 <span data-i18n="customization">Customization</span></button>
+              <button class="settings-item focusable customization-tab" data-tab="source" type="button" tabindex="0">🔀 <span data-i18n="profileTab">Source</span></button>
+              <button id="settingsDone" class="settings-item focusable" data-i18n="done" type="button" tabindex="0">✔ Done</button>
             </div>
           </nav>
         <div class="customization-content">
-          <div class="customization-pane" data-pane="color">
+          <div class="customization-pane" data-pane="general">
+            <section class="customization-section">
+              <h2 data-i18n="language">Language</h2>
+              <div class="settings-row">
+                <button class="settings-item focusable" data-setting="language" data-value="cycle" type="button" tabindex="0">🌐 🇬🇧 EN</button>
+              </div>
+            </section>
+            <section class="customization-section">
+              <h2 data-i18n="refreshInterval">Refresh lists</h2>
+              <div class="settings-row">
+                <button class="settings-item focusable" data-setting="refreshCycle" data-value="cycle" type="button" tabindex="0">🔄 Off</button>
+              </div>
+            </section>
+            <section class="customization-section">
+              <button class="settings-item focusable" data-setting="resetHidden" type="button" tabindex="0">🙈 <span data-i18n="resetHidden">Show hidden categories</span></button>
+            </section>
+          </div>
+          <div class="customization-pane hidden" data-pane="playback">
+            <section class="customization-section">
+              <label class="settings-toggle" for="autoplayNextToggle">
+                <span>⏭ <span data-i18n="autoplayNext">Play next episode automatically</span></span>
+                <input id="autoplayNextToggle" class="focusable" type="checkbox" tabindex="0">
+              </label>
+            </section>
+          </div>
+          <div class="customization-pane hidden" data-pane="customization">
           <section class="customization-section">
             <h2 data-i18n="accentColor">Accent color</h2>
             <div class="color-swatch-group" role="group" data-i18n-aria="accentColor" aria-label="Accent color">
@@ -134,8 +95,6 @@
               <button class="color-swatch focusable" data-color-role="highlight" data-color="#65a9ff" data-i18n-aria="colorSky" data-i18n-title="colorSky" aria-label="Sky blue" title="Sky blue" tabindex="0"></button>
             </div>
           </section>
-          </div>
-          <div class="customization-pane hidden" data-pane="background">
           <section class="customization-section">
             <h2 data-i18n="presetBackgrounds">Presets</h2>
             <div class="background-presets" role="group">
@@ -153,12 +112,61 @@
               <button id="clearBackgroundButton" class="settings-item focusable" data-i18n="removeBackground" type="button" tabindex="0">Remove image</button>
             </div>
           </section>
-          </div>
-          <div class="customization-pane hidden" data-pane="clock">
           <section class="customization-section">
             <h2 data-i18n="clockFormat">Clock format</h2>
             <button id="clockFormatButton" class="settings-item focusable" type="button" tabindex="0">🕐 12 h</button>
           </section>
+          </div>
+          <div class="customization-pane hidden" data-pane="source">
+            <div id="loginStateButton" class="login-state-button focusable" data-state="failed" role="button" tabindex="0" aria-expanded="true" aria-controls="loginForm">
+              <span class="login-state-dot" aria-hidden="true"></span>
+              <span id="loginStatus" data-i18n="loginFailed">Login failed</span>
+            </div>
+            <div id="loginProgress" class="login-progress hidden" role="status" aria-live="polite">
+              <div class="login-progress-track"><div id="loginProgressBar" class="login-progress-bar"></div></div>
+              <span id="loginProgressText" class="login-progress-text"></span>
+            </div>
+            <form id="loginForm" class="login-panel">
+              <div class="login-panel-header">
+                <h2 data-i18n="providerLogin">Provider login</h2>
+              </div>
+              <label for="loginMethod" data-i18n="loginMethod">Login method</label>
+              <div class="source-switch">
+                <span class="source-switch-arrow" aria-hidden="true">‹</span>
+                <select id="loginMethod" class="focusable" tabindex="0">
+                  <option value="xtream">Xtream</option>
+                  <option value="m3u">M3U</option>
+                </select>
+                <span class="source-switch-arrow" aria-hidden="true">›</span>
+              </div>
+              <div class="login-actions">
+                <button type="submit" id="loginBtn" class="login-btn focusable" data-i18n="login" tabindex="0">Sign in</button>
+                <button type="button" id="loginTestBtn" class="login-btn focusable hidden" tabindex="0">Test connection</button>
+              </div>
+              <div id="xtreamLoginFields" class="login-method-fields">
+                <label for="serverUrl" data-i18n="serverUrl">Server URL</label>
+                <input type="url" id="serverUrl" class="focusable" autocomplete="url" tabindex="0">
+                <div class="login-row">
+                  <div class="login-row-field">
+                    <label for="username" data-i18n="username">Username</label>
+                    <input type="text" id="username" class="focusable" autocomplete="username" tabindex="0">
+                  </div>
+                  <div class="login-row-field">
+                    <label for="password" data-i18n="password">Password</label>
+                    <input type="password" id="password" class="focusable" autocomplete="current-password" tabindex="0">
+                  </div>
+                </div>
+              </div>
+              <div id="m3uLoginFields" class="login-method-fields hidden">
+                <label for="m3uProfile" data-i18n="m3uProfiles">Saved playlists</label>
+                <select id="m3uProfile" class="focusable" tabindex="0"></select>
+                <label for="m3uProfileName" data-i18n="m3uProfileName">Playlist name</label>
+                <input type="text" id="m3uProfileName" class="focusable" tabindex="0">
+                <label for="m3uUrl" data-i18n="m3uUrl">Playlist URL</label>
+                <input type="url" id="m3uUrl" class="focusable" autocomplete="url" tabindex="0">
+              </div>
+              <div id="loginErrorToast" class="login-inline-toast hidden" role="status" aria-live="polite"></div>
+            </form>
           </div>
         </div>
         </div>
@@ -210,6 +218,21 @@
       <!-- RECHTS: PREVIEW SPELER & EPG -->
       <div class="player-wrapper" id="playerWrapper">
         <video id="videoPlayer" autoplay></video>
+
+        <!-- CHANNEL LOADING OVERLAY -->
+        <div id="playerLoading" class="player-loading hidden">
+          <svg class="infinity-loader" viewBox="0 0 100 60" width="80" height="48" aria-hidden="true">
+            <defs>
+              <linearGradient id="infinityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop class="infinity-stop-start" offset="0%" />
+                <stop class="infinity-stop-mid" offset="50%" />
+                <stop class="infinity-stop-end" offset="100%" />
+              </linearGradient>
+            </defs>
+            <path class="infinity-bg" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+            <path class="infinity-path" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+          </svg>
+        </div>
         
         <!-- VOD PAUSE OVERLAY ICON -->
         <div id="vodPauseIcon" class="vod-pause-overlay hidden">

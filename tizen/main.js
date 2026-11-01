@@ -83,8 +83,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const numZapOverlay = document.getElementById("numZapOverlay");
   const numZapText = document.getElementById("numZapText");
   const settingsButton = document.getElementById("settingsButton");
-  const settingsPanel = document.getElementById("settingsPanel");
-  const customizationPage = document.getElementById("customizationPage");
+  const settingsPanel = document.getElementById("settingsPage");
+  const customizationPage = settingsPanel;
   const autoplayNextToggle = document.getElementById("autoplayNextToggle");
   const backgroundImageInput = document.getElementById("backgroundImageInput");
   const vodPlaybackControls = document.getElementById("vodPlaybackControls");
@@ -98,16 +98,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentLoginState = "failed";
   const appTranslations = {
     en: {
-      settings: "Settings", language: "Language", autoplayNext: "Play next episode automatically", customization: "Customization", switchProfile: "Change source", resetApp: "Reset app", close: "Close menu", back: "Back", accentColor: "Accent color", highlightColor: "Highlight color", backgroundImage: "Background image URL", apply: "Apply", removeBackground: "Remove image", done: "Done", previous: "Previous", next: "Next", playPause: "Pause / play", serverUrl: "Server URL", username: "Username", password: "Password", login: "Sign in", connecting: "Connecting to IPTV server...", loginFailed: "Login failed.", modes: "MODES", modeFavorites: "★ Favorites", modeLive: "📺 Live TV", modeMovies: "🎬 Movies", modeSeries: "🍿 Series", region: "REGION", categories: "CATEGORIES", allRegions: "🌍 All regions", channels: "CHANNELS", movies: "MOVIES", series: "SERIES", liveNow: "Live TV", noNextProgram: "No upcoming program", vodHint: "Up: controls | Play/Pause: toggle | Left/Right: seek", backToSeries: "← Back to series", noEpisodes: "No episodes found", loadingEpisodes: "Loading episodes...", unableLoad: "Unable to load episodes", favoritesRemoved: "Removed from favorites", favoritesAdded: "Added to favorites", moveOnlyFavorites: "Move mode is only available in Favorites", moveStarted: "Move mode started", positionSaved: "Position saved", channelNotFound: "Channel #{number} not found", autoplay: "Autoplay next episode", colors: "Colors", backgroundApplied: "Background updated", backgroundRemoved: "Background removed", invalidBackground: "Enter a valid HTTP or HTTPS image URL", previousEpisode: "Previous episode", nextEpisode: "Next episode", profileChanged: "Profile changed", appReset: "App reset", zapped: "Playing channel #{number}: {title}", colorRed: "Red", colorBlue: "Blue", colorGreen: "Green", colorRose: "Rose", colorOrange: "Orange", colorGold: "Gold", colorTurquoise: "Turquoise", colorLime: "Lime", colorSky: "Sky blue"
+      generalTab: "General", playbackTab: "Playback", profileTab: "Source", progressCategories: "Loading categories", progressPlaylist: "Downloading playlist", progressParsing: "Reading channels", streamFailed: "Channel error: {reason}", streamTimedOut: "Channel did not start within 20 s: {reason}", streamNoData: "no data received", settings: "Settings", language: "Language", autoplayNext: "Play next episode automatically", customization: "Customization", switchProfile: "Change source", resetApp: "Reset app", close: "Close menu", back: "Back", accentColor: "Accent color", highlightColor: "Highlight color", backgroundImage: "Background image URL", apply: "Apply", removeBackground: "Remove image", done: "Done", previous: "Previous", next: "Next", playPause: "Pause / play", serverUrl: "Server URL", username: "Username", password: "Password", login: "Sign in", connecting: "Connecting to IPTV server...", loginFailed: "Login failed.", modes: "MODES", modeFavorites: "★ Favorites", modeLive: "📺 Live TV", modeMovies: "🎬 Movies", modeSeries: "🍿 Series", region: "REGION", categories: "CATEGORIES", allRegions: "🌍 All regions", channels: "CHANNELS", movies: "MOVIES", series: "SERIES", liveNow: "Live TV", noNextProgram: "No upcoming program", vodHint: "Up: controls | Play/Pause: toggle | Left/Right: seek", backToSeries: "← Back to series", noEpisodes: "No episodes found", loadingEpisodes: "Loading episodes...", unableLoad: "Unable to load episodes", favoritesRemoved: "Removed from favorites", favoritesAdded: "Added to favorites", moveOnlyFavorites: "Move mode is only available in Favorites", moveStarted: "Move mode started", positionSaved: "Position saved", channelNotFound: "Channel #{number} not found", autoplay: "Autoplay next episode", colors: "Colors", backgroundApplied: "Background updated", backgroundRemoved: "Background removed", invalidBackground: "Enter a valid HTTP or HTTPS image URL", previousEpisode: "Previous episode", nextEpisode: "Next episode", profileChanged: "Profile changed", appReset: "App reset", zapped: "Playing channel #{number}: {title}", colorRed: "Red", colorBlue: "Blue", colorGreen: "Green", colorRose: "Rose", colorOrange: "Orange", colorGold: "Gold", colorTurquoise: "Turquoise", colorLime: "Lime", colorSky: "Sky blue"
     },
     tr: {
-      settings: "Ayarlar", language: "Dil", autoplayNext: "Sonraki bölümü otomatik oynat", customization: "Özelleştirme", switchProfile: "Kaynağı değiştir", resetApp: "Uygulamayı sıfırla", close: "Menüyü kapat", back: "Geri", accentColor: "Vurgu rengi", highlightColor: "Öne çıkan renk", backgroundImage: "Arka plan görseli URL'si", apply: "Uygula", removeBackground: "Görseli kaldır", done: "Tamam", previous: "Önceki", next: "Sonraki", playPause: "Duraklat / oynat", serverUrl: "Sunucu URL'si", username: "Kullanıcı adı", password: "Şifre", login: "Giriş yap", connecting: "IPTV sunucusuna bağlanılıyor...", loginFailed: "Giriş başarısız.", modes: "MODLAR", modeFavorites: "★ Favoriler", modeLive: "📺 Canlı TV", modeMovies: "🎬 Filmler", modeSeries: "🍿 Diziler", region: "BÖLGE", categories: "KATEGORİLER", allRegions: "🌍 Tüm bölgeler", channels: "KANALLAR", movies: "FİLMLER", series: "DİZİLER", liveNow: "Canlı yayın", noNextProgram: "Sonraki program yok", vodHint: "Yukarı: kontroller | Oynat/Duraklat: değiştir | Sol/Sağ: sar", backToSeries: "← Dizi listesine dön", noEpisodes: "Bölüm bulunamadı", loadingEpisodes: "Bölümler yükleniyor...", unableLoad: "Bölümler yüklenemedi", favoritesRemoved: "Favorilerden çıkarıldı", favoritesAdded: "Favorilere eklendi", moveOnlyFavorites: "Taşıma modu yalnızca Favorilerde kullanılabilir", moveStarted: "Taşıma başladı", positionSaved: "Sıralama kaydedildi", channelNotFound: "#{number} numaralı kanal bulunamadı", autoplay: "Sonraki bölümü otomatik oynat", colors: "Renkler", backgroundApplied: "Arka plan güncellendi", backgroundRemoved: "Arka plan kaldırıldı", invalidBackground: "Geçerli bir HTTP veya HTTPS görsel URL'si girin", previousEpisode: "Önceki bölüm", nextEpisode: "Sonraki bölüm", profileChanged: "Profil değiştirildi", appReset: "Uygulama sıfırlandı", zapped: "Kanal #{number} açılıyor: {title}", colorRed: "Kırmızı", colorBlue: "Mavi", colorGreen: "Yeşil", colorRose: "Pembe", colorOrange: "Turuncu", colorGold: "Altın", colorTurquoise: "Turkuaz", colorLime: "Fıstık yeşili", colorSky: "Gök mavisi"
+      generalTab: "Genel", playbackTab: "Oynatma", profileTab: "Kaynak", progressCategories: "Kategoriler yükleniyor", progressPlaylist: "Playlist indiriliyor", progressParsing: "Kanallar okunuyor", streamFailed: "Kanal hatası: {reason}", streamTimedOut: "Kanal 20 sn içinde açılmadı: {reason}", streamNoData: "veri alınamadı", settings: "Ayarlar", language: "Dil", autoplayNext: "Sonraki bölümü otomatik oynat", customization: "Özelleştirme", switchProfile: "Kaynağı değiştir", resetApp: "Uygulamayı sıfırla", close: "Menüyü kapat", back: "Geri", accentColor: "Vurgu rengi", highlightColor: "Öne çıkan renk", backgroundImage: "Arka plan görseli URL'si", apply: "Uygula", removeBackground: "Görseli kaldır", done: "Tamam", previous: "Önceki", next: "Sonraki", playPause: "Duraklat / oynat", serverUrl: "Sunucu URL'si", username: "Kullanıcı adı", password: "Şifre", login: "Giriş yap", connecting: "IPTV sunucusuna bağlanılıyor...", loginFailed: "Giriş başarısız.", modes: "MODLAR", modeFavorites: "★ Favoriler", modeLive: "📺 Canlı TV", modeMovies: "🎬 Filmler", modeSeries: "🍿 Diziler", region: "BÖLGE", categories: "KATEGORİLER", allRegions: "🌍 Tüm bölgeler", channels: "KANALLAR", movies: "FİLMLER", series: "DİZİLER", liveNow: "Canlı yayın", noNextProgram: "Sonraki program yok", vodHint: "Yukarı: kontroller | Oynat/Duraklat: değiştir | Sol/Sağ: sar", backToSeries: "← Dizi listesine dön", noEpisodes: "Bölüm bulunamadı", loadingEpisodes: "Bölümler yükleniyor...", unableLoad: "Bölümler yüklenemedi", favoritesRemoved: "Favorilerden çıkarıldı", favoritesAdded: "Favorilere eklendi", moveOnlyFavorites: "Taşıma modu yalnızca Favorilerde kullanılabilir", moveStarted: "Taşıma başladı", positionSaved: "Sıralama kaydedildi", channelNotFound: "#{number} numaralı kanal bulunamadı", autoplay: "Sonraki bölümü otomatik oynat", colors: "Renkler", backgroundApplied: "Arka plan güncellendi", backgroundRemoved: "Arka plan kaldırıldı", invalidBackground: "Geçerli bir HTTP veya HTTPS görsel URL'si girin", previousEpisode: "Önceki bölüm", nextEpisode: "Sonraki bölüm", profileChanged: "Profil değiştirildi", appReset: "Uygulama sıfırlandı", zapped: "Kanal #{number} açılıyor: {title}", colorRed: "Kırmızı", colorBlue: "Mavi", colorGreen: "Yeşil", colorRose: "Pembe", colorOrange: "Turuncu", colorGold: "Altın", colorTurquoise: "Turkuaz", colorLime: "Fıstık yeşili", colorSky: "Gök mavisi"
     },
     nl: {
-      settings: "Instellingen", language: "Taal", autoplayNext: "Volgende aflevering automatisch afspelen", customization: "Aanpassen", switchProfile: "Bron wijzigen", resetApp: "App resetten", close: "Menu sluiten", back: "Terug", accentColor: "Accentkleur", highlightColor: "Markeringskleur", backgroundImage: "URL van achtergrondafbeelding", apply: "Toepassen", removeBackground: "Afbeelding verwijderen", done: "Gereed", previous: "Vorige", next: "Volgende", playPause: "Pauzeren / afspelen", serverUrl: "Server-URL", username: "Gebruikersnaam", password: "Wachtwoord", login: "Inloggen", connecting: "Verbinden met IPTV-server...", loginFailed: "Inloggen mislukt.", modes: "MODI", modeFavorites: "★ Favorieten", modeLive: "📺 Live-tv", modeMovies: "🎬 Films", modeSeries: "🍿 Series", region: "REGIO", categories: "CATEGORIEËN", allRegions: "🌍 Alle regio's", channels: "KANALEN", movies: "FILMS", series: "SERIES", liveNow: "Live-uitzending", noNextProgram: "Geen volgend programma", vodHint: "Omhoog: bediening | Afspelen/Pauze: wisselen | Links/Rechts: zoeken", backToSeries: "← Terug naar series", noEpisodes: "Geen afleveringen gevonden", loadingEpisodes: "Afleveringen laden...", unableLoad: "Afleveringen laden mislukt", favoritesRemoved: "Verwijderd uit favorieten", favoritesAdded: "Toegevoegd aan favorieten", moveOnlyFavorites: "Verplaatsen kan alleen in Favorieten", moveStarted: "Verplaatsen gestart", positionSaved: "Positie opgeslagen", channelNotFound: "Kanaal #{number} niet gevonden", autoplay: "Volgende aflevering automatisch afspelen", colors: "Kleuren", backgroundApplied: "Achtergrond bijgewerkt", backgroundRemoved: "Achtergrond verwijderd", invalidBackground: "Voer een geldige HTTP- of HTTPS-afbeeldings-URL in", previousEpisode: "Vorige aflevering", nextEpisode: "Volgende aflevering", profileChanged: "Profiel gewijzigd", appReset: "App gereset", zapped: "Kanaal #{number} wordt afgespeeld: {title}", colorRed: "Rood", colorBlue: "Blauw", colorGreen: "Groen", colorRose: "Roze", colorOrange: "Oranje", colorGold: "Goud", colorTurquoise: "Turquoise", colorLime: "Limoen", colorSky: "Hemelsblauw"
+      generalTab: "Algemeen", playbackTab: "Afspelen", profileTab: "Bron", settings: "Instellingen", language: "Taal", autoplayNext: "Volgende aflevering automatisch afspelen", customization: "Aanpassen", switchProfile: "Bron wijzigen", resetApp: "App resetten", close: "Menu sluiten", back: "Terug", accentColor: "Accentkleur", highlightColor: "Markeringskleur", backgroundImage: "URL van achtergrondafbeelding", apply: "Toepassen", removeBackground: "Afbeelding verwijderen", done: "Gereed", previous: "Vorige", next: "Volgende", playPause: "Pauzeren / afspelen", serverUrl: "Server-URL", username: "Gebruikersnaam", password: "Wachtwoord", login: "Inloggen", connecting: "Verbinden met IPTV-server...", loginFailed: "Inloggen mislukt.", modes: "MODI", modeFavorites: "★ Favorieten", modeLive: "📺 Live-tv", modeMovies: "🎬 Films", modeSeries: "🍿 Series", region: "REGIO", categories: "CATEGORIEËN", allRegions: "🌍 Alle regio's", channels: "KANALEN", movies: "FILMS", series: "SERIES", liveNow: "Live-uitzending", noNextProgram: "Geen volgend programma", vodHint: "Omhoog: bediening | Afspelen/Pauze: wisselen | Links/Rechts: zoeken", backToSeries: "← Terug naar series", noEpisodes: "Geen afleveringen gevonden", loadingEpisodes: "Afleveringen laden...", unableLoad: "Afleveringen laden mislukt", favoritesRemoved: "Verwijderd uit favorieten", favoritesAdded: "Toegevoegd aan favorieten", moveOnlyFavorites: "Verplaatsen kan alleen in Favorieten", moveStarted: "Verplaatsen gestart", positionSaved: "Positie opgeslagen", channelNotFound: "Kanaal #{number} niet gevonden", autoplay: "Volgende aflevering automatisch afspelen", colors: "Kleuren", backgroundApplied: "Achtergrond bijgewerkt", backgroundRemoved: "Achtergrond verwijderd", invalidBackground: "Voer een geldige HTTP- of HTTPS-afbeeldings-URL in", previousEpisode: "Vorige aflevering", nextEpisode: "Volgende aflevering", profileChanged: "Profiel gewijzigd", appReset: "App gereset", zapped: "Kanaal #{number} wordt afgespeeld: {title}", colorRed: "Rood", colorBlue: "Blauw", colorGreen: "Groen", colorRose: "Roze", colorOrange: "Oranje", colorGold: "Goud", colorTurquoise: "Turquoise", colorLime: "Limoen", colorSky: "Hemelsblauw"
     },
     fr: {
-      settings: "Paramètres", language: "Langue", autoplayNext: "Lire automatiquement l’épisode suivant", customization: "Personnalisation", switchProfile: "Changer de source", resetApp: "Réinitialiser l’application", close: "Fermer le menu", back: "Retour", accentColor: "Couleur d’accentuation", highlightColor: "Couleur de surbrillance", backgroundImage: "URL de l’image d’arrière-plan", apply: "Appliquer", removeBackground: "Supprimer l’image", done: "Terminé", previous: "Précédent", next: "Suivant", playPause: "Pause / lecture", serverUrl: "URL du serveur", username: "Nom d’utilisateur", password: "Mot de passe", login: "Connexion", connecting: "Connexion au serveur IPTV...", loginFailed: "Échec de la connexion.", modes: "MODES", modeFavorites: "★ Favoris", modeLive: "📺 TV en direct", modeMovies: "🎬 Films", modeSeries: "🍿 Séries", region: "RÉGION", categories: "CATÉGORIES", allRegions: "🌍 Toutes les régions", channels: "CHAÎNES", movies: "FILMS", series: "SÉRIES", liveNow: "En direct", noNextProgram: "Aucun programme suivant", vodHint: "Haut : commandes | Lecture/Pause : basculer | Gauche/Droite : avancer", backToSeries: "← Retour aux séries", noEpisodes: "Aucun épisode trouvé", loadingEpisodes: "Chargement des épisodes...", unableLoad: "Impossible de charger les épisodes", favoritesRemoved: "Retiré des favoris", favoritesAdded: "Ajouté aux favoris", moveOnlyFavorites: "Le déplacement est réservé aux Favoris", moveStarted: "Déplacement commencé", positionSaved: "Position enregistrée", channelNotFound: "Chaîne #{number} introuvable", autoplay: "Lire automatiquement l’épisode suivant", colors: "Couleurs", backgroundApplied: "Arrière-plan mis à jour", backgroundRemoved: "Arrière-plan supprimé", invalidBackground: "Saisissez une URL d’image HTTP ou HTTPS valide", previousEpisode: "Épisode précédent", nextEpisode: "Épisode suivant", profileChanged: "Profil modifié", appReset: "Application réinitialisée", zapped: "Lecture de la chaîne #{number} : {title}", colorRed: "Rouge", colorBlue: "Bleu", colorGreen: "Vert", colorRose: "Rose", colorOrange: "Orange", colorGold: "Or", colorTurquoise: "Turquoise", colorLime: "Citron vert", colorSky: "Bleu ciel"
+      generalTab: "Général", playbackTab: "Lecture", profileTab: "Source", settings: "Paramètres", language: "Langue", autoplayNext: "Lire automatiquement l’épisode suivant", customization: "Personnalisation", switchProfile: "Changer de source", resetApp: "Réinitialiser l’application", close: "Fermer le menu", back: "Retour", accentColor: "Couleur d’accentuation", highlightColor: "Couleur de surbrillance", backgroundImage: "URL de l’image d’arrière-plan", apply: "Appliquer", removeBackground: "Supprimer l’image", done: "Terminé", previous: "Précédent", next: "Suivant", playPause: "Pause / lecture", serverUrl: "URL du serveur", username: "Nom d’utilisateur", password: "Mot de passe", login: "Connexion", connecting: "Connexion au serveur IPTV...", loginFailed: "Échec de la connexion.", modes: "MODES", modeFavorites: "★ Favoris", modeLive: "📺 TV en direct", modeMovies: "🎬 Films", modeSeries: "🍿 Séries", region: "RÉGION", categories: "CATÉGORIES", allRegions: "🌍 Toutes les régions", channels: "CHAÎNES", movies: "FILMS", series: "SÉRIES", liveNow: "En direct", noNextProgram: "Aucun programme suivant", vodHint: "Haut : commandes | Lecture/Pause : basculer | Gauche/Droite : avancer", backToSeries: "← Retour aux séries", noEpisodes: "Aucun épisode trouvé", loadingEpisodes: "Chargement des épisodes...", unableLoad: "Impossible de charger les épisodes", favoritesRemoved: "Retiré des favoris", favoritesAdded: "Ajouté aux favoris", moveOnlyFavorites: "Le déplacement est réservé aux Favoris", moveStarted: "Déplacement commencé", positionSaved: "Position enregistrée", channelNotFound: "Chaîne #{number} introuvable", autoplay: "Lire automatiquement l’épisode suivant", colors: "Couleurs", backgroundApplied: "Arrière-plan mis à jour", backgroundRemoved: "Arrière-plan supprimé", invalidBackground: "Saisissez une URL d’image HTTP ou HTTPS valide", previousEpisode: "Épisode précédent", nextEpisode: "Épisode suivant", profileChanged: "Profil modifié", appReset: "Application réinitialisée", zapped: "Lecture de la chaîne #{number} : {title}", colorRed: "Rouge", colorBlue: "Bleu", colorGreen: "Vert", colorRose: "Rose", colorOrange: "Orange", colorGold: "Or", colorTurquoise: "Turquoise", colorLime: "Citron vert", colorSky: "Bleu ciel"
     }
   };
 
@@ -270,6 +270,8 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => toastMsg.classList.remove("show"), 2500);
   }
 
+  let loginCredentialsRejected = false;
+
   function setLoginState(state) {
     currentLoginState = state;
     if (loginStateButton) loginStateButton.dataset.state = state;
@@ -281,7 +283,32 @@ document.addEventListener("DOMContentLoaded", () => {
       if (xtreamAuth) sources.push("Xtream");
       if (state === "logged-in" && sources.length) loginStatus.textContent += " · " + sources.join(" + ");
     }
+    const testBtn = document.getElementById("loginTestBtn");
+    if (testBtn) testBtn.classList.toggle("hidden", !(state === "failed" || loginCredentialsRejected));
     if (state === "failed") toggleLoginPanel(true, true);
+  }
+
+  function setLoginProgress(percent, text) {
+    const box = document.getElementById("loginProgress");
+    const bar = document.getElementById("loginProgressBar");
+    const label = document.getElementById("loginProgressText");
+    if (!box) return;
+    box.classList.remove("hidden");
+    if (bar) bar.style.width = `${Math.min(100, Math.max(0, Math.round(percent)))}%`;
+    if (label) label.textContent = text;
+  }
+
+  function hideLoginProgress() {
+    const box = document.getElementById("loginProgress");
+    if (box) box.classList.add("hidden");
+  }
+
+  // Without saved M3U playlists, the playlist generated from the Xtream login becomes the default.
+  function ensureDefaultXtreamPlaylist(server, username, password) {
+    if (getM3uProfiles().length > 0) return null;
+    const url = buildXtreamM3uUrl(server, username, password);
+    saveM3uProfile(url, "Xtream");
+    return url;
   }
 
   function showLoginError(message) {
@@ -303,10 +330,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function toggleLoginPanel(show, focusInput = false) {
     if (!loginForm || !loginStateButton) return;
-    const shouldShow = show === undefined ? loginForm.classList.contains("hidden") : show;
-    loginForm.classList.toggle("hidden", !shouldShow);
-    loginStateButton.setAttribute("aria-expanded", String(shouldShow));
-    if (shouldShow && focusInput) {
+    // The form lives in the Source tab, so it stays visible and the tab decides when it is seen.
+    loginForm.classList.remove("hidden");
+    loginStateButton.setAttribute("aria-expanded", "true");
+    if (show && focusInput) {
       const firstInput = loginForm.querySelector(".focusable:not([type='hidden'])");
       if (firstInput) setElementFocus(firstInput);
     }
@@ -322,10 +349,11 @@ document.addEventListener("DOMContentLoaded", () => {
     settingsPanel.classList.toggle("hidden", !shouldOpen);
     settingsButton.setAttribute("aria-expanded", String(shouldOpen));
     if (shouldOpen) {
-      const firstItem = settingsPanel.querySelector(".settings-item");
+      showCustomizationTab("general");
+      const firstItem = settingsPanel.querySelector(".customization-tab.active");
       if (firstItem) setElementFocus(firstItem);
-    } else if (appPage && !appPage.classList.contains("hidden")) {
-      setElementFocus(settingsButton);
+    } else {
+      if (appPage && !appPage.classList.contains("hidden")) setElementFocus(settingsButton);
     }
   }
 
@@ -429,16 +457,14 @@ document.addEventListener("DOMContentLoaded", () => {
       preset.classList.toggle("selected", preset.dataset.preset === themeConfig.backgroundImage);
     });
 
-    if (appPage) {
-      if (themeConfig.backgroundImage) {
-        appPage.style.backgroundImage = `url("${themeConfig.backgroundImage}")`;
-        appPage.style.backgroundSize = "cover";
-        appPage.style.backgroundPosition = "center";
-        document.body.classList.add("kc-has-bg");
-      } else {
-        appPage.style.backgroundImage = "none";
-        document.body.classList.remove("kc-has-bg");
-      }
+    if (themeConfig.backgroundImage) {
+      document.body.style.backgroundImage = `url("${themeConfig.backgroundImage}")`;
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundPosition = "center";
+      document.body.classList.add("kc-has-bg");
+    } else {
+      document.body.style.backgroundImage = "none";
+      document.body.classList.remove("kc-has-bg");
     }
     store.setItem("iptv_theme", JSON.stringify(themeConfig));
   }
@@ -484,18 +510,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function showCustomizationPage(show) {
+  function showCustomizationPage(show, tab = "general") {
     if (!customizationPage) return;
-    customizationPage.classList.toggle("hidden", !show);
+    toggleSettingsMenu(show);
     if (show) {
-      toggleSettingsMenu(false);
-      customizationPage.classList.remove("hidden");
-      showCustomizationTab("color");
-      setElementFocus(customizationPage.querySelector(".customization-tab"));
-    } else {
-      settingsPanel.classList.remove("hidden");
-      settingsButton.setAttribute("aria-expanded", "true");
-      setElementFocus(settingsPanel.querySelector(".settings-item[data-setting='customization']"));
+      showCustomizationTab(tab);
+      setElementFocus(customizationPage.querySelector(`.customization-tab[data-tab="${tab}"]`));
     }
   }
 
@@ -508,7 +528,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       case "customization":
-        showCustomizationPage(true);
+        showCustomizationPage(true, "customization");
         return;
       case "refreshCycle": {
         const options = [0, 3, 6, 12, 24];
@@ -528,8 +548,7 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast(t("hiddenReset"));
         return;
       case "switchProfile":
-        toggleSettingsMenu(false);
-        toggleLoginPanel(true, true);
+        showCustomizationPage(true, "source");
         return;
       case "close":
       default:
@@ -704,7 +723,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return buildXtreamM3uUrl(server, username, password);
   }
 
+  // Settings text fields start read-only; OK turns editing on and blur turns it off again.
+  function armTextInputs() {
+    document.querySelectorAll("#settingsPage input:not([type=checkbox])").forEach((input) => {
+      input.readOnly = true;
+      input.addEventListener("blur", () => { input.readOnly = true; });
+    });
+  }
+
   function initProfile() {
+    armTextInputs();
     showAppPage();
     restoreLoginDraft();
     renderM3uProfileOptions();
@@ -731,6 +759,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (passwordInput) passwordInput.value = vodProfile.password || "";
     }
 
+    if (!liveProfile && vodProfile) {
+      const defaultUrl = ensureDefaultXtreamPlaylist(normalizeServerUrl(vodProfile.server), vodProfile.username, vodProfile.password);
+      if (defaultUrl) liveProfile = { provider: "m3u", playlistUrl: defaultUrl };
+    }
+
     if (liveProfile && liveProfile.provider === "m3u") {
       currentAuth = liveProfile;
       setFavoritesProvider("m3u");
@@ -748,7 +781,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (currentActiveStreams.length > 0) {
           const first = currentActiveStreams[0];
           playStream(first.stream_id, first.name, first.stream_icon, 0, first.url);
-          activeerFitScreen();
         }
       }
       login(currentAuth.playlistUrl, "", "", true, "m3u", fastStart);
@@ -794,6 +826,15 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (error) {
         if (error.message === t("invalidCredentials")) throw error;
       }
+      xtreamAuth = { server, username, password };
+      loginCredentialsRejected = false;
+      store.setItem("iptv_xtream_profile", JSON.stringify({ server, username, password }));
+      if (!background) {
+        setLoginState("logged-in");
+        showToast(t("loggedIn"));
+        setLoginProgress(15, t("progressCategories"));
+      }
+
       const vodCats = await optionalList("get_vod_categories");
       const seriesCats = await optionalList("get_series_categories");
       if (!vodCats.length && !seriesCats.length) throw new Error(t("invalidCredentials"));
@@ -803,16 +844,21 @@ document.addEventListener("DOMContentLoaded", () => {
       vodStreams = [];
       seriesStreams = [];
       Object.keys(loadedCategories).forEach((key) => { delete loadedCategories[key]; });
-      xtreamAuth = { server, username, password };
-      store.setItem("iptv_xtream_profile", JSON.stringify({ server, username, password }));
       setLoginState("logged-in");
       if (background) {
         if (currentModus === "vod" || currentModus === "series") setupRegions();
       } else {
-        showAppPage();
-        showToast(t("loggedIn"));
+        const defaultUrl = ensureDefaultXtreamPlaylist(server, username, password);
+        if (defaultUrl) {
+          await login(defaultUrl, "", "", false, "m3u");
+        } else {
+          hideLoginProgress();
+          showAppPage();
+        }
       }
     } catch (error) {
+      hideLoginProgress();
+      if (error.message === t("invalidCredentials")) loginCredentialsRejected = true;
       setLoginState(currentAuth ? "logged-in" : "failed");
       showLoginError(error.message || t("playlistUnavailable"));
       toggleLoginPanel(true);
@@ -943,10 +989,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const applyBackgroundButton = document.getElementById("applyBackgroundButton");
   const clearBackgroundButton = document.getElementById("clearBackgroundButton");
-  const customizationDone = document.getElementById("customizationDone");
+  const settingsDone = document.getElementById("settingsDone");
+  const settingsBack = document.getElementById("settingsBack");
   if (applyBackgroundButton) applyBackgroundButton.addEventListener("click", () => updateBackgroundImage(backgroundImageInput.value));
   if (clearBackgroundButton) clearBackgroundButton.addEventListener("click", () => updateBackgroundImage(""));
-  if (customizationDone) customizationDone.addEventListener("click", () => showCustomizationPage(false));
+  if (settingsDone) settingsDone.addEventListener("click", () => showCustomizationPage(false));
+  if (settingsBack) settingsBack.addEventListener("click", () => showCustomizationPage(false));
 
   applyThemeConfig();
   applyAppLanguage(currentLang);
@@ -1027,11 +1075,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // XHR instead of fetch: the TV's fetch returned empty bodies for this provider.
-  function requestText(url, timeout = 60000) {
+  function requestText(url, timeout = 60000, onProgress = null) {
     return new Promise((resolve) => {
       const xhr = new XMLHttpRequest();
       xhr.open("GET", url, true);
       xhr.timeout = timeout;
+      if (onProgress) xhr.onprogress = (event) => onProgress(event.loaded, event.lengthComputable ? event.total : 0);
       xhr.onload = () => resolve({ status: xhr.status, body: xhr.responseText || "" });
       xhr.onerror = () => resolve({ status: 0, body: "", failed: "network" });
       xhr.ontimeout = () => resolve({ status: 0, body: "", failed: "timeout" });
@@ -1148,10 +1197,15 @@ document.addEventListener("DOMContentLoaded", () => {
       let startMode = "favorites";
       if (provider === "m3u") {
         if (!server) throw new Error(t("playlistUnavailable"));
-        const response = await requestText(server, 180000);
+        setLoginProgress(10, t("progressPlaylist"));
+        const response = await requestText(server, 180000, (loaded, total) => {
+          const mb = (loaded / 1048576).toFixed(1);
+          setLoginProgress(total ? 10 + (loaded / total) * 60 : 40, `${t("progressPlaylist")} ${mb} MB`);
+        });
         if (response.status !== 200) throw new Error(`${t("playlistUnavailable")} (${response.status || response.failed})`);
         const content = response.body;
         if (content.replace(/^\s+/, "").indexOf("#EXTM3U") !== 0) throw new Error(t("playlistInvalid"));
+        setLoginProgress(75, t("progressParsing"));
         const playlist = parseM3UPlaylist(content);
         if (playlist.streams.length === 0) throw new Error(t("playlistInvalid"));
 
@@ -1165,6 +1219,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       store.setItem("iptv_profile", JSON.stringify(currentAuth));
+      hideLoginProgress();
       if (provider === "m3u") saveM3uProfile(server, m3uProfileNameInput ? m3uProfileNameInput.value.trim() : "");
       cacheFavoriteStreams();
       if (!favorites.length && startMode === "favorites") startMode = "live";
@@ -1181,9 +1236,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (currentActiveStreams.length > 0) {
         const firstStream = currentActiveStreams[0];
         playStream(firstStream.stream_id, firstStream.name, firstStream.stream_icon, 0, firstStream.url);
-        activeerFitScreen();
       }
     } catch (error) {
+      hideLoginProgress();
       setLoginState("failed");
       showLoginError(error.message || t("playlistUnavailable"));
       toggleLoginPanel(true);
@@ -1863,13 +1918,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const epgs = data.epg_listings;
       const b64 = (str) => { try { return decodeURIComponent(escape(atob(str))); } catch (e) { return str; } };
       const pad2 = (n) => (n < 10 ? "0" : "") + n;
+      // The provider sends the end time as stop_timestamp; its text times are UTC.
       const clock = (listing, field) => {
-        const stamp = Number(listing[field + "_timestamp"]);
+        const stamp = Number(listing[field + "_timestamp"] || (field === "end" ? listing.stop_timestamp : 0));
         if (stamp) {
           const d = new Date(stamp * 1000);
           return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
         }
-        return listing[field] ? listing[field].substring(11, 16) : "";
+        if (!listing[field]) return "";
+        const d = new Date(listing[field].replace(" ", "T") + "Z");
+        return isNaN(d) ? listing[field].substring(11, 16) : `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
       };
 
       const cTitle = b64(epgs[0].title || t("liveNow"));
@@ -1926,8 +1984,51 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 4000);
 
-  video.addEventListener("playing", () => { liveReconnectAttempts = 0; });
-  video.addEventListener("error", () => { if (lastLive) scheduleLiveReconnect(); });
+  const playerLoading = document.getElementById("playerLoading");
+  function showPlayerLoading() {
+    if (playerLoading) playerLoading.classList.remove("hidden");
+  }
+  function hidePlayerLoading() {
+    if (playerLoading) playerLoading.classList.add("hidden");
+  }
+
+  let playbackTimer = null;
+  let lastPlaybackReason = "";
+  function reportPlaybackError(reason) {
+    lastPlaybackReason = reason;
+    console.error("Playback:", reason);
+    showToast(t("streamFailed", { reason }));
+  }
+  function startPlaybackTimeout() {
+    clearTimeout(playbackTimer);
+    lastPlaybackReason = "";
+    playbackTimer = setTimeout(() => {
+      playbackTimer = null;
+      hidePlayerLoading();
+      showToast(t("streamTimedOut", { reason: lastPlaybackReason || t("streamNoData") }));
+    }, 20000);
+  }
+  function clearPlaybackTimeout() {
+    clearTimeout(playbackTimer);
+    playbackTimer = null;
+  }
+  function mediaErrorReason(mediaError) {
+    const names = { 1: "aborted", 2: "network", 3: "decode", 4: "format not supported" };
+    if (!mediaError) return "unknown media error";
+    return `${names[mediaError.code] || "media error"}${mediaError.message ? ` (${mediaError.message})` : ""}`;
+  }
+
+  video.addEventListener("playing", () => {
+    liveReconnectAttempts = 0;
+    clearPlaybackTimeout();
+    hidePlayerLoading();
+  });
+  video.addEventListener("canplay", hidePlayerLoading);
+  video.addEventListener("error", () => {
+    if (!lastLive) return;
+    reportPlaybackError(mediaErrorReason(video.error));
+    scheduleLiveReconnect();
+  });
   video.addEventListener("ended", () => { if (lastLive) scheduleLiveReconnect(); });
 
   function destroyStreamPlayers() {
@@ -2014,21 +2115,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     destroyStreamPlayers();
     lastLive = { streamId, name, icon, index, directUrl };
-
-    video.muted = false;
+    showPlayerLoading();
+    startPlaybackTimeout();
+    if (isTransportStream && !window.mpegts) reportPlaybackError("MPEG-TS library not loaded (CDN unreachable?)");
+    if (!isTransportStream && /\.m3u8(?:$|[?#])/i.test(hlsUrl) && !window.Hls) reportPlaybackError("HLS library not loaded (CDN unreachable?)");
     video.volume = 1.0;
 
     if (isTransportStream && window.mpegts && mpegts.isSupported()) {
       mpegTsPlayer = mpegts.createPlayer({ type: "mpegts", isLive: true, url: streamUrl });
       mpegTsPlayer.on(mpegts.Events.ERROR, (type, detail) => {
-        console.error("MPEG-TS playback error", type, detail);
+        reportPlaybackError(`MPEG-TS ${type}: ${detail}`);
         scheduleLiveReconnect();
       });
       mpegTsPlayer.attachMediaElement(video);
       mpegTsPlayer.load();
       Promise.resolve(mpegTsPlayer.play()).catch(error => {
-        console.error(error);
-        showToast(t("streamPlaybackFailed"));
+        reportPlaybackError(`play() ${error.name}: ${error.message}`);
       });
     } else if (window.Hls && Hls.isSupported() && /\.m3u8(?:$|[?#])/i.test(hlsUrl)) {
       hlsPlayer = new Hls({ enableWorker: true });
@@ -2036,11 +2138,14 @@ document.addEventListener("DOMContentLoaded", () => {
       hlsPlayer.attachMedia(video);
       hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(console.error));
       hlsPlayer.on(Hls.Events.ERROR, (event, data) => {
-        if (data && data.fatal) scheduleLiveReconnect();
+        if (data && data.fatal) {
+          reportPlaybackError(`HLS ${data.type}: ${data.details}`);
+          scheduleLiveReconnect();
+        }
       });
     } else {
       video.src = hlsUrl;
-      video.play().catch(console.error);
+      video.play().catch((error) => reportPlaybackError(`play() ${error.name}: ${error.message}`));
     }
   }
 
@@ -2309,7 +2414,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     // Centre the list before focusing so the focus box never paints at the old position.
     centerInList(element, true);
-    element.focus();
+    element.focus({ preventScroll: true });
 
     if (element.classList.contains("grid-item")) {
       lastFocusedPoster = element;
@@ -2528,15 +2633,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let focused = document.activeElement;
 
+    // Text fields are read-only until OK, so highlighting one doesn't open the TV keyboard.
+    if (isEnter && focused && focused.tagName === "INPUT" && focused.readOnly) {
+      e.preventDefault();
+      focused.blur();
+      focused.readOnly = false;
+      focused.focus();
+      return;
+    }
+
     // Login panel: step through visible fields in order
     if (loginForm && !loginForm.classList.contains("hidden") && loginForm.contains(focused)) {
       const fields = Array.from(loginForm.querySelectorAll(".focusable")).filter((el) => el.offsetParent !== null);
       const idx = fields.indexOf(focused);
       if (isDown || isUp) {
         e.preventDefault();
+        if (isUp && idx <= 0) {
+          setElementFocus(loginStateButton);
+          return;
+        }
         const step = isDown ? 1 : -1;
-        const next = Math.max(0, Math.min(fields.length - 1, idx + step));
-        setElementFocus(fields[next]);
+        const target = fields[idx + step];
+        if (target) setElementFocus(target);
       } else if ((isLeft || isRight) && focused === loginMethod) {
         e.preventDefault();
         const count = loginMethod.options.length;
@@ -2574,56 +2692,76 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (customizationPage && !customizationPage.classList.contains("hidden")) {
-      if (isBack) {
-        e.preventDefault();
-        showCustomizationPage(false);
-      } else if (isUp || isDown || isLeft || isRight) {
-        e.preventDefault();
-        moveFocusByDirection(focused, isUp ? "up" : isDown ? "down" : isLeft ? "left" : "right", customizationPage);
-      } else if (isEnter && focused) {
-        e.preventDefault();
-        if (focused === backgroundImageInput) updateBackgroundImage(backgroundImageInput.value);
-        else focused.click();
-      }
-      return;
-    }
-
     if (settingsPanel && !settingsPanel.classList.contains("hidden")) {
-      const settingsItems = Array.from(settingsPanel.querySelectorAll(".settings-item, #autoplayNextToggle")).filter((el) => {
-        const row = el.closest(".settings-row");
-        if (!row || el === focused) return true;
-        if (row.contains(focused)) return false;
-        return el === (row.querySelector(".settings-item.active") || row.querySelector(".settings-item"));
-      });
-      const settingsIndex = settingsItems.indexOf(focused);
+      const GROUP_SELECTOR = ".settings-row, .color-swatch-group, .background-presets, .background-image-controls";
+      const MEMBER_SELECTOR = ".settings-item, .color-swatch, .background-preset, input.focusable, .settings-toggle input";
+      const isVisible = (el) => el.offsetParent !== null;
+      const unitOf = (el) => el.closest(GROUP_SELECTOR) || el;
+      const repOf = (unit) => (unit.matches(GROUP_SELECTOR) ? unit.querySelector(".active, .selected") || unit.querySelector(MEMBER_SELECTOR) : unit);
+      const navItems = Array.from(settingsPanel.querySelectorAll(".customization-header .settings-item, .customization-nav .settings-item")).filter(isVisible);
+      const paneRoot = settingsPanel.querySelector(".customization-pane:not(.hidden)");
+      const paneCandidates = paneRoot ? Array.from(paneRoot.querySelectorAll(`${MEMBER_SELECTOR}, #loginStateButton`)).filter(isVisible) : [];
+      const paneUnits = [...new Set(paneCandidates.map(unitOf))];
+      const paneItems = paneUnits.map(repOf).filter(Boolean);
+      const inNav = !!(focused && focused.closest(".customization-nav, .customization-header"));
+      const activeTab = settingsPanel.querySelector(".customization-tab.active");
       if (isBack) {
         e.preventDefault();
         toggleSettingsMenu(false);
         return;
       }
-      if (isUp || isDown) {
+      if (isDown && focused === loginStateButton && loginForm && !loginForm.classList.contains("hidden")) {
         e.preventDefault();
-        const step = isDown ? 1 : -1;
-        const nextIndex = (settingsIndex + step + settingsItems.length) % settingsItems.length;
-        setElementFocus(settingsItems[nextIndex]);
-        return;
-      }
-      if (isLeft || isRight) {
-        const focusedRow = focused && focused.closest ? focused.closest(".settings-row") : null;
-        const languageItems = focusedRow ? Array.from(focusedRow.querySelectorAll(".settings-item")) : [];
-        const languageIndex = languageItems.indexOf(focused);
-        if (languageIndex >= 0) {
-          e.preventDefault();
-          const step = isRight ? 1 : -1;
-          const nextIndex = (languageIndex + step + languageItems.length) % languageItems.length;
-          setElementFocus(languageItems[nextIndex]);
+        const firstField = Array.from(loginForm.querySelectorAll(".focusable")).find((el) => el.offsetParent !== null);
+        if (firstField) {
+          setElementFocus(firstField);
           return;
         }
       }
-      if (isEnter && settingsIndex >= 0) {
+      if (isUp || isDown) {
         e.preventDefault();
-        focused.click();
+        const step = isDown ? 1 : -1;
+        if (inNav) {
+          const idx = navItems.indexOf(focused);
+          const next = navItems[Math.min(Math.max(idx + step, 0), navItems.length - 1)];
+          if (next) setElementFocus(next);
+          return;
+        }
+        const idx = paneItems.findIndex((item) => unitOf(item) === unitOf(focused));
+        const next = paneItems[Math.min(Math.max(idx + step, 0), paneItems.length - 1)];
+        if (next) setElementFocus(next);
+        return;
+      }
+      if (isLeft || isRight) {
+        const step = isRight ? 1 : -1;
+        const isTextInput = focused && focused.tagName === "INPUT" && focused.type !== "checkbox";
+        if (!isTextInput) {
+          const group = focused && focused.closest(GROUP_SELECTOR);
+          if (group) {
+            const members = Array.from(group.querySelectorAll(MEMBER_SELECTOR)).filter(isVisible);
+            const target = members[members.indexOf(focused) + step];
+            if (target) {
+              e.preventDefault();
+              setElementFocus(target);
+              return;
+            }
+          }
+          if (inNav && isRight && paneItems.length) {
+            e.preventDefault();
+            setElementFocus(paneItems[0]);
+            return;
+          }
+          if (!inNav && isLeft && activeTab) {
+            e.preventDefault();
+            setElementFocus(activeTab);
+            return;
+          }
+        }
+      }
+      if (isEnter && focused) {
+        e.preventDefault();
+        if (focused === backgroundImageInput) updateBackgroundImage(backgroundImageInput.value);
+        else focused.click();
         return;
       }
     }
@@ -2752,6 +2890,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (numZapOverlay) numZapOverlay.classList.add("hidden");
         zapToNumber(num);
       }, 1200);
+      return;
+    }
+
+    if (isDown && focused === settingsButton) {
+      e.preventDefault();
+      const firstMode = document.querySelector("#modusList .nav-item.focusable:not(.hidden)");
+      if (firstMode) setElementFocus(firstMode);
       return;
     }
 
@@ -2907,11 +3052,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isUp) {
       e.preventDefault();
       let prev = focused.previousElementSibling;
-      while (prev && !prev.classList.contains("focusable")) {
+      while (prev && (!prev.classList.contains("focusable") || prev.classList.contains("hidden"))) {
         prev = prev.previousElementSibling;
       }
       if (prev) {
         setElementFocus(prev);
+      } else if (focused.closest("#modusList") && settingsButton) {
+        setElementFocus(settingsButton);
       }
       return;
     }
