@@ -610,7 +610,8 @@ body.kc-has-bg .col-content-wrapper {
 }
 
 body.favorites-mode #colRegions,
-body.favorites-mode #colCategories {
+body.favorites-mode #colCategories,
+body.no-region-column #colRegions {
   display: none !important;
 }
 
@@ -680,12 +681,17 @@ body.favorites-mode #colCategories {
   gap: 15px;
 }
 
-/* Long category/region names wrap onto at most two lines; words are never split */
-.col-nav:not(.collapsed)#colCategories,
-.col-nav:not(.collapsed)#colRegions {
+/* Category names can be long, so that column is wide; region codes are short, so that column stays narrow */
+.col-nav:not(.collapsed)#colCategories {
   width: 26vw;
   min-width: 280px;
   max-width: 26vw;
+}
+
+.col-nav:not(.collapsed)#colRegions {
+  width: 12vw;
+  min-width: 180px;
+  max-width: 12vw;
 }
 
 #categoryList .nav-item,
@@ -698,6 +704,26 @@ body.favorites-mode #colCategories {
   white-space: normal;
   text-align: center;
   line-height: 1.25;
+}
+
+/* Country flag behind a region box; isolation keeps it under the text but above the box background */
+#regionList .nav-item {
+  position: relative;
+  isolation: isolate;
+}
+
+.flag-underlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.22;
+  pointer-events: none;
 }
 
 /* KANALEN PANEL */

@@ -34,6 +34,9 @@ tizen/
 
 ### Centered Picker Navigation & Translucent Aesthetics
 - **Centered Focus:** Picker lists keep the active row on the centre line of their column (`centerInList` in `main.js`), the same line as the collapsed MODLAR / BÖLGE / KATEGORİLER labels. Padding is set from the `.col-nav` centre, so the focus box lines up with the collapsed labels. Items scroll behind it, reducing visual jumpiness on large TV screens.
+- **Region column and flags:** The BÖLGE column is 12vw wide (min 180px), so categories get the space. The "all regions" entry reads just `ALL` in every language, with no flag. Each two-letter region box gets a faded flag underlay (`.flag-underlay`, 0.22 opacity), using SVGs from flag-icons 7.6.0 (MIT) in `tizen/flags/`. `FLAG_ALIASES` maps UK/EN to `gb` and EL to `gr`. Flags load lazily with an IntersectionObserver rooted on `#regionList` (`observeRegionFlags` in `main.js`), so only boxes near the viewport fetch an image. Codes that are not two letters (EXYU, NEWS, SPOR, etc.) get no flag.
+- **Menu setting (hide region column):** The Settings page has a **Menu** tab with a toggle, `iptv_hide_regions` (`"true"`/`"false"`, default off). When on, `body.no-region-column` hides the BÖLGE column, `setupRegions` forces the region to ALL, and keyboard Left/Right skip the hidden column (`isColumnSkipped` in `main.js`). Turning it off restores the column.
+- **Focus memory:** `recallFocus` ignores hidden elements (for example the Favoriler item when no favourites exist), so returning to a column never lands on an invisible item.
 - **Translucent Glass Panels:** Background presets (Aurora, Dark Space, Sunset) paired with `backdrop-filter: blur(16px)` allow stream video to remain partially visible behind menus.
 - **Left-Aligned OSD:** Transparent channel logo display with program title and now/next EPG timeline.
 

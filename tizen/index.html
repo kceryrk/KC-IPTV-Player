@@ -49,6 +49,7 @@
               <button class="settings-item focusable customization-tab active" data-tab="general" type="button" tabindex="0">🌐 <span data-i18n="generalTab">General</span></button>
               <button class="settings-item focusable customization-tab" data-tab="playback" type="button" tabindex="0">▶ <span data-i18n="playbackTab">Playback</span></button>
               <button class="settings-item focusable customization-tab" data-tab="customization" type="button" tabindex="0">🎨 <span data-i18n="customization">Customization</span></button>
+              <button class="settings-item focusable customization-tab" data-tab="menu" type="button" tabindex="0">🧭 <span data-i18n="menuTab">Menu</span></button>
               <button id="settingsDone" class="settings-item focusable" data-i18n="done" type="button" tabindex="0">✔ Done</button>
             </div>
           </nav>
@@ -75,6 +76,14 @@
               <label class="settings-toggle" for="autoplayNextToggle">
                 <span>⏭ <span data-i18n="autoplayNext">Play next episode automatically</span></span>
                 <input id="autoplayNextToggle" class="focusable" type="checkbox" tabindex="0">
+              </label>
+            </section>
+          </div>
+          <div class="customization-pane hidden" data-pane="menu">
+            <section class="customization-section">
+              <label class="settings-toggle" for="hideRegionsToggle">
+                <span>🗺 <span data-i18n="hideRegions">Hide region column</span></span>
+                <input id="hideRegionsToggle" class="focusable" type="checkbox" tabindex="0">
               </label>
             </section>
           </div>
