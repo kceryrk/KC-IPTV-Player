@@ -2270,6 +2270,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   video.addEventListener("ended", () => {
+    if (lastLive) return;
     if (currentModus === "series" && autoplayNext && playAdjacentVod(1)) return;
     showVodControls();
   });
