@@ -1468,6 +1468,77 @@ body.speler-fit-screen .epg-preview-panel {
   border-radius: 50%;
 }
 
+.color-swatch.custom-swatch {
+  background-image: conic-gradient(#ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+}
+
+.color-swatch.custom-swatch.selected {
+  background-image: none;
+}
+
+.hue-panel {
+  flex: 0 0 100%;
+  width: 100%;
+  margin: 14px 0 26px;
+}
+
+.hue-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.hue-label {
+  flex: 0 0 180px;
+  margin-right: 18px;
+  color: #fff;
+  font-size: 1.4rem;
+}
+
+.hue-range.focus-width-range {
+  background: rgba(255,255,255,0.18);
+}
+
+.focus-width-value {
+  flex: 0 0 72px;
+  margin-left: 18px;
+  color: #fff;
+  font-size: 1.4rem;
+  text-align: right;
+}
+
+/* Pill-shaped sliders. The saturation and lightness gradients are set per panel in main.js (updateHueTracks). */
+.hue-range {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border-radius: 22px;
+  background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+  border: 3px solid rgba(255,255,255,0.72);
+  outline: none;
+}
+
+.hue-range::-webkit-slider-runnable-track {
+  height: 38px;
+  background: transparent;
+}
+
+.hue-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 56px;
+  margin-top: -9px;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.6);
+}
+
 .customization-body {
   flex: 1;
   min-height: 0;
@@ -1646,10 +1717,59 @@ body.speler-fit-screen .epg-preview-panel {
   border-radius: 8px;
 }
 
-.settings-toggle input {
-  width: 28px;
-  height: 28px;
-  accent-color: var(--accent);
+/* Apple-style switch: the checkbox stays focusable but is invisible; the track and knob draw the state. */
+.ios-switch {
+  position: relative;
+  flex: 0 0 auto;
+  width: 68px;
+  height: 40px;
+}
+
+.ios-switch input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  z-index: 1;
+}
+
+.ios-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 20px;
+  background: rgba(120,120,128,0.5);
+  transition: background-color 0.2s ease;
+}
+
+.ios-knob {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: transform 0.2s ease;
+}
+
+.ios-switch input:checked ~ .ios-track {
+  background: var(--accent);
+}
+
+.ios-switch input:checked ~ .ios-track .ios-knob {
+  transform: translateX(28px);
+}
+
+.ios-switch input.focused ~ .ios-track {
+  box-shadow: 0 0 0 4px #ffffff;
 }
 
 .vod-playback-controls {
@@ -1725,7 +1845,7 @@ body.speler-fit-screen .epg-preview-panel {
 
 .focusable:focus,
 .focusable.focused {
-  box-shadow: inset 0 0 0 5px var(--highlight) !important;
+  box-shadow: inset 0 0 0 var(--focus-width, 5px) var(--highlight) !important;
 }
 
 .color-swatch.focusable.focused {
@@ -1747,6 +1867,12 @@ body.speler-fit-screen .epg-preview-panel {
 body.kc-has-bg .player-wrapper,
 body.kc-has-bg video {
   background: transparent !important;
+}
+
+/* While a stream loads there is no frame yet, so keep the player black instead of showing the theme background. */
+body.kc-has-bg .player-wrapper.is-loading,
+body.kc-has-bg .player-wrapper.is-loading video {
+  background: #000 !important;
 }
 
 body.kc-has-bg .epg-preview-panel {

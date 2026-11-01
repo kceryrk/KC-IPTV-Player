@@ -75,7 +75,7 @@
             <section class="customization-section">
               <label class="settings-toggle" for="autoplayNextToggle">
                 <span>⏭ <span data-i18n="autoplayNext">Play next episode automatically</span></span>
-                <input id="autoplayNextToggle" class="focusable" type="checkbox" tabindex="0">
+                <span class="ios-switch"><input id="autoplayNextToggle" class="focusable" type="checkbox" tabindex="0"><span class="ios-track" aria-hidden="true"><span class="ios-knob"></span></span></span>
               </label>
             </section>
           </div>
@@ -83,7 +83,7 @@
             <section class="customization-section">
               <label class="settings-toggle" for="hideRegionsToggle">
                 <span>🗺 <span data-i18n="hideRegions">Hide region column</span></span>
-                <input id="hideRegionsToggle" class="focusable" type="checkbox" tabindex="0">
+                <span class="ios-switch"><input id="hideRegionsToggle" class="focusable" type="checkbox" tabindex="0"><span class="ios-track" aria-hidden="true"><span class="ios-knob"></span></span></span>
               </label>
             </section>
           </div>
@@ -96,6 +96,21 @@
               <button class="color-swatch focusable" data-color-role="accent" data-color="#26a269" data-i18n-aria="colorGreen" data-i18n-title="colorGreen" aria-label="Green" title="Green" tabindex="0"></button>
               <button class="color-swatch focusable" data-color-role="accent" data-color="#d33682" data-i18n-aria="colorRose" data-i18n-title="colorRose" aria-label="Rose" title="Rose" tabindex="0"></button>
               <button class="color-swatch focusable" data-color-role="accent" data-color="#f07818" data-i18n-aria="colorOrange" data-i18n-title="colorOrange" aria-label="Orange" title="Orange" tabindex="0"></button>
+              <button class="color-swatch custom-swatch focusable" data-color-role="accent" data-custom-role="accent" data-i18n-aria="customColor" data-i18n-title="customColor" aria-label="Custom" title="Custom" tabindex="0"></button>
+            </div>
+            <div class="hue-panel hidden" data-hue-role="accent">
+              <div class="hue-row">
+                <span class="hue-label" data-i18n="hueLabel">Hue</span>
+                <input type="range" class="hue-range focusable" data-hue-role="accent" data-hsl-part="h" min="0" max="354" step="6" value="0" data-i18n-aria="hueLabel" aria-label="Hue" tabindex="0">
+              </div>
+              <div class="hue-row">
+                <span class="hue-label" data-i18n="saturationLabel">Saturation</span>
+                <input type="range" class="hue-range focusable" data-hue-role="accent" data-hsl-part="s" min="0" max="100" step="1" value="90" data-i18n-aria="saturationLabel" aria-label="Saturation" tabindex="0">
+              </div>
+              <div class="hue-row">
+                <span class="hue-label" data-i18n="lightnessLabel">Lightness</span>
+                <input type="range" class="hue-range focusable" data-hue-role="accent" data-hsl-part="l" min="0" max="100" step="1" value="55" data-i18n-aria="lightnessLabel" aria-label="Lightness" tabindex="0">
+              </div>
             </div>
           </section>
           <section class="customization-section">
@@ -106,6 +121,28 @@
               <button class="color-swatch focusable" data-color-role="highlight" data-color="#91d32a" data-i18n-aria="colorLime" data-i18n-title="colorLime" aria-label="Lime" title="Lime" tabindex="0"></button>
               <button class="color-swatch focusable" data-color-role="highlight" data-color="#ff8a00" data-i18n-aria="colorOrange" data-i18n-title="colorOrange" aria-label="Orange" title="Orange" tabindex="0"></button>
               <button class="color-swatch focusable" data-color-role="highlight" data-color="#65a9ff" data-i18n-aria="colorSky" data-i18n-title="colorSky" aria-label="Sky blue" title="Sky blue" tabindex="0"></button>
+              <button class="color-swatch custom-swatch focusable" data-color-role="highlight" data-custom-role="highlight" data-i18n-aria="customColor" data-i18n-title="customColor" aria-label="Custom" title="Custom" tabindex="0"></button>
+            </div>
+            <div class="hue-panel hidden" data-hue-role="highlight">
+              <div class="hue-row">
+                <span class="hue-label" data-i18n="hueLabel">Hue</span>
+                <input type="range" class="hue-range focusable" data-hue-role="highlight" data-hsl-part="h" min="0" max="354" step="6" value="0" data-i18n-aria="hueLabel" aria-label="Hue" tabindex="0">
+              </div>
+              <div class="hue-row">
+                <span class="hue-label" data-i18n="saturationLabel">Saturation</span>
+                <input type="range" class="hue-range focusable" data-hue-role="highlight" data-hsl-part="s" min="0" max="100" step="1" value="90" data-i18n-aria="saturationLabel" aria-label="Saturation" tabindex="0">
+              </div>
+              <div class="hue-row">
+                <span class="hue-label" data-i18n="lightnessLabel">Lightness</span>
+                <input type="range" class="hue-range focusable" data-hue-role="highlight" data-hsl-part="l" min="0" max="100" step="1" value="55" data-i18n-aria="lightnessLabel" aria-label="Lightness" tabindex="0">
+              </div>
+            </div>
+          </section>
+          <section class="customization-section">
+            <h2 data-i18n="focusWidthLabel">Focus box thickness</h2>
+            <div class="hue-row">
+              <input type="range" id="focusWidthRange" class="hue-range focus-width-range focusable" min="1" max="10" step="1" value="5" data-i18n-aria="focusWidthLabel" aria-label="Focus box thickness" tabindex="0">
+              <span id="focusWidthValue" class="focus-width-value">5px</span>
             </div>
           </section>
           <section class="customization-section">

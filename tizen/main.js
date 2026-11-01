@@ -85,6 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const settingsButton = document.getElementById("settingsButton");
   const settingsPanel = document.getElementById("settingsPage");
   const customizationPage = settingsPanel;
+  const focusWidthRange = document.getElementById("focusWidthRange");
+  const focusWidthValue = document.getElementById("focusWidthValue");
   const autoplayNextToggle = document.getElementById("autoplayNextToggle");
   const hideRegionsToggle = document.getElementById("hideRegionsToggle");
   const backgroundImageInput = document.getElementById("backgroundImageInput");
@@ -146,14 +148,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     return text;
   }
-  Object.assign(appTranslations.en, {"hintFavorite": "Favorite", "hintReorder": "Reorder", "hintHide": "Hide category", "hintSearch": "Search", "searchTitle": "Search channels", "searchPlaceholder": "Type a channel name", "searchNoResults": "No channels found", "categoryHidden": "Category hidden", "resetHidden": "Show hidden categories", "hiddenReset": "Hidden categories restored", "refreshInterval": "Refresh lists", "refreshOff": "Off"});
-  Object.assign(appTranslations.tr, {"hintFavorite": "Favori", "hintReorder": "Sırala", "hintHide": "Kategoriyi gizle", "hintSearch": "Ara", "searchTitle": "Kanal ara", "searchPlaceholder": "Kanal adını yazın", "searchNoResults": "Kanal bulunamadı", "categoryHidden": "Kategori gizlendi", "resetHidden": "Gizli kategorileri göster", "hiddenReset": "Gizli kategoriler geri yüklendi", "refreshInterval": "Listeleri yenile", "refreshOff": "Kapalı"});
-  Object.assign(appTranslations.nl, {"hintFavorite": "Favoriet", "hintReorder": "Verplaatsen", "hintHide": "Categorie verbergen", "hintSearch": "Zoeken", "searchTitle": "Zoek kanalen", "searchPlaceholder": "Typ een kanaalnaam", "searchNoResults": "Geen kanalen gevonden", "categoryHidden": "Categorie verborgen", "resetHidden": "Verborgen categorieën tonen", "hiddenReset": "Verborgen categorieën hersteld", "refreshInterval": "Lijsten vernieuwen", "refreshOff": "Uit"});
+  Object.assign(appTranslations.en, {"hintFavorite": "Favorite", "hintReorder": "Reorder", "hintHide": "Hide category", "hintSearch": "Search", "searchTitle": "Search channels", "searchPlaceholder": "Type a channel name", "searchNoResults": "No channels found", "categoryHidden": "Category hidden", "resetHidden": "Show hidden categories", "hiddenReset": "Hidden categories restored", "refreshInterval": "Refresh lists", "refreshOff": "Off", "customColor": "Custom", "hueLabel": "Hue", "saturationLabel": "Saturation", "lightnessLabel": "Lightness", "focusWidthLabel": "Focus box thickness"});
+  Object.assign(appTranslations.tr, {"hintFavorite": "Favori", "hintReorder": "Sırala", "hintHide": "Kategoriyi gizle", "hintSearch": "Ara", "searchTitle": "Kanal ara", "searchPlaceholder": "Kanal adını yazın", "searchNoResults": "Kanal bulunamadı", "categoryHidden": "Kategori gizlendi", "resetHidden": "Gizli kategorileri göster", "hiddenReset": "Gizli kategoriler geri yüklendi", "refreshInterval": "Listeleri yenile", "refreshOff": "Kapalı", "customColor": "Özel", "hueLabel": "Ton", "saturationLabel": "Doygunluk", "lightnessLabel": "Parlaklık", "focusWidthLabel": "Odak kutusu kalınlığı"});
+  Object.assign(appTranslations.nl, {"hintFavorite": "Favoriet", "hintReorder": "Verplaatsen", "hintHide": "Categorie verbergen", "hintSearch": "Zoeken", "searchTitle": "Zoek kanalen", "searchPlaceholder": "Typ een kanaalnaam", "searchNoResults": "Geen kanalen gevonden", "categoryHidden": "Categorie verborgen", "resetHidden": "Verborgen categorieën tonen", "hiddenReset": "Verborgen categorieën hersteld", "refreshInterval": "Lijsten vernieuwen", "refreshOff": "Uit", "customColor": "Aangepast", "hueLabel": "Tint", "saturationLabel": "Verzadiging", "lightnessLabel": "Helderheid", "focusWidthLabel": "Dikte van focusvak"});
   Object.assign(appTranslations.en, {"menuTab": "Menu", "hideRegions": "Hide region column"});
   Object.assign(appTranslations.tr, {"menuTab": "Menü", "hideRegions": "Bölge sütununu gizle"});
   Object.assign(appTranslations.nl, {"menuTab": "Menu", "hideRegions": "Regiokolom verbergen"});
   Object.assign(appTranslations.fr, {"menuTab": "Menu", "hideRegions": "Masquer la colonne des régions"});
-  Object.assign(appTranslations.fr, {"hintFavorite": "Favori", "hintReorder": "Déplacer", "hintHide": "Masquer la catégorie", "hintSearch": "Rechercher", "searchTitle": "Rechercher des chaînes", "searchPlaceholder": "Saisissez un nom de chaîne", "searchNoResults": "Aucune chaîne trouvée", "categoryHidden": "Catégorie masquée", "resetHidden": "Afficher les catégories masquées", "hiddenReset": "Catégories masquées restaurées", "refreshInterval": "Actualiser les listes", "refreshOff": "Désactivé"});
+  Object.assign(appTranslations.fr, {"hintFavorite": "Favori", "hintReorder": "Déplacer", "hintHide": "Masquer la catégorie", "hintSearch": "Rechercher", "searchTitle": "Rechercher des chaînes", "searchPlaceholder": "Saisissez un nom de chaîne", "searchNoResults": "Aucune chaîne trouvée", "categoryHidden": "Catégorie masquée", "resetHidden": "Afficher les catégories masquées", "hiddenReset": "Catégories masquées restaurées", "refreshInterval": "Actualiser les listes", "refreshOff": "Désactivé", "customColor": "Personnalisée", "hueLabel": "Teinte", "saturationLabel": "Saturation", "lightnessLabel": "Luminosité", "focusWidthLabel": "Épaisseur du cadre de focus"});
   let autoplayNext = store.getItem("iptv_autoplay_next") === "true";
   let hideRegionColumn = store.getItem("iptv_hide_regions") === "true";
   let refreshTimer = null;
@@ -430,6 +432,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function clampFocusWidth(value) {
+    const width = typeof value === "number" ? Math.round(value) : NaN;
+    return Number.isFinite(width) ? Math.min(10, Math.max(1, width)) : 5;
+  }
+
   function loadThemeConfig() {
     try {
       const saved = JSON.parse(store.getItem("iptv_theme") || "{}");
@@ -439,10 +446,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return {
         accent: /^#[0-9a-f]{6}$/i.test(saved.accent || "") ? saved.accent : "#e50914",
         highlight: /^#[0-9a-f]{6}$/i.test(saved.highlight || "") ? saved.highlight : "#ffd700",
+        focusWidth: clampFocusWidth(saved.focusWidth),
         backgroundImage
       };
     } catch (error) {
-      return { accent: "#e50914", highlight: "#ffd700", backgroundImage: DEFAULT_BACKGROUND };
+      return { accent: "#e50914", highlight: "#ffd700", focusWidth: 5, backgroundImage: DEFAULT_BACKGROUND };
     }
   }
 
@@ -457,6 +465,9 @@ document.addEventListener("DOMContentLoaded", () => {
     root.style.setProperty("--accent-rgb", toRgb(themeConfig.accent));
     root.style.setProperty("--highlight", themeConfig.highlight);
     root.style.setProperty("--highlight-rgb", toRgb(themeConfig.highlight));
+    root.style.setProperty("--focus-width", `${themeConfig.focusWidth}px`);
+    if (focusWidthRange) focusWidthRange.value = String(themeConfig.focusWidth);
+    if (focusWidthValue) focusWidthValue.textContent = `${themeConfig.focusWidth}px`;
     const mixColor = (from, to, amount) => {
       const start = toRgb(from).split(", ").map(Number);
       const end = toRgb(to).split(", ").map(Number);
@@ -467,6 +478,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.querySelectorAll(".color-swatch").forEach(swatch => {
+      if (swatch.classList.contains("custom-swatch")) {
+        const role = swatch.dataset.customRole;
+        const isCustom = !Array.from(document.querySelectorAll(".color-swatch[data-color]")).some(preset => preset.dataset.color === themeConfig[role]);
+        swatch.style.setProperty("--swatch-color", themeConfig[role]);
+        swatch.classList.toggle("selected", isCustom);
+        swatch.setAttribute("aria-pressed", String(isCustom));
+        return;
+      }
       const selected = themeConfig[swatch.dataset.colorRole] === swatch.dataset.color;
       swatch.style.setProperty("--swatch-color", swatch.dataset.color);
       swatch.classList.toggle("selected", selected);
@@ -493,6 +512,86 @@ document.addEventListener("DOMContentLoaded", () => {
     if ((role !== "accent" && role !== "highlight") || !/^#[0-9a-f]{6}$/i.test(color || "")) return;
     themeConfig[role] = color;
     applyThemeConfig();
+  }
+
+  function updateFocusWidth(value) {
+    themeConfig.focusWidth = clampFocusWidth(Number(value));
+    applyThemeConfig();
+  }
+
+  // Custom colours use a fixed saturation and lightness so the hue slider always gives a vivid colour.
+  function hslToHex(hue, saturation, lightness) {
+    const a = saturation * Math.min(lightness, 1 - lightness);
+    const channel = n => {
+      const k = (n + hue / 30) % 12;
+      const value = lightness - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+      return Math.round(value * 255).toString(16).padStart(2, "0");
+    };
+    return `#${channel(0)}${channel(8)}${channel(4)}`;
+  }
+
+  function hexToHue(hex) {
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+    const max = Math.max(r, g, b);
+    const delta = max - Math.min(r, g, b);
+    if (delta === 0) return 0;
+    let hue;
+    if (max === r) hue = ((g - b) / delta) % 6;
+    else if (max === g) hue = (b - r) / delta + 2;
+    else hue = (r - g) / delta + 4;
+    return (hue * 60 + 360) % 360;
+  }
+
+  function hexToHsl(hex) {
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const lightness = (max + min) / 2;
+    const delta = max - min;
+    const saturation = delta === 0 ? 0 : delta / (1 - Math.abs(2 * lightness - 1));
+    return { hue: hexToHue(hex), saturation, lightness };
+  }
+
+  function readHuePanel(role) {
+    const panel = customizationPage.querySelector(`.hue-panel[data-hue-role="${role}"]`);
+    if (!panel) return null;
+    const value = part => Number(panel.querySelector(`[data-hsl-part="${part}"]`).value);
+    return { panel, hue: value("h"), saturation: value("s") / 100, lightness: value("l") / 100 };
+  }
+
+  // The saturation and lightness tracks show the colours the current hue can produce.
+  function updateHueTracks(panel, hue, saturation, lightness) {
+    panel.querySelector('[data-hsl-part="s"]').style.background = `linear-gradient(to right, ${hslToHex(hue, 0, lightness)}, ${hslToHex(hue, 1, lightness)})`;
+    panel.querySelector('[data-hsl-part="l"]').style.background = `linear-gradient(to right, #000000, ${hslToHex(hue, saturation, 0.5)}, #ffffff)`;
+  }
+
+  function applyHuePanel(role) {
+    const state = readHuePanel(role);
+    if (!state) return;
+    updateHueTracks(state.panel, state.hue, state.saturation, state.lightness);
+    updateThemeColor(role, hslToHex(state.hue, state.saturation, state.lightness));
+  }
+
+  function openHuePanel(role) {
+    const panel = customizationPage.querySelector(`.hue-panel[data-hue-role="${role}"]`);
+    if (!panel) return;
+    const current = hexToHsl(themeConfig[role]);
+    panel.querySelector('[data-hsl-part="h"]').value = String(Math.round(current.hue / 6) * 6 % 360);
+    panel.querySelector('[data-hsl-part="s"]').value = String(Math.round(current.saturation * 100));
+    panel.querySelector('[data-hsl-part="l"]').value = String(Math.round(current.lightness * 100));
+    const state = readHuePanel(role);
+    updateHueTracks(panel, state.hue, state.saturation, state.lightness);
+    panel.classList.remove("hidden");
+    setElementFocus(panel.querySelector('[data-hsl-part="h"]'));
+  }
+
+  function closeHuePanel(role) {
+    const panel = customizationPage.querySelector(`.hue-panel[data-hue-role="${role}"]`);
+    if (panel) panel.classList.add("hidden");
   }
 
   function updateBackgroundImage(value) {
@@ -1001,10 +1100,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (customizationPage) {
     customizationPage.addEventListener("click", e => {
+      const customSwatch = e.target.closest(".custom-swatch");
+      if (customSwatch) {
+        openHuePanel(customSwatch.dataset.customRole);
+        return;
+      }
       const swatch = e.target.closest(".color-swatch");
       if (swatch) {
+        closeHuePanel(swatch.dataset.colorRole);
         updateThemeColor(swatch.dataset.colorRole, swatch.dataset.color);
       }
+    });
+    customizationPage.addEventListener("input", e => {
+      if (e.target.id === "focusWidthRange") {
+        updateFocusWidth(e.target.value);
+        return;
+      }
+      const slider = e.target.closest(".hue-range");
+      if (!slider) return;
+      applyHuePanel(slider.dataset.hueRole);
     });
     customizationPage.querySelectorAll(".customization-tab").forEach(tab => {
       tab.addEventListener("focus", () => showCustomizationTab(tab.dataset.tab));
@@ -2076,9 +2190,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const playerLoading = document.getElementById("playerLoading");
   function showPlayerLoading() {
     if (playerLoading) playerLoading.classList.remove("hidden");
+    if (playerWrapper) playerWrapper.classList.add("is-loading");
   }
   function hidePlayerLoading() {
     if (playerLoading) playerLoading.classList.add("hidden");
+    if (playerWrapper) playerWrapper.classList.remove("is-loading");
   }
 
   let playbackTimer = null;
@@ -2836,6 +2952,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isLeft || isRight) {
         const step = isRight ? 1 : -1;
         const isTextInput = focused && focused.tagName === "INPUT" && focused.type !== "checkbox";
+        if (isTextInput && focused.type === "range") return;
         if (!isTextInput) {
           const group = focused && focused.closest(GROUP_SELECTOR);
           if (group) {
