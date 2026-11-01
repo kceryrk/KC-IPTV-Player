@@ -75,7 +75,7 @@ tizen/
   - *Status:* Not yet confirmed. The root cause of the "buttons stop working" issue is unconfirmed.
 - **Loader too small and choppy**
   - *Cause:* 80×48 px with an eased cubic-bezier animation.
-  - *Fix:* Replaced with the CodePen "Infinity Loader" (aaroniker/MzoXaZ), `.infinity` variant, in `#playerLoading` (`.infinity-loader`, `.infinity`). Four stacked copies with staggered lag, shrinking and fading toward the tail, form the trail. Period is 2.8 s. The Chrome-only goo-filter variant was left out to keep TV rendering light.
+  - *Fix:* Replaced with a lighter line loader in `#playerLoading` (`.trail-loader`, `.trail-line`). It is an SVG figure-eight (aaroniker/MzoXaZ shape) drawn as 10 stacked strokes. Each stroke's dash and gap sum to the 100-unit `pathLength`, so the animation loops without a jump. The stroke gets thinner toward the tail (0.8 → 4.2 px, thickest at the head) and the period is 2.4 s. Colours are set in `applyThemeConfig` (`main.js`) as `--trail-0`…`--trail-9`, blended from `--accent` to `--highlight`. Menus and text use `var(--accent)` / `var(--highlight)` (and the `-rgb` forms), never hardcoded red or gold, so the Settings colour swatches change the whole UI, including the loader. The keyframes use literal values because `var()` and `calc()` inside `@keyframes` are unreliable on Chromium 69. The earlier dot-based loader was too heavy for the TV. The goo-filter variant is not used.
   - *Status:* Not yet confirmed on TV.
 - **Channels spun forever with no error**
   - *Cause:* `#playerLoading` only hid on `playing`/`canplay`. Errors were never shown.

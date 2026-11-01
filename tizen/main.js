@@ -438,6 +438,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let themeConfig = loadThemeConfig();
 
+  const TRAIL_STEPS = 10;
+
   function applyThemeConfig() {
     const root = document.documentElement;
     const toRgb = color => color.match(/[0-9a-f]{2}/gi).map(value => parseInt(value, 16)).join(", ");
@@ -445,6 +447,14 @@ document.addEventListener("DOMContentLoaded", () => {
     root.style.setProperty("--accent-rgb", toRgb(themeConfig.accent));
     root.style.setProperty("--highlight", themeConfig.highlight);
     root.style.setProperty("--highlight-rgb", toRgb(themeConfig.highlight));
+    const mixColor = (from, to, amount) => {
+      const start = toRgb(from).split(", ").map(Number);
+      const end = toRgb(to).split(", ").map(Number);
+      return `rgb(${start.map((value, index) => Math.round(value + (end[index] - value) * amount)).join(", ")})`;
+    };
+    for (let index = 0; index < TRAIL_STEPS; index++) {
+      root.style.setProperty(`--trail-${index}`, mixColor(themeConfig.accent, themeConfig.highlight, index / (TRAIL_STEPS - 1)));
+    }
 
     document.querySelectorAll(".color-swatch").forEach(swatch => {
       const selected = themeConfig[swatch.dataset.colorRole] === swatch.dataset.color;

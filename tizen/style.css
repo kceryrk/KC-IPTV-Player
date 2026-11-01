@@ -23,7 +23,7 @@ body, html {
   position: fixed;
   top: 40px;
   right: 40px;
-  background: rgba(229, 9, 20, 0.95);
+  background: rgba(var(--accent-rgb), 0.95);
   color: #fff;
   font-size: 1.8rem;
   font-weight: 800;
@@ -61,7 +61,7 @@ body, html {
   background: rgba(15, 15, 25, 0.85);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  border: 2px solid rgba(255, 215, 0, 0.6);
+  border: 2px solid rgba(var(--highlight-rgb), 0.6);
   border-radius: 24px;
   padding: 30px 60px;
   display: flex;
@@ -83,8 +83,8 @@ body, html {
 .num-zap-number {
   font-size: 5rem;
   font-weight: 900;
-  color: #ffd700;
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  color: var(--highlight);
+  text-shadow: 0 0 20px rgba(var(--highlight-rgb), 0.5);
 }
 
 .num-zap-progress {
@@ -100,7 +100,7 @@ body, html {
   content: '';
   position: absolute;
   top: 0; left: 0; height: 100%; width: 100%;
-  background: #ffd700;
+  background: var(--highlight);
   animation: zapTimer 1.2s linear forwards;
 }
 
@@ -115,7 +115,7 @@ body, html {
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(229, 9, 20, 0.95);
+  background: rgba(var(--accent-rgb), 0.95);
   color: #fff;
   font-size: 1.6rem;
   font-weight: bold;
@@ -126,8 +126,8 @@ body, html {
 }
 
 .moving-card {
-  border: 3px solid #e50914 !important;
-  box-shadow: 0 0 20px rgba(229, 9, 20, 0.8) !important;
+  border: 3px solid var(--accent) !important;
+  box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.8) !important;
 }
 
 /* INLOGGEN & AUTO-LOGIN SPLASH SCHERM MET LANDSCHAPSACHTERGROND */
@@ -152,7 +152,7 @@ body, html {
 .splash-logo {
   font-size: 3.2rem;
   font-weight: 900;
-  color: #e50914;
+  color: var(--accent);
   letter-spacing: 2px;
   text-shadow: 0 4px 20px rgba(0,0,0,0.8);
 }
@@ -161,7 +161,7 @@ body, html {
   width: 60px;
   height: 60px;
   border: 6px solid rgba(255, 255, 255, 0.2);
-  border-top-color: #e50914;
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -190,14 +190,14 @@ body, html {
 }
 
 .login-title {
-  color: #e50914;
+  color: var(--accent);
   font-size: 2.4rem;
   font-weight: 800;
   text-align: center;
 }
 
 .login-status {
-  color: #ffd700;
+  color: var(--highlight);
   font-size: 1.4rem;
   text-align: center;
   font-weight: bold;
@@ -228,7 +228,7 @@ body, html {
   padding: 16px;
   font-size: 1.6rem;
   font-weight: bold;
-  background: #e50914;
+  background: var(--accent);
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -535,7 +535,7 @@ body.kc-has-bg .col-content-wrapper {
 }
 
 .settings-item.danger {
-  border-color: rgba(229, 9, 20, 0.7);
+  border-color: rgba(var(--accent-rgb), 0.7);
   color: #ffb3ba;
 }
 
@@ -545,14 +545,14 @@ body.kc-has-bg .col-content-wrapper {
 
 .settings-button.focused,
 .settings-item.focused {
-  outline: 3px solid #ffd700;
+  outline: 3px solid var(--highlight);
   outline-offset: 3px;
-  background-color: rgba(255, 215, 0, 0.18);
+  background-color: rgba(var(--highlight-rgb), 0.18);
   color: #fff;
 }
 
 .logo {
-  color: #e50914;
+  color: var(--accent);
   font-size: 2.4rem;
   font-weight: bold;
   display: flex;
@@ -561,7 +561,7 @@ body.kc-has-bg .col-content-wrapper {
 }
 
 .header-mode-badge {
-  background: linear-gradient(135deg, #ffd700, #ff9900) !important;
+  background: linear-gradient(135deg, var(--highlight), rgba(var(--highlight-rgb), 0.7)) !important;
   color: #000000 !important;
   font-size: 1.4rem;
   padding: 6px 16px;
@@ -624,7 +624,7 @@ body.favorites-mode #colCategories {
   font-size: 1.8rem;
   font-weight: bold;
   letter-spacing: 2px;
-  color: #e50914;
+  color: var(--accent);
   text-transform: uppercase;
   padding: 20px 0;
 }
@@ -632,7 +632,7 @@ body.favorites-mode #colCategories {
 .col-title {
   font-size: 2.0rem !important;
   font-weight: 800;
-  color: #ffd700;
+  color: var(--highlight);
   padding: 20px 25px;
   border-bottom: 2px solid rgba(255, 255, 255, 0.15);
   flex-shrink: 0;
@@ -715,7 +715,7 @@ body.favorites-mode #colCategories {
   width: 90px;
   height: 55px;
   background-color: rgba(37, 37, 56, 0.9);
-  color: #e50914;
+  color: var(--accent);
   font-weight: bold;
   font-size: 1.6rem;
   display: flex;
@@ -836,7 +836,7 @@ body.favorites-mode #colCategories {
 
 .season-heading {
   flex: 0 0 100%;
-  color: #ffd700;
+  color: var(--highlight);
   font-size: 2rem;
   font-weight: 800;
   padding: 8px 4px;
@@ -872,7 +872,7 @@ body.favorites-mode #colCategories {
 }
 
 .episode-number {
-  color: #ffd700;
+  color: var(--highlight);
   font-size: 1.5rem;
   font-weight: 700;
 }
@@ -897,7 +897,7 @@ body.favorites-mode #colCategories {
 
 .poster-sub {
   font-size: 1.3rem !important;
-  color: #ffd700;
+  color: var(--highlight);
   font-weight: 600;
 }
 
@@ -939,130 +939,32 @@ video {
   pointer-events: none;
 }
 
-/* Infinity spinner ported from CodePen "Infinity Loader" by Aaron Iker (aaroniker/MzoXaZ), .infinity variant. */
-.infinity-loader {
+/* Playback loader: a figure-eight line whose stroke thins toward its tail. Inspired by CodePen aaroniker/MzoXaZ. */
+.trail-loader {
   width: 192px;
   height: 96px;
-  position: relative;
-}
-
-/* Each .infinity is one copy of the spinner. The loader stacks a head copy and lagging, smaller, fainter copies to form the trail. */
-.infinity {
-  --period: 2.8s;
-  --lag: 0s;
-  --s: 1;
-  --o: 1;
-  width: 120px;
-  height: 60px;
-  position: absolute;
-  left: 36px;
-  top: 18px;
-  opacity: var(--o);
-  transform: scale(1.6);
-  transform-origin: center center;
-}
-
-.infinity div,
-.infinity span {
-  position: absolute;
-}
-
-.infinity div {
-  top: 0;
-  left: 50%;
-  width: 60px;
-  height: 60px;
-  animation: infinityRotate var(--period) linear infinite;
-  animation-delay: calc(var(--lag) + var(--off, 0s));
-}
-
-.infinity div span {
-  left: -8px;
-  top: 50%;
-  margin: -8px 0 0 0;
-  width: 16px;
-  height: 16px;
   display: block;
-  background: var(--highlight);
-  box-shadow: 2px 2px 8px rgba(var(--highlight-rgb), 0.09);
-  border-radius: 50%;
-  transform: rotate(90deg) scale(var(--s));
-  animation: infinityMove var(--period) linear infinite;
-  animation-delay: calc(var(--lag) + var(--off, 0s));
+  overflow: visible;
 }
 
-.infinity div span:before,
-.infinity div span:after {
-  content: '';
-  position: absolute;
-  display: block;
-  border-radius: 50%;
-  width: 14px;
-  height: 14px;
-  background: inherit;
-  top: 50%;
-  left: 50%;
-  margin: -7px 0 0 -7px;
-  box-shadow: inherit;
+/* Each layer is a dash ending at the same head point. Dash plus gap is exactly 100, so the loop is seamless. Layers grow thicker and shorter toward the head, and their colour is blended from accent to highlight by main.js. */
+.trail-line {
+  --period: 2.4s;
+  --w: 1;
+  --L: 50;
+  fill: none;
+  stroke-width: var(--w);
+  stroke-linecap: round;
+  animation: trailRun 2.4s linear infinite reverse;
 }
 
-.infinity div span:before {
-  animation: infinityDrop1 calc(var(--period) * 0.12) linear infinite;
-}
-
-.infinity div span:after {
-  animation: infinityDrop2 calc(var(--period) * 0.12) linear infinite calc(var(--period) * 0.06);
-}
-
-.infinity > div:nth-child(2) {
-  --off: calc(var(--period) / -3);
-}
-
-.infinity > div:nth-child(3) {
-  --off: calc(var(--period) / -1.5);
-}
-
-@keyframes infinityRotate {
-  50% {
-    transform: rotate(360deg);
-    margin-left: 0;
+/* Literal values: var() and calc() inside keyframes are not reliable on Chromium 69. */
+@keyframes trailRun {
+  from {
+    stroke-dashoffset: 0;
   }
-  50.0001%,
-  100% {
-    margin-left: -60px;
-  }
-}
-
-@keyframes infinityMove {
-  0%,
-  50% {
-    left: -8px;
-  }
-  25% {
-    background: var(--accent);
-  }
-  75% {
-    background: var(--highlight);
-  }
-  50.0001%,
-  100% {
-    left: auto;
-    right: -8px;
-  }
-}
-
-@keyframes infinityDrop1 {
-  100% {
-    transform: translate(32px, 8px) scale(0);
-  }
-}
-
-@keyframes infinityDrop2 {
-  0% {
-    transform: translate(0, 0) scale(0.9);
-  }
-  100% {
-    transform: translate(32px, -8px) scale(0);
+  to {
+    stroke-dashoffset: -100;
   }
 }
 
@@ -1131,7 +1033,7 @@ body.speler-fit-screen .epg-preview-panel {
 
 .epg-row { display: flex; gap: 15px; font-size: 1.5rem; color: #888; align-items: center; }
 .epg-row.current { color: #fff; font-weight: bold; font-size: 1.8rem; }
-.epg-time { color: #ffd700; font-weight: bold; min-width: 120px; }
+.epg-time { color: var(--highlight); font-weight: bold; min-width: 120px; }
 
 /* LIQUID GLASS OSD */
 .osd-overlay {
@@ -1180,7 +1082,7 @@ body.speler-fit-screen .epg-preview-panel {
 }
 
 .osd-logo-fallback {
-  background: #e50914;
+  background: var(--accent);
   color: #fff;
   font-weight: 800;
   font-size: 2.2rem;
@@ -1213,7 +1115,7 @@ body.speler-fit-screen .epg-preview-panel {
 .osd-clock {
   font-size: 2.2rem;
   font-weight: bold;
-  color: #ffd700;
+  color: var(--highlight);
 }
 
 .osd-epg-info {
@@ -1236,7 +1138,7 @@ body.speler-fit-screen .epg-preview-panel {
 }
 
 .osd-epg-time {
-  color: #ffd700;
+  color: var(--highlight);
   font-weight: bold;
   min-width: 120px;
 }
@@ -1296,7 +1198,7 @@ body.speler-fit-screen .epg-preview-panel {
 .vod-progress-bar {
   width: 0%;
   height: 100%;
-  background: linear-gradient(90deg, #e50914, #ff4d4d);
+  background: linear-gradient(90deg, var(--accent), rgba(var(--accent-rgb), 0.65));
   transition: width 0.2s linear;
 }
 
@@ -1310,7 +1212,7 @@ body.speler-fit-screen .epg-preview-panel {
 }
 
 .vod-hint {
-  color: #ffd700;
+  color: var(--highlight);
   font-weight: 600;
   letter-spacing: 0.5px;
 }
@@ -2004,7 +1906,7 @@ body.speler-fit-screen .hint-bar {
 .wheel > .wheel-0 { opacity: 1; }
 
 .moving-region {
-  background: rgba(255, 215, 0, 0.25) !important;
+  background: rgba(var(--highlight-rgb), 0.25) !important;
 }
 
 .category-search {

@@ -221,28 +221,18 @@
 
         <!-- CHANNEL LOADING OVERLAY -->
         <div id="playerLoading" class="player-loading hidden">
-          <div class="infinity-loader" aria-hidden="true">
-            <div class="infinity" style="--lag: 0.21s; --s: 0.55; --o: 0.2;">
-              <div><span></span></div>
-              <div><span></span></div>
-              <div><span></span></div>
-            </div>
-            <div class="infinity" style="--lag: 0.14s; --s: 0.7; --o: 0.4;">
-              <div><span></span></div>
-              <div><span></span></div>
-              <div><span></span></div>
-            </div>
-            <div class="infinity" style="--lag: 0.07s; --s: 0.85; --o: 0.7;">
-              <div><span></span></div>
-              <div><span></span></div>
-              <div><span></span></div>
-            </div>
-            <div class="infinity" style="--lag: 0s; --s: 1; --o: 1;">
-              <div><span></span></div>
-              <div><span></span></div>
-              <div><span></span></div>
-            </div>
-          </div>
+          <svg class="trail-loader" viewBox="0 0 120 60" aria-hidden="true" focusable="false">
+            <path class="trail-line" pathLength="100" d="M60 30 C80 2 112 2 112 30 C112 58 80 58 60 30 C40 2 8 2 8 30 C8 58 40 58 60 30 Z" style="--L: 58.0; --w: 0.8; stroke: var(--trail-0); stroke-dasharray: 58.0 42.0;"></path>
+            <path class="trail-line" pathLength="100" d="M60 30 C80 2 112 2 112 30 C112 58 80 58 60 30 C40 2 8 2 8 30 C8 58 40 58 60 30 Z" style="--L: 52.9; --w: 1.18; stroke: var(--trail-1); stroke-dasharray: 52.9 47.1;"></path>
+            <path class="trail-line" pathLength="100" d="M60 30 C80 2 112 2 112 30 C112 58 80 58 60 30 C40 2 8 2 8 30 C8 58 40 58 60 30 Z" style="--L: 47.8; --w: 1.56; stroke: var(--trail-2); stroke-dasharray: 47.8 52.2;"></path>
+            <path class="trail-line" pathLength="100" d="M60 30 C80 2 112 2 112 30 C112 58 80 58 60 30 C40 2 8 2 8 30 C8 58 40 58 60 30 Z" style="--L: 42.7; --w: 1.93; stroke: var(--trail-3); stroke-dasharray: 42.7 57.3;"></path>
+            <path class="trail-line" pathLength="100" d="M60 30 C80 2 112 2 112 30 C112 58 80 58 60 30 C40 2 8 2 8 30 C8 58 40 58 60 30 Z" style="--L: 37.6; --w: 2.31; stroke: var(--trail-4); stroke-dasharray: 37.6 62.4;"></path>
+            <path class="trail-line" pathLength="100" d="M60 30 C80 2 112 2 112 30 C112 58 80 58 60 30 C40 2 8 2 8 30 C8 58 40 58 60 30 Z" style="--L: 32.4; --w: 2.69; stroke: var(--trail-5); stroke-dasharray: 32.4 67.6;"></path>
+            <path class="trail-line" pathLength="100" d="M60 30 C80 2 112 2 112 30 C112 58 80 58 60 30 C40 2 8 2 8 30 C8 58 40 58 60 30 Z" style="--L: 27.3; --w: 3.07; stroke: var(--trail-6); stroke-dasharray: 27.3 72.7;"></path>
+            <path class="trail-line" pathLength="100" d="M60 30 C80 2 112 2 112 30 C112 58 80 58 60 30 C40 2 8 2 8 30 C8 58 40 58 60 30 Z" style="--L: 22.2; --w: 3.44; stroke: var(--trail-7); stroke-dasharray: 22.2 77.8;"></path>
+            <path class="trail-line" pathLength="100" d="M60 30 C80 2 112 2 112 30 C112 58 80 58 60 30 C40 2 8 2 8 30 C8 58 40 58 60 30 Z" style="--L: 17.1; --w: 3.82; stroke: var(--trail-8); stroke-dasharray: 17.1 82.9;"></path>
+            <path class="trail-line" pathLength="100" d="M60 30 C80 2 112 2 112 30 C112 58 80 58 60 30 C40 2 8 2 8 30 C8 58 40 58 60 30 Z" style="--L: 12.0; --w: 4.2; stroke: var(--trail-9); stroke-dasharray: 12.0 88.0;"></path>
+          </svg>
         </div>
         
         <!-- VOD PAUSE OVERLAY ICON -->
