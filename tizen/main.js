@@ -288,19 +288,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if (state === "failed") toggleLoginPanel(true, true);
   }
 
+  // One bar in the settings menu and one on the main screen; both show the same download.
   function setLoginProgress(percent, text) {
-    const box = document.getElementById("loginProgress");
-    const bar = document.getElementById("loginProgressBar");
-    const label = document.getElementById("loginProgressText");
-    if (!box) return;
-    box.classList.remove("hidden");
-    if (bar) bar.style.width = `${Math.min(100, Math.max(0, Math.round(percent)))}%`;
-    if (label) label.textContent = text;
+    const width = `${Math.min(100, Math.max(0, Math.round(percent)))}%`;
+    document.querySelectorAll(".login-progress").forEach((box) => {
+      box.classList.remove("hidden");
+      const bar = box.querySelector(".login-progress-bar");
+      const label = box.querySelector(".login-progress-text");
+      if (bar) bar.style.width = width;
+      if (label) label.textContent = text;
+    });
   }
 
   function hideLoginProgress() {
-    const box = document.getElementById("loginProgress");
-    if (box) box.classList.add("hidden");
+    document.querySelectorAll(".login-progress").forEach((box) => box.classList.add("hidden"));
   }
 
   // Without saved M3U playlists, the playlist generated from the Xtream login becomes the default.
@@ -1514,6 +1515,7 @@ document.addEventListener("DOMContentLoaded", () => {
       li.appendChild(name);
       searchResults.appendChild(li);
     });
+    fitChannelNames(searchResults);
     if (searchEmpty) searchEmpty.classList.toggle("hidden", searchHits.length > 0 || searchInput.value.trim().length < 2);
   }
 
@@ -1696,6 +1698,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 150);
   }, true);
 
+  // Shrink long channel names so they fit on one line; measured in one pass to avoid repeated reflows.
+  function fitChannelNames(root) {
+    const names = Array.from(root.querySelectorAll(".channel-name"));
+    names.forEach(el => el.style.removeProperty("font-size"));
+    const plan = names.map(el => {
+      const overflow = el.scrollWidth - el.clientWidth;
+      if (overflow <= 0) return null;
+      const base = parseFloat(getComputedStyle(el).fontSize);
+      const scale = Math.max(0.6, (el.clientWidth / el.scrollWidth) * 0.97);
+      return { el, size: base * scale };
+    });
+    plan.forEach(item => {
+      if (item) item.el.style.setProperty("font-size", `${item.size}px`, "important");
+    });
+  }
+
   function filterChannels() {
     if (!channelList) return;
     channelList.innerHTML = "";
@@ -1800,6 +1818,7 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
       channelList.appendChild(li);
     });
+    fitChannelNames(channelList);
     const activeCard = channelList.querySelector(".channel-card.active");
     if (activeCard) centerInList(activeCard, true);
     loadVisiblePosters();
@@ -2035,7 +2054,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   video.addEventListener("canplay", hidePlayerLoading);
   video.addEventListener("error", () => {
-    if (!lastLive) return;
+    if (!lastLive) {
+      hidePlayerLoading();
+      return;
+    }
     reportPlaybackError(mediaErrorReason(video.error));
     scheduleLiveReconnect();
   });
@@ -2077,6 +2099,7 @@ document.addEventListener("DOMContentLoaded", () => {
     video.removeAttribute("src");
     video.load();
     video.src = directMovieUrl;
+    showPlayerLoading();
     video.play().catch(console.error);
   }
 
@@ -2097,6 +2120,7 @@ document.addEventListener("DOMContentLoaded", () => {
     video.removeAttribute("src");
     video.load();
     video.src = `${xtreamAuth.server}/series/${xtreamAuth.username}/${xtreamAuth.password}/${episodeId}.${ext || "mp4"}`;
+    showPlayerLoading();
     video.play().catch(console.error);
   }
 
@@ -2395,21 +2419,29 @@ document.addEventListener("DOMContentLoaded", () => {
     container._wheelItems = marked;
   }
 
-  // Vertical lists behave like a picker wheel: the focused row stays in the middle.
+  // Vertical lists behave like a picker wheel: the focused row stays on the centre line of its column,
+  // which is where the collapsed tab labels are centred.
   function centerInList(element, instant) {
     const container = element.parentElement;
     if (!container) return;
     const isWheel = (container.classList.contains("nav-list") && container.id !== "modusList") || container.classList.contains("channel-grid");
     if (!isWheel || container.clientHeight === 0) return;
-    const pad = Math.max(0, Math.round(container.clientHeight / 2 - element.offsetHeight / 2));
-    if (container._wheelPad !== pad) {
-      container.style.paddingTop = pad + "px";
-      container.style.paddingBottom = pad + "px";
-      container._wheelPad = pad;
+    const column = container.closest(".col-nav") || container;
+    const listRect = container.getBoundingClientRect();
+    const columnRect = column.getBoundingClientRect();
+    const anchor = Math.min(container.clientHeight, Math.max(0, columnRect.top + columnRect.height / 2 - listRect.top));
+    const half = element.offsetHeight / 2;
+    const padTop = Math.max(0, Math.round(anchor - half));
+    const padBottom = Math.max(0, Math.round(container.clientHeight - anchor - half));
+    if (container._wheelPadTop !== padTop || container._wheelPadBottom !== padBottom) {
+      container.style.paddingTop = padTop + "px";
+      container.style.paddingBottom = padBottom + "px";
+      container._wheelPadTop = padTop;
+      container._wheelPadBottom = padBottom;
     }
     container.classList.add("wheel");
     markWheel(container, element);
-    const offset = (element.getBoundingClientRect().top + element.offsetHeight / 2) - (container.getBoundingClientRect().top + container.clientHeight / 2);
+    const offset = (element.getBoundingClientRect().top + half) - (listRect.top + anchor);
     animateScroll(container, container.scrollTop + offset, instant);
   }
 

@@ -38,6 +38,10 @@
           <button id="settingsBack" class="settings-item focusable" data-i18n="back" type="button" tabindex="0">Back</button>
           <h1 data-i18n="settings">Settings</h1>
         </header>
+        <div class="login-progress settings-progress hidden" role="status" aria-live="polite">
+          <div class="login-progress-track"><div class="login-progress-bar"></div></div>
+          <span class="login-progress-text"></span>
+        </div>
         <div class="customization-body">
           <nav class="customization-nav">
             <div class="customization-nav-list">
@@ -121,10 +125,6 @@
             <div id="loginStateButton" class="login-state-button focusable" data-state="failed" role="button" tabindex="0" aria-expanded="true" aria-controls="loginForm">
               <span class="login-state-dot" aria-hidden="true"></span>
               <span id="loginStatus" data-i18n="loginFailed">Login failed</span>
-            </div>
-            <div id="loginProgress" class="login-progress hidden" role="status" aria-live="polite">
-              <div class="login-progress-track"><div id="loginProgressBar" class="login-progress-bar"></div></div>
-              <span id="loginProgressText" class="login-progress-text"></span>
             </div>
             <form id="loginForm" class="login-panel">
               <div class="login-panel-header">
@@ -316,6 +316,11 @@
     <input id="searchInput" class="focusable" type="text" tabindex="0" data-i18n-placeholder="searchPlaceholder" placeholder="Type a channel name">
     <ul id="searchResults" class="search-results"></ul>
     <div id="searchEmpty" class="search-empty hidden" data-i18n="searchNoResults">No channels found</div>
+  </div>
+
+  <div class="login-progress app-progress hidden" role="status" aria-live="polite">
+    <div class="login-progress-track"><div class="login-progress-bar"></div></div>
+    <span class="login-progress-text"></span>
   </div>
 
   <script src="tizen-platform.js"></script>

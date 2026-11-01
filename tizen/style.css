@@ -650,6 +650,21 @@ body.favorites-mode #colCategories {
   list-style: none;
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Auto margins centre short lists without clipping long, scrollable ones */
+.nav-list > .nav-item {
+  flex-shrink: 0;
+}
+
+.nav-list > .nav-item:first-child {
+  margin-top: auto;
+}
+
+.nav-list > .nav-item:last-child {
+  margin-bottom: auto;
 }
 
 .nav-item {
@@ -661,7 +676,28 @@ body.favorites-mode #colCategories {
   white-space: nowrap;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 15px;
+}
+
+/* Long category/region names wrap onto at most two lines; words are never split */
+.col-nav:not(.collapsed)#colCategories,
+.col-nav:not(.collapsed)#colRegions {
+  width: 26vw;
+  min-width: 280px;
+  max-width: 26vw;
+}
+
+#categoryList .nav-item,
+#regionList .nav-item {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-pack: center;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.25;
 }
 
 /* KANALEN PANEL */
@@ -1033,7 +1069,7 @@ body.speler-fit-screen .epg-preview-panel {
 
 .epg-row { display: flex; gap: 15px; font-size: 1.5rem; color: #888; align-items: center; }
 .epg-row.current { color: #fff; font-weight: bold; font-size: 1.8rem; }
-.epg-time { color: var(--highlight); font-weight: bold; min-width: 120px; }
+.epg-time { color: var(--highlight); font-weight: bold; min-width: 120px; margin-right: 24px; }
 
 /* LIQUID GLASS OSD */
 .osd-overlay {
@@ -1141,6 +1177,7 @@ body.speler-fit-screen .epg-preview-panel {
   color: var(--highlight);
   font-weight: bold;
   min-width: 120px;
+  margin-right: 24px;
 }
 
 /* LIQUID GLASS VOD OSD OVERLAY */
@@ -1220,8 +1257,8 @@ body.speler-fit-screen .epg-preview-panel {
 /* FOCUS STIJL */
 .focusable:focus, .focusable.focused {
   background-color: rgba(42, 42, 64, 0.98) !important;
-  outline: 5px solid #ffffff !important;
-  outline-offset: -5px;
+  outline: none !important;
+  box-shadow: inset 0 0 0 5px #ffffff !important;
   border-radius: 12px;
 }
 
@@ -1317,6 +1354,10 @@ body.speler-fit-screen .epg-preview-panel {
 .nav-item.active,
 .channel-card.active {
   border-color: var(--highlight);
+}
+
+.channel-card.active {
+  background-color: rgba(var(--highlight-rgb), 0.22);
 }
 
 .settings-item.danger {
@@ -1475,6 +1516,38 @@ body.speler-fit-screen .epg-preview-panel {
   max-width: 960px;
 }
 
+.settings-progress {
+  flex-shrink: 0;
+  max-width: none;
+  padding: 14px 36px;
+  background: #08090d;
+  border-bottom: 1px solid rgba(255,255,255,0.16);
+}
+
+/* Main-screen copy: a slim strip above the hint bar, so it never shifts the layout */
+.app-progress {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 52px;
+  z-index: 2500;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
+  max-width: none;
+  padding: 10px 36px;
+  background: rgba(8,9,13,0.94);
+  border-top: 1px solid rgba(255,255,255,0.16);
+}
+
+.app-progress .login-progress-track {
+  flex: 1;
+}
+
+.app-progress .login-progress-text {
+  white-space: nowrap;
+}
+
 .login-progress-track {
   height: 14px;
   background: rgba(255,255,255,0.12);
@@ -1626,7 +1699,11 @@ body.speler-fit-screen .epg-preview-panel {
 
 .focusable:focus,
 .focusable.focused {
-  outline-color: var(--highlight) !important;
+  box-shadow: inset 0 0 0 5px var(--highlight) !important;
+}
+
+.color-swatch.focusable.focused {
+  box-shadow: none !important;
 }
 
 .login-card,
@@ -1639,6 +1716,19 @@ body.speler-fit-screen .epg-preview-panel {
 .vod-playback-controls {
   background-color: #08090d;
   background-color: rgba(8,9,13,0.94);
+}
+
+body.kc-has-bg .player-wrapper,
+body.kc-has-bg video {
+  background: transparent !important;
+}
+
+body.kc-has-bg .epg-preview-panel {
+  background-color: rgba(10, 10, 18, 0.55) !important;
+}
+
+.settings-button {
+  text-align: center;
 }
 
 @media (max-width: 899px) {
@@ -1843,6 +1933,10 @@ body.speler-fit-screen .epg-preview-panel {
 
 body.speler-fit-screen .hint-bar {
   display: none !important;
+}
+
+body.speler-fit-screen .app-progress {
+  bottom: 0;
 }
 
 /* SEARCH */

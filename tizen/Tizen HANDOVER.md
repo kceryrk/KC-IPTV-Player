@@ -33,7 +33,7 @@ tizen/
   - **Navigation:** D-Pad navigation with smart autofocus.
 
 ### Centered Picker Navigation & Translucent Aesthetics
-- **Centered Focus:** Picker lists maintain active focus at vertical center while items scroll behind it, reducing visual jumpiness on large TV screens.
+- **Centered Focus:** Picker lists keep the active row on the centre line of their column (`centerInList` in `main.js`), the same line as the collapsed MODLAR / BÖLGE / KATEGORİLER labels. Padding is set from the `.col-nav` centre, so the focus box lines up with the collapsed labels. Items scroll behind it, reducing visual jumpiness on large TV screens.
 - **Translucent Glass Panels:** Background presets (Aurora, Dark Space, Sunset) paired with `backdrop-filter: blur(16px)` allow stream video to remain partially visible behind menus.
 - **Left-Aligned OSD:** Transparent channel logo display with program title and now/next EPG timeline.
 
@@ -59,7 +59,7 @@ tizen/
   - *Fix:* Added to en and tr. **nl and fr are still missing**, so `t()` falls back to English.
 - **Login took 10–15 s before "logged in" showed**
   - *Cause:* The state changed only after categories and the full playlist had loaded.
-  - *Fix:* `loginXtream` sets "logged-in" right after the account check, then loads categories with a progress bar (`setLoginProgress`, `hideLoginProgress`). `requestText(url, timeout, onProgress)` reports download progress. The M3U path shows 10% → download (MB) → 75% parsing → hide.
+  - *Fix:* `loginXtream` sets "logged-in" right after the account check, then loads categories with a progress bar (`setLoginProgress`, `hideLoginProgress`). `requestText(url, timeout, onProgress)` reports download progress. The M3U path shows 10% → download (MB) → 75% parsing → hide. Progress is shown in two places with the same `.login-progress` markup: a strip under the settings header (`.settings-progress`), and a fixed bar above the hint bar on the main screen (`.app-progress`). `setLoginProgress` and `hideLoginProgress` update every `.login-progress` element.
   - *Status:* Not yet confirmed on TV.
 - **No default playlist after Xtream login**
   - *Cause:* Xtream login did not create an M3U profile, so M3U autologin had nothing to load.
