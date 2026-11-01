@@ -5,11 +5,13 @@ Thumbs.db
 # Build artifacts
 *.ipk
 *.zip
+*-release.apk
 
-# Backups & Handover notes
+# Backups
 *backup*.js
-*[Hh]andover*.md
-HANDOVER-*.md
+/HANDOVER-antigravity.md
+/Handover-Gemini android.md
+/Handover-claude Haiku 5.5.md
 
 # Local editor files
 .vscode/
@@ -42,3 +44,7 @@ android/**/credentials.local.js
 credentials.local.js
 .env
 .env.*
+*.keystore
+*.jks
+keystore.properties
+android/keystore.properties

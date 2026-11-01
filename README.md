@@ -1,128 +1,120 @@
 # KC IPTV Player
 
-A modern IPTV player for browsing live TV, movies and series on smart TVs. It runs on **LG webOS** and **Samsung Tizen** TVs, with an **Android** version available in releases.
+A modern, high-performance IPTV & VOD player designed for Smart TVs, mobile phones, and tablets. It supports **LG webOS**, **Samsung Tizen**, and **Android** devices with a shared responsive web-core and native platform integrations.
 
-| Platform | Status | Where to find it |
-|----------|--------|------------------|
-| LG webOS TV | Released (`.ipk`) | [`webos/`](webos/) and GitHub Releases |
-| Samsung Tizen TV | Working on Tizen 6.0 TVs (tested on a 2021 AU-series) | [`tizen/`](tizen/) |
-| Android | Released (`.apk`) | [`android/`](android/) and GitHub Releases |
+| Platform | Status | Current Version | Target Format | Handover & Details |
+|----------|--------|-----------------|---------------|-------------------|
+| **Android** | Released & Active | **`1.2.12`** | Signed `.apk` | [`android/HANDOVER.md`](android/HANDOVER.md) |
+| **LG webOS TV** | Released | **`1.2.44`** | Packaged `.ipk` | [`webos/HANDOVER.md`](webos/HANDOVER.md) |
+| **Samsung Tizen TV** | Working (Tizen 6.0+) | **`1.2.x`** | Packaged `.wgt` | [`tizen/HANDOVER.md`](tizen/HANDOVER.md) |
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/kceryrk/KC-IPTV-Player/main/webos/icon.png" alt="KC IPTV Player icon" width="180" />
+  <img src="https://raw.githubusercontent.com/kceryrk/KC-IPTV-Player/main/webos/icon.png" alt="KC IPTV Player icon" width="160" />
 </p>
 
-## Overview
+---
 
-KC IPTV Player is a lightweight IPTV app built for webOS devices. It gives users a TV-friendly interface for:
+## Highlights & Features
 
-- live channel browsing
-- favorites management
-- channel zapping by number
-- program info display
-- region/category filtering
-- fullscreen playback experience
+- **Multi-Source Support:** Full Xtream Codes API (Live, VOD, Series) and raw M3U / M3U_PLUS playlist compatibility.
+- **Material You & Modern Theming:** Material 3 dark surface palette with rounded cards, fluid touch states, and customizable presets (Aurora, Dark Space, Sunset).
+- **Fullscreen Swipe Gestures (Mobile/Tablet):**
+  - Swipe **Up / Left**: Next Channel.
+  - Swipe **Down / Right**: Previous Channel.
+  - Tap: Toggle OSD playback banner & VOD timeline scrub.
+- **10-Foot Smart TV Navigation:**
+  - Remote color button shortcuts (Yellow = Favorite, Red = Reorder, Green = Search, Blue = Mode).
+  - Quick numeric channel zapping with on-screen buffer.
+  - Smooth centered-picker lists (selected item remains anchored at center).
+- **Playback Engine Resilience:**
+  - Dual playback engine: hardware-native decode with seamless Hls.js & MPEG-TS (mpegts.js) fallback.
+  - Offline-bundled streaming libraries (`hls.min.js`, `mpegts.min.js`) — zero external CDN dependencies at runtime.
+  - Custom DNS fallback resolver for emulators and private DNS networks.
+  - Transparent video poster (no default grey placeholder during stream buffers).
+- **Favorites & Categories:** Region and category filtering with local storage favorites management.
+- **Back Button & Gesture Integration:** Native back key handlers to cleanly dismiss modals, settings, and fullscreen playback.
 
-## Features
+---
 
-- Live TV channel list
-- Xtream API
-- Favorite channel toggle with star button (yellow button)
-- Favorite channel reordering (red button)
-- Quick channel zap by number support
-- Live EPG information display
-- Channel logo support
-- Movies and Series have poster support with grid navigation
-- Fullscreen playback mode
-- Region and category filtering
-- Multi-language support
-- webOS packaging support via .ipk
-- Open full screen automatically in favorites and ready for zapping through channels like cable TV
-- Samsung Tizen remote support: color buttons, number keys and Page Up/Down
-- Page up and down buttons supported!
+## Platform Documentation & Handovers
 
-## Login
+Each platform includes dedicated handover and technical architecture documentation:
+- 📱 **Android:** [`android/HANDOVER.md`](android/HANDOVER.md)
+- 📺 **Samsung Tizen TV:** [`tizen/HANDOVER.md`](tizen/HANDOVER.md)
+- 📺 **LG webOS TV:** [`webos/HANDOVER.md`](webos/HANDOVER.md)
+- 🛠️ **Fixes & Troubleshooting Guide:** [`FIX_IPTV.md`](FIX_IPTV.md) — Comprehensive technical breakdown of all resolved bugs, network timeouts, CORS handling, and build configurations.
 
-Log in with an Xtream Codes account, an M3U playlist URL, or both. Xtream logins also provide categories, which the app uses for region and category filtering.
+---
 
-To avoid typing credentials on every start, create a `credentials.local.js` file in the platform folder with your own details. It sets `window.KC_DEFAULT_LOGIN` (for example `server`, `username`, `password`, and an optional `m3uUrl`). These files are listed in `.gitignore` and must never be committed.
+## Installation & Setup
 
-- webOS: `webos/credentials.local.js`
-- Tizen: `tizen/credentials.local.js`
+### 1. Android Installation
+Download the pre-built signed APK from GitHub Releases or the repository root:
+- Direct APK: [`android/KCIPTVPLAYER.apk`](android/KCIPTVPLAYER.apk) (version `1.2.12`)
+- Install via ADB:
+  ```bash
+  adb install -r android/KCIPTVPLAYER.apk
+  ```
+- Or build from source with Gradle:
+  ```bash
+  cd android
+  ./gradlew :app:assembleRelease
+  ```
 
-## Download the latest release
+### 2. LG webOS TV Installation
+Download the latest `.ipk` package from GitHub Releases (`com.iptv.webosapp_1.2.xx_all.ipk`).
 
-Download the latest packaged .ipk for webOS here, apk also available:
+**Using webOS Dev Manager (Recommended):**
+1. Enable Developer Mode on your LG TV.
+2. Connect webOS Dev Manager on your PC to the TV's IP.
+3. Install the `.ipk` package using the GUI installer.
 
-- GitHub Releases: https://github.com/kceryrk/KC-IPTV-Player/releases
-
-You can also find the packaged app in the release assets as:
-
-- `com.iptv.webosapp_1.2.xx_all.ipk`
-
-## Installation on Samsung Tizen TV
-
-The Tizen version lives in [`tizen/`](tizen/). The short version:
-
-1. Install Tizen Studio with the TV Extension and create a Samsung TV certificate profile.
-2. Enable Developer Mode on your Samsung TV and connect it to the same network as your computer.
-3. Import the `tizen/` folder as a Tizen Web Application, using the TV-Samsung profile.
-4. Run it on the TV with **Run As → Tizen Web Application**.
-
-See [`tizen/README.md`](tizen/README.md) for details.
-
-## Installation on webOS TV
-
-### Option 1: Install using webOS Dev Manager or Developer Mode
-
-1. Enable Developer Mode on your LG webOS TV.
-2. Connect the TV to the same network as your computer.
-3. Install the LG webOS Dev Manager or use the webOS command tools.
-4. Transfer the `.ipk` file to the TV.
-5. Install it from the TV or the dev tool.
-
-### Option 2: Install via command line
-
-If you are using the webOS CLI tools, run:
-
+**Using webOS CLI (`ares`):**
 ```bash
-ares-install --device your_tv_ip KCIPTVPLAYER_1.2.11.ipk
+ares-install --device <your_tv_ip> com.iptv.webosapp_1.2.44_all.ipk
 ```
 
-Replace `your_tv_ip` with the IP address of your LG TV.
-Check LG Developer website for more information.
+### 3. Samsung Tizen TV Installation
+1. Install Tizen Studio with the Samsung TV Extension.
+2. Enable Developer Mode on your Samsung TV (`Apps` -> `12345` -> Host PC IP).
+3. Connect and package:
+   ```bash
+   sdb connect <tv_ip>:26101
+   tizen package -t wgt -s <your_cert_profile> -- tizen/
+   tizen install -n <generated_wgt_file>.wgt -t <target_tv_id>
+   tizen run -p kcipplayer.KCIPTVPlayer -t <target_tv_id>
+   ```
 
-### Option 3: Install using a USB drive (not confirmed)
+---
 
-1. Copy the `.ipk` file to a USB stick.
-2. Plug the USB stick into the LG TV.
-3. Open the file manager on the TV.
-4. Select the `.ipk` file.
-5. Confirm installation.
+## Login & Local Credentials
 
-## Known limitations
+KC IPTV Player supports:
+1. **Xtream Codes API:** Server URL, Username, and Password (fetches Live, VOD, and Series categories via JSON API).
+2. **M3U Playlist URL:** Direct playlist link with optional EPG integration.
 
-- Android: sometimes no audio for movies and series.
-- webOS: difficulty implementing series playback.
-- Tizen: playback uses the standard HTML video path. Stream format support can differ from webOS, and Samsung AVPlay integration is not yet implemented.
+### Development Autofill
+To avoid entering credentials during development, create a local file named `credentials.local.js` in the respective platform folder (`android/app/src/main/assets/credentials.local.js`, `webos/credentials.local.js`, or `tizen/credentials.local.js`):
+```javascript
+window.KC_DEFAULT_LOGIN = {
+  type: "xtream",
+  server: "http://your-server.com:8080",
+  username: "your_username",
+  password: "your_password"
+};
+```
+> [!IMPORTANT]
+> `credentials.local.js`, `*.keystore`, and `keystore.properties` are listed in `.gitignore`. Never commit them or bundle them into public release packages.
 
-## Notes
+---
 
-This project is intended for:
+## Releases & Downloads
 
-- private backup
-- GitHub version history
-- webOS app packaging
-- future release updates
+Find packaged releases for all platforms on GitHub:
+- **GitHub Releases:** https://github.com/kceryrk/KC-IPTV-Player/releases
 
-## Version
+---
 
-- Current version: 1.2.11
+## License & Notice
 
-## License
-
-This project is for personal/private use and is not currently published under a public license.
-
-## Support
-
-For installation issues or release updates, please use the GitHub Releases page and project issues tracker.
+This project is maintained for personal and private backup use. All brand names, stream formats, and logos are property of their respective owners.
