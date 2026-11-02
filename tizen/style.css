@@ -1,3 +1,52 @@
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("fonts/outfit-latin-ext-400-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("fonts/outfit-latin-400-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url("fonts/outfit-latin-ext-500-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url("fonts/outfit-latin-500-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url("fonts/outfit-latin-600-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url("fonts/outfit-latin-ext-600-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -9,7 +58,7 @@ body, html {
   height: 100vh;
   background-color: #000000;
   color: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   overflow: hidden;
   user-select: none;
 }
@@ -23,6 +72,11 @@ body.no-animations *::before,
 body.no-animations *::after {
   transition: none !important;
   animation: none !important;
+}
+
+/* The playback loader is feedback, not decoration, so it keeps turning. */
+body.no-animations .trail-line {
+  animation: trailRun 2.4s linear infinite reverse !important;
 }
 
 /* VISUELE TOAST MELDING */
@@ -487,19 +541,19 @@ body.kc-has-bg .col-content-wrapper {
 }
 
 .settings-panel .settings-label {
-  font-size: 1.4rem;
+  font-size: 1.8rem;
 }
 
 .settings-panel .settings-item {
   min-height: 68px;
   padding: 14px 18px;
-  font-size: 1.6rem;
+  font-size: 2rem;
   border-radius: 999px;
 }
 
 .settings-panel .settings-toggle {
   min-height: 68px;
-  font-size: 1.6rem;
+  font-size: 2rem;
 }
 
 .settings-panel .settings-toggle input {
@@ -1840,7 +1894,7 @@ body.speler-fit-screen .epg-preview-panel {
   display: flex;
   align-items: center;
   color: #fff;
-  font-size: 1.7rem;
+  font-size: 2.1rem;
   margin-top: 28px;
 }
 
@@ -1991,15 +2045,15 @@ body.speler-fit-screen .epg-preview-panel {
 
 .customization-tab {
   min-height: 72px;
-  text-align: left;
-  font-size: 1.5rem;
+  text-align: center;
+  font-size: 1.9rem;
 }
 
 /* Tab icon sits above the label and is larger. */
 .customization-tab {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   gap: 0;
 }
@@ -2563,9 +2617,9 @@ button.focused,
   font-size: 1.3rem;
 }
 
-/* Margins instead of gap: older TV engines ignore gap in flex containers. */
-.hint-bar > * {
-  margin: 0 24px;
+/* Margins instead of gap: older TV engines ignore gap in flex containers. Left edge keeps the bar padding. */
+.hint-bar > * + * {
+  margin-left: 24px;
 }
 
 .hint {

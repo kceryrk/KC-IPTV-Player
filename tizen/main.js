@@ -1157,7 +1157,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Off turns off CSS transitions and animations, and makes list scrolling jump straight to the target.
   const animationsToggle = document.getElementById("animationsToggle");
-  let animationsEnabled = store.getItem("iptv_animations") !== "0";
+  let animationsEnabled = store.getItem("iptv_animations") === "1";
   function applyAnimationsSetting() {
     document.body.classList.toggle("no-animations", !animationsEnabled);
   }
@@ -1587,6 +1587,10 @@ document.addEventListener("DOMContentLoaded", () => {
     col._pendingFocus = null;
     cancelAnimationFrame(col._collapseFrame);
     col.classList.add("content-hidden");
+    if (document.body.classList.contains("no-animations")) {
+      col.classList.add("collapsed");
+      return;
+    }
     col._collapseFrame = requestAnimationFrame(() => col.classList.add("collapsed"));
   }
 
@@ -1596,7 +1600,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const wasCollapsed = col.classList.contains("collapsed");
     col.classList.remove("collapsed");
     if (!col.classList.contains("content-hidden")) return;
-    if (!wasCollapsed) {
+    if (!wasCollapsed || document.body.classList.contains("no-animations")) {
       revealColumnContents(col);
       return;
     }
