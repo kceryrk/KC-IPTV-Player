@@ -4,9 +4,9 @@ A modern, high-performance IPTV & VOD player designed for Smart TVs, mobile phon
 
 | Platform | Status | Current Version | Target Format | Handover & Details |
 |----------|--------|-----------------|---------------|-------------------|
-| **Android** | Released & Active | **`1.2.12`** | Signed `.apk` | [`android/HANDOVER.md`](android/HANDOVER.md) |
-| **LG webOS TV** | Released | **`1.2.44`** | Packaged `.ipk` | [`webos/HANDOVER.md`](webos/HANDOVER.md) |
-| **Samsung Tizen TV** | Working (Tizen 6.0+) | **`1.2.x`** | Packaged `.wgt` | [`tizen/HANDOVER.md`](tizen/HANDOVER.md) |
+| **Android** | Released & Active | **`1.2.45`** | Signed `.apk` | [`android/HANDOVER.md`](android/HANDOVER.md) |
+| **LG webOS TV** | Released | **`1.2.45`** | Packaged `.ipk` | [`webos/HANDOVER.md`](webos/HANDOVER.md) |
+| **Samsung Tizen TV** | Working (Tizen 6.0+) | **`1.2.45`** | Packaged `.wgt` | [`tizen/HANDOVER.md`](tizen/HANDOVER.md) |
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/kceryrk/KC-IPTV-Player/main/webos/icon.png" alt="KC IPTV Player icon" width="160" />
@@ -50,7 +50,7 @@ Each platform includes dedicated handover and technical architecture documentati
 
 ### 1. Android Installation
 Download the pre-built signed APK from GitHub Releases or the repository root:
-- Direct APK: [`android/KCIPTVPLAYER.apk`](android/KCIPTVPLAYER.apk) (version `1.2.12`)
+- Direct APK: [`android/KCIPTVPLAYER.apk`](android/KCIPTVPLAYER.apk) (version `1.2.12`, rebuild needed for `1.2.45`)
 - Install via ADB:
   ```bash
   adb install -r android/KCIPTVPLAYER.apk
@@ -71,7 +71,7 @@ Download the latest `.ipk` package from GitHub Releases (`com.iptv.webosapp_1.2.
 
 **Using webOS CLI (`ares`):**
 ```bash
-ares-install --device <your_tv_ip> com.iptv.webosapp_1.2.44_all.ipk
+ares-install --device <your_tv_ip> com.iptv.webosapp_1.2.45_all.ipk
 ```
 
 ### 3. Samsung Tizen TV Installation
