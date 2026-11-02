@@ -49,6 +49,8 @@ Open items to fix later.
 
 ## Wheel
 - [ ] Mac-style zoom while scrolling through the wheel list
+- [ ] Reorder stack moves when the list moves; it should stay static
+- [ ] List scrolls too fast while moving a channel; slow it down
 
 ## Fonts and look
 - [ ] The font does not look nice; find a better one
