@@ -196,10 +196,6 @@
             <button id="clockFormatButton" class="settings-item focusable" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-clock"/></svg><span>12 h</span></button>
           </section>
           <section class="customization-section">
-            <h2 data-i18n="uiScale">UI scale</h2>
-            <button id="uiScaleButton" class="settings-item focusable" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-sliders"/></svg><span>100%</span></button>
-          </section>
-          <section class="customization-section">
             <label class="settings-toggle" for="animationsToggle">
               <span><span data-i18n="animations">Animations</span></span>
               <span class="ios-switch"><input id="animationsToggle" class="focusable" type="checkbox" tabindex="0"><span class="ios-track" aria-hidden="true"><span class="ios-knob"></span></span></span>
@@ -356,7 +352,7 @@
             <div class="osd-epg-info">
               <div class="osd-epg-row active-epg">
                 <span class="osd-epg-time" id="osdEpgCurrTime">--:--</span>
-                <span id="osdEpgCurrTitle" data-i18n="liveNow">Yayın Bilgisi Yükleniyor...</span>
+                <span class="osd-epg-title" id="osdEpgCurrTitle" data-i18n="liveNow">Yayın Bilgisi Yükleniyor...</span>
               </div>
               <div class="osd-epg-row">
                 <span class="osd-epg-time" id="osdEpgNextTime">--:--</span>
@@ -364,8 +360,10 @@
               </div>
             </div>
           </div>
+          <span class="osd-epg-desc" id="osdEpgCurrDesc"></span>
         </div>
         <div class="osd-clock-bubble hidden" id="osdClockBubble" aria-label="Clock">
+          <span class="osd-clock-date" id="osdDate"></span>
           <span class="osd-clock" id="osdClock">00:00</span>
         </div>
 

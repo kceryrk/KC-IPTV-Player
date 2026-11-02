@@ -1914,6 +1914,53 @@ body.speler-fit-screen .epg-preview-panel {
   margin-left: 18px;
 }
 
+/* Settings page text sizes. Scoped to the page so the popup panel keeps its own sizes. */
+.customization-page .settings-item,
+.customization-page .settings-toggle {
+  min-height: 76px;
+  padding: 14px 24px;
+  font-size: 2.2rem;
+  font-weight: 600;
+}
+
+.customization-page .settings-item .ui-icon {
+  width: 1.4em;
+  height: 1.4em;
+}
+
+.customization-page .settings-label {
+  font-size: 2rem;
+}
+
+.customization-page .customization-header h1 {
+  font-size: 2.8rem;
+}
+
+.customization-page .customization-section h2 {
+  font-size: 2.6rem;
+}
+
+.customization-page .customization-nav {
+  flex-basis: 340px;
+}
+
+.customization-page .customization-tab {
+  min-height: 96px;
+  font-size: 2.2rem;
+}
+
+.customization-page .customization-tab .ui-icon {
+  width: 64px;
+  height: 64px;
+}
+
+/* Action buttons keep a fixed minimum width so they read as controls, not bars. */
+.customization-page .customization-section > .settings-item,
+.customization-page .settings-row > .settings-item {
+  align-self: flex-start;
+  min-width: 420px;
+}
+
 .color-swatch-group {
   display: flex;
   flex-wrap: wrap;
@@ -2447,13 +2494,14 @@ body.kc-has-bg .epg-preview-panel {
   left: 32px;
   right: auto;
   bottom: 32px;
-  width: 780px;
-  max-width: 76vw;
+  width: 1180px;
+  max-width: 86vw;
   min-width: 0;
-  min-height: 156px;
+  height: 240px;
   padding: 24px 32px;
   gap: 24px;
   border-radius: 999px;
+  overflow: hidden;
   background-color: rgba(8,9,13,0.5) !important;
 }
 
@@ -2462,7 +2510,13 @@ body.kc-has-bg .epg-preview-panel {
   top: 28px;
   right: 28px;
   z-index: 1001;
-  padding: 11px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  justify-content: center;
+  padding: 6px 28px;
   background: rgba(8,9,13,0.5);
   border: 1px solid rgba(255,255,255,0.24);
   border-radius: 999px;
@@ -2473,6 +2527,14 @@ body.kc-has-bg .epg-preview-panel {
   color: var(--highlight);
   font-size: 2rem;
   line-height: 1;
+}
+
+.osd-clock-bubble .osd-clock-date {
+  color: #dddddd;
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .osd-channel-badge {
@@ -2498,6 +2560,11 @@ body.kc-has-bg .epg-preview-panel {
 
 .osd-details {
   min-width: 0;
+  flex: 0 1 auto;
+  max-width: 56%;
+  height: 136px;
+  margin-left: 24px;
+  justify-content: space-between;
   gap: 8px;
 }
 
@@ -2534,6 +2601,38 @@ body.kc-has-bg .epg-preview-panel {
 .osd-epg-time {
   min-width: 120px;
   font-size: 1.35rem;
+}
+
+.osd-epg-row .osd-epg-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.osd-overlay > .osd-epg-desc {
+  flex: 1 1 0;
+  min-width: 0;
+  align-self: center;
+  margin-left: 24px;
+  padding-left: 24px;
+  border-left: 2px solid rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.35;
+  font-size: 1.6rem;
+  color: #aaaaaa;
+  font-weight: 400;
+}
+
+.osd-epg-desc:empty {
+  display: none;
 }
 
 @media (max-width: 899px) {

@@ -71,8 +71,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const osdContainer = document.getElementById("osdContainer");
   const osdChannelTitle = document.getElementById("osdChannelTitle");
   const osdClock = document.getElementById("osdClock");
+  const osdDate = document.getElementById("osdDate");
   const osdEpgCurrTime = document.getElementById("osdEpgCurrTime");
   const osdEpgCurrTitle = document.getElementById("osdEpgCurrTitle");
+  const osdEpgCurrDesc = document.getElementById("osdEpgCurrDesc");
   const osdEpgNextTime = document.getElementById("osdEpgNextTime");
   const osdEpgNextTitle = document.getElementById("osdEpgNextTitle");
   const headerModeIndicator = document.getElementById("headerModeIndicator");
@@ -137,10 +139,10 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.assign(appTranslations.tr, { presetBackgrounds: "Hazır arka planlar" });
   Object.assign(appTranslations.nl, { presetBackgrounds: "Voorinstellingen" });
   Object.assign(appTranslations.fr, { presetBackgrounds: "Préréglages" });
-  Object.assign(appTranslations.en, { m3uGenerateXtream: "⚡ Generate from Xtream", clockFormat: "Clock format", uiScale: "UI scale", animations: "Animations", colorTab: "Color", backgroundTab: "Background", clockTab: "Clock" });
-  Object.assign(appTranslations.tr, { m3uGenerateXtream: "⚡ Xtream'den oluştur", clockFormat: "Saat biçimi", uiScale: "Arayüz ölçeği", animations: "Animasyonlar", colorTab: "Renk", backgroundTab: "Arka plan", clockTab: "Saat" });
-  Object.assign(appTranslations.nl, { m3uGenerateXtream: "⚡ Genereren uit Xtream", clockFormat: "Klokweergave", uiScale: "Interfaceschaal", animations: "Animaties", colorTab: "Kleur", backgroundTab: "Achtergrond", clockTab: "Klok" });
-  Object.assign(appTranslations.fr, { m3uGenerateXtream: "⚡ Générer depuis Xtream", clockFormat: "Format de l'horloge", uiScale: "Échelle de l'interface", animations: "Animations", colorTab: "Couleur", backgroundTab: "Arrière-plan", clockTab: "Horloge" });
+  Object.assign(appTranslations.en, { m3uGenerateXtream: "⚡ Generate from Xtream", clockFormat: "Clock format", animations: "Animations", colorTab: "Color", backgroundTab: "Background", clockTab: "Clock" });
+  Object.assign(appTranslations.tr, { m3uGenerateXtream: "⚡ Xtream'den oluştur", clockFormat: "Saat biçimi", animations: "Animasyonlar", colorTab: "Renk", backgroundTab: "Arka plan", clockTab: "Saat" });
+  Object.assign(appTranslations.nl, { m3uGenerateXtream: "⚡ Genereren uit Xtream", clockFormat: "Klokweergave", animations: "Animaties", colorTab: "Kleur", backgroundTab: "Achtergrond", clockTab: "Klok" });
+  Object.assign(appTranslations.fr, { m3uGenerateXtream: "⚡ Générer depuis Xtream", clockFormat: "Format de l'horloge", animations: "Animations", colorTab: "Couleur", backgroundTab: "Arrière-plan", clockTab: "Horloge" });
   const languageOptions = { en: "🇬🇧", tr: "🇹🇷", nl: "🇳🇱", fr: "🇫🇷" };
   Object.assign(appTranslations.en, { streamPlaybackFailed: "This stream could not be played. Try the provider's HLS URL or a compatible stream format." });
   Object.assign(appTranslations.tr, { streamPlaybackFailed: "Bu yayın oynatılamadı. Sağlayıcının HLS URL'sini veya uyumlu bir yayın biçimini deneyin." });
@@ -758,6 +760,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const clockStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: !clock24h });
     if (headerClock) headerClock.textContent = clockStr;
     if (osdClock) osdClock.textContent = clockStr;
+    if (osdDate) osdDate.textContent = now.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
     if (vodOsdClock) vodOsdClock.textContent = clockStr;
   };
   updateClockFormatButton();
@@ -1114,33 +1117,6 @@ document.addEventListener("DOMContentLoaded", () => {
       store.setItem("iptv_clock_24h", clock24h ? "1" : "0");
       updateClockFormatButton();
       updateClocks();
-    });
-  }
-
-  const UI_SCALES = [0.9, 1, 1.15, 1.3];
-  let uiScale = Number(store.getItem("iptv_ui_scale"));
-  if (!UI_SCALES.includes(uiScale)) uiScale = 1;
-  function applyUiScale() {
-    // Zoom the whole page; size the root boxes to 100vw/100vh divided by the scale so the page still fills the screen.
-    [document.documentElement, document.body].forEach(el => {
-      el.style.zoom = String(uiScale);
-      el.style.width = `${100 / uiScale}vw`;
-      el.style.height = `${100 / uiScale}vh`;
-    });
-  }
-  function updateUiScaleButton() {
-    const button = document.getElementById("uiScaleButton");
-    if (button) setIconLabel(button, "sliders", `${Math.round(uiScale * 100)}%`);
-  }
-  applyUiScale();
-  updateUiScaleButton();
-  const uiScaleButton = document.getElementById("uiScaleButton");
-  if (uiScaleButton) {
-    uiScaleButton.addEventListener("click", () => {
-      uiScale = UI_SCALES[(UI_SCALES.indexOf(uiScale) + 1) % UI_SCALES.length];
-      store.setItem("iptv_ui_scale", String(uiScale));
-      applyUiScale();
-      updateUiScaleButton();
     });
   }
 
@@ -1543,6 +1519,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function deactiveerFitScreen() {
     isFitScreen = false;
     if (guideOpen) hideGuide();
+    // Collapse the skipped columns before the layout returns, so the modes list does not flash open.
+    if (currentModus === "live" || currentModus === "favorites") setColumnFocus(3);
     document.body.classList.remove("speler-fit-screen");
     if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
     if (currentModus === "live" || currentModus === "favorites") {
@@ -2612,6 +2590,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("epgNextTime").textContent = "--:--";
 
     if (osdEpgCurrTitle) osdEpgCurrTitle.textContent = t("liveNow");
+    if (osdEpgCurrDesc) osdEpgCurrDesc.textContent = "";
     if (osdEpgCurrTime) osdEpgCurrTime.textContent = "--:--";
     if (osdEpgNextTitle) osdEpgNextTitle.textContent = t("noNextProgram");
     if (osdEpgNextTime) osdEpgNextTime.textContent = "--:--";
@@ -2691,7 +2670,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const current = epgs[idx];
       const next = epgs[idx + 1];
       return {
-        current: { title: decodeEpgText(current.title) || t("liveNow"), time: `${clock(current, "start")} - ${clock(current, "end")}` },
+        current: { title: decodeEpgText(current.title) || t("liveNow"), description: decodeEpgText(current.description), time: `${clock(current, "start")} - ${clock(current, "end")}` },
         next: next ? { title: decodeEpgText(next.title) || t("noNextProgram"), time: clock(next, "start") } : null
       };
   }
@@ -2706,6 +2685,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("epgCurrTitle").textContent = info.current.title;
     document.getElementById("epgCurrTime").textContent = info.current.time;
     if (osdEpgCurrTitle) osdEpgCurrTitle.textContent = info.current.title;
+    if (osdEpgCurrDesc) osdEpgCurrDesc.textContent = info.current.description || "";
     if (osdEpgCurrTime) osdEpgCurrTime.textContent = info.current.time;
 
     if (info.next) {
