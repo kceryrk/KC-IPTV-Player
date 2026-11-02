@@ -48,42 +48,103 @@ Each platform includes dedicated handover and technical architecture documentati
 
 ## Installation & Setup
 
-### 1. Android Installation
-Download the pre-built signed APK from GitHub Releases or the repository root:
-- Direct APK: [`android/KCIPTVPLAYER.apk`](android/KCIPTVPLAYER.apk) (version `1.2.12`, rebuild needed for `1.2.45`)
-- Install via ADB:
-  ```bash
-  adb install -r android/KCIPTVPLAYER.apk
-  ```
-- Or build from source with Gradle:
-  ```bash
-  cd android
-  ./gradlew :app:assembleRelease
-  ```
+Each platform can be installed from a prebuilt package or built from source. The source steps below are the reference; prebuilt packages come from GitHub Releases.
 
-### 2. LG webOS TV Installation
-Download the latest `.ipk` package from GitHub Releases (`com.iptv.webosapp_1.2.xx_all.ipk`).
-
-**Using webOS Dev Manager (Recommended):**
-1. Enable Developer Mode on your LG TV.
-2. Connect webOS Dev Manager on your PC to the TV's IP.
-3. Install the `.ipk` package using the GUI installer.
-
-**Using webOS CLI (`ares`):**
+### Get the source (all platforms)
 ```bash
-ares-install --device <your_tv_ip> com.iptv.webosapp_1.2.45_all.ipk
+git clone https://github.com/kceryrk/KC-IPTV-Player.git
+cd KC-IPTV-Player
 ```
+Optional: create a `credentials.local.js` for the platform you're building (see [Login & Local Credentials](#login--local-credentials)). It is ignored by Git.
 
-### 3. Samsung Tizen TV Installation
-1. Install Tizen Studio with the Samsung TV Extension.
-2. Enable Developer Mode on your Samsung TV (`Apps` -> `12345` -> Host PC IP).
-3. Connect and package:
+### 1. Android
+
+**Prerequisites**
+- JDK 17 or newer (Android Studio's bundled JBR works).
+- Android SDK with platform 37 (`compileSdk = 37`). Install it from Android Studio's SDK Manager, or point `ANDROID_HOME` at your SDK.
+- A device with USB debugging enabled and `adb` on your `PATH`.
+
+**Steps**
+1. Build the release APK. The Gradle wrapper downloads Gradle 9.8.2 for you:
+   ```bash
+   cd android
+   ./gradlew :app:assembleRelease      # Windows: gradlew.bat :app:assembleRelease
+   ```
+2. The APK is written to `android/app/build/outputs/apk/release/app-release.apk`.
+3. Install it on the device, replacing the existing app:
+   ```bash
+   adb install -r app/build/outputs/apk/release/app-release.apk
+   ```
+
+**Signing (optional)**
+- Without `android/keystore.properties`, the release build is signed with the debug key. That is fine for sideloading on your own device.
+- For a stable release key, create `android/keystore.properties` with `storeFile`, `storePassword`, `keyAlias`, and `keyPassword`, and place the `.jks` file in `android/`. Both files are ignored by Git.
+- Android only updates an app when the signing key matches, so keep using the same key for every build.
+
+### 2. LG webOS TV
+
+**Prerequisites**
+- Node.js with npm.
+- The webOS TV CLI (`ares`):
+  ```bash
+  npm install -g @webos-tools/cli
+  ```
+- Developer Mode enabled on the TV. Install the **Developer Mode** app from the LG Content Store, sign in, and turn on Dev Mode and Key Server. Note the TV's IP address.
+
+**One-time device setup**
+1. Register the TV as a device named `lg-tv`:
+   ```bash
+   ares-setup-device --add lg-tv --info "host:<tv_ip>,port:9922,username:prisoner"
+   ```
+2. Fetch the device key. The passphrase is shown in the Developer Mode app on the TV:
+   ```bash
+   ares-novacom --getkey -d lg-tv
+   ```
+
+**Steps**
+1. From the repository root, package the `webos/` folder:
+   ```bash
+   ares-package webos -o dist
+   ```
+   This creates `dist/com.iptv.webosapp_<version>_all.ipk`.
+2. Install it. This replaces the existing app and keeps its data, so you don't need to uninstall first:
+   ```bash
+   ares-install --device lg-tv dist/com.iptv.webosapp_1.2.45_all.ipk
+   ```
+3. Launch it:
+   ```bash
+   ares-launch --device lg-tv com.iptv.webosapp
+   ```
+
+To skip the build, use the `.ipk` from GitHub Releases with the same `ares-install` command.
+
+### 3. Samsung Tizen TV
+
+**Prerequisites**
+- [Tizen Studio](https://developer.tizen.org/development/tizen-studio/download) with the **TV Extensions** package installed from the Package Manager. The `tizen` and `sdb` CLIs are in `<tizen-studio>/tools/`.
+- A Samsung certificate profile created in Tizen Studio's Certificate Manager. For a TV, you need an author certificate and a distributor certificate that includes your TV's DUID.
+- Developer Mode on the TV: open `Apps`, enter `12345`, switch Developer Mode on, and enter your PC's IP address.
+
+**Steps**
+1. Connect to the TV from your PC:
    ```bash
    sdb connect <tv_ip>:26101
-   tizen package -t wgt -s <your_cert_profile> -- tizen/
-   tizen install -n <generated_wgt_file>.wgt -t <target_tv_id>
+   sdb devices
+   ```
+2. From the repository root, package the `tizen/` folder as a `.wgt` file:
+   ```bash
+   tizen package -t wgt -s <your_cert_profile> -o dist -- tizen/
+   ```
+3. Install the generated `.wgt` from `dist/` on the TV:
+   ```bash
+   tizen install -n dist/<generated_file>.wgt -t <target_tv_id>
+   ```
+4. Launch the app:
+   ```bash
    tizen run -p kcipplayer.KCIPTVPlayer -t <target_tv_id>
    ```
+
+`<target_tv_id>` is the TV's name as listed in Tizen Studio's Device Manager.
 
 ---
 

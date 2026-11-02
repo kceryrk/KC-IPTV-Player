@@ -297,7 +297,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let osdTimeout = null;
   let vodOsdTimeout = null;
   let isFitScreen = false;
-  let movingStreamId = null;
+  // Pick-stack move mode (favourites only): moveStack holds the picked-up channel ids, in pick order.
+  let moveMode = false;
+  let moveStack = [];
+  let moveFirstId = null;
 
   let numberBuffer = "";
   let numberTimer = null;
@@ -2235,9 +2238,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     currentActiveStreams.forEach((s, idx) => {
       const isFav = favorites.includes(s.stream_id.toString());
-      const isMoving = movingStreamId === s.stream_id.toString();
       const li = document.createElement("li");
-      li.className = "channel-card focusable" + (idx === currentStreamIndex ? " active" : "") + (isMoving ? " moving-card" : "");
+      li.className = "channel-card focusable" + (String(s.stream_id) === String(currentPlayingStreamId) ? " active" : "");
       li.dataset.streamId = s.stream_id;
       li.dataset.index = idx;
       li.dataset.streamIcon = s.stream_icon || "";
@@ -2250,7 +2252,7 @@ document.addEventListener("DOMContentLoaded", () => {
            <div class="channel-logo-placeholder" style="display:none;">TV</div>`
         : `<div class="channel-logo-placeholder">TV</div>`;
 
-      const starColor = isFav ? "var(--highlight)" : "#444455";
+      const starColor = isFav ? "#ffd700" : "#444455";
       const starSvg = `<svg style="width:24px;height:24px;fill:${starColor};min-width:24px;" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
 
       li.innerHTML = `
@@ -2316,40 +2318,160 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function toggleMoveMode(streamId) {
+  // Pick-stack move (favourites only). OK picks up channels into a stack shown in a slot, Up/Down moves the slot,
+  // OK takes the channel under the gap into the stack, red drops, Back undoes. The favourites are only written on red.
+  function moveSlot() {
+    return channelList.querySelector(".pick-slot");
+  }
+
+  function resetMoveState() {
+    moveMode = false;
+    moveStack = [];
+    moveFirstId = null;
+    if (moveBanner) moveBanner.classList.add("hidden");
+  }
+
+  function toggleMoveMode() {
     if (currentModus !== "favorites") {
       showToast(`⚠️ ${t("moveOnlyFavorites")}`);
       return;
     }
-    if (!streamId) return;
-    const sId = streamId.toString();
-    if (!movingStreamId) {
-      movingStreamId = sId;
-      moveBanner.classList.remove("hidden");
-      showToast(`🔴 ${t("moveStarted")}`);
-    } else {
-      movingStreamId = null;
-      moveBanner.classList.add("hidden");
-      showToast(`✅ ${t("positionSaved")}`);
+    if (moveMode && moveStack.length) {
+      dropMove();
+      return;
     }
-    filterChannels();
+    if (moveMode) {
+      cancelMoveMode();
+      return;
+    }
+    moveMode = true;
+    if (moveBanner) moveBanner.classList.remove("hidden");
+    showToast(`🔴 ${t("moveStarted")}`);
   }
 
-  function stepMoveFavorite(delta) {
-    if (!movingStreamId || currentModus !== "favorites") return;
-    const idx = favorites.indexOf(movingStreamId);
-    if (idx < 0) return;
-    const newIdx = idx + delta;
-    if (newIdx >= 0 && newIdx < favorites.length) {
-      const temp = favorites[idx];
-      favorites[idx] = favorites[newIdx];
-      favorites[newIdx] = temp;
-      saveFavorites(favorites);
+  // Back with a held stack undoes it: favourites were never changed, so rebuilding the list restores the order.
+  function cancelMoveMode() {
+    const firstId = moveFirstId;
+    const hadStack = moveStack.length > 0;
+    resetMoveState();
+    if (hadStack) {
       filterChannels();
-      const targetCard = document.querySelector(`#channelList [data-stream-id="${movingStreamId}"]`);
-      if (targetCard) {
-        setElementFocus(targetCard);
+      const target = channelList.querySelector(`[data-stream-id="${escapeAttr(firstId)}"]`);
+      if (target) setElementFocus(target, true);
+    } else {
+      const focusedRow = channelList.querySelector(".focused");
+      if (focusedRow) centerInList(focusedRow, true);
+    }
+  }
+
+  function dropMove() {
+    const slot = moveSlot();
+    const ids = [];
+    wheelItems(channelList).forEach((el) => {
+      if (el === slot) ids.push(...moveStack);
+      else if (el.dataset.streamId) ids.push(el.dataset.streamId.toString());
+    });
+    // Favourites not shown in this list keep their place at the end.
+    favorites.forEach((id) => {
+      const key = String(id);
+      if (!ids.includes(key)) ids.push(key);
+    });
+    const firstId = moveFirstId;
+    favorites.splice(0, favorites.length, ...ids);
+    saveFavorites(favorites);
+    resetMoveState();
+    filterChannels();
+    const target = channelList.querySelector(`[data-stream-id="${escapeAttr(firstId)}"]`);
+    if (target) setElementFocus(target, true);
+    showToast(`✅ ${t("positionSaved")}`);
+  }
+
+  // The first OK turns the focused channel into the slot. Each later OK takes the channel under the gap into the stack.
+  function pickUpMove(row) {
+    if (!moveMode || currentModus !== "favorites") return;
+    let slot = moveSlot();
+    if (!slot) {
+      if (!row || !row.dataset.streamId) return;
+      moveFirstId = row.dataset.streamId.toString();
+      moveStack = [moveFirstId];
+      slot = row;
+    } else {
+      const rows = wheelItems(channelList);
+      const next = rows[(rows.indexOf(slot) + 1) % rows.length];
+      if (!next || next === slot || !next.dataset.streamId) return;
+      moveStack.push(next.dataset.streamId.toString());
+      next.remove();
+    }
+    slot.classList.add("pick-slot");
+    refreshMoveList(slot);
+    renderMoveStack(slot);
+    syncWheelCopies(channelList);
+    centerInList(slot, true);
+  }
+
+  // Moves the slot one row. The list loops, so moving past either end wraps; a wrap is instant.
+  function stepMoveSlot(delta) {
+    const slot = moveSlot();
+    const rows = wheelItems(channelList);
+    const n = rows.length;
+    if (!slot || n < 2) return;
+    const g = rows.indexOf(slot);
+    const newG = (g + delta + n) % n;
+    const others = rows.filter((el) => el !== slot);
+    channelList.insertBefore(slot, others[newG] || null);
+    refreshMoveList(slot);
+    syncWheelCopies(channelList);
+    const wrapped = (delta > 0 && g === n - 1) || (delta < 0 && g === 0);
+    centerInList(slot, wrapped);
+  }
+
+  // The stack takes one number per channel it holds. The row under the gap gets .pick-preview, so OK visibly targets it.
+  function refreshMoveList(slot) {
+    const rows = wheelItems(channelList);
+    const g = rows.indexOf(slot);
+    const K = moveStack.length;
+    const n = rows.length;
+    const next = n > 1 ? rows[(g + 1) % n] : null;
+    rows.forEach((el, i) => {
+      el.dataset.index = i;
+      const num = el.querySelector(".channel-number");
+      if (num) num.textContent = (i < g ? i + 1 : i === g ? g + 1 : i + K).toString();
+      el.classList.toggle("pick-preview", el === next);
+    });
+  }
+
+  // Draws the held channels as same-sized frames, each 3px further down-right than the one below. The last picked is the top frame.
+  function renderMoveStack(slot) {
+    slot.querySelectorAll(":scope > .pick-layer").forEach((el) => el.remove());
+    const count = moveStack.length;
+    const frames = Math.min(count, 4);
+    const byId = new Map(allStreams.map((s) => [String(s.stream_id), s]));
+    const nameOf = (id) => {
+      const s = byId.get(id);
+      return s ? cleanTitle(s.name) : id;
+    };
+    for (let i = 0; i < frames; i++) {
+      const layer = document.createElement("div");
+      const inset = 3 * (frames - 1 - i);
+      const isTop = i === frames - 1;
+      layer.className = "pick-layer" + (isTop ? " top" : "");
+      layer.style.top = `${3 * i}px`;
+      layer.style.left = `${3 * i}px`;
+      layer.style.bottom = `${inset}px`;
+      layer.style.right = `${inset}px`;
+      if (isTop) {
+        const name = document.createElement("span");
+        name.className = "pick-name";
+        name.textContent = nameOf(moveStack[count - 1]);
+        layer.appendChild(name);
+        if (count > 1) {
+          const badge = document.createElement("span");
+          badge.className = "pick-count";
+          badge.textContent = `×${count}`;
+          layer.appendChild(badge);
+        }
       }
+      slot.appendChild(layer);
     }
   }
 
@@ -3154,8 +3276,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (container._scrollFrame) cancelAnimationFrame(container._scrollFrame);
     if (instant) {
       container.scrollTop = to;
+      scrollSettled(container);
       return;
     }
+    container.classList.add("wheel-scrolling");
     const from = container.scrollTop;
     const started = Date.now();
     const length = duration || 140;
@@ -3163,8 +3287,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const progress = Math.min(1, (Date.now() - started) / length);
       container.scrollTop = from + (to - from) * (1 - Math.pow(1 - progress, 3));
       if (progress < 1) container._scrollFrame = requestAnimationFrame(step);
+      else scrollSettled(container);
     };
     step();
+  }
+
+  // Runs when a scroll stops, so the focus box can appear again.
+  function scrollSettled(container) {
+    container.classList.remove("wheel-scrolling");
+    const done = container._onScrollDone;
+    container._onScrollDone = null;
+    if (done) done();
   }
 
   // Eased scroll so focus moves glide instead of jumping (replaces scrollIntoView).
@@ -3185,41 +3318,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (rect.top < listRect.top) offset = rect.top - listRect.top;
     else if (rect.bottom > listRect.bottom) offset = rect.bottom - listRect.bottom;
     if (offset) animateScroll(container, container.scrollTop + offset, false, 260);
-  }
-
-  function markWheel(container, element) {
-    (container._wheelItems || []).forEach((item) => item.classList.remove("wheel-0", "wheel-1", "wheel-2", "wheel-3"));
-    (container._wheelCopies || []).forEach((copy) => copy.el.classList.remove("wheel-0", "wheel-1", "wheel-2", "wheel-3"));
-    const items = wheelItems(container);
-    const focusIndex = items.indexOf(element);
-    if (wheelHasCopies(items.length) && focusIndex >= 0) {
-      // Distance runs around the loop, so the last rows fade as neighbours of the first rows, and ghost copies fade too.
-      const count = items.length;
-      const distanceOf = (i) => Math.min(Math.abs(i - focusIndex), count - Math.abs(i - focusIndex));
-      const marked = [];
-      items.forEach((item, i) => {
-        const d = distanceOf(i);
-        if (d <= 3) { item.classList.add("wheel-" + d); marked.push(item); }
-      });
-      (container._wheelCopies || []).forEach((copy) => {
-        const d = distanceOf(copy.row);
-        if (d <= 3) copy.el.classList.add("wheel-" + d);
-      });
-      container._wheelItems = marked;
-      return;
-    }
-    const marked = [element];
-    element.classList.add("wheel-0");
-    let before = element;
-    let after = element;
-    for (let distance = 1; distance <= 3; distance++) {
-      before = before && before.previousElementSibling;
-      after = after && after.nextElementSibling;
-      if (after && after.classList.contains("wheel-ghost")) after = null;
-      if (before) { before.classList.add("wheel-" + distance); marked.push(before); }
-      if (after) { after.classList.add("wheel-" + distance); marked.push(after); }
-    }
-    container._wheelItems = marked;
   }
 
   function wheelAnchor(container) {
@@ -3257,9 +3355,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (edges.first) edges.first.style.marginTop = padTop + "px";
     if (edges.last) edges.last.style.marginBottom = padBottom + "px";
     container.classList.add("wheel", "wheel-detent");
-    markWheel(container, element);
     syncWheelCopies(container);
-    animateScroll(container, wheelScrollTop(container, element), instant);
+    animateScroll(container, wheelScrollTop(container, element), !!instant);
   }
 
   function isWheelList(container) {
@@ -3282,6 +3379,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const items = wheelItems(container);
     const count = items.length;
     const layerOk = !!container._wheelLayer && container._wheelLayer.parentElement === container;
+    // Move mode edits the rows in place, so the ghost layer follows the same rows as the list.
     if (!wheelHasCopies(count)) {
       if (layerOk) container._wheelLayer.remove();
       container._wheelLayer = null;
@@ -3293,11 +3391,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const gap = items[1].offsetTop - (first.offsetTop + first.offsetHeight);
     const period = last.offsetTop + last.offsetHeight + gap - first.offsetTop;
     const copyEach = Math.min(60, Math.ceil(container.clientHeight / (period / count)) + 2);
-    const same = layerOk
+    // Copies depend only on the row count and copy count, so the layer is rebuilt only when those change.
+    // Otherwise each copy's content is refreshed in place, which keeps numbers and order right after a reorder.
+    const sameLayer = layerOk
       && container._wheelCount === copyEach
-      && container._wheelSources.length === count
-      && container._wheelSources.every((el, i) => el === items[i]);
-    if (!same) {
+      && container._wheelRows === count
+      && container._wheelCopies.length > 0;
+    if (!sameLayer) {
       if (layerOk) container._wheelLayer.remove();
       const layer = document.createElement("div");
       layer.className = "wheel-ghost";
@@ -3307,20 +3407,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (m >= 0 && m < count) continue;
         const row = ((m % count) + count) % count;
         const el = items[row].cloneNode(true);
-        el.removeAttribute("id");
-        el.removeAttribute("tabindex");
-        el.querySelectorAll("[id]").forEach(node => node.removeAttribute("id"));
-        el.querySelectorAll(".flag-underlay").forEach(underlay => {
-          if (!underlay.style.backgroundImage) loadRegionFlag(underlay);
-        });
+        prepareCopy(el);
         layer.appendChild(el);
-        copies.push({ el, m, row, cycle: Math.floor(m / count) });
+        copies.push({ el, m, row, cycle: Math.floor(m / count), html: items[row].innerHTML });
       }
       container.appendChild(layer);
       container._wheelLayer = layer;
       container._wheelCopies = copies;
-      container._wheelSources = items.slice();
       container._wheelCount = copyEach;
+      container._wheelRows = count;
     }
     container._wheelCopies.forEach(copy => {
       const src = items[copy.row];
@@ -3328,6 +3423,24 @@ document.addEventListener("DOMContentLoaded", () => {
       copy.el.style.left = src.offsetLeft + "px";
       copy.el.style.width = src.offsetWidth + "px";
       copy.el.className = ("wheel-copy " + src.className.replace(/\b(focused|focusable)\b/g, "")).replace(/\s+/g, " ").trim();
+      const html = src.innerHTML;
+      if (html !== copy.html) {
+        copy.el.innerHTML = html;
+        copy.html = html;
+        copy.el.querySelectorAll(".flag-underlay").forEach(underlay => {
+          if (!underlay.style.backgroundImage) loadRegionFlag(underlay);
+        });
+      }
+    });
+  }
+
+  // Copies are visual only: no ids, tab stops or focus classes.
+  function prepareCopy(el) {
+    el.removeAttribute("id");
+    el.removeAttribute("tabindex");
+    el.querySelectorAll("[id]").forEach(node => node.removeAttribute("id"));
+    el.querySelectorAll(".flag-underlay").forEach(underlay => {
+      if (!underlay.style.backgroundImage) loadRegionFlag(underlay);
     });
   }
 
@@ -3339,7 +3452,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const copy = (container._wheelCopies || []).find(c => c.m === (forward ? count : -1));
     if (!copy) return false;
     const origin = document.activeElement;
-    markWheel(container, target);
     syncWheelCopies(container);
     clearTimeout(container._wrapTimer);
     animateScroll(container, wheelScrollTop(container, copy.el), false);
@@ -3419,10 +3531,22 @@ document.addEventListener("DOMContentLoaded", () => {
       setColumnFocus(parseInt(parentCol.dataset.col, 10));
     }
     // Centre the list before focusing so the focus box never paints at the old position.
-    centerInList(element, !!instant);
+    centerInList(element, instant);
     const container = element.parentElement;
     if (container && container.classList.contains("wheel") && element.offsetHeight > 0) {
-      showWheelWindow(container, element);
+      if (container.classList.contains("wheel-scrolling")) {
+        // The focus box waits for the list to stop, so it does not chase rows while a key is held.
+        hideWheelWindow();
+        container._onScrollDone = () => {
+          const focused = container.querySelector(":scope > .focused");
+          if (focused && !focused.classList.contains("pick-slot")) showWheelWindow(container, focused);
+        };
+      } else if (element.classList.contains("pick-slot")) {
+        // The held stack is not a focus target: its box stays out of the way of the stack frames.
+        hideWheelWindow();
+      } else {
+        showWheelWindow(container, element);
+      }
       if (previous && previous !== element && previous.parentElement === container) playTick();
     } else {
       hideWheelWindow();
@@ -3883,7 +4007,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else if (currentActiveStreams[currentStreamIndex]) {
         targetStreamId = currentActiveStreams[currentStreamIndex].stream_id;
       }
-      if (targetStreamId) toggleMoveMode(targetStreamId);
+      if (targetStreamId || moveMode) toggleMoveMode();
       return;
     }
 
@@ -3955,7 +4079,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (isUp && focused && focused.dataset.modus === "favorites" && !movingStreamId) {
+    if (isUp && focused && focused.dataset.modus === "favorites" && !moveMode) {
       e.preventDefault();
       toggleSettingsMenu(true);
       return;
@@ -4023,8 +4147,8 @@ document.addEventListener("DOMContentLoaded", () => {
         focusRegion(done);
         return;
       }
-      if (movingStreamId) {
-        toggleMoveMode(movingStreamId);
+      if (moveMode) {
+        cancelMoveMode();
         return;
       }
       if (selectedSeries) {
@@ -4048,15 +4172,16 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // VERPLAATS MODUS IN FAVORİETEN
-    if (movingStreamId && currentModus === "favorites") {
-      if (isUp) {
+    // VERPLAATS MODUS IN FAVORİETEN: OK picks up, Up/Down move the held stack.
+    if (moveMode && currentModus === "favorites") {
+      if (isEnter) {
         e.preventDefault();
-        stepMoveFavorite(-1);
+        pickUpMove(focused);
         return;
-      } else if (isDown) {
+      }
+      if (moveStack.length && (isUp || isDown)) {
         e.preventDefault();
-        stepMoveFavorite(1);
+        stepMoveSlot(isUp ? -1 : 1);
         return;
       }
     }

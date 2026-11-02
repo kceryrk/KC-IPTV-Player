@@ -125,11 +125,6 @@ body, html {
   z-index: 10000000;
 }
 
-.moving-card {
-  border: 3px solid var(--accent) !important;
-  box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.8) !important;
-}
-
 /* INLOGGEN & AUTO-LOGIN SPLASH SCHERM MET LANDSCHAPSACHTERGROND */
 .login-container {
   width: 100vw;
@@ -1670,11 +1665,6 @@ body.speler-fit-screen .epg-preview-panel {
   color: #fff;
 }
 
-.moving-card {
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.8) !important;
-}
-
 .header-mode-badge,
 .num-zap-number,
 .login-status,
@@ -2212,6 +2202,63 @@ body.speler-fit-screen .epg-preview-panel {
   box-shadow: inset 0 0 0 var(--focus-width, 5px) var(--highlight);
 }
 
+/* Pick-stack: the held slot draws no focus box; its frames are the stack. */
+.channel-card.pick-slot,
+.channel-card.pick-slot.focused,
+.channel-card.pick-slot.active {
+  position: relative;
+  overflow: visible;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.pick-layer {
+  position: absolute;
+  border: 2px solid #8a3a40;
+  border-radius: 12px;
+  background: #4a1316;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.pick-layer.top {
+  background: #6e1d22;
+  color: #ffb3b3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  font-weight: 600;
+}
+
+.pick-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pick-count {
+  flex-shrink: 0;
+  margin-left: 16px;
+  opacity: 0.85;
+}
+
+.channel-card.pick-preview .channel-name {
+  color: #ff8a8a;
+}
+
+/* Lists still scroll; the browser scrollbar beside them is hidden. */
+* {
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 .color-swatch.focusable.focused {
   box-shadow: none !important;
 }
@@ -2557,15 +2604,11 @@ body.speler-fit-screen .app-progress {
 }
 
 
-/* PICKER-WHEEL LISTS: rows fade with distance from the focused, centered row */
-.wheel > * {
-  opacity: 0.28;
+/* PICKER-WHEEL LISTS: a fixed fade toward the centre from the top and bottom edges. Static, so scrolling does not repaint it. */
+.wheel {
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.28) 0%, #000 50%, rgba(0, 0, 0, 0.28) 100%);
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.28) 0%, #000 50%, rgba(0, 0, 0, 0.28) 100%);
 }
-
-.wheel > .wheel-3 { opacity: 0.4; }
-.wheel > .wheel-2 { opacity: 0.6; }
-.wheel > .wheel-1 { opacity: 0.8; }
-.wheel > .wheel-0 { opacity: 1; }
 
 /* Infinite wheel: copies of the rows beyond both ends, so wrapping shows no empty gap */
 .wheel { position: relative; }
@@ -2582,12 +2625,7 @@ body.speler-fit-screen .app-progress {
   position: absolute !important;
   margin: 0 !important;
   box-sizing: border-box;
-  opacity: 0.28;
 }
-.wheel-ghost > .wheel-copy.wheel-3 { opacity: 0.4; }
-.wheel-ghost > .wheel-copy.wheel-2 { opacity: 0.6; }
-.wheel-ghost > .wheel-copy.wheel-1 { opacity: 0.8; }
-.wheel-ghost > .wheel-copy.wheel-0 { opacity: 1; }
 
 /* Modes fill the column height, as filled cards with margins between them */
 #modusList > .nav-item {
@@ -2613,6 +2651,11 @@ body.speler-fit-screen .app-progress {
 #modusList > .nav-item .ui-icon {
   width: 2.4em;
   height: 2.4em;
+}
+
+/* Only the favourites icon is filled */
+#modusList > .nav-item[data-modus='favorites'] .ui-icon {
+  fill: #ffd700;
 }
 
 #modusList > .nav-item > span {
