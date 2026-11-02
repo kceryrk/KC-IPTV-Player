@@ -1138,7 +1138,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const settingsBack = document.getElementById("settingsBack");
   if (applyBackgroundButton) applyBackgroundButton.addEventListener("click", () => updateBackgroundImage(backgroundImageInput.value));
   if (clearBackgroundButton) clearBackgroundButton.addEventListener("click", () => updateBackgroundImage(""));
-  if (settingsDone) settingsDone.addEventListener("click", () => showCustomizationPage(false));
+  // Done slides the panel out, then closes it like Back. Focusing Done (Down from the last settings item) starts the same close.
+  let settingsCloseTimer = null;
+  const closeSettingsAnimated = () => {
+    if (!settingsPanel || settingsPanel.classList.contains("hidden") || settingsPanel.classList.contains("closing")) return;
+    settingsPanel.classList.add("closing");
+    clearTimeout(settingsCloseTimer);
+    settingsCloseTimer = setTimeout(() => {
+      settingsPanel.classList.remove("closing");
+      if (!settingsPanel.classList.contains("hidden")) showCustomizationPage(false);
+    }, 260);
+  };
+  if (settingsDone) {
+    settingsDone.addEventListener("focus", closeSettingsAnimated);
+    settingsDone.addEventListener("click", closeSettingsAnimated);
+  }
   if (settingsBack) settingsBack.addEventListener("click", () => showCustomizationPage(false));
 
   applyThemeConfig();
@@ -1474,7 +1488,7 @@ document.addEventListener("DOMContentLoaded", () => {
           flagObserver.unobserve(entry.target);
           loadRegionFlag(entry.target);
         });
-      }, { root: regionList, rootMargin: "100px 0px" });
+      }, { root: regionList, rootMargin: "100% 0px" });
     }
     underlays.forEach((el) => flagObserver.observe(el));
   }
@@ -1573,13 +1587,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function hideRegion(region) {
     const kind = regionKind();
-    const items = Array.from(regionList.querySelectorAll("li"));
+    const items = Array.from(regionList.querySelectorAll(":scope > li"));
     const position = items.findIndex(li => li.dataset.region === region);
     regionPrefs.hidden[kind].push(region);
     saveRegionPrefs();
     const wasActive = (kind === "vod" ? currentVodRegion : currentLiveRegion) === region;
     setupRegions(!wasActive);
-    const remaining = regionList.querySelectorAll("li");
+    const remaining = regionList.querySelectorAll(":scope > li");
     if (remaining.length) setElementFocus(remaining[Math.min(position, remaining.length - 1)]);
     showToast(t("categoryHidden"));
   }
@@ -2583,6 +2597,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function markWheel(container, element) {
     (container._wheelItems || []).forEach((item) => item.classList.remove("wheel-0", "wheel-1", "wheel-2", "wheel-3"));
+    (container._wheelCopies || []).forEach((copy) => copy.el.classList.remove("wheel-0", "wheel-1", "wheel-2", "wheel-3"));
+    const items = wheelItems(container);
+    const focusIndex = items.indexOf(element);
+    if (wheelHasCopies(items.length) && focusIndex >= 0) {
+      // Distance runs around the loop, so the last rows fade as neighbours of the first rows, and ghost copies fade too.
+      const count = items.length;
+      const distanceOf = (i) => Math.min(Math.abs(i - focusIndex), count - Math.abs(i - focusIndex));
+      const marked = [];
+      items.forEach((item, i) => {
+        const d = distanceOf(i);
+        if (d <= 3) { item.classList.add("wheel-" + d); marked.push(item); }
+      });
+      (container._wheelCopies || []).forEach((copy) => {
+        const d = distanceOf(copy.row);
+        if (d <= 3) copy.el.classList.add("wheel-" + d);
+      });
+      container._wheelItems = marked;
+      return;
+    }
     const marked = [element];
     element.classList.add("wheel-0");
     let before = element;
@@ -2590,10 +2623,24 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let distance = 1; distance <= 3; distance++) {
       before = before && before.previousElementSibling;
       after = after && after.nextElementSibling;
+      if (after && after.classList.contains("wheel-ghost")) after = null;
       if (before) { before.classList.add("wheel-" + distance); marked.push(before); }
       if (after) { after.classList.add("wheel-" + distance); marked.push(after); }
     }
     container._wheelItems = marked;
+  }
+
+  function wheelAnchor(container) {
+    const column = container.closest(".col-nav") || container;
+    const listRect = container.getBoundingClientRect();
+    const columnRect = column.getBoundingClientRect();
+    return Math.min(container.clientHeight, Math.max(0, columnRect.top + columnRect.height / 2 - listRect.top));
+  }
+
+  function wheelScrollTop(container, element) {
+    const listRect = container.getBoundingClientRect();
+    const offset = (element.getBoundingClientRect().top + element.offsetHeight / 2) - (listRect.top + wheelAnchor(container));
+    return container.scrollTop + offset;
   }
 
   // Vertical lists behave like a picker wheel: the focused row stays on the centre line of its column,
@@ -2601,29 +2648,171 @@ document.addEventListener("DOMContentLoaded", () => {
   function centerInList(element, instant) {
     const container = element.parentElement;
     if (!container) return;
-    const isWheel = (container.classList.contains("nav-list") && container.id !== "modusList") || container.classList.contains("channel-grid");
-    if (!isWheel || container.clientHeight === 0) return;
-    const column = container.closest(".col-nav") || container;
-    const listRect = container.getBoundingClientRect();
-    const columnRect = column.getBoundingClientRect();
-    const anchor = Math.min(container.clientHeight, Math.max(0, columnRect.top + columnRect.height / 2 - listRect.top));
+    if (!isWheelList(container) || container.clientHeight === 0) return;
+    const anchor = wheelAnchor(container);
     const half = element.offsetHeight / 2;
-    const padTop = Math.max(0, Math.round(anchor - half));
+    // Room above the first row for the wrap glide onto the copy of the last row.
+    const lead = wheelHasCopies(wheelItems(container).length) ? element.offsetHeight * 2 : 0;
+    const padTop = Math.max(0, Math.round(anchor - half)) + lead;
     const padBottom = Math.max(0, Math.round(container.clientHeight - anchor - half));
-    if (container._wheelPadTop !== padTop || container._wheelPadBottom !== padBottom) {
-      container.style.paddingTop = padTop + "px";
-      container.style.paddingBottom = padBottom + "px";
-      container._wheelPadTop = padTop;
-      container._wheelPadBottom = padBottom;
-    }
-    container.classList.add("wheel");
+    // Spacers are margins on the first and last rows, not container padding: padding sits outside the flex
+    // basis of a content-box list and makes the list grow, which then feeds back into padBottom.
+    const edges = wheelEdges(container);
+    if (container._wheelFirst && container._wheelFirst !== edges.first) container._wheelFirst.style.marginTop = "";
+    if (container._wheelLast && container._wheelLast !== edges.last) container._wheelLast.style.marginBottom = "";
+    container._wheelFirst = edges.first;
+    container._wheelLast = edges.last;
+    if (edges.first) edges.first.style.marginTop = padTop + "px";
+    if (edges.last) edges.last.style.marginBottom = padBottom + "px";
+    container.classList.add("wheel", "wheel-detent");
     markWheel(container, element);
-    const offset = (element.getBoundingClientRect().top + half) - (listRect.top + anchor);
-    animateScroll(container, container.scrollTop + offset, instant);
+    syncWheelCopies(container);
+    animateScroll(container, wheelScrollTop(container, element), instant);
   }
 
-  function setElementFocus(element) {
+  function isWheelList(container) {
+    return (container.classList.contains("nav-list") && container.id !== "modusList") || container.classList.contains("channel-grid");
+  }
+
+  function wheelHasCopies(count) {
+    return count >= 10;
+  }
+
+  // First and last in-flow rows (ignores the ghost layer and hidden rows), where the centring spacers go.
+  function wheelEdges(container) {
+    const kids = Array.from(container.children).filter(el => !el.classList.contains("wheel-ghost") && !el.classList.contains("hidden"));
+    return { first: kids[0] || null, last: kids[kids.length - 1] || null };
+  }
+
+  // Infinite-wheel look for long lists: copies of the rows beyond both ends (virtual rows -n..-1 and count..count+n-1).
+  // Copies are visual only: no id, tabindex or focusable class, and pointer-events are off in CSS.
+  function syncWheelCopies(container) {
+    const items = wheelItems(container);
+    const count = items.length;
+    const layerOk = !!container._wheelLayer && container._wheelLayer.parentElement === container;
+    if (!wheelHasCopies(count)) {
+      if (layerOk) container._wheelLayer.remove();
+      container._wheelLayer = null;
+      container._wheelCopies = [];
+      return;
+    }
+    const first = items[0];
+    const last = items[count - 1];
+    const gap = items[1].offsetTop - (first.offsetTop + first.offsetHeight);
+    const period = last.offsetTop + last.offsetHeight + gap - first.offsetTop;
+    const copyEach = Math.min(60, Math.ceil(container.clientHeight / (period / count)) + 2);
+    const same = layerOk
+      && container._wheelCount === copyEach
+      && container._wheelSources.length === count
+      && container._wheelSources.every((el, i) => el === items[i]);
+    if (!same) {
+      if (layerOk) container._wheelLayer.remove();
+      const layer = document.createElement("div");
+      layer.className = "wheel-ghost";
+      layer.setAttribute("aria-hidden", "true");
+      const copies = [];
+      for (let m = -copyEach; m < count + copyEach; m++) {
+        if (m >= 0 && m < count) continue;
+        const row = ((m % count) + count) % count;
+        const el = items[row].cloneNode(true);
+        el.removeAttribute("id");
+        el.removeAttribute("tabindex");
+        el.querySelectorAll("[id]").forEach(node => node.removeAttribute("id"));
+        el.querySelectorAll(".flag-underlay").forEach(underlay => {
+          if (!underlay.style.backgroundImage) loadRegionFlag(underlay);
+        });
+        layer.appendChild(el);
+        copies.push({ el, m, row, cycle: Math.floor(m / count) });
+      }
+      container.appendChild(layer);
+      container._wheelLayer = layer;
+      container._wheelCopies = copies;
+      container._wheelSources = items.slice();
+      container._wheelCount = copyEach;
+    }
+    container._wheelCopies.forEach(copy => {
+      const src = items[copy.row];
+      copy.el.style.top = (src.offsetTop + copy.cycle * period) + "px";
+      copy.el.style.left = src.offsetLeft + "px";
+      copy.el.style.width = src.offsetWidth + "px";
+      copy.el.className = ("wheel-copy " + src.className.replace(/\b(focused|focusable)\b/g, "")).replace(/\s+/g, " ").trim();
+    });
+  }
+
+  // At the end of a long wheel: glide one row onto the copy beyond the edge, then jump to the real row.
+  // The copy shows the same content, so the jump is not visible. Returns false when there are no copies.
+  function wrapWheel(container, target, forward) {
+    syncWheelCopies(container);
+    const count = wheelItems(container).length;
+    const copy = (container._wheelCopies || []).find(c => c.m === (forward ? count : -1));
+    if (!copy) return false;
+    const origin = document.activeElement;
+    markWheel(container, target);
+    syncWheelCopies(container);
+    clearTimeout(container._wrapTimer);
+    animateScroll(container, wheelScrollTop(container, copy.el), false);
+    container._wrapTimer = setTimeout(() => {
+      if (document.activeElement === origin) setElementFocus(target, true);
+    }, 150);
+    return true;
+  }
+
+  // One fixed focus box per screen, drawn on the centre line of the wheel. The rows scroll underneath it.
+  let wheelWindowEl = null;
+  function showWheelWindow(container, element) {
+    if (!wheelWindowEl) {
+      wheelWindowEl = document.createElement("div");
+      wheelWindowEl.className = "wheel-focus-window";
+      document.body.appendChild(wheelWindowEl);
+    }
+    const listRect = container.getBoundingClientRect();
+    const h = element.offsetHeight;
+    wheelWindowEl.style.left = listRect.left + "px";
+    wheelWindowEl.style.width = listRect.width + "px";
+    wheelWindowEl.style.top = (listRect.top + wheelAnchor(container) - h / 2) + "px";
+    wheelWindowEl.style.height = h + "px";
+    wheelWindowEl.style.display = "block";
+  }
+
+  function hideWheelWindow() {
+    if (wheelWindowEl) wheelWindowEl.style.display = "none";
+  }
+
+  // Short filtered noise burst, like a clock escapement. Created lazily, so the first call happens after a key press.
+  let tickCtx = null;
+  let tickBuffer = null;
+  function playTick() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!tickCtx) tickCtx = new AC();
+      if (tickCtx.state === "suspended") tickCtx.resume();
+      if (!tickBuffer) {
+        const len = Math.floor(tickCtx.sampleRate * 0.012);
+        tickBuffer = tickCtx.createBuffer(1, len, tickCtx.sampleRate);
+        const data = tickBuffer.getChannelData(0);
+        for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 6);
+      }
+      const src = tickCtx.createBufferSource();
+      const filter = tickCtx.createBiquadFilter();
+      const gain = tickCtx.createGain();
+      filter.type = "bandpass";
+      filter.frequency.value = 3500;
+      filter.Q.value = 8;
+      gain.gain.value = 0.05;
+      src.buffer = tickBuffer;
+      src.connect(filter);
+      filter.connect(gain);
+      gain.connect(tickCtx.destination);
+      src.start();
+    } catch (e) {
+      // Sound is optional.
+    }
+  }
+
+  function setElementFocus(element, instant) {
     if (!element) return;
+    const previous = document.querySelector(".focused");
     document.querySelectorAll(".focused").forEach(el => el.classList.remove("focused"));
     element.classList.add("focused");
 
@@ -2633,7 +2822,14 @@ document.addEventListener("DOMContentLoaded", () => {
       setColumnFocus(parseInt(parentCol.dataset.col, 10));
     }
     // Centre the list before focusing so the focus box never paints at the old position.
-    centerInList(element, true);
+    centerInList(element, !!instant);
+    const container = element.parentElement;
+    if (container && container.classList.contains("wheel") && element.offsetHeight > 0) {
+      showWheelWindow(container, element);
+      if (previous && previous !== element && previous.parentElement === container) playTick();
+    } else {
+      hideWheelWindow();
+    }
     element.focus({ preventScroll: true });
 
     if (element.classList.contains("grid-item")) {
@@ -2642,6 +2838,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     rememberFocus(element, parentCol);
     updateHintBar(element);
+  }
+
+  // Visible focusable rows of a picker list, in order. Used to wrap Up/Down around the list.
+  function wheelItems(list) {
+    if (!list) return [];
+    return Array.from(list.children).filter(el => el.classList.contains("focusable") && !el.classList.contains("hidden"));
   }
 
   function moveFocusByDirection(current, direction, scope) {
@@ -3059,12 +3261,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       const item = focused && focused.closest ? focused.closest("#categoryList li") : null;
       if (item && item.dataset.catId) {
-        const items = Array.from(categoryList.querySelectorAll("li"));
+        const items = Array.from(categoryList.querySelectorAll(":scope > li"));
         const index = items.indexOf(item);
         hiddenCategories[categoryKind()].push(String(item.dataset.catId));
         saveHiddenCategories();
         filterCategories();
-        const remaining = categoryList.querySelectorAll("li");
+        const remaining = categoryList.querySelectorAll(":scope > li");
         if (remaining.length > 0) setElementFocus(remaining[Math.min(index, remaining.length - 1)]);
         showToast(t("categoryHidden"));
       }
@@ -3277,6 +3479,13 @@ document.addEventListener("DOMContentLoaded", () => {
         setElementFocus(prev);
       } else if (focused.closest("#modusList") && settingsButton) {
         setElementFocus(settingsButton);
+      } else if (focused.closest("#regionList, #categoryList, #channelList.channel-grid")) {
+        const container = focused.parentElement;
+        const items = wheelItems(container);
+        if (items.length) {
+          const last = items[items.length - 1];
+          if (!wrapWheel(container, last, false)) setElementFocus(last);
+        }
       }
       return;
     }
@@ -3289,6 +3498,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (next) {
         setElementFocus(next);
+      } else if (focused.closest("#regionList, #categoryList, #channelList.channel-grid")) {
+        const container = focused.parentElement;
+        const items = wheelItems(container);
+        if (items.length) {
+          const first = items[0];
+          if (!wrapWheel(container, first, true)) setElementFocus(first);
+        }
+      } else if (focused.closest("#modusList")) {
+        const items = wheelItems(focused.parentElement);
+        if (items.length) setElementFocus(items[0]);
       }
       return;
     }

@@ -743,8 +743,12 @@ body.no-region-column #colRegions {
   padding: 15px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
   overflow-y: auto !important;
+}
+
+/* TV browsers ignore flex gap, so card spacing is a margin */
+.channel-grid > .channel-card + .channel-card {
+  margin-top: 12px;
 }
 
 .channel-card {
@@ -1848,6 +1852,21 @@ body.speler-fit-screen .epg-preview-panel {
   box-shadow: inset 0 0 0 var(--focus-width, 5px) var(--highlight) !important;
 }
 
+/* Wheel rows hide their own focus box: the fixed .wheel-focus-window draws it on the centre line. */
+.wheel-detent > .focusable:focus,
+.wheel-detent > .focusable.focused {
+  box-shadow: none !important;
+}
+
+.wheel-focus-window {
+  position: fixed;
+  z-index: 900;
+  pointer-events: none;
+  display: none;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 var(--focus-width, 5px) var(--highlight);
+}
+
 .color-swatch.focusable.focused {
   box-shadow: none !important;
 }
@@ -2150,6 +2169,51 @@ body.speler-fit-screen .app-progress {
 .wheel > .wheel-2 { opacity: 0.6; }
 .wheel > .wheel-1 { opacity: 0.8; }
 .wheel > .wheel-0 { opacity: 1; }
+
+/* Infinite wheel: copies of the rows beyond both ends, so wrapping shows no empty gap */
+.wheel { position: relative; }
+.wheel > .wheel-ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  opacity: 1;
+  pointer-events: none;
+}
+.wheel-ghost > .wheel-copy {
+  position: absolute;
+  margin: 0 !important;
+  box-sizing: border-box;
+  opacity: 0.28;
+}
+.wheel-ghost > .wheel-copy.wheel-3 { opacity: 0.4; }
+.wheel-ghost > .wheel-copy.wheel-2 { opacity: 0.6; }
+.wheel-ghost > .wheel-copy.wheel-1 { opacity: 0.8; }
+.wheel-ghost > .wheel-copy.wheel-0 { opacity: 1; }
+
+/* Modes fill the column height, as filled cards with margins between them */
+#modusList > .nav-item {
+  flex: 1 1 0;
+  min-height: 0;
+  margin: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background-color: rgba(23, 23, 36, 0.85);
+}
+
+#modusList > .nav-item.active {
+  background-color: rgba(var(--highlight-rgb), 0.22);
+}
+
+/* Done: the settings panel slides out before it closes */
+.customization-page.closing {
+  animation: settingsClose 0.26s ease-in forwards;
+}
+@keyframes settingsClose {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(24px); }
+}
 
 .moving-region {
   background: rgba(var(--highlight-rgb), 0.25) !important;
