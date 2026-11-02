@@ -217,7 +217,7 @@ body, html {
 .form-group input {
   padding: 14px 18px;
   font-size: 1.5rem;
-  border-radius: 12px;
+  border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
@@ -382,7 +382,7 @@ body.kc-has-bg .col-content-wrapper {
   padding: 12px 16px;
   background: #111219;
   border: 1px solid rgba(255,255,255,0.22);
-  border-radius: 8px;
+  border-radius: 999px;
   color: #fff;
   font-size: 1.6rem;
 }
@@ -471,8 +471,12 @@ body.kc-has-bg .col-content-wrapper {
   padding: 28px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
   z-index: 2000;
+}
+
+/* Margins instead of gap: older TV engines ignore gap in flex containers. */
+.settings-panel > * + * {
+  margin-top: 16px;
 }
 
 .settings-panel .settings-label {
@@ -483,7 +487,7 @@ body.kc-has-bg .col-content-wrapper {
   min-height: 68px;
   padding: 14px 18px;
   font-size: 1.6rem;
-  border-radius: 8px;
+  border-radius: 999px;
 }
 
 .settings-panel .settings-toggle {
@@ -499,7 +503,10 @@ body.kc-has-bg .col-content-wrapper {
 .settings-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+}
+
+.settings-group > * + * {
+  margin-top: 10px;
 }
 
 .settings-label {
@@ -513,7 +520,11 @@ body.kc-has-bg .col-content-wrapper {
 .settings-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  margin: -4px;
+}
+
+.settings-row > * {
+  margin: 4px;
 }
 
 .settings-item {
@@ -543,11 +554,12 @@ body.kc-has-bg .col-content-wrapper {
   background: rgba(255,255,255,0.08);
 }
 
-.settings-button.focused,
-.settings-item.focused {
-  outline: 3px solid var(--highlight);
-  outline-offset: 3px;
-  background-color: rgba(var(--highlight-rgb), 0.18);
+/* Settings focus follows the column focus style: same ring colour, no separate outline or white box. */
+.settings-button.focused.focusable,
+.settings-item.focused.focusable {
+  outline: none !important;
+  box-shadow: inset 0 0 0 var(--focus-width, 5px) var(--highlight) !important;
+  background-color: rgba(42, 42, 64, 0.98) !important;
   color: #fff;
 }
 
@@ -589,6 +601,12 @@ body.kc-has-bg .col-content-wrapper {
   border-right: 2px solid rgba(255, 255, 255, 0.12);
   flex-shrink: 0;
   height: 100%;
+  transition: width 0.25s ease, min-width 0.25s ease, max-width 0.25s ease;
+}
+
+@keyframes colContentFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .col-nav.collapsed {
@@ -598,7 +616,8 @@ body.kc-has-bg .col-content-wrapper {
   background-color: rgba(10, 10, 18, 0.98);
 }
 
-.col-nav.collapsed .col-content-wrapper {
+.col-nav.collapsed .col-content-wrapper,
+.col-nav.content-hidden .col-content-wrapper {
   display: none !important;
 }
 
@@ -647,6 +666,10 @@ body.no-region-column #colRegions {
   overflow: hidden;
 }
 
+.col-nav:not(.collapsed) .col-content-wrapper {
+  animation: colContentFadeIn 0.25s ease;
+}
+
 .nav-list {
   list-style: none;
   flex: 1;
@@ -666,6 +689,11 @@ body.no-region-column #colRegions {
 
 .nav-list > .nav-item:last-child {
   margin-bottom: auto;
+}
+
+/* Thin line between neighbouring column items. */
+.nav-list > .nav-item + .nav-item {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .nav-item {
@@ -1153,6 +1181,12 @@ body.no-region-column #colRegions {
   .poster-card {
     flex-basis: calc((100% - 40px) / 2);
   }
+}
+
+/* Off-screen grid cards skip layout and paint; the browser remembers the size of cards it has already rendered. */
+.netflix-grid .poster-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 360px;
 }
 
 .poster-media {
@@ -1780,18 +1814,45 @@ body.speler-fit-screen .epg-preview-panel {
 .customization-section {
   display: flex;
   flex-direction: column;
-  gap: 14px;
 }
 
+.customization-section > * + * {
+  margin-top: 14px;
+}
+
+/* Section title centred between two separator lines. */
 .customization-section h2 {
+  display: flex;
+  align-items: center;
   color: #fff;
   font-size: 1.7rem;
+  margin-top: 28px;
+}
+
+.customization-section h2::before,
+.customization-section h2::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.customization-section h2::before {
+  margin-right: 18px;
+}
+
+.customization-section h2::after {
+  margin-left: 18px;
 }
 
 .color-swatch-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 18px;
+  margin: -9px;
+}
+
+.color-swatch-group > * {
+  margin: 9px;
 }
 
 .color-swatch {
@@ -1905,15 +1966,33 @@ body.speler-fit-screen .epg-preview-panel {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 16px;
   padding: 0 24px;
   transition: transform 0.25s ease;
+}
+
+.customization-nav-list > * + * {
+  margin-top: 16px;
 }
 
 .customization-tab {
   min-height: 72px;
   text-align: left;
   font-size: 1.5rem;
+}
+
+/* Tab icon sits above the label and is larger. */
+.customization-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+}
+
+.customization-tab .ui-icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 8px;
 }
 
 .customization-tab.active {
@@ -2049,7 +2128,7 @@ body.speler-fit-screen .epg-preview-panel {
   font-size: 1.4rem;
   background: #101116;
   border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 6px;
+  border-radius: 999px;
 }
 
 .settings-toggle {
@@ -2062,7 +2141,7 @@ body.speler-fit-screen .epg-preview-panel {
   color: #fff;
   font-size: 1.3rem;
   border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 8px;
+  border-radius: 999px;
 }
 
 /* Apple-style switch: the checkbox stays focusable but is invisible; the track and knob draw the state. */
@@ -2538,7 +2617,7 @@ body.speler-fit-screen .app-progress {
   padding: 10px 16px;
   background: #111219;
   border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 8px;
+  border-radius: 999px;
   color: #fff;
   font-size: 1.6rem;
 }
@@ -2643,4 +2722,15 @@ body.speler-fit-screen .app-progress {
   border: 1px solid #444455;
   background: #1b1b2a;
   color: #fff;
+}
+
+/* Lists still scroll; the browser scrollbar beside them is hidden. */
+* {
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }

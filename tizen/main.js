@@ -132,10 +132,10 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.assign(appTranslations.tr, { presetBackgrounds: "Hazır arka planlar" });
   Object.assign(appTranslations.nl, { presetBackgrounds: "Voorinstellingen" });
   Object.assign(appTranslations.fr, { presetBackgrounds: "Préréglages" });
-  Object.assign(appTranslations.en, { m3uGenerateXtream: "⚡ Generate from Xtream", clockFormat: "Clock format", colorTab: "Color", backgroundTab: "Background", clockTab: "Clock" });
-  Object.assign(appTranslations.tr, { m3uGenerateXtream: "⚡ Xtream'den oluştur", clockFormat: "Saat biçimi", colorTab: "Renk", backgroundTab: "Arka plan", clockTab: "Saat" });
-  Object.assign(appTranslations.nl, { m3uGenerateXtream: "⚡ Genereren uit Xtream", clockFormat: "Klokweergave", colorTab: "Kleur", backgroundTab: "Achtergrond", clockTab: "Klok" });
-  Object.assign(appTranslations.fr, { m3uGenerateXtream: "⚡ Générer depuis Xtream", clockFormat: "Format de l'horloge", colorTab: "Couleur", backgroundTab: "Arrière-plan", clockTab: "Horloge" });
+  Object.assign(appTranslations.en, { m3uGenerateXtream: "⚡ Generate from Xtream", clockFormat: "Clock format", uiScale: "UI scale", colorTab: "Color", backgroundTab: "Background", clockTab: "Clock" });
+  Object.assign(appTranslations.tr, { m3uGenerateXtream: "⚡ Xtream'den oluştur", clockFormat: "Saat biçimi", uiScale: "Arayüz ölçeği", colorTab: "Renk", backgroundTab: "Arka plan", clockTab: "Saat" });
+  Object.assign(appTranslations.nl, { m3uGenerateXtream: "⚡ Genereren uit Xtream", clockFormat: "Klokweergave", uiScale: "Interfaceschaal", colorTab: "Kleur", backgroundTab: "Achtergrond", clockTab: "Klok" });
+  Object.assign(appTranslations.fr, { m3uGenerateXtream: "⚡ Générer depuis Xtream", clockFormat: "Format de l'horloge", uiScale: "Échelle de l'interface", colorTab: "Couleur", backgroundTab: "Arrière-plan", clockTab: "Horloge" });
   const languageOptions = { en: "🇬🇧", tr: "🇹🇷", nl: "🇳🇱", fr: "🇫🇷" };
   Object.assign(appTranslations.en, { streamPlaybackFailed: "This stream could not be played. Try the provider's HLS URL or a compatible stream format." });
   Object.assign(appTranslations.tr, { streamPlaybackFailed: "Bu yayın oynatılamadı. Sağlayıcının HLS URL'sini veya uyumlu bir yayın biçimini deneyin." });
@@ -1109,6 +1109,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  const UI_SCALES = [0.9, 1, 1.15, 1.3];
+  let uiScale = Number(store.getItem("iptv_ui_scale"));
+  if (!UI_SCALES.includes(uiScale)) uiScale = 1;
+  function applyUiScale() {
+    // Zoom the whole page; size the root boxes to 100vw/100vh divided by the scale so the page still fills the screen.
+    [document.documentElement, document.body].forEach(el => {
+      el.style.zoom = String(uiScale);
+      el.style.width = `${100 / uiScale}vw`;
+      el.style.height = `${100 / uiScale}vh`;
+    });
+  }
+  function updateUiScaleButton() {
+    const button = document.getElementById("uiScaleButton");
+    if (button) setIconLabel(button, "sliders", `${Math.round(uiScale * 100)}%`);
+  }
+  applyUiScale();
+  updateUiScaleButton();
+  const uiScaleButton = document.getElementById("uiScaleButton");
+  if (uiScaleButton) {
+    uiScaleButton.addEventListener("click", () => {
+      uiScale = UI_SCALES[(UI_SCALES.indexOf(uiScale) + 1) % UI_SCALES.length];
+      store.setItem("iptv_ui_scale", String(uiScale));
+      applyUiScale();
+      updateUiScaleButton();
+    });
+  }
+
   if (vodPlaybackControls) {
     vodPlaybackControls.addEventListener("click", e => {
       const control = e.target.closest("[data-vod-control]");
@@ -1528,15 +1555,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     cols.forEach((col, idx) => {
       if (!col) return;
-      if (isColumnSkipped(idx)) {
-        col.classList.add("collapsed");
-        return;
-      }
-      if (idx < activeColIdx) {
-        col.classList.add("collapsed");
+      if (isColumnSkipped(idx) || idx < activeColIdx) {
+        collapseColumn(col);
       } else {
-        col.classList.remove("collapsed");
+        col.classList.remove("collapsed", "content-hidden");
       }
+    });
+  }
+
+  // Contents are hidden first, then the column narrows on the next frame.
+  function collapseColumn(col) {
+    if (col.classList.contains("collapsed") || col.classList.contains("content-hidden")) return;
+    col.classList.add("content-hidden");
+    requestAnimationFrame(() => {
+      if (col.classList.contains("content-hidden")) col.classList.add("collapsed");
     });
   }
 
@@ -2096,14 +2128,38 @@ document.addEventListener("DOMContentLoaded", () => {
   let posterObserver = null;
   let posterLoadQueue = [];
   let posterFlushTimer = null;
+  let lastNavigationAt = 0;
+  // Few posters download at once so heavy images do not block the TV's main thread.
+  const POSTER_MAX_IN_FLIGHT = 2;
+  let posterInFlight = 0;
+  let posterEpoch = 0;
 
+  function finishPosterLoad(img, epoch) {
+    if (!img._posterInFlight) return;
+    img._posterInFlight = false;
+    if (epoch === posterEpoch) posterInFlight = Math.max(0, posterInFlight - 1);
+    if (posterLoadQueue.length && !posterFlushTimer) posterFlushTimer = setTimeout(flushPosterLoads, 60);
+  }
+
+  // Navigation has priority: posters wait until focus has been still briefly, then load within the in-flight cap.
   function flushPosterLoads() {
     posterFlushTimer = null;
-    const queue = posterLoadQueue;
-    posterLoadQueue = [];
-    queue.forEach((img) => {
-      if (img.inBand && !img.getAttribute("src") && img.dataset.src) img.src = img.dataset.src;
-    });
+    if (Date.now() - lastNavigationAt < 350) {
+      posterFlushTimer = setTimeout(flushPosterLoads, 350);
+      return;
+    }
+    const epoch = posterEpoch;
+    while (posterInFlight < POSTER_MAX_IN_FLIGHT && posterLoadQueue.length) {
+      const img = posterLoadQueue.shift();
+      if (!img.inBand || img.getAttribute("src") || !img.dataset.src) continue;
+      posterInFlight++;
+      img._posterInFlight = true;
+      const done = () => finishPosterLoad(img, epoch);
+      img.addEventListener("load", done, { once: true });
+      img.addEventListener("error", done, { once: true });
+      img.src = img.dataset.src;
+    }
+    if (posterLoadQueue.length && !posterFlushTimer) posterFlushTimer = setTimeout(flushPosterLoads, 120);
   }
 
   function schedulePosterFlush() {
@@ -2113,6 +2169,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function unloadPoster(img) {
     if (!img.getAttribute("src")) return;
+    if (img._posterInFlight) {
+      img._posterInFlight = false;
+      posterInFlight = Math.max(0, posterInFlight - 1);
+    }
     img.removeAttribute("src");
     img.style.visibility = "";
     img.parentNode.classList.remove("is-loaded", "is-failed");
@@ -2123,6 +2183,8 @@ document.addEventListener("DOMContentLoaded", () => {
     clearTimeout(posterFlushTimer);
     posterFlushTimer = null;
     posterLoadQueue = [];
+    posterEpoch++;
+    posterInFlight = 0;
     if (!("IntersectionObserver" in window)) { loadVisiblePosters(); return; }
     posterObserver = new IntersectionObserver((entries) => {
       let queued = false;
@@ -2265,6 +2327,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function switchModus(modus) {
     if (modus !== currentModus) selectedSeries = null;
+    if ((modus === "vod" || modus === "series") && lastLive) stopLivePlayback();
     currentModus = modus;
     document.body.classList.toggle("favorites-mode", modus === "favorites");
     document.querySelectorAll("#modusList .nav-item").forEach(el => el.classList.toggle("active", el.dataset.modus === modus));
@@ -2795,6 +2858,14 @@ document.addEventListener("DOMContentLoaded", () => {
       mpegTsPlayer.destroy();
       mpegTsPlayer = null;
     }
+  }
+
+  // Live audio must not keep playing behind the movie and series lists.
+  function stopLivePlayback() {
+    destroyStreamPlayers();
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
   }
 
   function playVodMovie(streamId, title, ext) {
@@ -3369,6 +3440,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setElementFocus(element, instant) {
     if (!element) return;
+    lastNavigationAt = Date.now();
     const previous = document.querySelector(".focused");
     document.querySelectorAll(".focused").forEach(el => el.classList.remove("focused"));
     element.classList.add("focused");

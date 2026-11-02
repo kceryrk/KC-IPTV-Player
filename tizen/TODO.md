@@ -17,16 +17,16 @@ Open items to fix later.
 - [ ] Smaller label font, with enough space from the channel name
 
 ## Menus and animation
-- [ ] Animate between menus (collapse and expand)
-- [ ] Prioritize animation over loading
-- [ ] Remove the scrollbar on the right of list column menus
-- [ ] Add a separator between items
-- [ ] Separator line between settings sections, with the section title centred
-- [ ] Settings: the gap between items does not work on TVs
-- [ ] Settings: make the SVG icons sit above the title and make them bigger
-- [ ] Settings: the selected item is a plain white box; it should follow the parent's style
-- [ ] Settings: not everything is pill shaped, and most controls are small; add a UI scale setting
-- [ ] Text input boxes: pill shaped
+- [x] Animate between menus (collapse and expand)
+- [x] Prioritize animation over loading
+- [x] Remove the scrollbar on the right of list column menus
+- [x] Add a separator between items
+- [x] Separator line between settings sections, with the section title centred
+- [x] Settings: the gap between items does not work on TVs
+- [x] Settings: make the SVG icons sit above the title and make them bigger
+- [x] Settings: the selected item is a plain white box; it should follow the parent's style
+- [x] Settings: not everything is pill shaped, and most controls are small; add a UI scale setting
+- [x] Text input boxes: pill shaped
 
 ## Hint bar
 - [ ] Pill-shaped hints
@@ -40,9 +40,11 @@ Open items to fix later.
 - [ ] Add a general navigation sound for moving through buttons
 
 ## Posters and categories
-- [ ] When a poster image is too heavy, navigation stops loading; keep navigation responsive while large images load
+- [x] When a poster image is too heavy, navigation stops loading; keep navigation responsive while large images load
 - [ ] Movie and series region tags show a "V" and "S" prefix (for example "VTR" and "STR"); remove the prefix
 - [ ] Remove the "Diziler" tag from categories
+- [ ] Full-screen poster selection only: posters are picked full-screen, and the menus only select categories
+- [ ] Movies and series region opens at ALL; consider defaulting to a real region to keep the grid smaller
 - [ ] Consider full-screen poster navigation with infinite scrolling, horizontally and vertically (hard)
 
 ## Regions and favourites
