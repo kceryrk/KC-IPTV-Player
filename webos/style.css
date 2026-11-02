@@ -23,7 +23,7 @@ body, html {
   position: fixed;
   top: 40px;
   right: 40px;
-  background: rgba(229, 9, 20, 0.95);
+  background: rgba(var(--accent-rgb), 0.95);
   color: #fff;
   font-size: 1.8rem;
   font-weight: 800;
@@ -61,7 +61,7 @@ body, html {
   background: rgba(15, 15, 25, 0.85);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  border: 2px solid rgba(255, 215, 0, 0.6);
+  border: 2px solid rgba(var(--highlight-rgb), 0.6);
   border-radius: 24px;
   padding: 30px 60px;
   display: flex;
@@ -83,8 +83,8 @@ body, html {
 .num-zap-number {
   font-size: 5rem;
   font-weight: 900;
-  color: #ffd700;
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  color: var(--highlight);
+  text-shadow: 0 0 20px rgba(var(--highlight-rgb), 0.5);
 }
 
 .num-zap-progress {
@@ -100,7 +100,7 @@ body, html {
   content: '';
   position: absolute;
   top: 0; left: 0; height: 100%; width: 100%;
-  background: #ffd700;
+  background: var(--highlight);
   animation: zapTimer 1.2s linear forwards;
 }
 
@@ -115,7 +115,7 @@ body, html {
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(229, 9, 20, 0.95);
+  background: rgba(var(--accent-rgb), 0.95);
   color: #fff;
   font-size: 1.6rem;
   font-weight: bold;
@@ -126,8 +126,8 @@ body, html {
 }
 
 .moving-card {
-  border: 3px solid #e50914 !important;
-  box-shadow: 0 0 20px rgba(229, 9, 20, 0.8) !important;
+  border: 3px solid var(--accent) !important;
+  box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.8) !important;
 }
 
 /* INLOGGEN & AUTO-LOGIN SPLASH SCHERM MET LANDSCHAPSACHTERGROND */
@@ -152,7 +152,7 @@ body, html {
 .splash-logo {
   font-size: 3.2rem;
   font-weight: 900;
-  color: #e50914;
+  color: var(--accent);
   letter-spacing: 2px;
   text-shadow: 0 4px 20px rgba(0,0,0,0.8);
 }
@@ -161,7 +161,7 @@ body, html {
   width: 60px;
   height: 60px;
   border: 6px solid rgba(255, 255, 255, 0.2);
-  border-top-color: #e50914;
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -190,14 +190,14 @@ body, html {
 }
 
 .login-title {
-  color: #e50914;
+  color: var(--accent);
   font-size: 2.4rem;
   font-weight: 800;
   text-align: center;
 }
 
 .login-status {
-  color: #ffd700;
+  color: var(--highlight);
   font-size: 1.4rem;
   text-align: center;
   font-weight: bold;
@@ -228,7 +228,7 @@ body, html {
   padding: 16px;
   font-size: 1.6rem;
   font-weight: bold;
-  background: #e50914;
+  background: var(--accent);
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -243,6 +243,15 @@ body, html {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+}
+
+/* Panels turn translucent so the chosen background shows through. */
+body.kc-has-bg .app-header,
+body.kc-has-bg .col-nav,
+body.kc-has-bg .col-nav.collapsed,
+body.kc-has-bg .channel-panel,
+body.kc-has-bg .col-content-wrapper {
+  background-color: rgba(10, 10, 18, 0.55) !important;
 }
 
 .app-header {
@@ -317,20 +326,25 @@ body, html {
 }
 
 .login-panel {
-  position: absolute;
-  top: 60px;
-  right: 0;
-  width: 720px;
-  max-width: 92vw;
+  position: static;
+  width: 100%;
+  max-width: none;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 28px;
-  background: rgba(8,9,13,0.97);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 10px;
-  box-shadow: 0 18px 42px rgba(0,0,0,0.78);
-  z-index: 2100;
+  padding: 16px 0 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+.login-section {
+  gap: 12px;
+}
+
+.login-section .login-state-button {
+  width: 100%;
+  justify-content: flex-start;
 }
 
 .login-panel-header {
@@ -379,6 +393,44 @@ body, html {
   gap: 8px;
 }
 
+.login-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.login-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.login-row-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.source-switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.source-switch select {
+  flex: 1;
+  text-align: center;
+  text-align-last: center;
+  font-weight: 700;
+}
+
+.source-switch-arrow {
+  color: #fff;
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
 .login-inline-toast {
   padding: 10px 12px;
   background: rgba(var(--accent-rgb),0.16);
@@ -407,17 +459,41 @@ body, html {
 .settings-panel {
   position: absolute;
   right: 0;
-  top: 58px;
-  width: 360px;
+  top: 60px;
+  width: 720px;
+  max-width: 92vw;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
   background: rgba(10, 12, 18, 0.96);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 16px;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.7);
-  padding: 18px 16px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  box-shadow: 0 18px 42px rgba(0,0,0,0.78);
+  padding: 28px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   z-index: 2000;
+}
+
+.settings-panel .settings-label {
+  font-size: 1.4rem;
+}
+
+.settings-panel .settings-item {
+  min-height: 68px;
+  padding: 14px 18px;
+  font-size: 1.6rem;
+  border-radius: 8px;
+}
+
+.settings-panel .settings-toggle {
+  min-height: 68px;
+  font-size: 1.6rem;
+}
+
+.settings-panel .settings-toggle input {
+  width: 32px;
+  height: 32px;
 }
 
 .settings-group {
@@ -459,7 +535,7 @@ body, html {
 }
 
 .settings-item.danger {
-  border-color: rgba(229, 9, 20, 0.7);
+  border-color: rgba(var(--accent-rgb), 0.7);
   color: #ffb3ba;
 }
 
@@ -469,14 +545,14 @@ body, html {
 
 .settings-button.focused,
 .settings-item.focused {
-  outline: 3px solid #ffd700;
+  outline: 3px solid var(--highlight);
   outline-offset: 3px;
-  background-color: rgba(255, 215, 0, 0.18);
+  background-color: rgba(var(--highlight-rgb), 0.18);
   color: #fff;
 }
 
 .logo {
-  color: #e50914;
+  color: var(--accent);
   font-size: 2.4rem;
   font-weight: bold;
   display: flex;
@@ -485,7 +561,7 @@ body, html {
 }
 
 .header-mode-badge {
-  background: linear-gradient(135deg, #ffd700, #ff9900) !important;
+  background: linear-gradient(135deg, var(--highlight), rgba(var(--highlight-rgb), 0.7)) !important;
   color: #000000 !important;
   font-size: 1.4rem;
   padding: 6px 16px;
@@ -496,7 +572,7 @@ body, html {
 .tv-grid {
   display: flex;
   flex: 1;
-  height: calc(100vh - 132px);
+  min-height: 0;
   width: 100%;
   min-width: 0;
   position: relative;
@@ -534,7 +610,8 @@ body, html {
 }
 
 body.favorites-mode #colRegions,
-body.favorites-mode #colCategories {
+body.favorites-mode #colCategories,
+body.no-region-column #colRegions {
   display: none !important;
 }
 
@@ -548,7 +625,7 @@ body.favorites-mode #colCategories {
   font-size: 1.8rem;
   font-weight: bold;
   letter-spacing: 2px;
-  color: #e50914;
+  color: var(--accent);
   text-transform: uppercase;
   padding: 20px 0;
 }
@@ -556,7 +633,7 @@ body.favorites-mode #colCategories {
 .col-title {
   font-size: 2.0rem !important;
   font-weight: 800;
-  color: #ffd700;
+  color: var(--highlight);
   padding: 20px 25px;
   border-bottom: 2px solid rgba(255, 255, 255, 0.15);
   flex-shrink: 0;
@@ -574,6 +651,21 @@ body.favorites-mode #colCategories {
   list-style: none;
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Auto margins centre short lists without clipping long, scrollable ones */
+.nav-list > .nav-item {
+  flex-shrink: 0;
+}
+
+.nav-list > .nav-item:first-child {
+  margin-top: auto;
+}
+
+.nav-list > .nav-item:last-child {
+  margin-bottom: auto;
 }
 
 .nav-item {
@@ -585,7 +677,335 @@ body.favorites-mode #colCategories {
   white-space: nowrap;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 15px;
+}
+
+/* Category names can be long, so that column is wide; region codes are short, so that column stays narrow */
+.col-nav:not(.collapsed)#colCategories {
+  width: 26vw;
+  min-width: 280px;
+  max-width: 26vw;
+}
+
+.col-nav:not(.collapsed)#colRegions {
+  width: 12vw;
+  min-width: 180px;
+  max-width: 12vw;
+}
+
+#categoryList .nav-item,
+#regionList .nav-item {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-pack: center;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.25;
+}
+
+/* Country flag behind a region box; isolation keeps it under the text but above the box background */
+#regionList .nav-item {
+  position: relative;
+  isolation: isolate;
+}
+
+.flag-underlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+/* Region boxes use the 4:3 flag ratio (flag SVGs are 640x480); padding-top sets the height because Chromium 69 has no aspect-ratio */
+#regionList .nav-item {
+  display: block;
+  height: 0;
+  padding: 75% 0 0;
+  overflow: hidden;
+}
+
+#regionList .region-label {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  text-align: center;
+  line-height: 1.25;
+}
+
+/* GUIDE OVERLAY */
+.guide-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  /* Must stay above the fullscreen player (999999). */
+  z-index: 1000005;
+  display: flex;
+  flex-direction: column;
+  /* Text is 2x the normal size; em-based rules inside scale with it. */
+  font-size: 200%;
+  --guide-ch-w: 380px;
+  background: rgba(8, 8, 14, 0.55);
+  /* No real blur on this TV's Chromium, so a dark text shadow keeps the text readable on video. */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8);
+  color: #fff;
+}
+.guide-topbar {
+  display: flex;
+  align-items: center;
+  padding: 24px 40px 12px;
+  background: linear-gradient(to bottom, rgba(8, 8, 14, 0.85), rgba(8, 8, 14, 0));
+}
+.guide-topbar h2 {
+  margin: 0;
+  font-size: 1.6em;
+}
+.guide-hint {
+  margin-left: 20px;
+  font-size: 0.9em;
+  opacity: 0.6;
+}
+.guide-clock-wrap {
+  margin-left: auto;
+  text-align: right;
+}
+.guide-date {
+  display: block;
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+.guide-clock {
+  font-size: 1.6em;
+  font-variant-numeric: tabular-nums;
+}
+/* Ruler and now line share the full width, so one left formula places both. */
+.guide-timebar,
+.guide-body {
+  position: relative;
+  margin: 0 40px;
+}
+.guide-timebar {
+  height: 36px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+.guide-ruler {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.guide-tick {
+  position: absolute;
+  top: 8px;
+  transform: translateX(-50%);
+  font-size: 0.9em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+.guide-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.guide-rows {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+/* Fixed row height: the grid does not stretch or shrink with the channel count or text. */
+.guide-row {
+  flex: 0 0 84px;
+  height: 84px;
+  display: flex;
+  align-items: stretch;
+  border-radius: 12px;
+  transition: background-color 0.15s ease;
+}
+.guide-row.selected {
+  background: rgba(255, 255, 255, 0.08);
+}
+.guide-chan {
+  flex: 0 0 var(--guide-ch-w);
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  min-width: 0;
+}
+.guide-num {
+  flex: 0 0 40px;
+  font-weight: 600;
+  opacity: 0.7;
+}
+.guide-logo {
+  flex: 0 0 96px;
+  width: 96px;
+  height: 56px;
+  object-fit: contain;
+  margin-right: 14px;
+}
+.guide-name {
+  flex: 1;
+  font-size: 1.05em;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.guide-track {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  margin: 6px 0;
+}
+.guide-block {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.guide-block.is-on-air {
+  background: rgba(110, 168, 255, 0.35);
+}
+.guide-block-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.95em;
+}
+.guide-now-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+}
+.guide-info {
+  flex: 0 0 auto;
+  padding: 16px 40px 28px;
+  background: linear-gradient(to bottom, rgba(8, 8, 14, 0), rgba(8, 8, 14, 0.92) 30%);
+}
+.guide-info-channel {
+  font-size: 0.9em;
+  opacity: 0.7;
+}
+.guide-info-programme {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.guide-info-time {
+  font-size: 0.95em;
+  opacity: 0.75;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+.guide-info-desc {
+  margin-top: 8px;
+  font-size: 0.95em;
+  line-height: 1.35;
+  opacity: 0.85;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* RENAME DIALOG */
+.rename-dialog {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+}
+.rename-box {
+  width: 560px;
+  padding: 28px 32px;
+  border-radius: 28px;
+  background: rgba(24, 24, 36, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.rename-title {
+  font-size: 1.4em;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.rename-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 1.1em;
+  outline: none;
+}
+.rename-input:focus {
+  border-color: #6ea8ff;
+}
+.rename-hint {
+  margin-top: 10px;
+  font-size: 0.85em;
+  opacity: 0.6;
+}
+.rename-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+.rename-btn {
+  margin-left: 14px;
+  padding: 10px 26px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1em;
+  outline: none;
+}
+.rename-btn:focus {
+  border-color: #6ea8ff;
+  background: rgba(110, 168, 255, 0.25);
 }
 
 /* KANALEN PANEL */
@@ -605,8 +1025,12 @@ body.favorites-mode #colCategories {
   padding: 15px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
   overflow-y: auto !important;
+}
+
+/* TV browsers ignore flex gap, so card spacing is a margin */
+.channel-grid > .channel-card + .channel-card {
+  margin-top: 12px;
 }
 
 .channel-card {
@@ -639,7 +1063,7 @@ body.favorites-mode #colCategories {
   width: 90px;
   height: 55px;
   background-color: rgba(37, 37, 56, 0.9);
-  color: #e50914;
+  color: var(--accent);
   font-weight: bold;
   font-size: 1.6rem;
   display: flex;
@@ -674,7 +1098,6 @@ body.favorites-mode #colCategories {
   display: flex !important;
   flex-flow: row wrap !important;
   align-content: flex-start;
-  gap: 20px !important;
   padding: 20px !important;
   flex: 1 !important;
   width: 100% !important;
@@ -687,20 +1110,21 @@ body.favorites-mode #colCategories {
 .poster-card {
   display: flex;
   flex-direction: column;
-  flex: 0 0 calc((100% - 60px) / 4);
-  min-width: 0;
-  background-color: rgba(23, 23, 36, 0.9);
-  border-radius: 14px;
+  position: relative;
+  flex: 0 0 calc((100% - 80px) / 4);
+  margin: 0 20px 20px 0;
+  border-radius: 22px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
   height: auto !important;
   flex-shrink: 0 !important;
+  contain: layout paint style;
 }
 
 @media (max-width: 1279px) {
   .poster-card {
-    flex-basis: calc((100% - 40px) / 3);
+    flex-basis: calc((100% - 60px) / 3);
   }
 }
 
@@ -727,25 +1151,87 @@ body.favorites-mode #colCategories {
   }
 
   .poster-card {
-    flex-basis: calc((100% - 20px) / 2);
+    flex-basis: calc((100% - 40px) / 2);
   }
 }
 
-.poster-img {
-  width: 100% !important;
-  height: auto !important;
-  aspect-ratio: 2 / 3;
-  object-fit: cover !important;
+.poster-media {
+  position: relative;
+  width: 100%;
+  padding-top: 150%;
+  overflow: hidden;
+  background-color: #2a2a38;
+}
+
+/* Breathing uses opacity on a pseudo-element so the compositor animates it without repainting the card. */
+.poster-media::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #41414f;
+  opacity: 0;
+  animation: poster-breathe 1.6s ease-in-out infinite alternate;
+}
+
+.poster-media.is-loaded::before,
+.poster-media.is-failed::before,
+.poster-media.is-away::before {
+  animation: none;
+  opacity: 0;
+}
+
+.poster-media.is-failed {
   background-color: #0d0d14;
 }
 
+@keyframes poster-breathe {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.poster-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.poster-media.is-loaded .poster-img {
+  opacity: 1;
+}
+
+/* Placeholder cards hold the grid's shape while a category loads; they are not focusable. */
+.poster-card.is-placeholder {
+  pointer-events: none;
+}
+
+.category-status {
+  flex: 0 0 100%;
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 1.1em;
+  opacity: 0.8;
+}
+
 .poster-info {
-  padding: 12px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 46px 12px 12px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 4px;
-  min-height: 76px;
+  background: linear-gradient(to top, rgba(10, 10, 18, 0.95) 0%, rgba(10, 10, 18, 0.7) 50%, rgba(10, 10, 18, 0) 100%);
+  pointer-events: none;
 }
 
 .poster-title {
@@ -760,7 +1246,7 @@ body.favorites-mode #colCategories {
 
 .season-heading {
   flex: 0 0 100%;
-  color: #ffd700;
+  color: var(--highlight);
   font-size: 2rem;
   font-weight: 800;
   padding: 8px 4px;
@@ -780,8 +1266,8 @@ body.favorites-mode #colCategories {
 }
 
 .episode-card {
-  flex: 0 0 calc((100% - 60px) / 4);
-  min-width: 0;
+  flex: 0 0 calc((100% - 80px) / 4);
+  margin: 0 20px 20px 0;min-width: 0;
   min-height: 135px;
   display: flex;
   flex-direction: column;
@@ -796,7 +1282,7 @@ body.favorites-mode #colCategories {
 }
 
 .episode-number {
-  color: #ffd700;
+  color: var(--highlight);
   font-size: 1.5rem;
   font-weight: 700;
 }
@@ -809,19 +1295,19 @@ body.favorites-mode #colCategories {
 
 @media (max-width: 1279px) {
   .episode-card {
-    flex-basis: calc((100% - 40px) / 3);
+    flex-basis: calc((100% - 60px) / 3);
   }
 }
 
 @media (max-width: 899px) {
   .episode-card {
-    flex-basis: calc((100% - 20px) / 2);
+    flex-basis: calc((100% - 40px) / 2);
   }
 }
 
 .poster-sub {
   font-size: 1.3rem !important;
-  color: #ffd700;
+  color: var(--highlight);
   font-weight: 600;
 }
 
@@ -849,6 +1335,49 @@ video {
 }
 
 /* VOD PAUSE OVERLAY ICON */
+.player-loading {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 99998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+/* Playback loader: a figure-eight line whose stroke thins toward its tail. Inspired by CodePen aaroniker/MzoXaZ. */
+.trail-loader {
+  width: 192px;
+  height: 96px;
+  display: block;
+  overflow: visible;
+}
+
+/* Each layer is a dash ending at the same head point. Dash plus gap is exactly 100, so the loop is seamless. Layers grow thicker and shorter toward the head, and their colour is blended from accent to highlight by main.js. */
+.trail-line {
+  --period: 2.4s;
+  --w: 1;
+  --L: 50;
+  fill: none;
+  stroke-width: var(--w);
+  stroke-linecap: round;
+  animation: trailRun 2.4s linear infinite reverse;
+}
+
+/* Literal values: var() and calc() inside keyframes are not reliable on Chromium 69. */
+@keyframes trailRun {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
 .vod-pause-overlay {
   position: absolute;
   top: 50%;
@@ -914,7 +1443,7 @@ body.speler-fit-screen .epg-preview-panel {
 
 .epg-row { display: flex; gap: 15px; font-size: 1.5rem; color: #888; align-items: center; }
 .epg-row.current { color: #fff; font-weight: bold; font-size: 1.8rem; }
-.epg-time { color: #ffd700; font-weight: bold; min-width: 120px; }
+.epg-time { color: var(--highlight); font-weight: bold; min-width: 120px; margin-right: 24px; }
 
 /* LIQUID GLASS OSD */
 .osd-overlay {
@@ -963,7 +1492,7 @@ body.speler-fit-screen .epg-preview-panel {
 }
 
 .osd-logo-fallback {
-  background: #e50914;
+  background: var(--accent);
   color: #fff;
   font-weight: 800;
   font-size: 2.2rem;
@@ -996,7 +1525,7 @@ body.speler-fit-screen .epg-preview-panel {
 .osd-clock {
   font-size: 2.2rem;
   font-weight: bold;
-  color: #ffd700;
+  color: var(--highlight);
 }
 
 .osd-epg-info {
@@ -1019,9 +1548,10 @@ body.speler-fit-screen .epg-preview-panel {
 }
 
 .osd-epg-time {
-  color: #ffd700;
+  color: var(--highlight);
   font-weight: bold;
   min-width: 120px;
+  margin-right: 24px;
 }
 
 /* LIQUID GLASS VOD OSD OVERLAY */
@@ -1036,7 +1566,7 @@ body.speler-fit-screen .epg-preview-panel {
   -webkit-backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-top: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 28px;
+  border-radius: 999px;
   padding: 24px 36px;
   display: flex;
   flex-direction: column;
@@ -1079,7 +1609,7 @@ body.speler-fit-screen .epg-preview-panel {
 .vod-progress-bar {
   width: 0%;
   height: 100%;
-  background: linear-gradient(90deg, #e50914, #ff4d4d);
+  background: linear-gradient(90deg, var(--accent), rgba(var(--accent-rgb), 0.65));
   transition: width 0.2s linear;
 }
 
@@ -1093,7 +1623,7 @@ body.speler-fit-screen .epg-preview-panel {
 }
 
 .vod-hint {
-  color: #ffd700;
+  color: var(--highlight);
   font-weight: 600;
   letter-spacing: 0.5px;
 }
@@ -1101,8 +1631,8 @@ body.speler-fit-screen .epg-preview-panel {
 /* FOCUS STIJL */
 .focusable:focus, .focusable.focused {
   background-color: rgba(42, 42, 64, 0.98) !important;
-  outline: 5px solid #ffffff !important;
-  outline-offset: -5px;
+  outline: none !important;
+  box-shadow: inset 0 0 0 5px #ffffff !important;
   border-radius: 12px;
 }
 
@@ -1200,6 +1730,10 @@ body.speler-fit-screen .epg-preview-panel {
   border-color: var(--highlight);
 }
 
+.channel-card.active {
+  background-color: rgba(var(--highlight-rgb), 0.22);
+}
+
 .settings-item.danger {
   border-color: rgba(var(--accent-rgb), 0.8);
   color: var(--accent);
@@ -1274,6 +1808,233 @@ body.speler-fit-screen .epg-preview-panel {
   outline-offset: 4px;
 }
 
+.color-swatch.focusable:focus,
+.color-swatch.focusable.focused {
+  background-color: var(--swatch-color) !important;
+  outline: 5px solid #ffffff !important;
+  outline-offset: 5px;
+  border-radius: 50%;
+}
+
+.color-swatch.custom-swatch {
+  background-image: conic-gradient(#ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+}
+
+.color-swatch.custom-swatch.selected {
+  background-image: none;
+}
+
+.hue-panel {
+  flex: 0 0 100%;
+  width: 100%;
+  margin: 14px 0 26px;
+}
+
+.hue-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.hue-label {
+  flex: 0 0 180px;
+  margin-right: 18px;
+  color: #fff;
+  font-size: 1.4rem;
+}
+
+.hue-range.focus-width-range {
+  background: rgba(255,255,255,0.18);
+}
+
+.focus-width-value {
+  flex: 0 0 72px;
+  margin-left: 18px;
+  color: #fff;
+  font-size: 1.4rem;
+  text-align: right;
+}
+
+/* Pill-shaped sliders. The saturation and lightness gradients are set per panel in main.js (updateHueTracks). */
+.hue-range {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border-radius: 22px;
+  background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+  border: 3px solid rgba(255,255,255,0.72);
+  outline: none;
+}
+
+.hue-range::-webkit-slider-runnable-track {
+  height: 38px;
+  background: transparent;
+}
+
+.hue-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 56px;
+  margin-top: -9px;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.6);
+}
+
+.customization-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.customization-nav {
+  flex: 0 0 300px;
+  position: relative;
+  overflow: hidden;
+  background: #0b0c11;
+  border-right: 1px solid rgba(255,255,255,0.16);
+}
+
+.customization-nav-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 24px;
+  transition: transform 0.25s ease;
+}
+
+.customization-tab {
+  min-height: 72px;
+  text-align: left;
+  font-size: 1.5rem;
+}
+
+.customization-tab.active {
+  border-color: var(--highlight);
+  background: rgba(var(--accent-rgb), 0.25);
+}
+
+.customization-pane.hidden {
+  display: none;
+}
+
+.customization-pane[data-pane="source"] {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 1040px;
+}
+
+.customization-pane[data-pane="source"] .login-state-button {
+  width: fit-content;
+  min-height: 56px;
+  font-size: 1.5rem;
+}
+
+.customization-pane[data-pane="source"] .login-panel label {
+  margin-top: 10px;
+}
+
+.customization-pane[data-pane="source"] .login-panel input,
+.customization-pane[data-pane="source"] .login-panel select {
+  max-width: 960px;
+}
+
+.customization-pane[data-pane="source"] #loginBtn {
+  width: fit-content;
+  min-width: 260px;
+  min-height: 60px;
+  font-size: 1.5rem;
+}
+
+.login-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 960px;
+}
+
+.settings-progress {
+  flex-shrink: 0;
+  max-width: none;
+  padding: 14px 36px;
+  background: #08090d;
+  border-bottom: 1px solid rgba(255,255,255,0.16);
+}
+
+/* Main-screen copy: a slim strip above the hint bar, so it never shifts the layout */
+.app-progress {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 52px;
+  z-index: 2500;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
+  max-width: none;
+  padding: 10px 36px;
+  background: rgba(8,9,13,0.94);
+  border-top: 1px solid rgba(255,255,255,0.16);
+}
+
+.app-progress .login-progress-track {
+  flex: 1;
+}
+
+.app-progress .login-progress-text {
+  white-space: nowrap;
+}
+
+.login-progress-track {
+  height: 14px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.login-progress-bar {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.login-progress-text {
+  color: #ddd;
+  font-size: 1.4rem;
+}
+
+.background-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.background-preset {
+  width: 240px;
+  height: 135px;
+  padding: 0;
+  border-radius: 12px;
+  border: 3px solid rgba(255,255,255,0.3);
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+}
+
+.background-preset.selected {
+  border-color: #fff;
+  outline: 4px solid #fff;
+  outline-offset: 4px;
+}
+
 .background-image-controls {
   display: flex;
   align-items: center;
@@ -1304,10 +2065,59 @@ body.speler-fit-screen .epg-preview-panel {
   border-radius: 8px;
 }
 
-.settings-toggle input {
-  width: 28px;
-  height: 28px;
-  accent-color: var(--accent);
+/* Apple-style switch: the checkbox stays focusable but is invisible; the track and knob draw the state. */
+.ios-switch {
+  position: relative;
+  flex: 0 0 auto;
+  width: 68px;
+  height: 40px;
+}
+
+.ios-switch input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  z-index: 1;
+}
+
+.ios-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 20px;
+  background: rgba(120,120,128,0.5);
+  transition: background-color 0.2s ease;
+}
+
+.ios-knob {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: transform 0.2s ease;
+}
+
+.ios-switch input:checked ~ .ios-track {
+  background: var(--accent);
+}
+
+.ios-switch input:checked ~ .ios-track .ios-knob {
+  transform: translateX(28px);
+}
+
+.ios-switch input.focused ~ .ios-track {
+  box-shadow: 0 0 0 4px #ffffff;
 }
 
 .vod-playback-controls {
@@ -1383,7 +2193,27 @@ body.speler-fit-screen .epg-preview-panel {
 
 .focusable:focus,
 .focusable.focused {
-  outline-color: var(--highlight) !important;
+  box-shadow: inset 0 0 0 var(--focus-width, 5px) var(--highlight) !important;
+}
+
+/* Wheel rows hide their own focus box: the fixed .wheel-focus-window draws it on the centre line. */
+.wheel-detent > .focusable:focus,
+.wheel-detent > .focusable.focused {
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+.wheel-focus-window {
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  display: none;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 var(--focus-width, 5px) var(--highlight);
+}
+
+.color-swatch.focusable.focused {
+  box-shadow: none !important;
 }
 
 .login-card,
@@ -1396,6 +2226,50 @@ body.speler-fit-screen .epg-preview-panel {
 .vod-playback-controls {
   background-color: #08090d;
   background-color: rgba(8,9,13,0.94);
+}
+
+body.kc-has-bg .player-wrapper,
+body.kc-has-bg video {
+  background: transparent !important;
+}
+
+/* Movies and episodes are often letterboxed, so their bars stay black instead of showing the theme background. */
+body.kc-has-bg .player-wrapper.vod-playback,
+body.kc-has-bg .player-wrapper.vod-playback video {
+  background: #000 !important;
+}
+
+/* While a stream loads there is no frame yet, so keep the player black instead of showing the theme background. */
+body.kc-has-bg .player-wrapper.is-loading,
+body.kc-has-bg .player-wrapper.is-loading video {
+  background: #000 !important;
+}
+
+body.kc-has-bg .epg-preview-panel {
+  background-color: rgba(10, 10, 18, 0.55) !important;
+}
+
+/* Poster focus ring follows the poster's 22px corners instead of the generic 12px focus radius. */
+/* Poster focus grows smoothly; the ring follows the 22px poster corners. */
+.poster-card.focusable.focused,
+.poster-card.focusable:focus {
+  border-radius: 22px;
+}
+
+.poster-card.focusable.focused {
+  transform: scale(1.05);
+  transition: transform 0.22s ease-out, box-shadow 0.2s ease;
+}
+
+/* No real backdrop blur on this TV's Chromium: a darker gradient scrim and a text shadow keep the OSD readable over video. */
+.osd-overlay,
+.vod-osd-overlay {
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.6));
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 12px rgba(0, 0, 0, 0.7);
+}
+
+.settings-button {
+  text-align: center;
 }
 
 @media (max-width: 899px) {
@@ -1454,18 +2328,18 @@ body.speler-fit-screen .epg-preview-panel {
 }
 
 .osd-channel-badge {
-  min-width: 124px;
-  width: 124px;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 260px;
   height: 96px;
-  flex: 0 0 124px;
-  padding: 10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.08);
+  padding: 0;
+  justify-content: flex-start;
+  background: none;
 }
 
 .osd-logo {
   height: 76px;
-  max-width: none;
+  max-width: 100%;
 }
 
 .osd-logo-fallback {
@@ -1532,15 +2406,13 @@ body.speler-fit-screen .epg-preview-panel {
   }
 
   .osd-channel-badge {
-    width: 92px;
-    min-width: 92px;
+    max-width: 180px;
     height: 74px;
-    flex-basis: 92px;
   }
 
   .osd-logo {
     height: 56px;
-    max-width: none;
+    max-width: 100%;
   }
 
   .osd-title-row h2 {
@@ -1559,12 +2431,38 @@ body.speler-fit-screen .epg-preview-panel {
 
 
 /* BUTTON HINTS BAR */
+.ui-icon {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+  vertical-align: middle;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+button,
+.settings-item {
+  border-radius: 999px !important;
+}
+
+button.focused,
+.settings-item.focused,
+#modusList > .nav-item.focused,
+.login-btn.focused,
+.vod-control.focused {
+  transform: scale(1.06);
+  transition: transform 0.18s ease-out, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
 .hint-bar {
   height: 52px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 36px;
+  gap: 64px;
   padding: 0 30px;
   background: rgba(16, 16, 24, 0.95);
   border-top: 1px solid rgba(255, 255, 255, 0.15);
@@ -1575,7 +2473,8 @@ body.speler-fit-screen .epg-preview-panel {
 .hint {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
+  white-space: nowrap;
 }
 
 .hint-key {
@@ -1602,6 +2501,10 @@ body.speler-fit-screen .epg-preview-panel {
 
 body.speler-fit-screen .hint-bar {
   display: none !important;
+}
+
+body.speler-fit-screen .app-progress {
+  bottom: 0;
 }
 
 /* SEARCH */
@@ -1664,6 +2567,80 @@ body.speler-fit-screen .hint-bar {
 .wheel > .wheel-1 { opacity: 0.8; }
 .wheel > .wheel-0 { opacity: 1; }
 
+/* Infinite wheel: copies of the rows beyond both ends, so wrapping shows no empty gap */
+.wheel { position: relative; }
+.wheel > .wheel-ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  opacity: 1;
+  pointer-events: none;
+}
+.wheel-ghost > .wheel-copy {
+  position: absolute !important;
+  margin: 0 !important;
+  box-sizing: border-box;
+  opacity: 0.28;
+}
+.wheel-ghost > .wheel-copy.wheel-3 { opacity: 0.4; }
+.wheel-ghost > .wheel-copy.wheel-2 { opacity: 0.6; }
+.wheel-ghost > .wheel-copy.wheel-1 { opacity: 0.8; }
+.wheel-ghost > .wheel-copy.wheel-0 { opacity: 1; }
+
+/* Modes fill the column height, as filled cards with margins between them */
+#modusList > .nav-item {
+  flex: 1 1 0;
+  min-height: 0;
+  margin: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background-color: rgba(23, 23, 36, 0.85);
+}
+
+#modusList > .nav-item.active {
+  background-color: rgba(var(--highlight-rgb), 0.22);
+}
+
+#modusList > .nav-item {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+#modusList > .nav-item .ui-icon {
+  width: 2.4em;
+  height: 2.4em;
+}
+
+#modusList > .nav-item > span {
+  margin-top: 10px;
+}
+
+/* Done: the settings panel slides out before it closes */
+.customization-page.closing {
+  animation: settingsClose 0.26s ease-in forwards;
+}
+@keyframes settingsClose {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(24px); }
+}
+
 .moving-region {
-  background: rgba(255, 215, 0, 0.25) !important;
+  background: rgba(var(--highlight-rgb), 0.25) !important;
+}
+
+.category-search {
+  display: block;
+  box-sizing: border-box;
+  width: calc(100% - 24px);
+  margin: 8px 12px;
+  padding: 8px 12px;
+  font-size: 18px;
+  border-radius: 6px;
+  border: 1px solid #444455;
+  background: #1b1b2a;
+  color: #fff;
 }

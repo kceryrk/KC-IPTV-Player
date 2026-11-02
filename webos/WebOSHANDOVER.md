@@ -4,7 +4,7 @@
 **Location:** [`webos/`](file:///Users/kamil/Desktop/KC-IPTV-Player/webos)  
 **Packaging:** webOS Package (`.ipk`)  
 **Package ID:** `com.iptv.webosapp`  
-**Current Release Line:** `1.2.44`
+**Current Release Line:** `1.2.45` (webOS port of the Tizen UI/feature changes: guide overlay, poster loading, OSD readability, rename dialog, settings tabs)
 
 ---
 
