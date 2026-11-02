@@ -100,6 +100,8 @@ tizen/
 - **Guide (EPG overlay):** `#guideOverlay` is transparent (`rgba(8,8,14,0.55)`, z-index 1000005). It shows a topbar with a local clock, a half-hour ruler from −30 min to +2 h 30 min, 8 channel rows with blocks, a now line, and an info panel with the on-air programme and its description. Rows paint from `epgCache` only (`cachedEpgListings`), and `loadGuideEpgWindow` fetches the rest. `onAirIndex` and `listingSpan` apply `epgOffsetHours` so the guide matches the OSD. Test hook: none in the shipped app; the headless harness was a scratch copy.
 - **Region ghost:** `#regionList .nav-item` sets `position: relative` with higher specificity, so `.wheel-ghost > .wheel-copy` uses `position: absolute !important`.
 - **EPG:** The Playback pane has "Show EPG info" (`iptv_epg_show`) and an "EPG time offset" button that cycles −2…+2 h (`iptv_epg_offset`). `fetchEPGData` picks the listing airing now by `start_timestamp`/`stop_timestamp`, not `epgs[0]`, because Xtream often lists past shows first. The offset only shifts displayed times.
+- **Guide sizing and readability:** `.guide-overlay` uses `font-size: 200%`, so em-based text scales. Rows are a fixed 84px (`.guide-row`), so the grid does not stretch with channel count or text. Titles are single-line with ellipsis. The Chromium on the TV has no usable `backdrop-filter`, so the OSD and guide use darker gradient scrims plus `text-shadow` for readability.
+- **Poster focus:** `.poster-card.focusable.focused` uses a 22px radius to match the poster corners.
 - *Status:* Guide and poster loading verified headless only (Playwright, mock data). Not yet confirmed on TV.
 
 ---

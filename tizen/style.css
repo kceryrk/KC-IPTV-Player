@@ -759,15 +759,19 @@ body.no-region-column #colRegions {
   z-index: 1000005;
   display: flex;
   flex-direction: column;
-  /* Translucent scrim so the playing video shows through. */
+  /* Text is 2x the normal size; em-based rules inside scale with it. */
+  font-size: 200%;
   --guide-ch-w: 380px;
   background: rgba(8, 8, 14, 0.55);
+  /* No real blur on this TV's Chromium, so a dark text shadow keeps the text readable on video. */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8);
   color: #fff;
 }
 .guide-topbar {
   display: flex;
   align-items: center;
   padding: 24px 40px 12px;
+  background: linear-gradient(to bottom, rgba(8, 8, 14, 0.85), rgba(8, 8, 14, 0));
 }
 .guide-topbar h2 {
   margin: 0;
@@ -824,12 +828,14 @@ body.no-region-column #colRegions {
   min-height: 0;
 }
 .guide-rows {
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
 }
+/* Fixed row height: the grid does not stretch or shrink with the channel count or text. */
 .guide-row {
-  flex: 1;
+  flex: 0 0 84px;
+  height: 84px;
   display: flex;
   align-items: stretch;
   border-radius: 12px;
@@ -904,7 +910,7 @@ body.no-region-column #colRegions {
 .guide-info {
   flex: 0 0 auto;
   padding: 16px 40px 28px;
-  background: linear-gradient(to bottom, rgba(8, 8, 14, 0), rgba(8, 8, 14, 0.85) 30%);
+  background: linear-gradient(to bottom, rgba(8, 8, 14, 0), rgba(8, 8, 14, 0.92) 30%);
 }
 .guide-info-channel {
   font-size: 0.9em;
@@ -914,11 +920,17 @@ body.no-region-column #colRegions {
   font-size: 1.5em;
   font-weight: 600;
   margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .guide-info-time {
   font-size: 0.95em;
   opacity: 0.75;
   margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-variant-numeric: tabular-nums;
 }
 .guide-info-desc {
@@ -2235,6 +2247,25 @@ body.kc-has-bg .player-wrapper.is-loading video {
 
 body.kc-has-bg .epg-preview-panel {
   background-color: rgba(10, 10, 18, 0.55) !important;
+}
+
+/* Poster focus ring follows the poster's 22px corners instead of the generic 12px focus radius. */
+/* Poster focus grows smoothly; the ring follows the 22px poster corners. */
+.poster-card.focusable.focused,
+.poster-card.focusable:focus {
+  border-radius: 22px;
+}
+
+.poster-card.focusable.focused {
+  transform: scale(1.05);
+  transition: transform 0.22s ease-out, box-shadow 0.2s ease;
+}
+
+/* No real backdrop blur on this TV's Chromium: a darker gradient scrim and a text shadow keep the OSD readable over video. */
+.osd-overlay,
+.vod-osd-overlay {
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.6));
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 12px rgba(0, 0, 0, 0.7);
 }
 
 .settings-button {

@@ -3108,7 +3108,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return document.querySelector(".focusable");
   }
 
-  function animateScroll(container, target, instant) {
+  function animateScroll(container, target, instant, duration) {
     const max = container.scrollHeight - container.clientHeight;
     const to = Math.max(0, Math.min(max, target));
     if (container._scrollFrame) cancelAnimationFrame(container._scrollFrame);
@@ -3118,12 +3118,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const from = container.scrollTop;
     const started = Date.now();
+    const length = duration || 140;
     const step = () => {
-      const progress = Math.min(1, (Date.now() - started) / 140);
+      const progress = Math.min(1, (Date.now() - started) / length);
       container.scrollTop = from + (to - from) * (1 - Math.pow(1 - progress, 3));
       if (progress < 1) container._scrollFrame = requestAnimationFrame(step);
     };
     step();
+  }
+
+  // Eased scroll so focus moves glide instead of jumping (replaces scrollIntoView).
+  function scrollFocusIntoView(element) {
+    let container = element.parentElement;
+    while (container && container !== document.body) {
+      const overflow = getComputedStyle(container).overflowY;
+      if ((overflow === "auto" || overflow === "scroll") && container.scrollHeight > container.clientHeight) break;
+      container = container.parentElement;
+    }
+    if (!container || container === document.body) {
+      element.scrollIntoView({ block: "nearest" });
+      return;
+    }
+    const listRect = container.getBoundingClientRect();
+    const rect = element.getBoundingClientRect();
+    let offset = 0;
+    if (rect.top < listRect.top) offset = rect.top - listRect.top;
+    else if (rect.bottom > listRect.bottom) offset = rect.bottom - listRect.bottom;
+    if (offset) animateScroll(container, container.scrollTop + offset, false, 260);
   }
 
   function markWheel(container, element) {
@@ -3470,7 +3491,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (target) {
       setElementFocus(target);
-      target.scrollIntoView({ block: "nearest" });
+      scrollFocusIntoView(target);
     } else if (direction === "left") {
       enterColumn(2);
     }
