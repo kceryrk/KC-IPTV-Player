@@ -18,6 +18,13 @@ body, html {
   display: none !important;
 }
 
+body.no-animations *,
+body.no-animations *::before,
+body.no-animations *::after {
+  transition: none !important;
+  animation: none !important;
+}
+
 /* VISUELE TOAST MELDING */
 .toast-msg {
   position: fixed;
@@ -594,7 +601,7 @@ body.kc-has-bg .col-content-wrapper {
   background-color: rgba(18, 18, 28, 0.95);
   border-right: 2px solid rgba(255, 255, 255, 0.12);
   height: 100%;
-  transition: width 0.25s ease, min-width 0.25s ease, max-width 0.25s ease;
+  transition: width 0.12s ease-out, min-width 0.12s ease-out, max-width 0.12s ease-out;
 }
 
 @keyframes colContentFadeIn {
@@ -660,7 +667,7 @@ body.no-region-column #colRegions {
 }
 
 .col-nav:not(.collapsed) .col-content-wrapper {
-  animation: colContentFadeIn 0.25s ease;
+  animation: colContentFadeIn 0.12s ease;
 }
 
 .nav-list {
@@ -767,6 +774,14 @@ body.no-region-column #colRegions {
   padding: 0 10px;
   text-align: center;
   line-height: 1.25;
+}
+
+#regionList .region-fav-star {
+  width: 0.9em;
+  height: 0.9em;
+  margin-right: 0.3em;
+  flex-shrink: 0;
+  fill: var(--highlight);
 }
 
 /* GUIDE OVERLAY */
@@ -2582,7 +2597,6 @@ button.focused,
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 64px;
   padding: 0 30px;
   background: rgba(16, 16, 24, 0.95);
   border-top: 1px solid rgba(255, 255, 255, 0.15);
@@ -2590,30 +2604,45 @@ button.focused,
   font-size: 1.3rem;
 }
 
+/* Margins instead of gap: older TV engines ignore gap in flex containers. */
+.hint-bar > * {
+  margin: 0 24px;
+}
+
 .hint {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  padding: 4px 20px 4px 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
   white-space: nowrap;
 }
 
 .hint-key {
   display: inline-block;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
+  width: 36px;
+  height: 24px;
+  border-radius: 999px;
 }
 
-.hint-key.red { background: #e53935; }
-.hint-key.yellow { background: #fdd835; }
-.hint-key.blue { background: #1e88e5; }
-.hint-key.green { background: #43a047; }
+.hint.hint-red,
+.hint.hint-yellow,
+.hint.hint-blue,
+.hint.hint-green {
+  padding: 4px 20px;
+  color: #fff;
+}
+
+.hint.hint-red { background: #e53935; }
+.hint.hint-yellow { background: #fdd835; color: #111; }
+.hint.hint-blue { background: #1e88e5; }
+.hint.hint-green { background: #43a047; }
 
 .hint-key.back {
   width: auto;
   height: auto;
-  border-radius: 6px;
-  padding: 2px 10px;
+  padding: 2px 12px;
   font-style: normal;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.16);

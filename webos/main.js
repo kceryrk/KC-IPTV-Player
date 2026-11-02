@@ -137,10 +137,10 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.assign(appTranslations.tr, { presetBackgrounds: "Hazır arka planlar" });
   Object.assign(appTranslations.nl, { presetBackgrounds: "Voorinstellingen" });
   Object.assign(appTranslations.fr, { presetBackgrounds: "Préréglages" });
-  Object.assign(appTranslations.en, { m3uGenerateXtream: "⚡ Generate from Xtream", clockFormat: "Clock format", uiScale: "UI scale", colorTab: "Color", backgroundTab: "Background", clockTab: "Clock" });
-  Object.assign(appTranslations.tr, { m3uGenerateXtream: "⚡ Xtream'den oluştur", clockFormat: "Saat biçimi", uiScale: "Arayüz ölçeği", colorTab: "Renk", backgroundTab: "Arka plan", clockTab: "Saat" });
-  Object.assign(appTranslations.nl, { m3uGenerateXtream: "⚡ Genereren uit Xtream", clockFormat: "Klokweergave", uiScale: "Interfaceschaal", colorTab: "Kleur", backgroundTab: "Achtergrond", clockTab: "Klok" });
-  Object.assign(appTranslations.fr, { m3uGenerateXtream: "⚡ Générer depuis Xtream", clockFormat: "Format de l'horloge", uiScale: "Échelle de l'interface", colorTab: "Couleur", backgroundTab: "Arrière-plan", clockTab: "Horloge" });
+  Object.assign(appTranslations.en, { m3uGenerateXtream: "⚡ Generate from Xtream", clockFormat: "Clock format", uiScale: "UI scale", animations: "Animations", colorTab: "Color", backgroundTab: "Background", clockTab: "Clock" });
+  Object.assign(appTranslations.tr, { m3uGenerateXtream: "⚡ Xtream'den oluştur", clockFormat: "Saat biçimi", uiScale: "Arayüz ölçeği", animations: "Animasyonlar", colorTab: "Renk", backgroundTab: "Arka plan", clockTab: "Saat" });
+  Object.assign(appTranslations.nl, { m3uGenerateXtream: "⚡ Genereren uit Xtream", clockFormat: "Klokweergave", uiScale: "Interfaceschaal", animations: "Animaties", colorTab: "Kleur", backgroundTab: "Achtergrond", clockTab: "Klok" });
+  Object.assign(appTranslations.fr, { m3uGenerateXtream: "⚡ Générer depuis Xtream", clockFormat: "Format de l'horloge", uiScale: "Échelle de l'interface", animations: "Animations", colorTab: "Couleur", backgroundTab: "Arrière-plan", clockTab: "Horloge" });
   const languageOptions = { en: "🇬🇧", tr: "🇹🇷", nl: "🇳🇱", fr: "🇫🇷" };
   Object.assign(appTranslations.en, { streamPlaybackFailed: "This stream could not be played. Try the provider's HLS URL or a compatible stream format." });
   Object.assign(appTranslations.tr, { streamPlaybackFailed: "Bu yayın oynatılamadı. Sağlayıcının HLS URL'sini veya uyumlu bir yayın biçimini deneyin." });
@@ -1163,6 +1163,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Off turns off CSS transitions and animations, and makes list scrolling jump straight to the target.
+  const animationsToggle = document.getElementById("animationsToggle");
+  let animationsEnabled = store.getItem("iptv_animations") !== "0";
+  function applyAnimationsSetting() {
+    document.body.classList.toggle("no-animations", !animationsEnabled);
+  }
+  applyAnimationsSetting();
+  if (animationsToggle) {
+    animationsToggle.checked = animationsEnabled;
+    animationsToggle.addEventListener("change", () => {
+      animationsEnabled = animationsToggle.checked;
+      store.setItem("iptv_animations", animationsEnabled ? "1" : "0");
+      applyAnimationsSetting();
+    });
+  }
+
   if (showEpgToggle) {
     showEpgToggle.checked = epgVisible;
     showEpgToggle.addEventListener("change", () => {
@@ -1566,18 +1582,48 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isColumnSkipped(idx) || idx < activeColIdx) {
         collapseColumn(col);
       } else {
-        col.classList.remove("collapsed", "content-hidden");
+        expandColumn(col);
       }
     });
   }
 
   // Contents are hidden first, then the column narrows on the next frame.
   function collapseColumn(col) {
-    if (col.classList.contains("collapsed") || col.classList.contains("content-hidden")) return;
+    if (col.classList.contains("collapsed")) return;
+    clearTimeout(col._revealTimer);
+    col._revealTimer = null;
+    col._pendingFocus = null;
+    cancelAnimationFrame(col._collapseFrame);
     col.classList.add("content-hidden");
-    requestAnimationFrame(() => {
-      if (col.classList.contains("content-hidden")) col.classList.add("collapsed");
-    });
+    col._collapseFrame = requestAnimationFrame(() => col.classList.add("collapsed"));
+  }
+
+  // The width animates first. Contents stay hidden until it settles, so they lay out at full width.
+  function expandColumn(col) {
+    cancelAnimationFrame(col._collapseFrame);
+    const wasCollapsed = col.classList.contains("collapsed");
+    col.classList.remove("collapsed");
+    if (!col.classList.contains("content-hidden")) return;
+    if (!wasCollapsed) {
+      revealColumnContents(col);
+      return;
+    }
+    if (!col._revealTimer) {
+      col._revealTimer = setTimeout(() => {
+        col._revealTimer = null;
+        revealColumnContents(col);
+      }, 150);
+    }
+  }
+
+  // Focus requested during the reveal waits here, because a hidden element cannot take focus.
+  function revealColumnContents(col) {
+    col.classList.remove("content-hidden");
+    const pending = col._pendingFocus;
+    col._pendingFocus = null;
+    if (pending && pending.element.isConnected && pending.element.classList.contains("focused")) {
+      setElementFocus(pending.element, pending.instant);
+    }
   }
 
   function regionFlagPath(reg) {
@@ -1665,10 +1711,12 @@ document.addEventListener("DOMContentLoaded", () => {
         underlay.setAttribute("aria-hidden", "true");
         li.appendChild(underlay);
       }
-      const marker = favoriteRegions.indexOf(reg) !== -1 ? "\u2665 " : (topRegions.includes(reg) ? "\u2B50 " : "");
+      const isFavRegion = favoriteRegions.indexOf(reg) !== -1;
+      const marker = !isFavRegion && topRegions.includes(reg) ? "\u2B50 " : "";
       const label = document.createElement("span");
       label.className = "region-label";
       label.textContent = marker + (customNames[customNameKey("region", reg)] || reg);
+      if (isFavRegion) label.insertAdjacentHTML("afterbegin", `<svg class="region-fav-star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`);
       li.appendChild(label);
       regionList.appendChild(li);
     });
@@ -3345,12 +3393,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const max = container.scrollHeight - container.clientHeight;
     const to = Math.max(0, Math.min(max, target));
     if (container._scrollFrame) cancelAnimationFrame(container._scrollFrame);
-    if (instant) {
+    if (instant || document.body.classList.contains("no-animations")) {
       container.scrollTop = to;
-      scrollSettled(container);
       return;
     }
-    container.classList.add("wheel-scrolling");
     const from = container.scrollTop;
     const started = Date.now();
     const length = duration || 140;
@@ -3358,17 +3404,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const progress = Math.min(1, (Date.now() - started) / length);
       container.scrollTop = from + (to - from) * (1 - Math.pow(1 - progress, 3));
       if (progress < 1) container._scrollFrame = requestAnimationFrame(step);
-      else scrollSettled(container);
     };
     step();
-  }
-
-  // Runs when a scroll stops, so the focus box can appear again.
-  function scrollSettled(container) {
-    container.classList.remove("wheel-scrolling");
-    const done = container._onScrollDone;
-    container._onScrollDone = null;
-    if (done) done();
   }
 
   // Eased scroll so focus moves glide instead of jumping (replaces scrollIntoView).
@@ -3536,21 +3573,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // One fixed focus box per screen, drawn on the centre line of the wheel. The rows scroll underneath it.
   let wheelWindowEl = null;
+  let wheelWindowTarget = null;
+  let wheelFollowUntil = 0;
+
+  // Measures the focused row and places the box on it.
+  function positionWheelWindow() {
+    const element = wheelWindowTarget;
+    if (!wheelWindowEl || !element || !element.isConnected || !element.classList.contains("focused")) return;
+    const container = element.parentElement;
+    if (!container) return;
+    const listRect = container.getBoundingClientRect();
+    const rowRect = element.getBoundingClientRect();
+    const h = element.offsetHeight;
+    wheelWindowEl.style.left = rowRect.left + "px";
+    wheelWindowEl.style.width = rowRect.width + "px";
+    wheelWindowEl.style.top = (listRect.top + wheelAnchor(container) - h / 2) + "px";
+    wheelWindowEl.style.height = h + "px";
+  }
+
+  // Columns animate their width after focus moves, so the box re-measures each frame until they settle.
+  function followWheelWindow() {
+    const running = wheelFollowUntil > performance.now();
+    wheelFollowUntil = performance.now() + 200;
+    if (running) return;
+    const tick = () => {
+      positionWheelWindow();
+      if (performance.now() < wheelFollowUntil) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
   function showWheelWindow(container, element) {
     if (!wheelWindowEl) {
       wheelWindowEl = document.createElement("div");
       wheelWindowEl.className = "wheel-focus-window";
       document.body.appendChild(wheelWindowEl);
     }
-    const listRect = container.getBoundingClientRect();
-    const rowRect = element.getBoundingClientRect();
-    const h = element.offsetHeight;
+    wheelWindowTarget = element;
     // The fill is copied from the row while it is focused, then the row goes transparent, so the fill stays fixed.
     wheelWindowEl.style.background = getComputedStyle(element).backgroundColor;
-    wheelWindowEl.style.left = rowRect.left + "px";
-    wheelWindowEl.style.width = rowRect.width + "px";
-    wheelWindowEl.style.top = (listRect.top + wheelAnchor(container) - h / 2) + "px";
-    wheelWindowEl.style.height = h + "px";
+    positionWheelWindow();
     wheelWindowEl.style.display = "block";
   }
 
@@ -3561,7 +3623,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Short filtered noise burst, like a clock escapement. Created lazily, so the first call happens after a key press.
   let tickCtx = null;
   let tickBuffer = null;
-  function playTick() {
+  function playTick(frequency = 3500, level = 0.3) {
     try {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
@@ -3577,9 +3639,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const filter = tickCtx.createBiquadFilter();
       const gain = tickCtx.createGain();
       filter.type = "bandpass";
-      filter.frequency.value = 3500;
+      filter.frequency.value = frequency;
       filter.Q.value = 8;
-      gain.gain.value = 0.05;
+      gain.gain.value = level;
       src.buffer = tickBuffer;
       src.connect(filter);
       filter.connect(gain);
@@ -3601,19 +3663,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const parentCol = element.closest(".col-nav");
     if (parentCol && parentCol.dataset.col !== undefined) {
       setColumnFocus(parseInt(parentCol.dataset.col, 10));
+      followWheelWindow();
+      if (parentCol.classList.contains("content-hidden")) {
+        // Still revealing: focus and centring need laid-out contents, so they run when the reveal ends.
+        parentCol._pendingFocus = { element, instant };
+        return;
+      }
     }
     // Centre the list before focusing so the focus box never paints at the old position.
     centerInList(element, instant);
     const container = element.parentElement;
     if (container && container.classList.contains("wheel") && element.offsetHeight > 0) {
-      if (container.classList.contains("wheel-scrolling")) {
-        // The focus box waits for the list to stop, so it does not chase rows while a key is held.
-        hideWheelWindow();
-        container._onScrollDone = () => {
-          const focused = container.querySelector(":scope > .focused");
-          if (focused && !focused.classList.contains("pick-slot")) showWheelWindow(container, focused);
-        };
-      } else if (element.classList.contains("pick-slot")) {
+      if (element.classList.contains("pick-slot")) {
         // The held stack is not a focus target: its box stays out of the way of the stack frames.
         hideWheelWindow();
       } else {
@@ -3622,6 +3683,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (previous && previous !== element && previous.parentElement === container) playTick();
     } else {
       hideWheelWindow();
+      // Posters stay silent so fast scrolling through a grid is not noisy.
+      if (previous && previous !== element && !element.classList.contains("grid-item")) playTick(2200, 0.1);
     }
     element.focus({ preventScroll: true });
 

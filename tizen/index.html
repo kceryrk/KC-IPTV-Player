@@ -199,6 +199,12 @@
             <h2 data-i18n="uiScale">UI scale</h2>
             <button id="uiScaleButton" class="settings-item focusable" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-sliders"/></svg><span>100%</span></button>
           </section>
+          <section class="customization-section">
+            <label class="settings-toggle" for="animationsToggle">
+              <span><span data-i18n="animations">Animations</span></span>
+              <span class="ios-switch"><input id="animationsToggle" class="focusable" type="checkbox" tabindex="0"><span class="ios-track" aria-hidden="true"><span class="ios-knob"></span></span></span>
+            </label>
+          </section>
           </div>
           <div class="customization-pane hidden" data-pane="source">
             <div id="loginStateButton" class="login-state-button focusable" data-state="failed" role="button" tabindex="0" aria-expanded="true" aria-controls="loginForm">
@@ -382,10 +388,10 @@
     </div>
 
     <footer id="hintBar" class="hint-bar">
-      <span class="hint hidden" data-hint="fav"><i class="hint-key yellow"></i><span data-i18n="hintFavorite">Favorite</span></span>
-      <span class="hint hidden" data-hint="reorder"><i class="hint-key red"></i><span data-i18n="hintReorder">Reorder</span></span>
-      <span class="hint hidden" data-hint="hide"><i class="hint-key blue"></i><span data-i18n="hintHide">Hide category</span></span>
-      <span class="hint hidden" data-hint="search"><i class="hint-key green"></i><span data-i18n="hintSearch">Search</span></span>
+      <span class="hint hint-yellow hidden" data-hint="fav"><span data-i18n="hintFavorite">Favorite</span></span>
+      <span class="hint hint-red hidden" data-hint="reorder"><span data-i18n="hintReorder">Reorder</span></span>
+      <span class="hint hint-blue hidden" data-hint="hide"><span data-i18n="hintHide">Hide category</span></span>
+      <span class="hint hint-green hidden" data-hint="search"><span data-i18n="hintSearch">Search</span></span>
       <span class="hint"><i class="hint-key back">&#8617;</i><span data-i18n="back">Back</span></span>
     </footer>
   </div>

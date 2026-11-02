@@ -17,30 +17,33 @@ Open items to fix later.
 - [ ] Smaller label font, with enough space from the channel name
 
 ## Menus and animation
-- [x] Animate between menus (collapse and expand)
-- [x] Prioritize animation over loading
-- [x] Remove the scrollbar on the right of list column menus
-- [x] Add a separator between items
-- [x] Separator line between settings sections, with the section title centred
-- [x] Settings: the gap between items does not work on TVs
-- [x] Settings: make the SVG icons sit above the title and make them bigger
-- [x] Settings: the selected item is a plain white box; it should follow the parent's style
-- [x] Settings: not everything is pill shaped, and most controls are small; add a UI scale setting
-- [x] Text input boxes: pill shaped
+- [x] ~~Animate between menus (collapse and expand)~~
+- [x] ~~Prioritize animation over loading~~
+- [x] ~~Remove the scrollbar on the right of list column menus~~
+- [x] ~~Add a separator between items~~
+- [x] ~~Separator line between settings sections, with the section title centred~~
+- [x] ~~Settings: the gap between items does not work on TVs~~
+- [x] ~~Settings: make the SVG icons sit above the title and make them bigger~~
+- [x] ~~Settings: the selected item is a plain white box; it should follow the parent's style~~
+- [x] ~~Settings: not everything is pill shaped, and most controls are small; add a UI scale setting~~
+- [x] ~~Text input boxes: pill shaped~~
+- [x] ~~Add a setting to disable animation~~
 
 ## Hint bar
-- [ ] Pill-shaped hints
-- [ ] Fill colour for the coloured buttons
+- [x] ~~Pill-shaped hints~~
+- [x] ~~Fill colour for the coloured buttons~~
 
 ## Rename
 - [ ] Holding OK does not start rename, and there is no hint for it
 
 ## Sound
-- [ ] Tick sound is too quiet to hear; raise the volume
-- [ ] Add a general navigation sound for moving through buttons
+- [x] ~~Tick sound is too quiet to hear; raise the volume~~
+- [x] ~~Add a general navigation sound for moving through buttons~~
 
 ## Posters and categories
-- [x] When a poster image is too heavy, navigation stops loading; keep navigation responsive while large images load
+- [x] ~~When a poster image is too heavy, navigation stops loading; keep navigation responsive while large images load~~
+- [x] ~~Large poster lists lag more the bigger they are; skip layout and paint for off-screen cards~~
+- [x] ~~Stop live TV playback when entering Movies or Series~~
 - [ ] Movie and series region tags show a "V" and "S" prefix (for example "VTR" and "STR"); remove the prefix
 - [ ] Remove the "Diziler" tag from categories
 - [ ] Full-screen poster selection only: posters are picked full-screen, and the menus only select categories
@@ -48,7 +51,7 @@ Open items to fix later.
 - [ ] Consider full-screen poster navigation with infinite scrolling, horizontally and vertically (hard)
 
 ## Regions and favourites
-- [ ] Favourite regions use a heart in a different colour; make them match the channel favourite style (star). The channel style is preferred.
+- [x] ~~Favourite regions use a heart in a different colour; make them match the channel favourite style (star). The channel style is preferred.~~
 
 ## Wheel
 - [ ] Mac-style zoom while scrolling through the wheel list
