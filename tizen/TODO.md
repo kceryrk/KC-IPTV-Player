@@ -40,6 +40,7 @@ Open items to fix later.
 - [ ] Add a general navigation sound for moving through buttons
 
 ## Posters and categories
+- [ ] When a poster image is too heavy, navigation stops loading; keep navigation responsive while large images load
 - [ ] Movie and series region tags show a "V" and "S" prefix (for example "VTR" and "STR"); remove the prefix
 - [ ] Remove the "Diziler" tag from categories
 - [ ] Consider full-screen poster navigation with infinite scrolling, horizontally and vertically (hard)
