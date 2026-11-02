@@ -3989,6 +3989,9 @@ document.addEventListener("DOMContentLoaded", () => {
           currentStreamIndex = (currentStreamIndex - 1 + currentActiveStreams.length) % currentActiveStreams.length;
           const target = currentActiveStreams[currentStreamIndex];
           playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.url);
+        } else if (isRight) {
+          e.preventDefault();
+          openGuide();
         } else if (isLeft || isEnter || isBack) {
           e.preventDefault();
           deactiveerFitScreen();
