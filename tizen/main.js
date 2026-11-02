@@ -88,6 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const focusWidthRange = document.getElementById("focusWidthRange");
   const focusWidthValue = document.getElementById("focusWidthValue");
   const autoplayNextToggle = document.getElementById("autoplayNextToggle");
+  const showEpgToggle = document.getElementById("showEpgToggle");
   const hideRegionsToggle = document.getElementById("hideRegionsToggle");
   const backgroundImageInput = document.getElementById("backgroundImageInput");
   const vodPlaybackControls = document.getElementById("vodPlaybackControls");
@@ -101,16 +102,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentLoginState = "failed";
   const appTranslations = {
     en: {
-      generalTab: "General", playbackTab: "Playback", profileTab: "Source", progressCategories: "Loading categories", progressPlaylist: "Downloading playlist", progressParsing: "Reading channels", streamFailed: "Channel error: {reason}", streamTimedOut: "Channel did not start within 20 s: {reason}", streamNoData: "no data received", settings: "Settings", language: "Language", autoplayNext: "Play next episode automatically", customization: "Customization", switchProfile: "Change source", resetApp: "Reset app", close: "Close menu", back: "Back", accentColor: "Accent color", highlightColor: "Highlight color", backgroundImage: "Background image URL", apply: "Apply", removeBackground: "Remove image", done: "Done", previous: "Previous", next: "Next", playPause: "Pause / play", serverUrl: "Server URL", username: "Username", password: "Password", login: "Sign in", connecting: "Connecting to IPTV server...", loginFailed: "Login failed.", modes: "MODES", modeFavorites: "★ Favorites", modeLive: "📺 Live TV", modeMovies: "🎬 Movies", modeSeries: "🍿 Series", region: "REGION", categories: "CATEGORIES", allRegions: "ALL", channels: "CHANNELS", movies: "MOVIES", series: "SERIES", liveNow: "Live TV", noNextProgram: "No upcoming program", vodHint: "Up: controls | Play/Pause: toggle | Left/Right: seek", backToSeries: "← Back to series", noEpisodes: "No episodes found", loadingEpisodes: "Loading episodes...", unableLoad: "Unable to load episodes", favoritesRemoved: "Removed from favorites", favoritesAdded: "Added to favorites", moveOnlyFavorites: "Move mode is only available in Favorites", moveStarted: "Move mode started", positionSaved: "Position saved", channelNotFound: "Channel #{number} not found", autoplay: "Autoplay next episode", colors: "Colors", backgroundApplied: "Background updated", backgroundRemoved: "Background removed", invalidBackground: "Enter a valid HTTP or HTTPS image URL", previousEpisode: "Previous episode", nextEpisode: "Next episode", profileChanged: "Profile changed", appReset: "App reset", zapped: "Playing channel #{number}: {title}", colorRed: "Red", colorBlue: "Blue", colorGreen: "Green", colorRose: "Rose", colorOrange: "Orange", colorGold: "Gold", colorTurquoise: "Turquoise", colorLime: "Lime", colorSky: "Sky blue"
+      generalTab: "General", playbackTab: "Playback", profileTab: "Source", progressCategories: "Loading categories", progressPlaylist: "Downloading playlist", progressParsing: "Reading channels", streamFailed: "Channel error: {reason}", streamTimedOut: "Channel did not start within 20 s: {reason}", streamNoData: "no data received", settings: "Settings", language: "Language", autoplayNext: "Play next episode automatically", customization: "Customization", switchProfile: "Change source", resetApp: "Reset app", close: "Close menu", back: "Back", accentColor: "Accent color", highlightColor: "Highlight color", backgroundImage: "Background image URL", apply: "Apply", removeBackground: "Remove image", done: "Done", previous: "Previous", next: "Next", playPause: "Pause / play", serverUrl: "Server URL", username: "Username", password: "Password", login: "Sign in", connecting: "Connecting to IPTV server...", loginFailed: "Login failed.", modes: "MODES", modeFavorites: "Favorites", modeLive: "Live TV", modeMovies: "Movies", modeSeries: "Series", region: "REGION", categories: "CATEGORIES", allRegions: "ALL", channels: "CHANNELS", movies: "MOVIES", series: "SERIES", liveNow: "Live TV", noNextProgram: "No upcoming program", vodHint: "Up: controls | Play/Pause: toggle | Left/Right: seek", backToSeries: "← Back to series", noEpisodes: "No episodes found", loadingEpisodes: "Loading episodes...", unableLoad: "Unable to load episodes", favoritesRemoved: "Removed from favorites", favoritesAdded: "Added to favorites", moveOnlyFavorites: "Move mode is only available in Favorites", moveStarted: "Move mode started", positionSaved: "Position saved", channelNotFound: "Channel #{number} not found", autoplay: "Autoplay next episode", colors: "Colors", backgroundApplied: "Background updated", backgroundRemoved: "Background removed", invalidBackground: "Enter a valid HTTP or HTTPS image URL", previousEpisode: "Previous episode", nextEpisode: "Next episode", profileChanged: "Profile changed", appReset: "App reset", zapped: "Playing channel #{number}: {title}", colorRed: "Red", colorBlue: "Blue", colorGreen: "Green", colorRose: "Rose", colorOrange: "Orange", colorGold: "Gold", colorTurquoise: "Turquoise", colorLime: "Lime", colorSky: "Sky blue"
     },
     tr: {
-      generalTab: "Genel", playbackTab: "Oynatma", profileTab: "Kaynak", progressCategories: "Kategoriler yükleniyor", progressPlaylist: "Playlist indiriliyor", progressParsing: "Kanallar okunuyor", streamFailed: "Kanal hatası: {reason}", streamTimedOut: "Kanal 20 sn içinde açılmadı: {reason}", streamNoData: "veri alınamadı", settings: "Ayarlar", language: "Dil", autoplayNext: "Sonraki bölümü otomatik oynat", customization: "Özelleştirme", switchProfile: "Kaynağı değiştir", resetApp: "Uygulamayı sıfırla", close: "Menüyü kapat", back: "Geri", accentColor: "Vurgu rengi", highlightColor: "Öne çıkan renk", backgroundImage: "Arka plan görseli URL'si", apply: "Uygula", removeBackground: "Görseli kaldır", done: "Tamam", previous: "Önceki", next: "Sonraki", playPause: "Duraklat / oynat", serverUrl: "Sunucu URL'si", username: "Kullanıcı adı", password: "Şifre", login: "Giriş yap", connecting: "IPTV sunucusuna bağlanılıyor...", loginFailed: "Giriş başarısız.", modes: "MODLAR", modeFavorites: "★ Favoriler", modeLive: "📺 Canlı TV", modeMovies: "🎬 Filmler", modeSeries: "🍿 Diziler", region: "BÖLGE", categories: "KATEGORİLER", allRegions: "ALL", channels: "KANALLAR", movies: "FİLMLER", series: "DİZİLER", liveNow: "Canlı yayın", noNextProgram: "Sonraki program yok", vodHint: "Yukarı: kontroller | Oynat/Duraklat: değiştir | Sol/Sağ: sar", backToSeries: "← Dizi listesine dön", noEpisodes: "Bölüm bulunamadı", loadingEpisodes: "Bölümler yükleniyor...", unableLoad: "Bölümler yüklenemedi", favoritesRemoved: "Favorilerden çıkarıldı", favoritesAdded: "Favorilere eklendi", moveOnlyFavorites: "Taşıma modu yalnızca Favorilerde kullanılabilir", moveStarted: "Taşıma başladı", positionSaved: "Sıralama kaydedildi", channelNotFound: "#{number} numaralı kanal bulunamadı", autoplay: "Sonraki bölümü otomatik oynat", colors: "Renkler", backgroundApplied: "Arka plan güncellendi", backgroundRemoved: "Arka plan kaldırıldı", invalidBackground: "Geçerli bir HTTP veya HTTPS görsel URL'si girin", previousEpisode: "Önceki bölüm", nextEpisode: "Sonraki bölüm", profileChanged: "Profil değiştirildi", appReset: "Uygulama sıfırlandı", zapped: "Kanal #{number} açılıyor: {title}", colorRed: "Kırmızı", colorBlue: "Mavi", colorGreen: "Yeşil", colorRose: "Pembe", colorOrange: "Turuncu", colorGold: "Altın", colorTurquoise: "Turkuaz", colorLime: "Fıstık yeşili", colorSky: "Gök mavisi"
+      generalTab: "Genel", playbackTab: "Oynatma", profileTab: "Kaynak", progressCategories: "Kategoriler yükleniyor", progressPlaylist: "Playlist indiriliyor", progressParsing: "Kanallar okunuyor", streamFailed: "Kanal hatası: {reason}", streamTimedOut: "Kanal 20 sn içinde açılmadı: {reason}", streamNoData: "veri alınamadı", settings: "Ayarlar", language: "Dil", autoplayNext: "Sonraki bölümü otomatik oynat", customization: "Özelleştirme", switchProfile: "Kaynağı değiştir", resetApp: "Uygulamayı sıfırla", close: "Menüyü kapat", back: "Geri", accentColor: "Vurgu rengi", highlightColor: "Öne çıkan renk", backgroundImage: "Arka plan görseli URL'si", apply: "Uygula", removeBackground: "Görseli kaldır", done: "Tamam", previous: "Önceki", next: "Sonraki", playPause: "Duraklat / oynat", serverUrl: "Sunucu URL'si", username: "Kullanıcı adı", password: "Şifre", login: "Giriş yap", connecting: "IPTV sunucusuna bağlanılıyor...", loginFailed: "Giriş başarısız.", modes: "MODLAR", modeFavorites: "Favoriler", modeLive: "Canlı TV", modeMovies: "Filmler", modeSeries: "Diziler", region: "BÖLGE", categories: "KATEGORİLER", allRegions: "ALL", channels: "KANALLAR", movies: "FİLMLER", series: "DİZİLER", liveNow: "Canlı yayın", noNextProgram: "Sonraki program yok", vodHint: "Yukarı: kontroller | Oynat/Duraklat: değiştir | Sol/Sağ: sar", backToSeries: "← Dizi listesine dön", noEpisodes: "Bölüm bulunamadı", loadingEpisodes: "Bölümler yükleniyor...", unableLoad: "Bölümler yüklenemedi", favoritesRemoved: "Favorilerden çıkarıldı", favoritesAdded: "Favorilere eklendi", moveOnlyFavorites: "Taşıma modu yalnızca Favorilerde kullanılabilir", moveStarted: "Taşıma başladı", positionSaved: "Sıralama kaydedildi", channelNotFound: "#{number} numaralı kanal bulunamadı", autoplay: "Sonraki bölümü otomatik oynat", colors: "Renkler", backgroundApplied: "Arka plan güncellendi", backgroundRemoved: "Arka plan kaldırıldı", invalidBackground: "Geçerli bir HTTP veya HTTPS görsel URL'si girin", previousEpisode: "Önceki bölüm", nextEpisode: "Sonraki bölüm", profileChanged: "Profil değiştirildi", appReset: "Uygulama sıfırlandı", zapped: "Kanal #{number} açılıyor: {title}", colorRed: "Kırmızı", colorBlue: "Mavi", colorGreen: "Yeşil", colorRose: "Pembe", colorOrange: "Turuncu", colorGold: "Altın", colorTurquoise: "Turkuaz", colorLime: "Fıstık yeşili", colorSky: "Gök mavisi"
     },
     nl: {
-      generalTab: "Algemeen", playbackTab: "Afspelen", profileTab: "Bron", settings: "Instellingen", language: "Taal", autoplayNext: "Volgende aflevering automatisch afspelen", customization: "Aanpassen", switchProfile: "Bron wijzigen", resetApp: "App resetten", close: "Menu sluiten", back: "Terug", accentColor: "Accentkleur", highlightColor: "Markeringskleur", backgroundImage: "URL van achtergrondafbeelding", apply: "Toepassen", removeBackground: "Afbeelding verwijderen", done: "Gereed", previous: "Vorige", next: "Volgende", playPause: "Pauzeren / afspelen", serverUrl: "Server-URL", username: "Gebruikersnaam", password: "Wachtwoord", login: "Inloggen", connecting: "Verbinden met IPTV-server...", loginFailed: "Inloggen mislukt.", modes: "MODI", modeFavorites: "★ Favorieten", modeLive: "📺 Live-tv", modeMovies: "🎬 Films", modeSeries: "🍿 Series", region: "REGIO", categories: "CATEGORIEËN", allRegions: "ALL", channels: "KANALEN", movies: "FILMS", series: "SERIES", liveNow: "Live-uitzending", noNextProgram: "Geen volgend programma", vodHint: "Omhoog: bediening | Afspelen/Pauze: wisselen | Links/Rechts: zoeken", backToSeries: "← Terug naar series", noEpisodes: "Geen afleveringen gevonden", loadingEpisodes: "Afleveringen laden...", unableLoad: "Afleveringen laden mislukt", favoritesRemoved: "Verwijderd uit favorieten", favoritesAdded: "Toegevoegd aan favorieten", moveOnlyFavorites: "Verplaatsen kan alleen in Favorieten", moveStarted: "Verplaatsen gestart", positionSaved: "Positie opgeslagen", channelNotFound: "Kanaal #{number} niet gevonden", autoplay: "Volgende aflevering automatisch afspelen", colors: "Kleuren", backgroundApplied: "Achtergrond bijgewerkt", backgroundRemoved: "Achtergrond verwijderd", invalidBackground: "Voer een geldige HTTP- of HTTPS-afbeeldings-URL in", previousEpisode: "Vorige aflevering", nextEpisode: "Volgende aflevering", profileChanged: "Profiel gewijzigd", appReset: "App gereset", zapped: "Kanaal #{number} wordt afgespeeld: {title}", colorRed: "Rood", colorBlue: "Blauw", colorGreen: "Groen", colorRose: "Roze", colorOrange: "Oranje", colorGold: "Goud", colorTurquoise: "Turquoise", colorLime: "Limoen", colorSky: "Hemelsblauw"
+      generalTab: "Algemeen", playbackTab: "Afspelen", profileTab: "Bron", settings: "Instellingen", language: "Taal", autoplayNext: "Volgende aflevering automatisch afspelen", customization: "Aanpassen", switchProfile: "Bron wijzigen", resetApp: "App resetten", close: "Menu sluiten", back: "Terug", accentColor: "Accentkleur", highlightColor: "Markeringskleur", backgroundImage: "URL van achtergrondafbeelding", apply: "Toepassen", removeBackground: "Afbeelding verwijderen", done: "Gereed", previous: "Vorige", next: "Volgende", playPause: "Pauzeren / afspelen", serverUrl: "Server-URL", username: "Gebruikersnaam", password: "Wachtwoord", login: "Inloggen", connecting: "Verbinden met IPTV-server...", loginFailed: "Inloggen mislukt.", modes: "MODI", modeFavorites: "Favorieten", modeLive: "Live-tv", modeMovies: "Films", modeSeries: "Series", region: "REGIO", categories: "CATEGORIEËN", allRegions: "ALL", channels: "KANALEN", movies: "FILMS", series: "SERIES", liveNow: "Live-uitzending", noNextProgram: "Geen volgend programma", vodHint: "Omhoog: bediening | Afspelen/Pauze: wisselen | Links/Rechts: zoeken", backToSeries: "← Terug naar series", noEpisodes: "Geen afleveringen gevonden", loadingEpisodes: "Afleveringen laden...", unableLoad: "Afleveringen laden mislukt", favoritesRemoved: "Verwijderd uit favorieten", favoritesAdded: "Toegevoegd aan favorieten", moveOnlyFavorites: "Verplaatsen kan alleen in Favorieten", moveStarted: "Verplaatsen gestart", positionSaved: "Positie opgeslagen", channelNotFound: "Kanaal #{number} niet gevonden", autoplay: "Volgende aflevering automatisch afspelen", colors: "Kleuren", backgroundApplied: "Achtergrond bijgewerkt", backgroundRemoved: "Achtergrond verwijderd", invalidBackground: "Voer een geldige HTTP- of HTTPS-afbeeldings-URL in", previousEpisode: "Vorige aflevering", nextEpisode: "Volgende aflevering", profileChanged: "Profiel gewijzigd", appReset: "App gereset", zapped: "Kanaal #{number} wordt afgespeeld: {title}", colorRed: "Rood", colorBlue: "Blauw", colorGreen: "Groen", colorRose: "Roze", colorOrange: "Oranje", colorGold: "Goud", colorTurquoise: "Turquoise", colorLime: "Limoen", colorSky: "Hemelsblauw"
     },
     fr: {
-      generalTab: "Général", playbackTab: "Lecture", profileTab: "Source", settings: "Paramètres", language: "Langue", autoplayNext: "Lire automatiquement l’épisode suivant", customization: "Personnalisation", switchProfile: "Changer de source", resetApp: "Réinitialiser l’application", close: "Fermer le menu", back: "Retour", accentColor: "Couleur d’accentuation", highlightColor: "Couleur de surbrillance", backgroundImage: "URL de l’image d’arrière-plan", apply: "Appliquer", removeBackground: "Supprimer l’image", done: "Terminé", previous: "Précédent", next: "Suivant", playPause: "Pause / lecture", serverUrl: "URL du serveur", username: "Nom d’utilisateur", password: "Mot de passe", login: "Connexion", connecting: "Connexion au serveur IPTV...", loginFailed: "Échec de la connexion.", modes: "MODES", modeFavorites: "★ Favoris", modeLive: "📺 TV en direct", modeMovies: "🎬 Films", modeSeries: "🍿 Séries", region: "RÉGION", categories: "CATÉGORIES", allRegions: "ALL", channels: "CHAÎNES", movies: "FILMS", series: "SÉRIES", liveNow: "En direct", noNextProgram: "Aucun programme suivant", vodHint: "Haut : commandes | Lecture/Pause : basculer | Gauche/Droite : avancer", backToSeries: "← Retour aux séries", noEpisodes: "Aucun épisode trouvé", loadingEpisodes: "Chargement des épisodes...", unableLoad: "Impossible de charger les épisodes", favoritesRemoved: "Retiré des favoris", favoritesAdded: "Ajouté aux favoris", moveOnlyFavorites: "Le déplacement est réservé aux Favoris", moveStarted: "Déplacement commencé", positionSaved: "Position enregistrée", channelNotFound: "Chaîne #{number} introuvable", autoplay: "Lire automatiquement l’épisode suivant", colors: "Couleurs", backgroundApplied: "Arrière-plan mis à jour", backgroundRemoved: "Arrière-plan supprimé", invalidBackground: "Saisissez une URL d’image HTTP ou HTTPS valide", previousEpisode: "Épisode précédent", nextEpisode: "Épisode suivant", profileChanged: "Profil modifié", appReset: "Application réinitialisée", zapped: "Lecture de la chaîne #{number} : {title}", colorRed: "Rouge", colorBlue: "Bleu", colorGreen: "Vert", colorRose: "Rose", colorOrange: "Orange", colorGold: "Or", colorTurquoise: "Turquoise", colorLime: "Citron vert", colorSky: "Bleu ciel"
+      generalTab: "Général", playbackTab: "Lecture", profileTab: "Source", settings: "Paramètres", language: "Langue", autoplayNext: "Lire automatiquement l’épisode suivant", customization: "Personnalisation", switchProfile: "Changer de source", resetApp: "Réinitialiser l’application", close: "Fermer le menu", back: "Retour", accentColor: "Couleur d’accentuation", highlightColor: "Couleur de surbrillance", backgroundImage: "URL de l’image d’arrière-plan", apply: "Appliquer", removeBackground: "Supprimer l’image", done: "Terminé", previous: "Précédent", next: "Suivant", playPause: "Pause / lecture", serverUrl: "URL du serveur", username: "Nom d’utilisateur", password: "Mot de passe", login: "Connexion", connecting: "Connexion au serveur IPTV...", loginFailed: "Échec de la connexion.", modes: "MODES", modeFavorites: "Favoris", modeLive: "TV en direct", modeMovies: "Films", modeSeries: "Séries", region: "RÉGION", categories: "CATÉGORIES", allRegions: "ALL", channels: "CHAÎNES", movies: "FILMS", series: "SÉRIES", liveNow: "En direct", noNextProgram: "Aucun programme suivant", vodHint: "Haut : commandes | Lecture/Pause : basculer | Gauche/Droite : avancer", backToSeries: "← Retour aux séries", noEpisodes: "Aucun épisode trouvé", loadingEpisodes: "Chargement des épisodes...", unableLoad: "Impossible de charger les épisodes", favoritesRemoved: "Retiré des favoris", favoritesAdded: "Ajouté aux favoris", moveOnlyFavorites: "Le déplacement est réservé aux Favoris", moveStarted: "Déplacement commencé", positionSaved: "Position enregistrée", channelNotFound: "Chaîne #{number} introuvable", autoplay: "Lire automatiquement l’épisode suivant", colors: "Couleurs", backgroundApplied: "Arrière-plan mis à jour", backgroundRemoved: "Arrière-plan supprimé", invalidBackground: "Saisissez une URL d’image HTTP ou HTTPS valide", previousEpisode: "Épisode précédent", nextEpisode: "Épisode suivant", profileChanged: "Profil modifié", appReset: "Application réinitialisée", zapped: "Lecture de la chaîne #{number} : {title}", colorRed: "Rouge", colorBlue: "Bleu", colorGreen: "Vert", colorRose: "Rose", colorOrange: "Orange", colorGold: "Or", colorTurquoise: "Turquoise", colorLime: "Citron vert", colorSky: "Bleu ciel"
     }
   };
 
@@ -155,8 +156,22 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.assign(appTranslations.tr, {"menuTab": "Menü", "hideRegions": "Bölge sütununu gizle"});
   Object.assign(appTranslations.nl, {"menuTab": "Menu", "hideRegions": "Regiokolom verbergen"});
   Object.assign(appTranslations.fr, {"menuTab": "Menu", "hideRegions": "Masquer la colonne des régions"});
+  Object.assign(appTranslations.en, {"guideTitle": "Guide", "guideHint": "OK: play · Back: close", "guideNoData": "No programme information"});
+  Object.assign(appTranslations.tr, {"guideTitle": "Rehber", "guideHint": "OK: izle · Geri: kapat", "guideNoData": "Program bilgisi yok"});
+  Object.assign(appTranslations.nl, {"guideTitle": "Gids", "guideHint": "OK: afspelen · Terug: sluiten", "guideNoData": "Geen programma-informatie"});
+  Object.assign(appTranslations.fr, {"guideTitle": "Guide", "guideHint": "OK : lire · Retour : fermer", "guideNoData": "Aucune information de programme"});
+  Object.assign(appTranslations.en, {"renameTitle": "Rename", "renameSave": "Save", "renameCancel": "Cancel", "renameHint": "Leave empty to restore the original name"});
+  Object.assign(appTranslations.tr, {"renameTitle": "Yeniden adlandır", "renameSave": "Kaydet", "renameCancel": "İptal", "renameHint": "Boş bırakırsanız özgün ad geri yüklenir"});
+  Object.assign(appTranslations.nl, {"renameTitle": "Hernoemen", "renameSave": "Opslaan", "renameCancel": "Annuleren", "renameHint": "Leeg laten om de oorspronkelijke naam te herstellen"});
+  Object.assign(appTranslations.fr, {"renameTitle": "Renommer", "renameSave": "Enregistrer", "renameCancel": "Annuler", "renameHint": "Laisser vide pour restaurer le nom d'origine"});
   Object.assign(appTranslations.fr, {"hintFavorite": "Favori", "hintReorder": "Déplacer", "hintHide": "Masquer la catégorie", "hintSearch": "Rechercher", "searchTitle": "Rechercher des chaînes", "searchPlaceholder": "Saisissez un nom de chaîne", "searchNoResults": "Aucune chaîne trouvée", "categoryHidden": "Catégorie masquée", "resetHidden": "Afficher les catégories masquées", "hiddenReset": "Catégories masquées restaurées", "refreshInterval": "Actualiser les listes", "refreshOff": "Désactivé", "customColor": "Personnalisée", "hueLabel": "Teinte", "saturationLabel": "Saturation", "lightnessLabel": "Luminosité", "focusWidthLabel": "Épaisseur du cadre de focus"});
+  Object.assign(appTranslations.en, {"showEpg": "Show EPG info", "epgOffset": "EPG time offset"});
+  Object.assign(appTranslations.tr, {"showEpg": "EPG bilgisini göster", "epgOffset": "EPG saat farkı"});
+  Object.assign(appTranslations.nl, {"showEpg": "EPG-info tonen", "epgOffset": "EPG-tijdverschil"});
+  Object.assign(appTranslations.fr, {"showEpg": "Afficher les infos EPG", "epgOffset": "Décalage horaire EPG"});
   let autoplayNext = store.getItem("iptv_autoplay_next") === "true";
+  let epgVisible = store.getItem("iptv_epg_show") !== "false";
+  let epgOffsetHours = Math.max(-2, Math.min(2, Number(store.getItem("iptv_epg_offset")) || 0));
   let hideRegionColumn = store.getItem("iptv_hide_regions") === "true";
   let refreshTimer = null;
   let movingRegion = null;
@@ -194,11 +209,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let currentAuth = null;
+  Object.assign(appTranslations.en, { categoryLoadTimeout: "This category did not load within 30 s. Check the connection and try again." });
+  Object.assign(appTranslations.tr, { categoryLoadTimeout: "Bu kategori 30 sn içinde yüklenmedi. Bağlantıyı kontrol edip tekrar deneyin." });
+  Object.assign(appTranslations.nl, { categoryLoadTimeout: "Deze categorie laadde niet binnen 30 s. Controleer de verbinding en probeer het opnieuw." });
+  Object.assign(appTranslations.fr, { categoryLoadTimeout: "Cette catégorie ne s'est pas chargée en 30 s. Vérifiez la connexion et réessayez." });
+
+  const CATEGORY_LOAD_TIMEOUT_MS = 30000;
+
   let xtreamAuth = null;
   let allStreams = [];
   let vodStreams = [];
   let vodCategories = [];
   let seriesCategories = [];
+  let xtreamCategoriesLoading = false;
   let seriesStreams = [];
   let selectedSeries = null;
   let currentVodItems = [];
@@ -374,10 +397,18 @@ document.addEventListener("DOMContentLoaded", () => {
     return codes[(codes.indexOf(lang) + 1) % codes.length];
   }
 
+  function uiIcon(name) {
+    return `<svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-${name}"/></svg>`;
+  }
+
+  function setIconLabel(el, icon, text) {
+    if (el) el.innerHTML = `${uiIcon(icon)}<span>${text}</span>`;
+  }
+
   function updateSettingsSelection() {
     if (!settingsPanel) return;
     const refreshButton = settingsPanel.querySelector(".settings-item[data-setting='refreshCycle']");
-    if (refreshButton) refreshButton.textContent = `🔄 ${refreshHours ? refreshHours + " h" : t("refreshOff")}`;
+    setIconLabel(refreshButton, "refresh", refreshHours ? refreshHours + " h" : t("refreshOff"));
     updateFavoritesTab();
   }
 
@@ -387,7 +418,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.documentElement.lang = currentLang;
     updateSettingsSelection();
     const languageButton = settingsPanel && settingsPanel.querySelector(".settings-item[data-setting='language']");
-    if (languageButton) languageButton.textContent = `${languageOptions[currentLang]} ${currentLang.toUpperCase()}`;
+    if (languageButton) setIconLabel(languageButton, "globe", `${languageOptions[currentLang]} ${currentLang.toUpperCase()}`);
     document.querySelectorAll("[data-i18n]").forEach(element => {
       element.textContent = t(element.dataset.i18n);
     });
@@ -400,7 +431,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-i18n-title]").forEach(element => {
       element.title = t(element.dataset.i18nTitle);
     });
-    if (settingsButton) settingsButton.textContent = `⚙ ${t("settings")}`;
     if (headerModeIndicator) {
       const modeKeys = { favorites: "modeFavorites", live: "modeLive", vod: "modeMovies", series: "modeSeries" };
       headerModeIndicator.textContent = t(modeKeys[currentModus]);
@@ -658,6 +688,12 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast(`${t("refreshInterval")}: ${refreshHours ? refreshHours + " h" : t("refreshOff")}`);
         return;
       }
+      case "epgOffset":
+        epgOffsetHours = ((epgOffsetHours + 3) % 5) - 2;
+        store.setItem("iptv_epg_offset", String(epgOffsetHours));
+        updateEpgOffsetLabel();
+        if (epgVisible && currentPlayingStreamId) fetchEPGData(currentPlayingStreamId);
+        return;
       case "resetHidden":
         hiddenCategories = { live: [], vod: [], series: [] };
         regionPrefs.hidden = { live: [], vod: [] };
@@ -702,11 +738,11 @@ document.addEventListener("DOMContentLoaded", () => {
     return "";
   }
 
-  let clock24h = store.getItem("iptv_clock_24h") === "1";
+  let clock24h = store.getItem("iptv_clock_24h") !== "0";
 
   function updateClockFormatButton() {
     const button = document.getElementById("clockFormatButton");
-    if (button) button.textContent = `🕐 ${clock24h ? "24" : "12"} h`;
+    if (button) setIconLabel(button, "clock", `${clock24h ? "24" : "12"} h`);
   }
 
   const updateClocks = () => {
@@ -888,21 +924,22 @@ document.addEventListener("DOMContentLoaded", () => {
       setFavoritesProvider("m3u");
       if (m3uUrlInput) m3uUrlInput.value = currentAuth.playlistUrl || "";
       saveM3uProfile(currentAuth.playlistUrl);
-      const cachedFavorites = loadFavoriteCache();
-      const fastStart = cachedFavorites.length > 0 && favorites.length > 0;
-      if (fastStart) {
-        // Show favorites from the cache now; the full playlist refreshes behind it.
-        allStreams = cachedFavorites;
-        allCategories = [];
+      const cachedChannels = loadChannelCache(currentAuth.playlistUrl);
+      if (cachedChannels) {
+        // Start from the saved playlist without downloading. The playlist only refreshes on the refresh timer.
+        allStreams = cachedChannels.streams;
+        allCategories = cachedChannels.categories || [];
         currentLiveRegion = "ALL";
-        setLoginState("logging");
-        switchModus("favorites");
+        setLoginState("logged-in");
+        switchModus(favorites.length ? "favorites" : "live");
         if (currentActiveStreams.length > 0) {
           const first = currentActiveStreams[0];
           playStream(first.stream_id, first.name, first.stream_icon, 0, first.url);
+          activeerFitScreen();
         }
+      } else {
+        login(currentAuth.playlistUrl, "", "", true, "m3u", false);
       }
-      login(currentAuth.playlistUrl, "", "", true, "m3u", fastStart);
     } else {
       if (loginMethod) {
         loginMethod.value = "m3u";
@@ -912,7 +949,8 @@ document.addEventListener("DOMContentLoaded", () => {
       setLoginErrorMessage(t("noSavedProfile"));
     }
 
-    if (vodProfile) loginXtream(vodProfile.server, vodProfile.username, vodProfile.password, true);
+    // Xtream categories load when Movies or Series is opened, not on every start.
+    if (vodProfile) xtreamAuth = { server: vodProfile.server, username: vodProfile.username, password: vodProfile.password };
   }
 
   async function loginXtream(server, username, password, background = false) {
@@ -930,11 +968,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         throw new Error(`${t("playlistUnavailable")} (HTTP ${result.status}${result.failed ? " " + result.failed : ""}, ${result.body.length}B, ${action || "auth"})`);
       };
+      let transportError = null;
       const optionalList = async (action) => {
         try {
           const value = await fetchApi(action);
           return Array.isArray(value) ? value : [];
         } catch (error) {
+          transportError = transportError || error;
           return [];
         }
       };
@@ -944,6 +984,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (account && account.user_info && Number(account.user_info.auth) === 0) throw new Error(t("invalidCredentials"));
       } catch (error) {
         if (error.message === t("invalidCredentials")) throw error;
+        transportError = transportError || error;
       }
       xtreamAuth = { server, username, password };
       loginCredentialsRejected = false;
@@ -956,7 +997,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const vodCats = await optionalList("get_vod_categories");
       const seriesCats = await optionalList("get_series_categories");
-      if (!vodCats.length && !seriesCats.length) throw new Error(t("invalidCredentials"));
+      if (!vodCats.length && !seriesCats.length) throw transportError || new Error(t("invalidCredentials"));
 
       vodCategories = vodCats;
       seriesCategories = seriesCats;
@@ -1086,6 +1127,18 @@ document.addEventListener("DOMContentLoaded", () => {
       store.setItem("iptv_autoplay_next", String(autoplayNext));
     });
   }
+
+  if (showEpgToggle) {
+    showEpgToggle.checked = epgVisible;
+    showEpgToggle.addEventListener("change", () => {
+      epgVisible = showEpgToggle.checked;
+      store.setItem("iptv_epg_show", String(epgVisible));
+      applyEpgVisibility();
+      if (epgVisible && currentPlayingStreamId) fetchEPGData(currentPlayingStreamId);
+    });
+  }
+  updateEpgOffsetLabel();
+  applyEpgVisibility();
 
   document.body.classList.toggle("no-region-column", hideRegionColumn);
   if (hideRegionsToggle) {
@@ -1233,6 +1286,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Full parsed playlist, so a restart does not download it again. Written straight to localStorage so a full disk is detected.
+  function saveChannelCache(source, streams, categories) {
+    try {
+      window.localStorage.setItem("iptv_channel_cache" + favoritesNs, JSON.stringify({ source, streams, categories }));
+      return true;
+    } catch (error) {
+      try { window.localStorage.removeItem("iptv_channel_cache" + favoritesNs); } catch (e) {}
+      return false;
+    }
+  }
+
+  function loadChannelCache(source) {
+    try {
+      const cache = JSON.parse(window.localStorage.getItem("iptv_channel_cache" + favoritesNs) || "null");
+      if (cache && cache.source === source && Array.isArray(cache.streams) && cache.streams.length) return cache;
+    } catch (error) {}
+    return null;
+  }
+
   // XHR instead of fetch: the TV's fetch returned empty bodies for this provider.
   function requestText(url, timeout = 60000, onProgress = null) {
     return new Promise((resolve) => {
@@ -1370,6 +1442,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         allStreams = playlist.streams;
         allCategories = playlist.categories;
+        saveChannelCache(server, playlist.streams, playlist.categories);
         setFavoritesProvider("m3u");
         seedM3uFavorites(playlist.streams);
         currentAuth = { provider: "m3u", playlistUrl: server };
@@ -1418,6 +1491,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function deactiveerFitScreen() {
     isFitScreen = false;
+    if (guideOpen) hideGuide();
     document.body.classList.remove("speler-fit-screen");
     if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
     if (currentModus === "live" || currentModus === "favorites") {
@@ -1538,7 +1612,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (flagObserver) flagObserver.disconnect();
-    regionList.innerHTML = `<li class="nav-item focusable${currentActiveRegion === "ALL" ? " active" : ""}" data-region="ALL" tabindex="0">${t("allRegions")}</li>`;
+    regionList.innerHTML = `<li class="nav-item focusable${currentActiveRegion === "ALL" ? " active" : ""}" data-region="ALL" tabindex="0"><span class="region-label">${t("allRegions")}</span></li>`;
 
     visible.forEach(reg => {
       const li = document.createElement("li");
@@ -1552,7 +1626,10 @@ document.addEventListener("DOMContentLoaded", () => {
         li.appendChild(underlay);
       }
       const marker = favoriteRegions.indexOf(reg) !== -1 ? "\u2665 " : (topRegions.includes(reg) ? "\u2B50 " : "");
-      li.appendChild(document.createTextNode(marker + reg));
+      const label = document.createElement("span");
+      label.className = "region-label";
+      label.textContent = marker + (customNames[customNameKey("region", reg)] || reg);
+      li.appendChild(label);
       regionList.appendChild(li);
     });
     observeRegionFlags();
@@ -1596,6 +1673,93 @@ document.addEventListener("DOMContentLoaded", () => {
     const remaining = regionList.querySelectorAll(":scope > li");
     if (remaining.length) setElementFocus(remaining[Math.min(position, remaining.length - 1)]);
     showToast(t("categoryHidden"));
+  }
+
+  const CUSTOM_NAMES_KEY = "iptv_custom_names";
+  let customNames = {};
+  try {
+    customNames = JSON.parse(store.getItem(CUSTOM_NAMES_KEY) || "{}") || {};
+  } catch (_) {
+    customNames = {};
+  }
+
+  function customNameKey(type, id) {
+    return type === "region" ? "region:" + id : "category:" + categoryKind() + ":" + id;
+  }
+
+  const renameDialog = document.getElementById("renameDialog");
+  const renameInput = document.getElementById("renameInput");
+  const renameSave = document.getElementById("renameSave");
+  const renameCancel = document.getElementById("renameCancel");
+  let renameContext = null;
+
+  function openRenameDialog(type, id, originalLabel, element) {
+    renameContext = { type, id, key: customNameKey(type, id), originalLabel, element };
+    renameInput.value = customNames[renameContext.key] || "";
+    renameInput.placeholder = originalLabel;
+    renameDialog.classList.remove("hidden");
+    renameInput.focus();
+  }
+
+  function closeRenameDialog(save) {
+    if (!renameContext) return;
+    const ctx = renameContext;
+    renameContext = null;
+    if (save) {
+      const value = renameInput.value.trim();
+      if (value) customNames[ctx.key] = value;
+      else delete customNames[ctx.key];
+      store.setItem(CUSTOM_NAMES_KEY, JSON.stringify(customNames));
+    }
+    renameDialog.classList.add("hidden");
+    if (ctx.type === "region") {
+      setupRegions(true);
+      focusRegion(ctx.id);
+    } else if (ctx.element) {
+      ctx.element.textContent = customNames[ctx.key] || ctx.originalLabel;
+      setElementFocus(ctx.element);
+    }
+  }
+
+  // Dialog keys stay inside the dialog so the list underneath does not move
+  if (renameDialog) {
+    const renameButtons = [renameInput, renameSave, renameCancel];
+    renameDialog.addEventListener("keydown", e => {
+      e.stopPropagation();
+      const k = e.keyCode || e.which;
+      const isEnterKey = k === 13 || e.key === "Enter";
+      const isBackKey = k === 10009 || k === 461 || k === 27 || e.key === "Back" || e.key === "Escape";
+      const isUpKey = k === 38 || e.key === "ArrowUp";
+      const isDownKey = k === 40 || e.key === "ArrowDown";
+      if (isBackKey) {
+        e.preventDefault();
+        closeRenameDialog(false);
+        return;
+      }
+      if (isUpKey || isDownKey) {
+        e.preventDefault();
+        const index = renameButtons.indexOf(e.target);
+        const next = Math.min(renameButtons.length - 1, Math.max(0, index + (isDownKey ? 1 : -1)));
+        renameButtons[next].focus();
+        return;
+      }
+      if (isEnterKey) {
+        // Holding OK sends repeats; ignore them so the dialog does not save the moment it opens
+        if (e.repeat) {
+          e.preventDefault();
+          return;
+        }
+        if (e.target === renameInput) {
+          e.preventDefault();
+          closeRenameDialog(true);
+        } else if (e.target === renameCancel) {
+          e.preventDefault();
+          closeRenameDialog(false);
+        }
+      }
+    });
+    renameSave.addEventListener("click", () => closeRenameDialog(true));
+    renameCancel.addEventListener("click", () => closeRenameDialog(false));
   }
 
   function toggleRegionMove(region) {
@@ -1761,7 +1925,9 @@ document.addEventListener("DOMContentLoaded", () => {
       li.className = "nav-item focusable" + (index === 0 ? " active" : "");
       li.dataset.catId = cat.category_id;
       li.tabIndex = 0;
-      li.textContent = cleanTitle(cat.category_name, ["HEVC", "VIP"]);
+      const originalLabel = cleanTitle(cat.category_name, ["HEVC", "VIP"]);
+      li.dataset.label = originalLabel;
+      li.textContent = customNames[customNameKey("category", cat.category_id)] || originalLabel;
       categoryList.appendChild(li);
     });
 
@@ -1864,12 +2030,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Posters load only near the viewport; thousands of image requests stall the TV.
   function loadVisiblePosters() {
+    if (posterObserver && channelList && channelList.classList.contains("netflix-grid")) return;
     const height = window.innerHeight || 720;
     const images = channelList ? channelList.querySelectorAll("img[data-src]") : [];
     for (let i = 0; i < images.length; i++) {
       const img = images[i];
       const rect = img.getBoundingClientRect();
-      if (rect.bottom > -height * 0.5 && rect.top < height * 1.5) {
+      if (rect.bottom > -height * 0.25 && rect.top < height * 1.25) {
         const src = img.getAttribute("data-src");
         img.removeAttribute("data-src");
         if (src) img.src = src;
@@ -1902,6 +2069,83 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function renderCategoryPlaceholders() {
+    playerWrapper.classList.add("hidden");
+    colContent.classList.add("vod-mode-active");
+    channelList.className = "netflix-grid";
+    channelList.innerHTML = "";
+    for (let i = 0; i < 12; i++) {
+      const card = document.createElement("div");
+      card.className = "poster-card is-placeholder";
+      card.innerHTML = '<div class="poster-media"></div>';
+      channelList.appendChild(card);
+    }
+  }
+
+  function renderCategoryStatus(text) {
+    channelList.innerHTML = "";
+    const status = document.createElement("div");
+    status.className = "category-status";
+    status.textContent = text;
+    channelList.appendChild(status);
+  }
+
+  // Movie and series grids scroll inside channelList, so it is the observer root.
+  // Posters inside a one-screen band around the viewport are loaded once scrolling settles;
+  // posters that leave the band are unloaded so decoded images do not pile up in big categories.
+  let posterObserver = null;
+  let posterLoadQueue = [];
+  let posterFlushTimer = null;
+
+  function flushPosterLoads() {
+    posterFlushTimer = null;
+    const queue = posterLoadQueue;
+    posterLoadQueue = [];
+    queue.forEach((img) => {
+      if (img.inBand && !img.getAttribute("src") && img.dataset.src) img.src = img.dataset.src;
+    });
+  }
+
+  function schedulePosterFlush() {
+    clearTimeout(posterFlushTimer);
+    posterFlushTimer = setTimeout(flushPosterLoads, 200);
+  }
+
+  function unloadPoster(img) {
+    if (!img.getAttribute("src")) return;
+    img.removeAttribute("src");
+    img.style.visibility = "";
+    img.parentNode.classList.remove("is-loaded", "is-failed");
+  }
+
+  function observeVodPosters() {
+    if (posterObserver) posterObserver.disconnect();
+    clearTimeout(posterFlushTimer);
+    posterFlushTimer = null;
+    posterLoadQueue = [];
+    if (!("IntersectionObserver" in window)) { loadVisiblePosters(); return; }
+    posterObserver = new IntersectionObserver((entries) => {
+      let queued = false;
+      entries.forEach((entry) => {
+        const img = entry.target;
+        if (entry.isIntersecting) {
+          img.inBand = true;
+          img.parentNode.classList.remove("is-away");
+          if (!img.getAttribute("src") && img.dataset.src) {
+            posterLoadQueue.push(img);
+            queued = true;
+          }
+        } else {
+          img.inBand = false;
+          img.parentNode.classList.add("is-away");
+          unloadPoster(img);
+        }
+      });
+      if (queued) schedulePosterFlush();
+    }, { root: channelList, rootMargin: "100% 0px 100% 0px" });
+    channelList.querySelectorAll("img[data-src]").forEach((img) => posterObserver.observe(img));
+  }
+
   function filterChannels() {
     if (!channelList) return;
     channelList.innerHTML = "";
@@ -1912,16 +2156,19 @@ document.addEventListener("DOMContentLoaded", () => {
         && !loadedCategories[`${loadKind}:${currentCategoryId}`]) {
       const requestedModus = currentModus;
       const requestedCategory = currentCategoryId;
-      const note = document.createElement(channelList.tagName === "UL" ? "li" : "div");
-      note.className = "season-heading";
-      note.textContent = t("connecting");
-      channelList.appendChild(note);
+      const requestKey = `${loadKind}:${requestedCategory}`;
+      const isCurrentRequest = () => currentModus === requestedModus && currentCategoryId === requestedCategory;
+      renderCategoryPlaceholders();
+      const timer = setTimeout(() => {
+        if (isCurrentRequest() && !loadedCategories[requestKey]) renderCategoryStatus(t("categoryLoadTimeout"));
+      }, CATEGORY_LOAD_TIMEOUT_MS);
       loadXtreamCategory(loadKind, requestedCategory).then((ok) => {
+        clearTimeout(timer);
         if (!ok) {
-          loadedCategories[`${loadKind}:${requestedCategory}`] = true;
+          loadedCategories[requestKey] = true;
           showToast(t("playlistUnavailable"));
         }
-        if (currentModus === requestedModus && currentCategoryId === requestedCategory) filterChannels();
+        if (isCurrentRequest()) filterChannels();
       });
       return;
     }
@@ -1956,15 +2203,18 @@ document.addEventListener("DOMContentLoaded", () => {
         div.dataset.title = displayTitle;
 
         const posterSrc = item.stream_icon || item.cover || "";
+        const posterState = posterSrc ? "" : " is-failed";
         div.innerHTML = `
-          <img data-src="${posterSrc}" class="poster-img" alt="" onerror="this.style.visibility='hidden'">
+          <div class="poster-media${posterState}">
+            <img data-src="${posterSrc}" class="poster-img" alt="" decoding="async" onload="this.parentNode.classList.add('is-loaded')" onerror="this.parentNode.classList.add('is-failed'); this.style.visibility='hidden'">
+          </div>
           <div class="poster-info">
             <div class="poster-title">${displayTitle}</div>
           </div>
         `;
         channelList.appendChild(div);
       });
-      setTimeout(loadVisiblePosters, 0);
+      observeVodPosters();
       applyPendingFocus();
       return;
     }
@@ -2025,6 +2275,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     setupRegions();
+    if ((modus === "vod" || modus === "series") && !vodCategories.length && !seriesCategories.length && xtreamAuth && !xtreamCategoriesLoading) {
+      xtreamCategoriesLoading = true;
+      loginXtream(xtreamAuth.server, xtreamAuth.username, xtreamAuth.password, true).finally(() => { xtreamCategoriesLoading = false; });
+    }
     if (modus === "favorites") {
       setColumnFocus(0);
       filterChannels();
@@ -2121,48 +2375,322 @@ document.addEventListener("DOMContentLoaded", () => {
     if (osdEpgNextTime) osdEpgNextTime.textContent = "--:--";
   }
 
-  async function fetchEPGData(streamId) {
-    resetEpgTexts();
+  function updateEpgOffsetLabel() {
+    const valueEl = document.getElementById("epgOffsetValue");
+    if (valueEl) valueEl.textContent = `${epgOffsetHours > 0 ? "+" : ""}${epgOffsetHours} h`;
+  }
+
+  function applyEpgVisibility() {
+    const panel = document.getElementById("epgPreviewPanel");
+    const osdInfo = document.querySelector(".osd-epg-info");
+    if (panel) panel.classList.toggle("hidden", !epgVisible);
+    if (osdInfo) osdInfo.classList.toggle("hidden", !epgVisible);
+  }
+
+  const epgCache = {};
+
+  // Raw Xtream listings for a channel, cached for five minutes.
+  async function getEpgListings(streamId) {
     const epgId = epgStreamIdFor(streamId);
-    if (!epgId) return;
+    if (!epgId) return null;
+    const cached = epgCache[epgId];
+    if (cached && Date.now() - cached.at < 300000) return cached.epgs;
     try {
       const result = await requestText(`${xtreamAuth.server.replace(/\/+$/, "")}/player_api.php?username=${encodeURIComponent(xtreamAuth.username)}&password=${encodeURIComponent(xtreamAuth.password)}&action=get_short_epg&stream_id=${epgId}&limit=3`, 15000);
-      if (result.status !== 200 || !result.body.trim()) return;
-      // Ignore a late reply for a channel the user already left.
-      if (String(currentPlayingStreamId) !== String(streamId)) return;
+      if (result.status !== 200 || !result.body.trim()) return null;
       const data = JSON.parse(result.body);
-      if (!data || !data.epg_listings || data.epg_listings.length === 0) return;
-      const epgs = data.epg_listings;
-      const b64 = (str) => { try { return decodeURIComponent(escape(atob(str))); } catch (e) { return str; } };
+      if (!data || !data.epg_listings || data.epg_listings.length === 0) return null;
+      epgCache[epgId] = { at: Date.now(), epgs: data.epg_listings };
+      return data.epg_listings;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  // Cached listings only (no network), used when painting the guide.
+  function cachedEpgListings(streamId) {
+    const epgId = epgStreamIdFor(streamId);
+    const cached = epgId ? epgCache[epgId] : null;
+    return cached && Date.now() - cached.at < 300000 ? cached.epgs : null;
+  }
+
+  function decodeEpgText(str) {
+    if (!str) return "";
+    try { return decodeURIComponent(escape(atob(str))); } catch (e) { return str; }
+  }
+
+  // Index of the listing on air now. Xtream often lists past shows first, so this compares
+  // against the offset-adjusted clock to match the offset-adjusted times shown to the user.
+  function onAirIndex(epgs) {
+    if (!epgs.some((l) => Number(l.start_timestamp) > 0)) return 0;
+    const nowSec = Date.now() / 1000 - epgOffsetHours * 3600;
+    const startOf = (l) => Number(l.start_timestamp) || 0;
+    const endOf = (l) => Number(l.stop_timestamp || l.end_timestamp) || 0;
+    const live = epgs.findIndex((l) => startOf(l) <= nowSec && nowSec < endOf(l));
+    if (live >= 0) return live;
+    const upcoming = epgs.findIndex((l) => startOf(l) > nowSec);
+    return upcoming === -1 ? epgs.length - 1 : Math.max(0, upcoming - 1);
+  }
+
+  // Now/next programme for a channel, with the user's EPG offset applied.
+  function nowNextFrom(epgs) {
       const pad2 = (n) => (n < 10 ? "0" : "") + n;
-      // The provider sends the end time as stop_timestamp; its text times are UTC.
+      // Times are shown with the user's offset. Stamps are epoch seconds from the provider.
       const clock = (listing, field) => {
         const stamp = Number(listing[field + "_timestamp"] || (field === "end" ? listing.stop_timestamp : 0));
-        if (stamp) {
-          const d = new Date(stamp * 1000);
-          return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-        }
-        if (!listing[field]) return "";
-        const d = new Date(listing[field].replace(" ", "T") + "Z");
-        return isNaN(d) ? listing[field].substring(11, 16) : `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+        let ms = stamp ? stamp * 1000 : NaN;
+        if (!stamp && listing[field]) ms = new Date(listing[field].replace(" ", "T") + "Z").getTime();
+        if (isNaN(ms)) return listing[field] ? listing[field].substring(11, 16) : "";
+        const d = new Date(ms + epgOffsetHours * 3600000);
+        return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
       };
 
-      const cTitle = b64(epgs[0].title || t("liveNow"));
-      const cTime = `${clock(epgs[0], "start")} - ${clock(epgs[0], "end")}`;
-      document.getElementById("epgCurrTitle").textContent = cTitle;
-      document.getElementById("epgCurrTime").textContent = cTime;
-      if (osdEpgCurrTitle) osdEpgCurrTitle.textContent = cTitle;
-      if (osdEpgCurrTime) osdEpgCurrTime.textContent = cTime;
+      const idx = onAirIndex(epgs);
+      const current = epgs[idx];
+      const next = epgs[idx + 1];
+      return {
+        current: { title: decodeEpgText(current.title) || t("liveNow"), time: `${clock(current, "start")} - ${clock(current, "end")}` },
+        next: next ? { title: decodeEpgText(next.title) || t("noNextProgram"), time: clock(next, "start") } : null
+      };
+  }
 
-      if (epgs[1]) {
-        const nTitle = b64(epgs[1].title || t("noNextProgram"));
-        const nTime = clock(epgs[1], "start");
-        document.getElementById("epgNextTitle").textContent = nTitle;
-        document.getElementById("epgNextTime").textContent = nTime;
-        if (osdEpgNextTitle) osdEpgNextTitle.textContent = nTitle;
-        if (osdEpgNextTime) osdEpgNextTime.textContent = nTime;
-      }
-    } catch (error) {}
+  async function fetchEPGData(streamId) {
+    resetEpgTexts();
+    if (!epgVisible) return;
+    const epgs = await getEpgListings(streamId);
+    // Ignore a late reply for a channel the user already left.
+    if (!epgs || String(currentPlayingStreamId) !== String(streamId)) return;
+    const info = nowNextFrom(epgs);
+    document.getElementById("epgCurrTitle").textContent = info.current.title;
+    document.getElementById("epgCurrTime").textContent = info.current.time;
+    if (osdEpgCurrTitle) osdEpgCurrTitle.textContent = info.current.title;
+    if (osdEpgCurrTime) osdEpgCurrTime.textContent = info.current.time;
+
+    if (info.next) {
+      document.getElementById("epgNextTitle").textContent = info.next.title;
+      document.getElementById("epgNextTime").textContent = info.next.time;
+      if (osdEpgNextTitle) osdEpgNextTitle.textContent = info.next.title;
+      if (osdEpgNextTime) osdEpgNextTime.textContent = info.next.time;
+    }
+  }
+
+  // GUIDE OVERLAY (opened with the Guide key while fullscreen)
+  const guideOverlay = document.getElementById("guideOverlay");
+  const guideRows = document.getElementById("guideRows");
+  const guideRuler = document.getElementById("guideRuler");
+  const guideNowLine = document.getElementById("guideNowLine");
+  const guideClock = document.getElementById("guideClock");
+  const guideDate = document.getElementById("guideDate");
+  const guideInfoChannel = document.getElementById("guideInfoChannel");
+  const guideInfoProgramme = document.getElementById("guideInfoProgramme");
+  const guideInfoTime = document.getElementById("guideInfoTime");
+  const guideInfoDesc = document.getElementById("guideInfoDesc");
+  const GUIDE_ROWS = 8;
+  const GUIDE_LOOK_BACK_MS = 30 * 60000;
+  const GUIDE_SPAN_MS = 150 * 60000;
+  let guideOpen = false;
+  let guideSelected = 0;
+  let guideViewStart = 0;
+  let guideWindow = null;
+  let guideMinute = -1;
+  let guideRenderToken = 0;
+  let guideEpgTimer = null;
+  let guideClockTimer = null;
+
+  function formatGuideTime(ms) {
+    return new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: !clock24h });
+  }
+
+  // Places an element on the timeline; the channel column sits left of the time area.
+  function setTimelinePosition(el, fraction) {
+    const clamped = Math.max(0, Math.min(1, fraction));
+    el.style.left = `calc(var(--guide-ch-w) + (100% - var(--guide-ch-w)) * ${clamped})`;
+  }
+
+  function updateGuideClock() {
+    const now = new Date();
+    if (guideClock) guideClock.textContent = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: !clock24h });
+    if (guideDate) guideDate.textContent = now.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" });
+    if (guideWindow) setTimelinePosition(guideNowLine, (now.getTime() - guideWindow.start) / GUIDE_SPAN_MS);
+    if (now.getMinutes() !== guideMinute) {
+      guideMinute = now.getMinutes();
+      renderGuide();
+    }
+  }
+
+  // Half-hour labels across the window, aligned to local clock times.
+  function renderGuideRuler(winStart, winEnd) {
+    guideRuler.textContent = "";
+    const cursor = new Date(winStart);
+    cursor.setSeconds(0, 0);
+    while (cursor.getTime() < winStart) cursor.setMinutes(cursor.getMinutes() + 1);
+    for (; cursor.getTime() <= winEnd; cursor.setMinutes(cursor.getMinutes() + 1)) {
+      if (cursor.getMinutes() % 30 !== 0) continue;
+      const tick = document.createElement("span");
+      tick.className = "guide-tick";
+      tick.textContent = formatGuideTime(cursor.getTime());
+      setTimelinePosition(tick, (cursor.getTime() - winStart) / GUIDE_SPAN_MS);
+      guideRuler.appendChild(tick);
+    }
+  }
+
+  // Start and end in ms, with the user's EPG offset applied so they line up with the clock.
+  function listingSpan(listing) {
+    const toMs = (stamp, text) => {
+      if (Number(stamp)) return Number(stamp) * 1000;
+      return text ? new Date(String(text).replace(" ", "T") + "Z").getTime() : NaN;
+    };
+    const start = toMs(listing.start_timestamp, listing.start);
+    const end = toMs(listing.stop_timestamp || listing.end_timestamp, listing.end);
+    const shift = epgOffsetHours * 3600000;
+    return [start + shift, end + shift];
+  }
+
+  function paintGuideTrack(track, epgs, win, selected) {
+    track.textContent = "";
+    if (!epgs) return;
+    const span = win.end - win.start;
+    const onAir = onAirIndex(epgs);
+    epgs.forEach((listing, index) => {
+      const [s, e] = listingSpan(listing);
+      if (!(e > win.start && s < win.end)) return;
+      const from = Math.max(s, win.start);
+      const to = Math.min(e, win.end);
+      const width = (to - from) / span * 100;
+      if (width < 0.5) return;
+      const block = document.createElement("div");
+      block.className = "guide-block";
+      if (index === onAir) block.classList.add("is-on-air");
+      block.style.left = `calc(${(from - win.start) / span * 100}% + 3px)`;
+      block.style.width = `calc(${width}% - 6px)`;
+      const label = document.createElement("span");
+      label.className = "guide-block-title";
+      label.textContent = decodeEpgText(listing.title) || t("liveNow");
+      block.appendChild(label);
+      track.appendChild(block);
+    });
+  }
+
+  function buildGuideRow(index, win) {
+    const stream = currentActiveStreams[index];
+    const row = document.createElement("div");
+    row.className = "guide-row" + (index === guideSelected ? " selected" : "");
+    row.dataset.index = String(index);
+    const chan = document.createElement("div");
+    chan.className = "guide-chan";
+    const num = document.createElement("span");
+    num.className = "guide-num";
+    num.textContent = String(index + 1);
+    const logo = document.createElement("img");
+    logo.className = "guide-logo";
+    logo.alt = "";
+    if (stream.stream_icon) logo.src = stream.stream_icon;
+    logo.onerror = () => { logo.style.visibility = "hidden"; };
+    const name = document.createElement("div");
+    name.className = "guide-name";
+    name.textContent = cleanTitle(stream.name || "");
+    chan.appendChild(num);
+    chan.appendChild(logo);
+    chan.appendChild(name);
+    const track = document.createElement("div");
+    track.className = "guide-track";
+    row.appendChild(chan);
+    row.appendChild(track);
+    paintGuideTrack(track, cachedEpgListings(stream.stream_id), win, index === guideSelected);
+    return row;
+  }
+
+  // Rebuilds the visible rows from cached EPG only; network fetches happen in loadGuideEpgWindow.
+  function renderGuide() {
+    if (!guideOpen || !guideRows) return;
+    const now = Date.now();
+    const start = now - GUIDE_LOOK_BACK_MS;
+    const end = start + GUIDE_SPAN_MS;
+    const count = currentActiveStreams.length;
+    guideWindow = { start, end };
+    guideViewStart = Math.max(0, Math.min(guideSelected - 3, count - GUIDE_ROWS));
+    renderGuideRuler(start, end);
+    setTimelinePosition(guideNowLine, (now - start) / GUIDE_SPAN_MS);
+    guideRows.textContent = "";
+    const last = Math.min(count, guideViewStart + GUIDE_ROWS);
+    for (let i = guideViewStart; i < last; i++) guideRows.appendChild(buildGuideRow(i, guideWindow));
+    renderGuideInfo();
+  }
+
+  function renderGuideInfo(fallbackText = "") {
+    const stream = currentActiveStreams[guideSelected];
+    if (!stream) return;
+    guideInfoChannel.textContent = cleanTitle(stream.name || "");
+    const epgs = cachedEpgListings(stream.stream_id);
+    if (!epgs) {
+      guideInfoProgramme.textContent = fallbackText;
+      guideInfoTime.textContent = "";
+      guideInfoDesc.textContent = "";
+      return;
+    }
+    const listing = epgs[onAirIndex(epgs)];
+    const [s, e] = listingSpan(listing);
+    guideInfoProgramme.textContent = decodeEpgText(listing.title) || t("liveNow");
+    guideInfoTime.textContent = `${formatGuideTime(s)} - ${formatGuideTime(e)}`;
+    guideInfoDesc.textContent = decodeEpgText(listing.description);
+  }
+
+  function applyGuideSelection() {
+    renderGuide();
+    clearTimeout(guideEpgTimer);
+    guideEpgTimer = setTimeout(loadGuideEpgWindow, 200);
+  }
+
+  // Fetches EPG for the visible rows only, so long playlists stay light. Each row repaints when its data arrives.
+  async function loadGuideEpgWindow() {
+    const token = ++guideRenderToken;
+    const last = Math.min(currentActiveStreams.length, guideViewStart + GUIDE_ROWS);
+    const jobs = [];
+    for (let i = guideViewStart; i < last; i++) {
+      const stream = currentActiveStreams[i];
+      jobs.push(getEpgListings(stream.stream_id).then((epgs) => {
+        if (!guideOpen || token !== guideRenderToken || !guideWindow) return;
+        const row = guideRows.querySelector(`.guide-row[data-index="${i}"]`);
+        if (row) paintGuideTrack(row.querySelector(".guide-track"), epgs, guideWindow, i === guideSelected);
+        if (i === guideSelected) renderGuideInfo(t("guideNoData"));
+      }));
+    }
+    await Promise.all(jobs);
+  }
+
+  function openGuide() {
+    if (!guideOverlay || guideOpen || currentActiveStreams.length === 0) return;
+    guideOpen = true;
+    guideSelected = Math.max(0, Math.min(currentStreamIndex, currentActiveStreams.length - 1));
+    guideMinute = new Date().getMinutes();
+    guideOverlay.classList.remove("hidden");
+    if (osdContainer) osdContainer.classList.add("hidden");
+    if (osdClockBubble) osdClockBubble.classList.add("hidden");
+    applyGuideSelection();
+    updateGuideClock();
+    clearInterval(guideClockTimer);
+    guideClockTimer = setInterval(updateGuideClock, 1000);
+  }
+
+  function hideGuide() {
+    guideOpen = false;
+    clearTimeout(guideEpgTimer);
+    clearInterval(guideClockTimer);
+    if (guideOverlay) guideOverlay.classList.add("hidden");
+  }
+
+  function closeGuide() {
+    hideGuide();
+    showLiveOSD();
+  }
+
+  function playGuideSelection() {
+    const target = currentActiveStreams[guideSelected];
+    closeGuide();
+    if (!target) return;
+    if (String(target.stream_id) === String(currentPlayingStreamId)) return;
+    currentStreamIndex = guideSelected;
+    playStream(target.stream_id, target.name, target.stream_icon, guideSelected, target.url);
   }
 
   let lastLive = null;
@@ -2273,6 +2801,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentVodMovieId = String(streamId);
     currentEpisodeId = null;
     playerWrapper.classList.remove("hidden");
+    playerWrapper.classList.add("vod-playback");
     activeerFitScreen();
     if (vodOsdTitle) vodOsdTitle.textContent = title;
     if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
@@ -2297,6 +2826,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentEpisodeId = String(episodeId);
     currentVodMovieId = null;
     playerWrapper.classList.remove("hidden");
+    playerWrapper.classList.add("vod-playback");
     activeerFitScreen();
     if (vodOsdTitle) vodOsdTitle.textContent = title;
     if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
@@ -2316,6 +2846,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function playStream(streamId, name, icon, index, directUrl = "", isReconnect = false) {
     if (window.kcLibsReady) await window.kcLibsReady;
+    playerWrapper.classList.remove("vod-playback");
     if (index !== undefined) currentStreamIndex = index;
     currentPlayingStreamId = String(streamId);
 
@@ -2425,7 +2956,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateVodPlayPauseIcon() {
-    if (vodPlayPauseIcon) vodPlayPauseIcon.textContent = video.paused ? "▶" : "⏸";
+    if (vodPlayPauseIcon) vodPlayPauseIcon.innerHTML = uiIcon(video.paused ? "play" : "pause");
   }
 
   function showVodControls(focusToggle = false) {
@@ -2751,7 +3282,9 @@ document.addEventListener("DOMContentLoaded", () => {
     syncWheelCopies(container);
     clearTimeout(container._wrapTimer);
     animateScroll(container, wheelScrollTop(container, copy.el), false);
+    container._wrapPending = target;
     container._wrapTimer = setTimeout(() => {
+      container._wrapPending = null;
       if (document.activeElement === origin) setElementFocus(target, true);
     }, 150);
     return true;
@@ -2766,9 +3299,12 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.appendChild(wheelWindowEl);
     }
     const listRect = container.getBoundingClientRect();
+    const rowRect = element.getBoundingClientRect();
     const h = element.offsetHeight;
-    wheelWindowEl.style.left = listRect.left + "px";
-    wheelWindowEl.style.width = listRect.width + "px";
+    // The fill is copied from the row while it is focused, then the row goes transparent, so the fill stays fixed.
+    wheelWindowEl.style.background = getComputedStyle(element).backgroundColor;
+    wheelWindowEl.style.left = rowRect.left + "px";
+    wheelWindowEl.style.width = rowRect.width + "px";
     wheelWindowEl.style.top = (listRect.top + wheelAnchor(container) - h / 2) + "px";
     wheelWindowEl.style.height = h + "px";
     wheelWindowEl.style.display = "block";
@@ -2900,7 +3436,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function navigatePosterGrid(current, direction) {
-    const posters = Array.from(document.querySelectorAll("#channelList .grid-item"));
+    // Grid order is DOM order, so the nearest neighbour in any direction lies within a small window.
+    const all = Array.from(document.querySelectorAll("#channelList .grid-item"));
+    const index = all.indexOf(current);
+    const posters = index < 0 ? all : all.slice(Math.max(0, index - 30), index + 31);
     if (posters.length === 0) return;
 
     const currentRect = current.getBoundingClientRect();
@@ -2931,7 +3470,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (target) {
       setElementFocus(target);
-      target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      target.scrollIntoView({ block: "nearest" });
     } else if (direction === "left") {
       enterColumn(2);
     }
@@ -3051,6 +3590,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const isRewind = key === 412 || e.key === "MediaRewind" || e.key === "Rewind";
 
     let focused = document.activeElement;
+
+    // Guide key: fullscreen first, then the overlay. Ignored for movies and series.
+    const isGuideKey = key === 458 || e.key === "Guide";
+    if (isGuideKey && (currentModus === "live" || currentModus === "favorites")) {
+      e.preventDefault();
+      if (!isFitScreen) activeerFitScreen();
+      else if (guideOpen) closeGuide();
+      else openGuide();
+      return;
+    }
+
+    if (guideOpen) {
+      if (isUp || isDown || isPageUp || isPageDown) {
+        e.preventDefault();
+        const step = isUp ? -1 : isDown ? 1 : isPageUp ? -8 : 8;
+        guideSelected = Math.max(0, Math.min(currentActiveStreams.length - 1, guideSelected + step));
+        applyGuideSelection();
+      } else if (isEnter) {
+        e.preventDefault();
+        playGuideSelection();
+      } else if (isBack || isLeft || isGuideKey) {
+        e.preventDefault();
+        closeGuide();
+      }
+      return;
+    }
 
     // Text fields are read-only until OK, so highlighting one doesn't open the TV keyboard.
     if (isEnter && focused && focused.tagName === "INPUT" && focused.readOnly) {
@@ -3217,6 +3782,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const focusedRegionItem = focused && focused.closest ? focused.closest("#regionList li") : null;
     const regionCode = focusedRegionItem && focusedRegionItem.dataset.region !== "ALL" ? focusedRegionItem.dataset.region : null;
+    const focusedCategoryItem = focused && focused.closest ? focused.closest("#categoryList li[data-cat-id]") : null;
+
+    // Holding OK on a region or category opens rename (the first press already acted as normal OK)
+    if (isEnter && e.repeat && (regionCode || focusedCategoryItem)) {
+      e.preventDefault();
+      if (regionCode) openRenameDialog("region", regionCode, regionCode, focusedRegionItem);
+      else openRenameDialog("category", focusedCategoryItem.dataset.catId, focusedCategoryItem.dataset.label || focusedCategoryItem.textContent, focusedCategoryItem);
+      return;
+    }
 
     // GELE KNOP HANDLER (FAVORIET TOGGLE - KEY 405)
     if (isYellow) {
@@ -3467,6 +4041,17 @@ document.addEventListener("DOMContentLoaded", () => {
       else if (isUp) navigatePosterGrid(focused, "up");
       else if (isEnter) focused.click();
       return;
+    }
+
+    // A wrap glides for 150 ms before focus moves. A key pressed during that glide lands the wrap first,
+    // so holding Up or Down keeps looping instead of stopping at the copy.
+    const wrapHost = focused && focused.parentElement;
+    if (wrapHost && wrapHost._wrapPending) {
+      const landed = wrapHost._wrapPending;
+      wrapHost._wrapPending = null;
+      clearTimeout(wrapHost._wrapTimer);
+      setElementFocus(landed, true);
+      focused = landed;
     }
 
     if (isUp) {
