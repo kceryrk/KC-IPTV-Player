@@ -55,4 +55,5 @@ Open items to fix later.
 - [ ] More backgrounds
 
 ## Platform
+- [ ] New app icon (launcher and home screen)
 - [ ] webOS update
