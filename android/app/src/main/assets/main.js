@@ -146,13 +146,39 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     return text;
   }
-  Object.assign(appTranslations.en, {"hintFavorite": "Favorite", "hintReorder": "Reorder", "hintHide": "Hide category", "hintSearch": "Search", "searchTitle": "Search channels", "searchPlaceholder": "Type a channel name", "searchNoResults": "No channels found", "categoryHidden": "Category hidden", "resetHidden": "Show hidden categories", "hiddenReset": "Hidden categories restored", "refreshInterval": "Refresh lists", "refreshOff": "Off", uiScale: "Interface scale", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Large", menuStyle: "Menu display mode", menuOneAtATime: "One menu open at a time", menuAllVisible: "Multi-column cascading", materialTheme: "Material You palette", androidExternalPlayer: "Use Android external player", emptyFavorites: "No favorites added yet"});
-  Object.assign(appTranslations.tr, {"hintFavorite": "Favori", "hintReorder": "Sırala", "hintHide": "Kategoriyi gizle", "hintSearch": "Ara", "searchTitle": "Kanal ara", "searchPlaceholder": "Kanal adını yazın", "searchNoResults": "Kanal bulunamadı", "categoryHidden": "Kategori gizlendi", "resetHidden": "Gizli kategorileri göster", "hiddenReset": "Gizli kategoriler geri yüklendi", "refreshInterval": "Listeleri yenile", "refreshOff": "Kapalı", uiScale: "Arayüz boyutu", uiScaleCompact: "Küçük", uiScaleDefault: "Normal", uiScaleLarge: "Büyük", menuStyle: "Menü görünüm modu", menuOneAtATime: "Tek menü açık", menuAllVisible: "Çoklu sütun", materialTheme: "Material You paleti", androidExternalPlayer: "Harici oynatıcı kullan", emptyFavorites: "Henüz favori eklenmedi"});
-  Object.assign(appTranslations.nl, {"hintFavorite": "Favoriet", "hintReorder": "Verplaatsen", "hintHide": "Categorie verbergen", "hintSearch": "Zoeken", "searchTitle": "Zoek kanalen", "searchPlaceholder": "Typ een kanaalnaam", "searchNoResults": "Geen kanalen gevonden", "categoryHidden": "Categorie verborgen", "resetHidden": "Verborgen categorieën tonen", "hiddenReset": "Verborgen categorieën hersteld", "refreshInterval": "Lijsten vernieuwen", "refreshOff": "Uit", uiScale: "Interface-schaal", uiScaleCompact: "Compact", uiScaleDefault: "Normaal", uiScaleLarge: "Groot", menuStyle: "Menuweergave", menuOneAtATime: "Eén menu tegelijk open", menuAllVisible: "Meerdere kolommen", materialTheme: "Material You-palet", androidExternalPlayer: "Externe speler gebruiken", emptyFavorites: "Nog geen favorieten toegevoegd"});
-  Object.assign(appTranslations.fr, {"hintFavorite": "Favori", "hintReorder": "Déplacer", "hintHide": "Masquer la catégorie", "hintSearch": "Rechercher", "searchTitle": "Rechercher des chaînes", "searchPlaceholder": "Saisissez un nom de chaîne", "searchNoResults": "Aucune chaîne trouvée", "categoryHidden": "Catégorie masquée", "resetHidden": "Afficher les catégories masquées", "hiddenReset": "Catégories masquées restaurées", "refreshInterval": "Actualiser les listes", "refreshOff": "Désactivé", uiScale: "Échelle de l'interface", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Grand", menuStyle: "Mode d'affichage du menu", menuOneAtATime: "Un seul menu ouvert à la fois", menuAllVisible: "Colonnes multiples", materialTheme: "Palette Material You", androidExternalPlayer: "Utiliser le lecteur externe", emptyFavorites: "Aucun favori ajouté pour l'instant"});
+  Object.assign(appTranslations.en, {"hintFavorite": "Favorite", "hintReorder": "Reorder", "hintHide": "Hide category", "hintSearch": "Search", "searchTitle": "Search channels", "searchPlaceholder": "Type a channel name", "searchNoResults": "No channels found", "categoryHidden": "Category hidden", "resetHidden": "Show hidden categories", "hiddenReset": "Hidden categories restored", "refreshInterval": "Refresh lists", "refreshOff": "Off", uiScale: "Interface scale", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Large", menuStyle: "Menu display mode", menuOneAtATime: "One menu open at a time", menuAllVisible: "Multi-column cascading", materialTheme: "Material You palette", androidExternalPlayer: "Use Android external player", emptyFavorites: "No favorites added yet", deviceLayout: "Device layout", layoutMobile: "Mobile (Portrait)", layoutTv: "TV (Landscape)"});
+  Object.assign(appTranslations.tr, {"hintFavorite": "Favori", "hintReorder": "Sırala", "hintHide": "Kategoriyi gizle", "hintSearch": "Ara", "searchTitle": "Kanal ara", "searchPlaceholder": "Kanal adını yazın", "searchNoResults": "Kanal bulunamadı", "categoryHidden": "Kategori gizlendi", "resetHidden": "Gizli kategorileri göster", "hiddenReset": "Gizli kategoriler geri yüklendi", "refreshInterval": "Listeleri yenile", "refreshOff": "Kapalı", uiScale: "Arayüz boyutu", uiScaleCompact: "Küçük", uiScaleDefault: "Normal", uiScaleLarge: "Büyük", menuStyle: "Menü görünüm modu", menuOneAtATime: "Tek menü açık", menuAllVisible: "Çoklu sütun", materialTheme: "Material You paleti", androidExternalPlayer: "Harici oynatıcı kullan", emptyFavorites: "Henüz favori eklenmedi", deviceLayout: "Cihaz düzeni", layoutMobile: "Mobil (Dikey)", layoutTv: "TV (Yatay)"});
+  Object.assign(appTranslations.nl, {"hintFavorite": "Favoriet", "hintReorder": "Verplaatsen", "hintHide": "Categorie verbergen", "hintSearch": "Zoeken", "searchTitle": "Zoek kanalen", "searchPlaceholder": "Typ een kanaalnaam", "searchNoResults": "Geen kanalen gevonden", "categoryHidden": "Categorie verborgen", "resetHidden": "Verborgen categorieën tonen", "hiddenReset": "Verborgen categorieën hersteld", "refreshInterval": "Lijsten vernieuwen", "refreshOff": "Uit", uiScale: "Interface-schaal", uiScaleCompact: "Compact", uiScaleDefault: "Normaal", uiScaleLarge: "Groot", menuStyle: "Menuweergave", menuOneAtATime: "Eén menu tegelijk open", menuAllVisible: "Meerdere kolommen", materialTheme: "Material You-palet", androidExternalPlayer: "Externe speler gebruiken", emptyFavorites: "Nog geen favorieten toegevoegd", deviceLayout: "Apparaatindeling", layoutMobile: "Mobiel (Staand)", layoutTv: "TV (Liggend)"});
+  Object.assign(appTranslations.fr, {"hintFavorite": "Favori", "hintReorder": "Déplacer", "hintHide": "Masquer la catégorie", "hintSearch": "Rechercher", "searchTitle": "Rechercher des chaînes", "searchPlaceholder": "Saisissez un nom de chaîne", "searchNoResults": "Aucune chaîne trouvée", "categoryHidden": "Catégorie masquée", "resetHidden": "Afficher les catégories masquées", "hiddenReset": "Catégories masquées restaurées", "refreshInterval": "Actualiser les listes", "refreshOff": "Désactivé", uiScale: "Échelle de l'interface", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Grand", menuStyle: "Mode d'affichage du menu", menuOneAtATime: "Un seul menu ouvert à la fois", menuAllVisible: "Colonnes multiples", materialTheme: "Palette Material You", androidExternalPlayer: "Utiliser le lecteur externe", emptyFavorites: "Aucun favori ajouté pour l'instant", deviceLayout: "Disposition", layoutMobile: "Mobile (Portrait)", layoutTv: "TV (Paysage)"});
   let singleMenuMode = store.getItem("iptv_single_menu") !== "false";
   let uiScale = store.getItem("iptv_ui_scale") || "default";
   let materialPalette = store.getItem("iptv_palette") || "dynamic-blue";
+  let deviceLayout = store.getItem("iptv_device_layout");
+  if (!deviceLayout) {
+    if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.getDeviceLayout === "function") {
+      deviceLayout = window.AndroidExternalPlayer.getDeviceLayout();
+    } else {
+      deviceLayout = (window.innerHeight > window.innerWidth) ? "mobile" : "tv";
+    }
+  }
+  if (!deviceLayout) deviceLayout = "mobile";
+
+  function applyDeviceLayout(layout, notifyNative = true) {
+    deviceLayout = layout || "mobile";
+    store.setItem("iptv_device_layout", deviceLayout);
+    document.body.classList.remove("layout-mobile", "layout-tv");
+    document.body.classList.add(deviceLayout === "tv" ? "layout-tv" : "layout-mobile");
+
+    if (notifyNative && window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setDeviceLayout === "function") {
+      window.AndroidExternalPlayer.setDeviceLayout(deviceLayout);
+    }
+
+    if (settingsPage) {
+      settingsPage.querySelectorAll(".settings-item[data-setting='deviceLayout']").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.value === deviceLayout);
+      });
+    }
+  }
 
   const MATERIAL_PALETTES = {
     "dynamic-blue": {
@@ -476,6 +502,9 @@ document.addEventListener("DOMContentLoaded", () => {
     settingsPage.querySelectorAll(".settings-item[data-setting='uiScale']").forEach(btn => {
       btn.classList.toggle("active", btn.dataset.value === uiScale);
     });
+    settingsPage.querySelectorAll(".settings-item[data-setting='deviceLayout']").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.value === deviceLayout);
+    });
     settingsPage.querySelectorAll(".settings-item[data-setting='singleMenu']").forEach(btn => {
       btn.classList.toggle("active", (btn.dataset.value === "true") === singleMenuMode);
     });
@@ -657,6 +686,11 @@ document.addEventListener("DOMContentLoaded", () => {
       case "uiScale": {
         applyUiScale(value);
         showToast(`${t("uiScale")}: ${value}`);
+        return;
+      }
+      case "deviceLayout": {
+        applyDeviceLayout(value, true);
+        showToast(`${t("deviceLayout")}: ${value === "tv" ? t("layoutTv") : t("layoutMobile")}`);
         return;
       }
       case "singleMenu": {
@@ -1404,6 +1438,7 @@ document.addEventListener("DOMContentLoaded", () => {
   applyThemeConfig();
   applyMaterialPalette(materialPalette);
   applyUiScale(uiScale);
+  applyDeviceLayout(deviceLayout, false);
   applyAppLanguage(currentLang);
 
   if (loginForm) {
@@ -1684,6 +1719,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function deactiveerFitScreen() {
     isFitScreen = false;
     document.body.classList.remove("speler-fit-screen");
+    if (deviceLayout === "mobile") {
+      if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.requestOrientation === "function") {
+        window.AndroidExternalPlayer.requestOrientation("user");
+      }
+    }
     if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
     if (currentModus === "live" || currentModus === "favorites") {
       setTimeout(() => {
@@ -1714,6 +1754,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setColumnFocus(activeColIdx) {
+    if (deviceLayout === "mobile") return;
     const cols = [
       document.getElementById("colModus"),
       document.getElementById("colRegions"),
@@ -3093,6 +3134,40 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (currentModus === "vod" || currentModus === "series") {
           showVodOSD();
         }
+      }
+    });
+
+    const mobileFullscreenBtn = document.getElementById("mobileFullscreenBtn");
+    if (mobileFullscreenBtn) {
+      mobileFullscreenBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        activeerFitScreen();
+        if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.requestOrientation === "function") {
+          window.AndroidExternalPlayer.requestOrientation("landscape");
+        }
+      });
+    }
+
+    window.handleOrientationChange = function(isLandscape) {
+      if (deviceLayout !== "mobile") return;
+      if (isLandscape) {
+        if (!isFitScreen && (currentPlayingStreamId || (currentActiveStreams && currentActiveStreams.length > 0))) {
+          activeerFitScreen();
+        }
+      } else {
+        if (isFitScreen) {
+          deactiveerFitScreen();
+        }
+      }
+    };
+
+    window.addEventListener("resize", () => {
+      if (deviceLayout !== "mobile") return;
+      const isLandscape = window.innerWidth > window.innerHeight;
+      if (isLandscape && !isFitScreen && (currentPlayingStreamId || (currentActiveStreams && currentActiveStreams.length > 0))) {
+        activeerFitScreen();
+      } else if (!isLandscape && isFitScreen) {
+        deactiveerFitScreen();
       }
     });
   }

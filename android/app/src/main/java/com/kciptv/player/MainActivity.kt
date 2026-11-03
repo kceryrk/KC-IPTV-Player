@@ -1,9 +1,12 @@
 package com.kciptv.player
 
+import android.app.UiModeManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -30,11 +33,34 @@ class MainActivity : AppCompatActivity() {
     private lateinit var webView: WebView
     private val tag = "KCIPTV"
 
+    companion object {
+        const val PREFS_NAME = "kc_iptv_prefs"
+        const val PREF_DEVICE_LAYOUT = "device_layout"
+    }
+
+    fun applyOrientationForLayout(layout: String) {
+        runOnUiThread {
+            if (layout.equals("tv", ignoreCase = true)) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            } else {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Immersive full-screen landscape
+        // Setup layout orientation from preferences or device type
+        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
+        val isTvDevice = uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val defaultLayout = if (isTvDevice) "tv" else "mobile"
+        val savedLayout = prefs.getString(PREF_DEVICE_LAYOUT, defaultLayout) ?: defaultLayout
+        applyOrientationForLayout(savedLayout)
+
+        // Immersive full-screen
         WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowInsetsControllerCompat(window, window.decorView).let { controller ->
             controller.hide(WindowInsetsCompat.Type.systemBars())
@@ -144,6 +170,16 @@ class MainActivity : AppCompatActivity() {
         webView.loadUrl("file:///android_asset/index.html")
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val layout = prefs.getString(PREF_DEVICE_LAYOUT, "mobile") ?: "mobile"
+        if (layout.equals("mobile", ignoreCase = true)) {
+            webView.evaluateJavascript("window.handleOrientationChange && window.handleOrientationChange($isLandscape)", null)
+        }
+    }
+
     class ExternalPlayerInterface(private val context: Context) {
         companion object {
             private val dnsCache = java.util.concurrent.ConcurrentHashMap<String, String>().apply {
@@ -164,6 +200,36 @@ class MainActivity : AppCompatActivity() {
                     Log.w("KCIPTV", "System DNS failed for $host: ${e.message}, checking fallback")
                 }
                 return dnsCache[host] ?: host
+            }
+        }
+
+        @JavascriptInterface
+        fun setDeviceLayout(layout: String) {
+            Handler(Looper.getMainLooper()).post {
+                val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                prefs.edit().putString(PREF_DEVICE_LAYOUT, layout).apply()
+                (context as? MainActivity)?.applyOrientationForLayout(layout)
+            }
+        }
+
+        @JavascriptInterface
+        fun getDeviceLayout(): String {
+            val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
+            val isTvDevice = uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+            val defaultLayout = if (isTvDevice) "tv" else "mobile"
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            return prefs.getString(PREF_DEVICE_LAYOUT, defaultLayout) ?: defaultLayout
+        }
+
+        @JavascriptInterface
+        fun requestOrientation(mode: String) {
+            Handler(Looper.getMainLooper()).post {
+                val activity = context as? MainActivity ?: return@post
+                when (mode.lowercase()) {
+                    "landscape" -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                    "portrait" -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                    else -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+                }
             }
         }
 
