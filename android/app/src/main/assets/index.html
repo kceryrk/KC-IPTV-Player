@@ -12,7 +12,11 @@
   <div id="appPage">
     <header class="app-header">
       <div class="logo">
-        <button id="headerBackBtn" class="header-back-btn focusable" type="button" tabindex="0" title="Back" aria-label="Back">‹</button>
+        <button id="headerBackBtn" class="header-back-btn focusable hidden" type="button" tabindex="0" title="Back" aria-label="Back">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
         <span>KC IPTV PLAYER</span>
         <span id="headerModeIndicator" class="header-mode-badge">★ FAVORİLER</span>
       </div>
@@ -40,6 +44,13 @@
           </nav>
           <div class="customization-content">
             <div class="customization-pane" data-pane="general">
+              <section class="customization-section" id="settingsRegionSection">
+                <h2 data-i18n="regionSetting">Region</h2>
+                <div id="settingsRegionList" class="settings-row region-settings-row">
+                  <button class="settings-item focusable active" data-setting="appRegion" data-value="ALL" type="button" tabindex="0">All regions</button>
+                </div>
+              </section>
+
               <section class="customization-section">
                 <h2 data-i18n="language">Language</h2>
                 <div class="settings-row">
@@ -410,22 +421,227 @@
       </div>
     </div>
 
+    <!-- MOBILE NETFLIX-STYLE HOME SCREEN -->
+    <div id="mobileHomeScreen" class="mobile-home-screen hidden">
+      <!-- Main Featured Hero Poster Banner -->
+      <section id="homeHeroBanner" class="home-hero-banner">
+        <div class="home-hero-backdrop-container">
+          <img id="homeHeroBackdrop" class="home-hero-backdrop" alt="" src="" style="display:none;" onerror="this.style.display='none';">
+          <div class="home-hero-gradient"></div>
+        </div>
+        <div class="home-hero-content">
+          <span class="home-hero-badge">FEATURED</span>
+          <h1 id="homeHeroTitle" class="home-hero-title">KC IPTV</h1>
+          <div class="home-hero-meta">
+            <span id="homeHeroRating" class="home-hero-rating">★ 8.8</span>
+            <span id="homeHeroYear" class="home-hero-year">2025</span>
+            <span id="homeHeroCategory" class="home-hero-category">Cinema</span>
+          </div>
+          <div class="home-hero-actions">
+            <button id="homeHeroPlayBtn" class="home-hero-play-btn focusable" type="button" tabindex="0">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <span>Play</span>
+            </button>
+            <button id="homeHeroInfoBtn" class="home-hero-info-btn focusable" type="button" tabindex="0">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg>
+              <span>Details</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Shelves Container -->
+      <div id="homeShelvesContainer" class="home-shelves-container">
+        <!-- 2 Shelves: 1 Movies, 1 Series -->
+      </div>
+    </div>
+
+    <!-- MOBILE VIEW ALL FULL PAGE (For Movies or Series) -->
+    <div id="homeViewAllPage" class="home-view-all-page hidden" role="dialog" aria-modal="true" aria-label="View All">
+      <div class="home-view-all-header">
+        <button id="viewAllBackBtn" class="home-view-all-back-btn focusable" type="button" tabindex="0" title="Back" aria-label="Back">‹</button>
+        <h1 id="viewAllTitle" class="home-view-all-title">Movies</h1>
+        <div style="width: 38px;"></div>
+      </div>
+      <div id="viewAllCategoriesBar" class="home-view-all-categories-bar"></div>
+      <div class="home-view-all-content">
+        <div id="viewAllGrid" class="home-view-all-grid"></div>
+      </div>
+    </div>
+
     <footer id="hintBar" class="hint-bar">
       <span class="hint hidden" data-hint="fav"><span data-i18n="hintFavorite">Favorite</span></span>
       <span class="hint hidden" data-hint="hide"><span data-i18n="hintHide">Hide category</span></span>
       <span class="hint hidden" data-hint="search"><span data-i18n="hintSearch">Search</span></span>
       <span class="hint" id="hintBackBtn" style="cursor:pointer;"><i class="hint-key back">&#8617;</i><span data-i18n="back">Back</span></span>
     </footer>
+
+    <!-- MOBILE PILL BOTTOM NAVIGATION BAR -->
+    <nav id="mobileBottomNav" class="mobile-bottom-nav" aria-label="Bottom Navigation">
+      <button class="mobile-nav-item active" data-mobile-tab="home" type="button">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+        <span class="mobile-nav-label" data-i18n="navHome">Home</span>
+      </button>
+      <button class="mobile-nav-item" data-mobile-tab="search" type="button">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+        <span class="mobile-nav-label" data-i18n="navSearch">Search</span>
+      </button>
+      <button class="mobile-nav-item" data-mobile-tab="live" type="button">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+          <path d="M21 6h-7.59l3.29-3.29L16 2l-4 4-4-4-.71.71L10.59 6H3a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8a2 2 0 0 0-2-2zm0 14H3V8h18v12zM9 10v8l7-4z"/>
+        </svg>
+        <span class="mobile-nav-label" data-i18n="navLiveTv">Live TV</span>
+      </button>
+      <button class="mobile-nav-item" data-mobile-tab="profile" type="button">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+        <span class="mobile-nav-label" data-i18n="navProfile">Profile</span>
+      </button>
+    </nav>
   </div>
 
-  <div id="searchPanel" class="search-panel hidden">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h2 data-i18n="searchTitle">Search channels</h2>
-      <button id="searchCloseBtn" class="settings-item focusable" style="padding:6px 14px;" type="button" tabindex="0">✕</button>
+  <!-- OFFLINE STATE (shown on every page when there is no connection - Completely rounded 3D Red icon with ZERO straight corners or lines) -->
+  <div id="offlineState" class="offline-state hidden" role="alert" aria-live="assertive">
+    <svg class="offline-3d-icon" viewBox="0 0 120 120" width="112" height="112" aria-hidden="true">
+      <!-- 2 Colors Only: Vibrant Red #FF3B30 and Deep Crimson 3D Extrusion #A81414 -->
+      <!-- Zero straight corners or lines: everything is 100% round-capped volumetric 3D -->
+      <defs>
+        <!-- Centered clearance mask so the background 3D waves have a smooth gap around the foreground 3D slash -->
+        <mask id="slashClearance">
+          <rect x="-20" y="-20" width="160" height="160" fill="white" />
+          <path d="M15 103 L101 17" fill="none" stroke="black" stroke-width="28" stroke-linecap="round"/>
+        </mask>
+      </defs>
+
+      <!-- 1. Background 3D WiFi Waves (Solid continuous isometric 3D extrusion) -->
+      <g mask="url(#slashClearance)">
+        <!-- Solid continuous extruded wall in #A81414 (dx=6, dy=9 in 10 dense steps for seamless volume) -->
+        <g fill="#A81414" stroke="#A81414" stroke-linecap="round" stroke-width="9">
+          <!-- Step 10 (furthest back) -->
+          <circle cx="66" cy="97" r="8" stroke="none"/>
+          <path d="M50 81 A21 21 0 0 1 82 81" fill="none"/>
+          <path d="M36 65 A39 39 0 0 1 96 65" fill="none"/>
+          <path d="M22 49 A58 58 0 0 1 110 49" fill="none"/>
+
+          <!-- Step 9 -->
+          <circle cx="65.4" cy="96.1" r="8" stroke="none"/>
+          <path d="M49.4 80.1 A21 21 0 0 1 81.4 80.1" fill="none"/>
+          <path d="M35.4 64.1 A39 39 0 0 1 95.4 64.1" fill="none"/>
+          <path d="M21.4 48.1 A58 58 0 0 1 109.4 48.1" fill="none"/>
+
+          <!-- Step 8 -->
+          <circle cx="64.8" cy="95.2" r="8" stroke="none"/>
+          <path d="M48.8 79.2 A21 21 0 0 1 80.8 79.2" fill="none"/>
+          <path d="M34.8 63.2 A39 39 0 0 1 94.8 63.2" fill="none"/>
+          <path d="M20.8 47.2 A58 58 0 0 1 108.8 47.2" fill="none"/>
+
+          <!-- Step 7 -->
+          <circle cx="64.2" cy="94.3" r="8" stroke="none"/>
+          <path d="M48.2 78.3 A21 21 0 0 1 80.2 78.3" fill="none"/>
+          <path d="M34.2 62.3 A39 39 0 0 1 94.2 62.3" fill="none"/>
+          <path d="M20.2 46.3 A58 58 0 0 1 108.2 46.3" fill="none"/>
+
+          <!-- Step 6 -->
+          <circle cx="63.6" cy="93.4" r="8" stroke="none"/>
+          <path d="M47.6 77.4 A21 21 0 0 1 79.6 77.4" fill="none"/>
+          <path d="M33.6 61.4 A39 39 0 0 1 93.6 61.4" fill="none"/>
+          <path d="M19.6 45.4 A58 58 0 0 1 107.6 45.4" fill="none"/>
+
+          <!-- Step 5 -->
+          <circle cx="63.0" cy="92.5" r="8" stroke="none"/>
+          <path d="M47.0 76.5 A21 21 0 0 1 79.0 76.5" fill="none"/>
+          <path d="M33.0 60.5 A39 39 0 0 1 93.0 60.5" fill="none"/>
+          <path d="M19.0 44.5 A58 58 0 0 1 107.0 44.5" fill="none"/>
+
+          <!-- Step 4 -->
+          <circle cx="62.4" cy="91.6" r="8" stroke="none"/>
+          <path d="M46.4 75.6 A21 21 0 0 1 78.4 75.6" fill="none"/>
+          <path d="M32.4 59.6 A39 39 0 0 1 92.4 59.6" fill="none"/>
+          <path d="M18.4 43.6 A58 58 0 0 1 106.4 43.6" fill="none"/>
+
+          <!-- Step 3 -->
+          <circle cx="61.8" cy="90.7" r="8" stroke="none"/>
+          <path d="M45.8 74.7 A21 21 0 0 1 77.8 74.7" fill="none"/>
+          <path d="M31.8 58.7 A39 39 0 0 1 91.8 58.7" fill="none"/>
+          <path d="M17.8 42.7 A58 58 0 0 1 105.8 42.7" fill="none"/>
+
+          <!-- Step 2 -->
+          <circle cx="61.2" cy="89.8" r="8" stroke="none"/>
+          <path d="M45.2 73.8 A21 21 0 0 1 77.2 73.8" fill="none"/>
+          <path d="M31.2 57.8 A39 39 0 0 1 91.2 57.8" fill="none"/>
+          <path d="M17.2 41.8 A58 58 0 0 1 105.2 41.8" fill="none"/>
+
+          <!-- Step 1 -->
+          <circle cx="60.6" cy="88.9" r="8" stroke="none"/>
+          <path d="M44.6 72.9 A21 21 0 0 1 76.6 72.9" fill="none"/>
+          <path d="M30.6 56.9 A39 39 0 0 1 90.6 56.9" fill="none"/>
+          <path d="M16.6 40.9 A58 58 0 0 1 104.6 40.9" fill="none"/>
+        </g>
+
+        <!-- Front Illuminated Face in Vibrant Red #FF3B30 -->
+        <g fill="#FF3B30" stroke="#FF3B30" stroke-linecap="round" stroke-width="9">
+          <circle cx="60" cy="88" r="8" stroke="none"/>
+          <path d="M44 72 A21 21 0 0 1 76 72" fill="none"/>
+          <path d="M30 56 A39 39 0 0 1 90 56" fill="none"/>
+          <path d="M16 40 A58 58 0 0 1 104 40" fill="none"/>
+        </g>
+      </g>
+
+      <!-- 2. Foreground 3D Diagonal Slash (Solid continuous isometric 3D pill extrusion) -->
+      <g>
+        <!-- 3D Extruded Depth Walls in Deep Crimson Red #A81414 -->
+        <g stroke="#A81414" stroke-linecap="round" stroke-width="14" fill="none">
+          <path d="M24 107 L102 29"/>
+          <path d="M23.4 106.1 L101.4 28.1"/>
+          <path d="M22.8 105.2 L100.8 27.2"/>
+          <path d="M22.2 104.3 L100.2 26.3"/>
+          <path d="M21.6 103.4 L99.6 25.4"/>
+          <path d="M21.0 102.5 L99.0 24.5"/>
+          <path d="M20.4 101.6 L98.4 23.6"/>
+          <path d="M19.8 100.7 L97.8 22.7"/>
+          <path d="M19.2 99.8 L97.2 21.8"/>
+          <path d="M18.6 98.9 L96.6 20.9"/>
+        </g>
+        <!-- Front Illuminated Face in Vibrant Red #FF3B30 -->
+        <path d="M18 98 L96 20" stroke="#FF3B30" stroke-linecap="round" stroke-width="14" fill="none"/>
+      </g>
+    </svg>
+    <h2 class="offline-title" data-i18n="offlineTitle">You're offline</h2>
+    <p class="offline-subtitle" data-i18n="offlineSubtitle">Check your internet connection and try again.</p>
+    <button id="offlineRetryBtn" class="offline-retry focusable" type="button" tabindex="0" data-i18n="retry">Retry</button>
+  </div>
+
+  <!-- FULL-PAGE SEARCH -->
+  <div id="searchPanel" class="search-panel full-search-page hidden" role="dialog" aria-modal="true" aria-label="Search">
+    <div class="search-header">
+      <button id="searchBackBtn" class="search-back-btn focusable" type="button" tabindex="0" title="Back" aria-label="Back">‹</button>
+      <div class="search-input-wrapper">
+        <svg class="search-input-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+        <input id="searchInput" class="search-input-field focusable" type="text" tabindex="0" data-i18n-placeholder="searchPlaceholder" placeholder="Search channels, movies, series...">
+        <button id="searchClearBtn" class="search-clear-btn hidden" type="button" tabindex="0" title="Clear">✕</button>
+      </div>
+      <button id="searchCloseBtn" class="search-close-btn focusable" type="button" tabindex="0" title="Close">✕</button>
     </div>
-    <input id="searchInput" class="focusable" type="text" tabindex="0" data-i18n-placeholder="searchPlaceholder" placeholder="Type a channel name">
-    <ul id="searchResults" class="search-results"></ul>
-    <div id="searchEmpty" class="search-empty hidden" data-i18n="searchNoResults">No channels found</div>
+
+    <!-- Filter chips for search -->
+    <div class="search-scope-tabs">
+      <button class="search-scope-chip active focusable" data-scope="all" type="button" tabindex="0">All</button>
+      <button class="search-scope-chip focusable" data-scope="live" type="button" tabindex="0">📺 Live TV</button>
+      <button class="search-scope-chip focusable" data-scope="vod" type="button" tabindex="0">🎬 Movies</button>
+      <button class="search-scope-chip focusable" data-scope="series" type="button" tabindex="0">🍿 Series</button>
+    </div>
+
+    <div class="search-results-container">
+      <ul id="searchResults" class="search-results-grid"></ul>
+      <div id="searchEmpty" class="search-empty hidden" data-i18n="searchNoResults">No results found</div>
+    </div>
   </div>
 
   <script src="tizen-platform.js"></script>

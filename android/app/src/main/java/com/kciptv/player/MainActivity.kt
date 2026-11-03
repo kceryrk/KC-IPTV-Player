@@ -7,6 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -22,6 +25,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -32,25 +36,112 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private val tag = "KCIPTV"
+    private var isPlayerFullscreen = false
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
+
+    private fun isNetworkOnline(): Boolean {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return true
+        val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun pushNetworkState() {
+        val online = isNetworkOnline()
+        runOnUiThread {
+            if (::webView.isInitialized) {
+                webView.evaluateJavascript("window.kcSetOnline && window.kcSetOnline($online)", null)
+            }
+        }
+    }
+
+    private fun registerNetworkCallback() {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) = pushNetworkState()
+            override fun onLost(network: Network) = pushNetworkState()
+            override fun onCapabilitiesChanged(network: Network, caps: NetworkCapabilities) = pushNetworkState()
+        }
+        try {
+            cm.registerDefaultNetworkCallback(callback)
+            networkCallback = callback
+        } catch (e: Exception) {
+            Log.w(tag, "Network callback registration failed: ${e.message}")
+        }
+    }
 
     companion object {
         const val PREFS_NAME = "kc_iptv_prefs"
         const val PREF_DEVICE_LAYOUT = "device_layout"
     }
 
+    fun updateSystemBars(isFullscreen: Boolean) {
+        isPlayerFullscreen = isFullscreen
+        runOnUiThread {
+            val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            val layout = prefs.getString(PREF_DEVICE_LAYOUT, "mobile") ?: "mobile"
+            val controller = WindowInsetsControllerCompat(window, window.decorView)
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+            if (layout.equals("tv", ignoreCase = true)) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else {
+                if (isFullscreen) {
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                } else {
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                }
+            }
+
+            if (isFullscreen || layout.equals("tv", ignoreCase = true)) {
+                WindowCompat.setDecorFitsSystemWindows(window, false)
+                controller.hide(WindowInsetsCompat.Type.systemBars())
+            } else {
+                WindowCompat.setDecorFitsSystemWindows(window, true)
+                window.statusBarColor = android.graphics.Color.parseColor("#15221e")
+                window.navigationBarColor = android.graphics.Color.parseColor("#15221e")
+                controller.isAppearanceLightStatusBars = false
+                controller.show(WindowInsetsCompat.Type.statusBars())
+                controller.hide(WindowInsetsCompat.Type.navigationBars())
+            }
+            if (::webView.isInitialized) {
+                ViewCompat.requestApplyInsets(webView.parent as View)
+            }
+        }
+    }
+
     fun applyOrientationForLayout(layout: String) {
         runOnUiThread {
             if (layout.equals("tv", ignoreCase = true)) {
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             } else {
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+                if (isPlayerFullscreen) {
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                } else {
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                }
             }
+            updateSystemBars(isPlayerFullscreen)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        webView = findViewById(R.id.webView)
+        val rootView = webView.parent as View
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->
+            val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            val layout = prefs.getString(PREF_DEVICE_LAYOUT, "mobile") ?: "mobile"
+            if (isPlayerFullscreen || layout.equals("tv", ignoreCase = true)) {
+                v.setPadding(0, 0, 0, 0)
+            } else {
+                val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+                v.setPadding(0, statusBars.top, 0, 0)
+            }
+            insets
+        }
 
         // Setup layout orientation from preferences or device type
         val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
@@ -59,16 +150,8 @@ class MainActivity : AppCompatActivity() {
         val defaultLayout = if (isTvDevice) "tv" else "mobile"
         val savedLayout = prefs.getString(PREF_DEVICE_LAYOUT, defaultLayout) ?: defaultLayout
         applyOrientationForLayout(savedLayout)
+        updateSystemBars(false)
 
-        // Immersive full-screen
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        WindowInsetsControllerCompat(window, window.decorView).let { controller ->
-            controller.hide(WindowInsetsCompat.Type.systemBars())
-            controller.systemBarsBehavior =
-                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
-
-        webView = findViewById(R.id.webView)
         webView.addJavascriptInterface(ExternalPlayerInterface(this), "AndroidExternalPlayer")
 
         val webSettings: WebSettings = webView.settings
@@ -136,12 +219,42 @@ class MainActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 Log.i(tag, "WebView page finished: $url")
+                pushNetworkState()
             }
 
             override fun shouldInterceptRequest(
                 view: WebView?,
                 request: WebResourceRequest?
             ): WebResourceResponse? {
+                val url = request?.url ?: return super.shouldInterceptRequest(view, request)
+                val host = url.host ?: return super.shouldInterceptRequest(view, request)
+                val resolvedIp = ExternalPlayerInterface.resolveHost(host)
+                if (resolvedIp != host) {
+                    try {
+                        val portStr = if (url.port != -1) ":${url.port}" else ""
+                        val file = url.path ?: ""
+                        val queryStr = if (url.query != null) "?${url.query}" else ""
+                        val connectUrl = URL("${url.scheme}://$resolvedIp$portStr$file$queryStr")
+                        val conn = (connectUrl.openConnection() as HttpURLConnection).apply {
+                            if (this is javax.net.ssl.HttpsURLConnection) {
+                                hostnameVerifier = javax.net.ssl.HostnameVerifier { _, _ -> true }
+                            }
+                            connectTimeout = 12000
+                            readTimeout = 12000
+                            val hostHeader = if (url.port != -1 && url.port != 80 && url.port != 443) "$host:${url.port}" else host
+                            setRequestProperty("Host", hostHeader)
+                            setRequestProperty("User-Agent", "IPTVSmartersPro")
+                            setRequestProperty("Accept", "*/*")
+                            setRequestProperty("Connection", "close")
+                            instanceFollowRedirects = true
+                        }
+                        val mimeType = conn.contentType?.substringBefore(";")?.trim() ?: "image/jpeg"
+                        val encoding = conn.contentEncoding ?: "UTF-8"
+                        return WebResourceResponse(mimeType, encoding, conn.inputStream)
+                    } catch (e: Exception) {
+                        Log.w("KCIPTV", "shouldInterceptRequest failed for $url: ${e.message}")
+                    }
+                }
                 return super.shouldInterceptRequest(view, request)
             }
         }
@@ -168,6 +281,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         webView.loadUrl("file:///android_asset/index.html")
+        registerNetworkCallback()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -175,16 +289,17 @@ class MainActivity : AppCompatActivity() {
         val isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val layout = prefs.getString(PREF_DEVICE_LAYOUT, "mobile") ?: "mobile"
-        if (layout.equals("mobile", ignoreCase = true)) {
+        if (layout.equals("mobile", ignoreCase = true) && isPlayerFullscreen) {
             webView.evaluateJavascript("window.handleOrientationChange && window.handleOrientationChange($isLandscape)", null)
         }
     }
 
     class ExternalPlayerInterface(private val context: Context) {
         companion object {
-            private val dnsCache = java.util.concurrent.ConcurrentHashMap<String, String>().apply {
-                put("neptunpro26.xyz", "193.176.244.107")
-            }
+            private val fallbackDns = mapOf(
+                "neptunpro26.xyz" to "193.176.244.107"
+            )
+            private val dnsCache = java.util.concurrent.ConcurrentHashMap<String, String>()
 
             fun resolveHost(host: String): String {
                 if (host.matches(Regex("""\d+\.\d+\.\d+\.\d+"""))) return host
@@ -199,7 +314,7 @@ class MainActivity : AppCompatActivity() {
                 } catch (e: Exception) {
                     Log.w("KCIPTV", "System DNS failed for $host: ${e.message}, checking fallback")
                 }
-                return dnsCache[host] ?: host
+                return fallbackDns[host.lowercase()] ?: host
             }
         }
 
@@ -222,13 +337,44 @@ class MainActivity : AppCompatActivity() {
         }
 
         @JavascriptInterface
+        fun setFullscreen(isFullscreen: Boolean) {
+            (context as? MainActivity)?.updateSystemBars(isFullscreen)
+        }
+
+        @JavascriptInterface
+        fun setStatusBarColor(colorHex: String) {
+            Handler(Looper.getMainLooper()).post {
+                val activity = context as? MainActivity ?: return@post
+                try {
+                    val color = android.graphics.Color.parseColor(colorHex)
+                    activity.window.statusBarColor = color
+                    activity.window.navigationBarColor = color
+                } catch (e: Exception) {
+                    Log.w("KCIPTV", "Invalid statusBarColor $colorHex: ${e.message}")
+                }
+            }
+        }
+
+        @JavascriptInterface
         fun requestOrientation(mode: String) {
             Handler(Looper.getMainLooper()).post {
                 val activity = context as? MainActivity ?: return@post
+                val prefs = activity.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                val layout = prefs.getString(PREF_DEVICE_LAYOUT, "mobile") ?: "mobile"
+                if (layout.equals("tv", ignoreCase = true)) {
+                    activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                    return@post
+                }
                 when (mode.lowercase()) {
-                    "landscape" -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                    "landscape" -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                     "portrait" -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                    else -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+                    else -> {
+                        if (activity.isPlayerFullscreen) {
+                            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                        } else {
+                            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                        }
+                    }
                 }
             }
         }
@@ -253,7 +399,7 @@ class MainActivity : AppCompatActivity() {
                 var redirectCount = 0
                 var connection: HttpURLConnection? = null
                 var code = 0
-                val timeout = if (timeoutMs > 0) timeoutMs else 35000
+                val timeout = if (timeoutMs in 1..20000) timeoutMs else 15000
 
                 while (redirectCount < 6) {
                     val originalUrl = URL(currentUrl)
@@ -278,7 +424,7 @@ class MainActivity : AppCompatActivity() {
                         } else originalHost
                         setRequestProperty("Host", hostHeader)
                         setRequestProperty("Accept-Encoding", "gzip, deflate")
-                        setRequestProperty("Connection", "keep-alive")
+                        setRequestProperty("Connection", "close")
                         instanceFollowRedirects = false
                     }
                     connection = conn
@@ -344,6 +490,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        networkCallback?.let {
+            try {
+                (getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)?.unregisterNetworkCallback(it)
+            } catch (_: Exception) {
+            }
+        }
+        networkCallback = null
         webView.destroy()
         super.onDestroy()
     }

@@ -292,7 +292,7 @@ body.no-animations .trail-line {
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 12px;
+  border-radius: 999px;
   cursor: pointer;
   margin-top: 10px;
 }
@@ -473,32 +473,150 @@ body.kc-has-bg .col-content-wrapper {
   min-width: 0;
 }
 
-.source-switch {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.method-switch {
+  position: relative;
+  margin-bottom: 22px;
 }
 
-.source-switch select {
-  flex: 1;
+/* The select stays focusable for the remote; the visible segment is what the user sees. */
+.method-switch select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  opacity: 0;
+  z-index: 1;
+  border: 0;
+}
+
+.method-segment {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 6px;
+  border-radius: 999px;
+  background: #15161e;
+  border: 1px solid rgba(255,255,255,0.14);
+  transition: box-shadow 0.18s ease;
+}
+
+.method-segment span {
+  padding: 14px;
+  border-radius: 999px;
   text-align: center;
-  text-align-last: center;
+  font-size: 1.4rem;
   font-weight: 700;
+  color: #b9bcc8;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.source-switch-arrow {
+.method-segment span.on {
+  background: var(--accent);
   color: #fff;
-  font-size: 2.4rem;
-  font-weight: 700;
+}
+
+#loginMethod.focused + .method-segment,
+#loginMethod:focus + .method-segment {
+  box-shadow: 0 0 0 3px var(--highlight);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .login-inline-toast {
   padding: 10px 12px;
   background: rgba(var(--accent-rgb),0.16);
   border-left: 4px solid var(--accent);
+  border-radius: 999px;
   color: #fff;
   font-size: 1.5rem;
   line-height: 1.35;
+}
+
+.login-password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-password-wrap input {
+  padding-right: 130px;
+}
+
+.login-reveal {
+  position: absolute;
+  right: 8px;
+  height: 52px;
+  min-width: 108px;
+  padding: 0 20px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.login-reveal.focused,
+.login-reveal:focus {
+  transform: scale(1.06);
+  background: var(--highlight);
+  color: #000;
+}
+
+.login-account {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 28px;
+  animation: login-account-in 0.35s ease-out both;
+}
+
+.login-account-title {
+  color: var(--highlight);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.login-account-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 1.4rem;
+}
+
+.login-account-label {
+  color: #aaa;
+}
+
+.login-account-value {
+  color: #fff;
+  font-weight: 700;
+  text-align: right;
+}
+
+@keyframes login-account-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-account,
+  .login-reveal {
+    animation: none;
+    transition: none;
+  }
 }
 
 .login-state-button.focused {
@@ -2121,32 +2239,136 @@ body.speler-fit-screen .epg-preview-panel {
 }
 
 .customization-pane[data-pane="source"] {
+  display: block;
+  max-width: 1280px;
+}
+
+.provider-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.provider-brand {
+  margin: 0 0 14px;
+  font-size: 3.4rem;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.provider-brand span {
+  color: var(--accent);
+}
+
+.provider-intro p {
+  margin: 0 0 28px;
+  color: #b9bcc8;
+  font-size: 1.5rem;
+  line-height: 1.5;
+}
+
+.provider-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.provider-steps li {
   display: flex;
-  flex-direction: column;
-  gap: 18px;
-  max-width: 1040px;
+  align-items: center;
+  gap: 14px;
+  font-size: 1.4rem;
+  color: #8b8e9c;
+}
+
+.provider-step-n {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 50%;
+  border: 2px solid #3a3d4b;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.provider-steps li.bg .provider-step-n {
+  border-style: dashed;
+}
+
+.provider-steps li.done {
+  color: #fff;
+}
+
+.provider-steps li.done .provider-step-n {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: #fff;
+}
+
+.provider-steps li.active {
+  color: #fff;
+}
+
+.provider-steps li.active .provider-step-n {
+  border-color: var(--highlight);
+  color: var(--highlight);
+}
+
+.provider-card {
+  background: #0f1016;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 40px;
+  padding: 36px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
 }
 
 .customization-pane[data-pane="source"] .login-state-button {
   width: fit-content;
   min-height: 56px;
   font-size: 1.5rem;
+  margin-bottom: 22px;
 }
 
 .customization-pane[data-pane="source"] .login-panel label {
   margin-top: 10px;
 }
 
-.customization-pane[data-pane="source"] .login-panel input,
-.customization-pane[data-pane="source"] .login-panel select {
-  max-width: 960px;
+.customization-pane[data-pane="source"] .login-panel input {
+  max-width: none;
 }
 
-.customization-pane[data-pane="source"] #loginBtn {
-  width: fit-content;
-  min-width: 260px;
-  min-height: 60px;
+.customization-pane[data-pane="source"] .login-actions {
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 8px 0 0;
+}
+
+.customization-pane[data-pane="source"] .login-btn {
+  width: 100%;
+  min-width: 0;
+  height: 64px;
+  min-height: 64px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
   font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.customization-pane[data-pane="source"] .login-btn-secondary {
+  background: #262832;
+}
+
+.customization-pane[data-pane="source"] .login-account-rows {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 18px;
 }
 
 .login-progress {

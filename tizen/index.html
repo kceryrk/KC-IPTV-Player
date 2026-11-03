@@ -60,10 +60,6 @@
           <button id="settingsBack" class="settings-item focusable" data-i18n="back" type="button" tabindex="0">Back</button>
           <h1 data-i18n="settings">Settings</h1>
         </header>
-        <div class="login-progress settings-progress hidden" role="status" aria-live="polite">
-          <div class="login-progress-track"><div class="login-progress-bar"></div></div>
-          <span class="login-progress-text"></span>
-        </div>
         <div class="customization-body">
           <nav class="customization-nav">
             <div class="customization-nav-list">
@@ -203,6 +199,18 @@
           </section>
           </div>
           <div class="customization-pane hidden" data-pane="source">
+            <div class="provider-layout">
+              <aside class="provider-intro">
+                <h1 class="provider-brand">KC <span>IPTV</span> Player</h1>
+                <p data-i18n="providerIntro">Sign in once. Your categories open right away, and the full channel list downloads in the background.</p>
+                <ol id="providerSteps" class="provider-steps">
+                  <li data-step="account"><span class="provider-step-n">1</span><span data-i18n="providerStepAccount">Checking account</span></li>
+                  <li data-step="categories"><span class="provider-step-n">2</span><span data-i18n="providerStepCategories">Loading movies and series</span></li>
+                  <li data-step="open"><span class="provider-step-n">3</span><span data-i18n="providerStepOpen">Opening the app</span></li>
+                  <li class="bg" data-step="playlist"><span class="provider-step-n">+</span><span data-i18n="providerStepPlaylist">Channel list (background)</span></li>
+                </ol>
+              </aside>
+            <div class="provider-card">
             <div id="loginStateButton" class="login-state-button focusable" data-state="failed" role="button" tabindex="0" aria-expanded="true" aria-controls="loginForm">
               <span class="login-state-dot" aria-hidden="true"></span>
               <span id="loginStatus" data-i18n="loginFailed">Login failed</span>
@@ -211,18 +219,20 @@
               <div class="login-panel-header">
                 <h2 data-i18n="providerLogin">Provider login</h2>
               </div>
-              <label for="loginMethod" data-i18n="loginMethod">Login method</label>
-              <div class="source-switch">
-                <span class="source-switch-arrow" aria-hidden="true">‹</span>
+              <label for="loginMethod" class="visually-hidden" data-i18n="loginMethod">Login method</label>
+              <div class="method-switch">
                 <select id="loginMethod" class="focusable" tabindex="0">
                   <option value="xtream">Xtream</option>
                   <option value="m3u">M3U</option>
                 </select>
-                <span class="source-switch-arrow" aria-hidden="true">›</span>
+                <div class="method-segment" aria-hidden="true">
+                  <span data-method="xtream">Xtream</span>
+                  <span data-method="m3u">M3U</span>
+                </div>
               </div>
               <div class="login-actions">
+                <button type="button" id="loginTestBtn" class="login-btn login-btn-secondary focusable" tabindex="0" data-i18n="testConnection">Test connection</button>
                 <button type="submit" id="loginBtn" class="login-btn focusable" data-i18n="login" tabindex="0">Sign in</button>
-                <button type="button" id="loginTestBtn" class="login-btn focusable hidden" tabindex="0">Test connection</button>
               </div>
               <div id="xtreamLoginFields" class="login-method-fields">
                 <label for="serverUrl" data-i18n="serverUrl">Server URL</label>
@@ -234,7 +244,10 @@
                   </div>
                   <div class="login-row-field">
                     <label for="password" data-i18n="password">Password</label>
-                    <input type="password" id="password" class="focusable" autocomplete="current-password" tabindex="0">
+                    <div class="login-password-wrap">
+                      <input type="password" id="password" class="focusable" autocomplete="current-password" tabindex="0">
+                      <button type="button" id="loginRevealBtn" class="login-reveal focusable" tabindex="0" data-i18n="showPassword" aria-label="Show password">Show</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -247,7 +260,13 @@
                 <input type="url" id="m3uUrl" class="focusable" autocomplete="url" tabindex="0">
               </div>
               <div id="loginErrorToast" class="login-inline-toast hidden" role="status" aria-live="polite"></div>
+              <div id="loginAccount" class="login-account hidden" aria-live="polite">
+                <div class="login-account-title" data-i18n="accountDetails">Account</div>
+                <div id="loginAccountRows" class="login-account-rows"></div>
+              </div>
             </form>
+            </div>
+            </div>
           </div>
         </div>
         </div>

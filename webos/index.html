@@ -61,10 +61,6 @@
           <button id="settingsBack" class="settings-item focusable" data-i18n="back" type="button" tabindex="0">Back</button>
           <h1 data-i18n="settings">Settings</h1>
         </header>
-        <div class="login-progress settings-progress hidden" role="status" aria-live="polite">
-          <div class="login-progress-track"><div class="login-progress-bar"></div></div>
-          <span class="login-progress-text"></span>
-        </div>
         <div class="customization-body">
           <nav class="customization-nav">
             <div class="customization-nav-list">
@@ -223,7 +219,7 @@
               </div>
               <div class="login-actions">
                 <button type="submit" id="loginBtn" class="login-btn focusable" data-i18n="login" tabindex="0">Sign in</button>
-                <button type="button" id="loginTestBtn" class="login-btn focusable hidden" tabindex="0">Test connection</button>
+                <button type="button" id="loginTestBtn" class="login-btn focusable" tabindex="0">Test connection</button>
               </div>
               <div id="xtreamLoginFields" class="login-method-fields">
                 <label for="serverUrl" data-i18n="serverUrl">Server URL</label>
@@ -235,7 +231,10 @@
                   </div>
                   <div class="login-row-field">
                     <label for="password" data-i18n="password">Password</label>
-                    <input type="password" id="password" class="focusable" autocomplete="current-password" tabindex="0">
+                    <div class="login-password-wrap">
+                      <input type="password" id="password" class="focusable" autocomplete="current-password" tabindex="0">
+                      <button type="button" id="loginRevealBtn" class="login-reveal focusable" tabindex="0" data-i18n="showPassword" aria-label="Show password">Show</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -248,6 +247,10 @@
                 <input type="url" id="m3uUrl" class="focusable" autocomplete="url" tabindex="0">
               </div>
               <div id="loginErrorToast" class="login-inline-toast hidden" role="status" aria-live="polite"></div>
+              <div id="loginAccount" class="login-account hidden" aria-live="polite">
+                <div class="login-account-title" data-i18n="accountDetails">Account</div>
+                <div id="loginAccountRows" class="login-account-rows"></div>
+              </div>
             </form>
           </div>
         </div>

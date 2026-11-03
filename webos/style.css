@@ -287,7 +287,7 @@ body.no-animations .trail-line {
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 12px;
+  border-radius: 999px;
   cursor: pointer;
   margin-top: 10px;
 }
@@ -491,9 +491,89 @@ body.kc-has-bg .col-content-wrapper {
   padding: 10px 12px;
   background: rgba(var(--accent-rgb),0.16);
   border-left: 4px solid var(--accent);
+  border-radius: 999px;
   color: #fff;
   font-size: 1.5rem;
   line-height: 1.35;
+}
+
+.login-password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-password-wrap input {
+  padding-right: 130px;
+}
+
+.login-reveal {
+  position: absolute;
+  right: 8px;
+  height: 52px;
+  min-width: 108px;
+  padding: 0 20px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.login-reveal.focused,
+.login-reveal:focus {
+  transform: scale(1.06);
+  background: var(--highlight);
+  color: #000;
+}
+
+.login-account {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 28px;
+  animation: login-account-in 0.35s ease-out both;
+}
+
+.login-account-title {
+  color: var(--highlight);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.login-account-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 1.4rem;
+}
+
+.login-account-label {
+  color: #aaa;
+}
+
+.login-account-value {
+  color: #fff;
+  font-weight: 700;
+  text-align: right;
+}
+
+@keyframes login-account-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-account,
+  .login-reveal {
+    animation: none;
+    transition: none;
+  }
 }
 
 .login-state-button.focused {
@@ -2140,15 +2220,6 @@ body.speler-fit-screen .epg-preview-panel {
   max-width: 960px;
 }
 
-.settings-progress {
-  flex-shrink: 0;
-  max-width: none;
-  padding: 14px 36px;
-  background: #08090d;
-  border-bottom: 1px solid rgba(255,255,255,0.16);
-}
-
-/* Main-screen copy: a slim strip above the hint bar, so it never shifts the layout */
 .app-progress {
   position: fixed;
   left: 0;

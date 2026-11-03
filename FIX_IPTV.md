@@ -25,6 +25,7 @@ This document records all critical bugs diagnosed, their underlying root causes,
    - [Bug T1: Remote Key Registration & Event Codes](#bug-t1-samsung-remote-key-registration)
    - [Bug T2: Picker List Centering & Translucent Panels](#bug-t2-picker-list-centering--translucent-panels)
    - [Bug T3: Signature & Build Packaging Failures](#bug-t3-unsigned-files-and-package-rejection)
+   - [Bug T4: Tizen Studio Install Failure (stale build files)](#bug-t4-tizen-studio-tizen-web-application-install-failed)
 4. [Security & Credentials Hygiene](#4-security--credentials-hygiene)
 
 ---
@@ -226,6 +227,17 @@ This document records all critical bugs diagnosed, their underlying root causes,
 * **Symptom:** `tizen package` produced "unsigned file" errors or failed validation during TV installation.
 * **Root Cause:** Leftover build metadata from Tizen Studio (`.buildResult/`, `.manifest.tmp`, old `author-signature.xml`) caused packaging collisions.
 * **Fix:** Excluded build artifacts and signatures from source packaging and added them to `.gitignore`.
+
+---
+
+### Bug T4: Tizen Studio "Tizen Web Application install failed"
+* **Symptom:** Studio's Run/Install fails with `Installing the package... > Fail` and `Tizen Web Application install failed. Please try again later.`. The Studio log (`~/workspace/.metadata/.log`) shows only this generic message.
+* **Root Cause:** Stale generated build output in `tizen/` (`.buildResult/`, `.manifest.tmp`, `KCIPTVPlayer.wgt`, `author-signature.xml`, `signature1.xml`) conflicts with the new build, and Studio can hold the old files as out of sync.
+* **Fix:**
+  1. Delete the generated files above from `tizen/`. They are gitignored and regenerated on the next build. Keep the source, `.sign/`, `.project`, `.tproject` and `config.xml`.
+  2. In Studio, right-click the project and choose **Refresh** (or close and reopen the project).
+  3. Run the install from Studio again.
+* **Also check:** The project platform in `tizen/.tproject` must match the TV's platform (for example `tv-samsung-6.0` for a platform 6.0 TV).
 
 ---
 

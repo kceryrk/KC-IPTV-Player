@@ -146,13 +146,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     return text;
   }
-  Object.assign(appTranslations.en, {"hintFavorite": "Favorite", "hintReorder": "Reorder", "hintHide": "Hide category", "hintSearch": "Search", "searchTitle": "Search channels", "searchPlaceholder": "Type a channel name", "searchNoResults": "No channels found", "categoryHidden": "Category hidden", "resetHidden": "Show hidden categories", "hiddenReset": "Hidden categories restored", "refreshInterval": "Refresh lists", "refreshOff": "Off", uiScale: "Interface scale", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Large", menuStyle: "Menu display mode", menuOneAtATime: "One menu open at a time", menuAllVisible: "Multi-column cascading", materialTheme: "Material You palette", androidExternalPlayer: "Use Android external player", emptyFavorites: "No favorites added yet", deviceLayout: "Device layout", layoutMobile: "Mobile (Portrait)", layoutTv: "TV (Landscape)"});
-  Object.assign(appTranslations.tr, {"hintFavorite": "Favori", "hintReorder": "Sırala", "hintHide": "Kategoriyi gizle", "hintSearch": "Ara", "searchTitle": "Kanal ara", "searchPlaceholder": "Kanal adını yazın", "searchNoResults": "Kanal bulunamadı", "categoryHidden": "Kategori gizlendi", "resetHidden": "Gizli kategorileri göster", "hiddenReset": "Gizli kategoriler geri yüklendi", "refreshInterval": "Listeleri yenile", "refreshOff": "Kapalı", uiScale: "Arayüz boyutu", uiScaleCompact: "Küçük", uiScaleDefault: "Normal", uiScaleLarge: "Büyük", menuStyle: "Menü görünüm modu", menuOneAtATime: "Tek menü açık", menuAllVisible: "Çoklu sütun", materialTheme: "Material You paleti", androidExternalPlayer: "Harici oynatıcı kullan", emptyFavorites: "Henüz favori eklenmedi", deviceLayout: "Cihaz düzeni", layoutMobile: "Mobil (Dikey)", layoutTv: "TV (Yatay)"});
-  Object.assign(appTranslations.nl, {"hintFavorite": "Favoriet", "hintReorder": "Verplaatsen", "hintHide": "Categorie verbergen", "hintSearch": "Zoeken", "searchTitle": "Zoek kanalen", "searchPlaceholder": "Typ een kanaalnaam", "searchNoResults": "Geen kanalen gevonden", "categoryHidden": "Categorie verborgen", "resetHidden": "Verborgen categorieën tonen", "hiddenReset": "Verborgen categorieën hersteld", "refreshInterval": "Lijsten vernieuwen", "refreshOff": "Uit", uiScale: "Interface-schaal", uiScaleCompact: "Compact", uiScaleDefault: "Normaal", uiScaleLarge: "Groot", menuStyle: "Menuweergave", menuOneAtATime: "Eén menu tegelijk open", menuAllVisible: "Meerdere kolommen", materialTheme: "Material You-palet", androidExternalPlayer: "Externe speler gebruiken", emptyFavorites: "Nog geen favorieten toegevoegd", deviceLayout: "Apparaatindeling", layoutMobile: "Mobiel (Staand)", layoutTv: "TV (Liggend)"});
-  Object.assign(appTranslations.fr, {"hintFavorite": "Favori", "hintReorder": "Déplacer", "hintHide": "Masquer la catégorie", "hintSearch": "Rechercher", "searchTitle": "Rechercher des chaînes", "searchPlaceholder": "Saisissez un nom de chaîne", "searchNoResults": "Aucune chaîne trouvée", "categoryHidden": "Catégorie masquée", "resetHidden": "Afficher les catégories masquées", "hiddenReset": "Catégories masquées restaurées", "refreshInterval": "Actualiser les listes", "refreshOff": "Désactivé", uiScale: "Échelle de l'interface", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Grand", menuStyle: "Mode d'affichage du menu", menuOneAtATime: "Un seul menu ouvert à la fois", menuAllVisible: "Colonnes multiples", materialTheme: "Palette Material You", androidExternalPlayer: "Utiliser le lecteur externe", emptyFavorites: "Aucun favori ajouté pour l'instant", deviceLayout: "Disposition", layoutMobile: "Mobile (Portrait)", layoutTv: "TV (Paysage)"});
+  Object.assign(appTranslations.en, {"hintFavorite": "Favorite", "hintReorder": "Reorder", "hintHide": "Hide category", "hintSearch": "Search", "searchTitle": "Search channels", "searchPlaceholder": "Type a channel name", "searchNoResults": "No channels found", "categoryHidden": "Category hidden", "resetHidden": "Show hidden categories", "hiddenReset": "Hidden categories restored", "refreshInterval": "Refresh lists", "refreshOff": "Off", uiScale: "Interface scale", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Large", menuStyle: "Menu display mode", menuOneAtATime: "One menu open at a time", menuAllVisible: "Multi-column cascading", materialTheme: "Material You palette", androidExternalPlayer: "Use Android external player", emptyFavorites: "No favorites added yet", deviceLayout: "Device layout", layoutMobile: "Mobile (Portrait)", layoutTv: "TV (Landscape)", navHome: "Home", navSearch: "Search", navLiveTv: "Live TV", navProfile: "Profile", copyPlaylist: "Copy playlist URL", regionSetting: "Region", allRegions: "All regions"});
+  Object.assign(appTranslations.tr, {"hintFavorite": "Favori", "hintReorder": "Sırala", "hintHide": "Kategoriyi gizle", "hintSearch": "Ara", "searchTitle": "Kanal ara", "searchPlaceholder": "Kanal adını yazın", "searchNoResults": "Kanal bulunamadı", "categoryHidden": "Kategori gizlendi", "resetHidden": "Gizli kategorileri göster", "hiddenReset": "Gizli kategoriler geri yüklendi", "refreshInterval": "Listeleri yenile", "refreshOff": "Kapalı", uiScale: "Arayüz boyutu", uiScaleCompact: "Küçük", uiScaleDefault: "Normal", uiScaleLarge: "Büyük", menuStyle: "Menü görünüm modu", menuOneAtATime: "Tek menü açık", menuAllVisible: "Çoklu sütun", materialTheme: "Material You paleti", androidExternalPlayer: "Harici oynatıcı kullan", emptyFavorites: "Henüz favori eklenmedi", deviceLayout: "Cihaz düzeni", layoutMobile: "Mobil (Dikey)", layoutTv: "TV (Yatay)", navHome: "Ana Sayfa", navSearch: "Ara", navLiveTv: "Canlı TV", navProfile: "Profil", copyPlaylist: "Oynatma listesini kopyala", regionSetting: "Bölge", allRegions: "Tüm bölgeler"});
+  Object.assign(appTranslations.nl, {"hintFavorite": "Favoriet", "hintReorder": "Verplaatsen", "hintHide": "Categorie verbergen", "hintSearch": "Zoeken", "searchTitle": "Zoek kanalen", "searchPlaceholder": "Typ een kanaalnaam", "searchNoResults": "Geen kanalen gevonden", "categoryHidden": "Categorie verborgen", "resetHidden": "Verborgen categorieën tonen", "hiddenReset": "Verborgen categorieën hersteld", "refreshInterval": "Lijsten vernieuwen", "refreshOff": "Uit", uiScale: "Interface-schaal", uiScaleCompact: "Compact", uiScaleDefault: "Normaal", uiScaleLarge: "Groot", menuStyle: "Menuweergave", menuOneAtATime: "Eén menu tegelijk open", menuAllVisible: "Meerdere kolommen", materialTheme: "Material You-palet", androidExternalPlayer: "Externe speler gebruiken", emptyFavorites: "Nog geen favorieten toegevoegd", deviceLayout: "Apparaatindeling", layoutMobile: "Mobiel (Staand)", layoutTv: "TV (Liggend)", navHome: "Start", navSearch: "Zoeken", navLiveTv: "Live TV", navProfile: "Profiel", copyPlaylist: "Afspeellijst kopiëren", regionSetting: "Regio", allRegions: "Alle regio's"});
+  Object.assign(appTranslations.fr, {"hintFavorite": "Favori", "hintReorder": "Déplacer", "hintHide": "Masquer la catégorie", "hintSearch": "Rechercher", "searchTitle": "Rechercher des chaînes", "searchPlaceholder": "Saisissez un nom de chaîne", "searchNoResults": "Aucune chaîne trouvée", "categoryHidden": "Catégorie masquée", "resetHidden": "Afficher les catégories masquées", "hiddenReset": "Catégories masquées restaurées", "refreshInterval": "Actualiser les listes", "refreshOff": "Désactivé", uiScale: "Échelle de l'interface", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Grand", menuStyle: "Mode d'affichage du menu", menuOneAtATime: "Un seul menu ouvert à la fois", menuAllVisible: "Colonnes multiples", materialTheme: "Palette Material You", androidExternalPlayer: "Utiliser le lecteur externe", emptyFavorites: "Aucun favori ajouté pour l'instant", deviceLayout: "Disposition", layoutMobile: "Mobile (Portrait)", layoutTv: "TV (Paysage)", navHome: "Accueil", navSearch: "Recherche", navLiveTv: "Direct", navProfile: "Profil", copyPlaylist: "Copier l'URL de la playlist", regionSetting: "Région", allRegions: "Toutes les régions"});
+  Object.assign(appTranslations.en, { offlineTitle: "You're offline", offlineSubtitle: "Check your internet connection and try again.", retry: "Retry", backOnline: "Back online" });
+  Object.assign(appTranslations.tr, { offlineTitle: "Çevrimdışısınız", offlineSubtitle: "İnternet bağlantınızı kontrol edip tekrar deneyin.", retry: "Tekrar dene", backOnline: "Tekrar çevrimiçi" });
+  Object.assign(appTranslations.nl, { offlineTitle: "Je bent offline", offlineSubtitle: "Controleer je internetverbinding en probeer het opnieuw.", retry: "Opnieuw", backOnline: "Weer online" });
+  Object.assign(appTranslations.fr, { offlineTitle: "Vous êtes hors ligne", offlineSubtitle: "Vérifiez votre connexion Internet et réessayez.", retry: "Réessayer", backOnline: "De nouveau en ligne" });
   let singleMenuMode = store.getItem("iptv_single_menu") !== "false";
   let uiScale = store.getItem("iptv_ui_scale") || "default";
   let materialPalette = store.getItem("iptv_palette") || "dynamic-blue";
+  let mobileActiveSection = "home";
+  let appSelectedRegion = store.getItem("iptv_app_region") || "ALL";
+  var homeFeaturedItem = null;
+  var homeFeaturedCycleTimer = null;
+  var isFetchingHomeShelves = false;
+  var currentViewAllType = "vod";
+  var currentViewAllCatId = "all";
   let deviceLayout = store.getItem("iptv_device_layout");
   if (!deviceLayout) {
     if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.getDeviceLayout === "function") {
@@ -163,11 +174,190 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   if (!deviceLayout) deviceLayout = "mobile";
 
+  const NON_REGION_WORDS = new Set([
+    "VIP", "HEVC", "FHD", "UHD", "4K", "SD", "HD", "KINO", "FILM", "SERIES", "MOVIES",
+    "VOD", "LIVE", "CINEMA", "TV", "NEW", "TOP", "ALL", "XXX", "ADULT", "FOR", "AND", "THE"
+  ]);
+
+  const REGION_SYNONYMS = {
+    "TUR": "TR", "TURK": "TR", "TURKEY": "TR", "TURKIYE": "TR",
+    "DEU": "DE", "GER": "DE", "GERMANY": "DE",
+    "NLD": "NL", "NED": "NL", "NETHERLANDS": "NL",
+    "BEL": "BE", "BELGIUM": "BE",
+    "FRA": "FR", "FRANCE": "FR",
+    "ENG": "EN", "GBR": "UK",
+    "USA": "US",
+    "POL": "PL", "POLAND": "PL",
+    "ESP": "ES", "SPAIN": "ES",
+    "ITA": "IT", "ITALY": "IT",
+    "RUS": "RU", "RUSSIA": "RU"
+  };
+
+  function normalizeRegionCode(code) {
+    if (!code) return "";
+    let r = String(code).trim().toUpperCase();
+    r = r.replace(/^[^A-Z]+/, "");
+    if (/^VI[-_]?([A-Z]{2,})/i.test(r)) {
+      r = r.replace(/^VI[-_]?/i, "");
+    }
+    let clean = r.replace(/[^A-Z]/g, "");
+    // User instruction: "remove v and s if its the first letter and if its more or same than 3 letters"
+    if (clean.length >= 3 && (clean.startsWith("V") || clean.startsWith("S"))) {
+      clean = clean.substring(1);
+    }
+    if (REGION_SYNONYMS[clean]) {
+      clean = REGION_SYNONYMS[clean];
+    }
+    return clean;
+  }
+
+  function extractRegionFromCategory(catName, isVod) {
+    if (!catName) return "";
+    const str = String(catName).trim();
+
+    // 1. Check parenthesized or bracketed codes like (VTR), [VTR], [STR], (TR), [TR]
+    const bracketMatches = str.matchAll(/[([]([A-Za-z0-9_ -]{2,10})[)\]]/g);
+    for (const match of bracketMatches) {
+      const norm = normalizeRegionCode(match[1]);
+      if (norm.length >= 2 && norm.length <= 6 && !NON_REGION_WORDS.has(norm)) {
+        return norm;
+      }
+    }
+
+    // 2. Check prefix before delimiter: "VTR | ...", "STR: ...", "VTR - ...", "VTR / ..."
+    const prefixMatch = str.match(/^([A-Za-z0-9_-]{2,10})\s*[|:_\-\/]/);
+    if (prefixMatch) {
+      const norm = normalizeRegionCode(prefixMatch[1]);
+      if (norm.length >= 2 && norm.length <= 6 && !NON_REGION_WORDS.has(norm)) {
+        return norm;
+      }
+    }
+
+    // 3. Check tokens separated by space, pipe, dash, colon, underscore, slash, parenthesis, brackets
+    const tokens = str.split(/[\s|:_\-\/()\[\]]+/).filter(Boolean);
+    for (let token of tokens) {
+      const upper = token.toUpperCase();
+      if (NON_REGION_WORDS.has(upper)) continue;
+      const norm = normalizeRegionCode(token);
+      if (norm.length >= 2 && norm.length <= 6 && !NON_REGION_WORDS.has(norm)) {
+        return norm;
+      }
+    }
+
+    return "";
+  }
+
+  function isCategoryInRegion(cat, isVod, region) {
+    if (!region || region === "ALL") return true;
+    if (!cat || !cat.category_name) return false;
+    const r = extractRegionFromCategory(cat.category_name, isVod);
+    if (r && (r === region || normalizeRegionCode(r) === region)) return true;
+
+    // Direct token check with normalization
+    const tokens = String(cat.category_name).split(/[\s|:_\-\/()\[\]]+/).filter(Boolean);
+    for (let t of tokens) {
+      const norm = normalizeRegionCode(t);
+      if (norm === region) return true;
+    }
+    return false;
+  }
+
+  function isStreamInRegion(stream, kind, region) {
+    if (!region || region === "ALL") return true;
+    if (!stream) return false;
+    const catList = kind === "series" ? seriesCategories : (kind === "vod" ? vodCategories : allCategories);
+    const cat = (catList || []).find(c => String(c.category_id) === String(stream.category_id));
+    if (cat) return isCategoryInRegion(cat, kind !== "live", region);
+    return false;
+  }
+
+  function getAllAvailableRegions() {
+    const regions = new Set(["ALL"]);
+    const topRegions = ["TR", "NL", "DE", "FR", "EN", "EXYU", "US", "IT", "ES", "AR"];
+    [vodCategories, seriesCategories, allCategories].forEach(list => {
+      if (Array.isArray(list)) {
+        list.forEach(cat => {
+          const r = extractRegionFromCategory(cat.category_name, true) || extractRegionFromCategory(cat.category_name, false);
+          if (r && r.length >= 2 && r.length <= 6) regions.add(r);
+        });
+      }
+    });
+    const found = Array.from(regions);
+    return ["ALL"].concat(
+      topRegions.filter(r => regions.has(r)),
+      found.filter(r => r !== "ALL" && !topRegions.includes(r)).sort()
+    );
+  }
+
+  function renderSettingsRegions() {
+    const container = document.getElementById("settingsRegionList");
+    if (!container) return;
+    container.innerHTML = "";
+    const available = getAllAvailableRegions();
+    available.forEach(reg => {
+      const btn = document.createElement("button");
+      btn.className = "settings-item focusable" + (reg === appSelectedRegion ? " active" : "");
+      btn.dataset.setting = "appRegion";
+      btn.dataset.value = reg;
+      btn.type = "button";
+      btn.tabIndex = 0;
+      btn.textContent = reg === "ALL" ? t("allRegions") : reg;
+      container.appendChild(btn);
+    });
+  }
+
+  function setAppRegion(reg) {
+    appSelectedRegion = reg || "ALL";
+    store.setItem("iptv_app_region", appSelectedRegion);
+    currentVodRegion = appSelectedRegion;
+    currentLiveRegion = appSelectedRegion;
+    homeFeaturedItem = null;
+    updateSettingsSelection();
+    renderSettingsRegions();
+    setupRegions();
+    filterCategories();
+    renderMobileHomeScreen();
+    initMobileHomeScreen();
+  }
+
+  function updateHeaderBackButton() {
+    const btn = document.getElementById("headerBackBtn");
+    if (!btn) return;
+    if (deviceLayout === "mobile") {
+      const homeViewAll = document.getElementById("homeViewAllPage");
+      const viewAllOpen = homeViewAll && !homeViewAll.classList.contains("hidden");
+      const searchOpen = searchPanel && !searchPanel.classList.contains("hidden");
+      const settingsOpen = settingsPage && !settingsPage.classList.contains("hidden");
+      const customOpen = customizationPage && !customizationPage.classList.contains("hidden");
+      const hasPlayer = isFitScreen || (currentPlayingStreamId && playerWrapper && !playerWrapper.classList.contains("hidden"));
+      const hasSeries = !!selectedSeries;
+
+      const canGoBack = viewAllOpen || searchOpen || settingsOpen || customOpen || hasPlayer || hasSeries;
+      btn.classList.toggle("hidden", !canGoBack);
+    } else {
+      btn.classList.remove("hidden");
+    }
+  }
+
+  function syncMobileNavState(activeTab) {
+    if (activeTab) mobileActiveSection = activeTab;
+    document.body.classList.remove("mobile-sec-home", "mobile-sec-live", "mobile-sec-search", "mobile-sec-profile");
+    document.body.classList.add(`mobile-sec-${mobileActiveSection}`);
+    document.querySelectorAll("#mobileBottomNav .mobile-nav-item").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.mobileTab === mobileActiveSection);
+    });
+    if (mobileActiveSection === "home" && typeof renderMobileHomeScreen === "function") {
+      renderMobileHomeScreen();
+    }
+    updateHeaderBackButton();
+  }
+
   function applyDeviceLayout(layout, notifyNative = true) {
     deviceLayout = layout || "mobile";
     store.setItem("iptv_device_layout", deviceLayout);
     document.body.classList.remove("layout-mobile", "layout-tv");
     document.body.classList.add(deviceLayout === "tv" ? "layout-tv" : "layout-mobile");
+    syncMobileNavState(mobileActiveSection);
 
     if (notifyNative && window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setDeviceLayout === "function") {
       window.AndroidExternalPlayer.setDeviceLayout(deviceLayout);
@@ -287,6 +477,7 @@ document.addEventListener("DOMContentLoaded", () => {
       themeConfig.highlight = pal.highlight;
       applyThemeConfig();
     }
+    syncStatusBarColor();
     updateSettingsSelection();
   }
   let autoplayNext = store.getItem("iptv_autoplay_next") === "true";
@@ -386,8 +577,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let favorites = loadFavorites();
   let currentModus = "favorites";
 
-  let currentLiveRegion = "TR";
-  let currentVodRegion = "TR";
+  let currentLiveRegion = appSelectedRegion !== "ALL" ? appSelectedRegion : "TR";
+  let currentVodRegion = appSelectedRegion !== "ALL" ? appSelectedRegion : "TR";
 
   let currentCategoryId = null;
   let currentStreamIndex = 0;
@@ -473,12 +664,20 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.remove("speler-fit-screen");
       }
       settingsPage.classList.remove("hidden");
+      if (deviceLayout === "mobile") {
+        syncMobileNavState("profile");
+      }
       showSettingsTab("general");
+      renderSettingsRegions();
       setElementFocus(settingsPage.querySelector(".customization-tab"));
     } else {
       settingsPage.classList.add("hidden");
+      if (deviceLayout === "mobile" && mobileActiveSection === "profile") {
+        syncMobileNavState((currentModus === "vod" || currentModus === "series") ? "home" : "live");
+      }
       setElementFocus(settingsButton);
     }
+    updateHeaderBackButton();
   }
 
   function nextLanguage(lang) {
@@ -496,6 +695,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateSettingsSelection() {
     if (!settingsPage) return;
+    renderSettingsRegions();
     settingsPage.querySelectorAll(".settings-item[data-setting='language']").forEach(btn => {
       btn.classList.toggle("active", btn.dataset.value === currentLang);
     });
@@ -583,6 +783,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let themeConfig = loadThemeConfig();
 
+  function syncStatusBarColor() {
+    if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setStatusBarColor === "function") {
+      setTimeout(() => {
+        const header = document.querySelector(".app-header");
+        if (header) {
+          const bg = window.getComputedStyle(header).backgroundColor;
+          const match = bg.match(/\d+/g);
+          if (match && match.length >= 3) {
+            const hex = "#" + match.slice(0, 3).map(n => parseInt(n, 10).toString(16).padStart(2, "0")).join("");
+            window.AndroidExternalPlayer.setStatusBarColor(hex);
+          }
+        }
+      }, 50);
+    }
+  }
+
   function applyThemeConfig() {
     const root = document.documentElement;
     const toRgb = color => color.match(/[0-9a-f]{2}/gi).map(value => parseInt(value, 16)).join(", ");
@@ -614,6 +830,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     store.setItem("iptv_theme", JSON.stringify(themeConfig));
+    syncStatusBarColor();
   }
 
   function updateThemeColor(role, color) {
@@ -673,10 +890,16 @@ document.addEventListener("DOMContentLoaded", () => {
         setElementFocus(settingsButton);
       }
     }
+    updateHeaderBackButton();
   }
 
   function handleSettingsAction(action, value = null) {
     switch (action) {
+      case "appRegion": {
+        setAppRegion(value);
+        showToast(`${t("regionSetting") || "Region"}: ${value === "ALL" ? t("allRegions") : value}`);
+        return;
+      }
       case "language": {
         const next = appTranslations[value] ? value : nextLanguage(currentLang);
         applyAppLanguage(next);
@@ -760,20 +983,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!str) return "";
     const kept = keep || [];
     const tags = TITLE_TAGS.filter((tag) => kept.indexOf(tag) === -1);
-    let text = str.replace(/\([^)]*\)/g, "").replace(/^[A-Z0-9]{2,5}\s*:\s*/i, "");
+    let text = str
+      .replace(/\([^)]*\)/g, "")
+      .replace(/^([A-Za-z0-9]{2,6})\s*[|:_\-]\s*/i, "")
+      .replace(/^[A-Z0-9]{2,5}\s*:\s*/i, "");
     if (tags.length) text = text.replace(new RegExp("\\b(" + tags.join("|") + ")\\b", "gi"), "");
     return text.replace(/\s{2,}/g, " ").trim();
-  }
-
-  function extractRegionFromCategory(catName, isVod) {
-    if (!catName) return "";
-    if (isVod) {
-      const match = catName.match(/\(VI([A-Z0-9-]+)[|)]/i);
-      if (match && match[1]) return match[1].replace("-", "").toUpperCase();
-    }
-    const prefix = catName.split(" ")[0].replace(/[^a-zA-Z]/g, "").toUpperCase();
-    if (prefix.length >= 2 && prefix.length <= 5) return prefix;
-    return "";
   }
 
   let clock24h = store.getItem("iptv_clock_24h") === "1";
@@ -906,6 +1121,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initProfile() {
     showAppPage();
+    if (deviceLayout === "mobile") {
+      syncMobileNavState("home");
+      initMobileHomeScreen();
+    }
     restoreLoginDraft();
     renderM3uProfileOptions();
     let liveProfile = null;
@@ -946,7 +1165,7 @@ document.addEventListener("DOMContentLoaded", () => {
         currentLiveRegion = "ALL";
         setLoginState("logging");
         switchModus("favorites");
-        if (currentActiveStreams.length > 0) {
+        if (currentActiveStreams.length > 0 && deviceLayout !== "mobile") {
           const first = currentActiveStreams[0];
           playStream(first.stream_id, first.name, first.stream_icon, 0, first.url);
           activeerFitScreen();
@@ -1001,6 +1220,14 @@ document.addEventListener("DOMContentLoaded", () => {
       allCategories = Array.isArray(liveCats) ? liveCats : [];
       vodCategories = Array.isArray(vodCats) ? vodCats : [];
       seriesCategories = Array.isArray(seriesCats) ? seriesCats : [];
+      try {
+        store.setItem("iptv_xtream_cats_cache", JSON.stringify({
+          account,
+          allCategories,
+          vodCategories,
+          seriesCategories
+        }));
+      } catch (e) {}
       vodStreams = [];
       seriesStreams = [];
       Object.keys(loadedCategories).forEach((key) => { delete loadedCategories[key]; });
@@ -1018,12 +1245,43 @@ document.addEventListener("DOMContentLoaded", () => {
         showAppPage();
         showToast(t("loggedIn"));
         setupRegions();
-        switchModus(favorites.length ? "favorites" : "live");
+        if (deviceLayout === "mobile") {
+          syncMobileNavState("home");
+          initMobileHomeScreen();
+        } else {
+          switchModus(favorites.length ? "favorites" : "live");
+        }
       }
     } catch (error) {
-      setLoginState(currentAuth ? "logged-in" : "failed");
-      showLoginError(error.message || t("playlistUnavailable"));
-      toggleLoginPanel(true);
+      let restoredFromCache = false;
+      try {
+        const cached = JSON.parse(store.getItem("iptv_xtream_cats_cache") || "null");
+        if (cached && Array.isArray(cached.allCategories) && cached.allCategories.length > 0 && server && username && password) {
+          if (cached.account) displayAccountInfo(cached.account);
+          allCategories = cached.allCategories || [];
+          vodCategories = cached.vodCategories || [];
+          seriesCategories = cached.seriesCategories || [];
+          xtreamAuth = { server, username, password };
+          currentAuth = { provider: "xtream", server, username, password };
+          setFavoritesProvider("xtream");
+          allStreams = loadFavoriteCache();
+          setLoginState("logged-in");
+          showAppPage();
+          setupRegions();
+          if (deviceLayout === "mobile") {
+            syncMobileNavState("home");
+            initMobileHomeScreen();
+          } else {
+            switchModus(favorites.length ? "favorites" : "live");
+          }
+          restoredFromCache = true;
+        }
+      } catch (e) {}
+      if (!restoredFromCache) {
+        setLoginState(currentAuth ? "logged-in" : "failed");
+        showLoginError(error.message || t("playlistUnavailable"));
+        toggleLoginPanel(true);
+      }
     } finally {
       if (loginBtn) loginBtn.disabled = false;
     }
@@ -1116,6 +1374,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.handleAppBack = function() {
+    const homeViewAll = document.getElementById("homeViewAllPage");
+    if (homeViewAll && !homeViewAll.classList.contains("hidden")) {
+      if (typeof closeHomeViewAll === "function") closeHomeViewAll();
+      else homeViewAll.classList.add("hidden");
+      return "true";
+    }
     if (customizationPage && !customizationPage.classList.contains("hidden")) {
       showCustomizationPage(false);
       return "true";
@@ -1582,6 +1846,9 @@ document.addEventListener("DOMContentLoaded", () => {
             seriesStreams = seriesStreams.concat(list);
           }
           loadedCategories[key] = true;
+          if (deviceLayout === "mobile" && mobileActiveSection === "home" && typeof renderMobileHomeScreen === "function") {
+            renderMobileHomeScreen();
+          }
           return true;
         }
         return false;
@@ -1692,7 +1959,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showAppPage();
       switchModus(startMode);
 
-      if (currentActiveStreams.length > 0) {
+      if (currentActiveStreams.length > 0 && deviceLayout !== "mobile") {
         const firstStream = currentActiveStreams[0];
         playStream(firstStream.stream_id, firstStream.name, firstStream.stream_icon, 0, firstStream.url);
         activeerFitScreen();
@@ -1709,6 +1976,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function activeerFitScreen() {
     isFitScreen = true;
     document.body.classList.add("speler-fit-screen");
+    if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setFullscreen === "function") {
+      window.AndroidExternalPlayer.setFullscreen(true);
+    }
+    if (deviceLayout === "mobile") {
+      if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.requestOrientation === "function") {
+        window.AndroidExternalPlayer.requestOrientation("landscape");
+      }
+    }
     if (currentModus === "live" || currentModus === "favorites") {
       showLiveOSD();
     } else if (currentModus === "vod" || currentModus === "series") {
@@ -1719,9 +1994,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function deactiveerFitScreen() {
     isFitScreen = false;
     document.body.classList.remove("speler-fit-screen");
+    if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setFullscreen === "function") {
+      window.AndroidExternalPlayer.setFullscreen(false);
+    }
     if (deviceLayout === "mobile") {
       if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.requestOrientation === "function") {
-        window.AndroidExternalPlayer.requestOrientation("user");
+        window.AndroidExternalPlayer.requestOrientation("portrait");
       }
     }
     if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
@@ -1779,9 +2057,16 @@ document.addEventListener("DOMContentLoaded", () => {
   function setupRegions(keepCategories) {
     if (!regionList) return;
     const isVod = (currentModus === "vod" || currentModus === "series");
-    const categoriesToUse = currentModus === "series"
+    let categoriesToUse = currentModus === "series"
       ? (seriesCategories.length ? seriesCategories : vodCategories)
       : (isVod ? vodCategories : allCategories);
+
+    if (appSelectedRegion !== "ALL") {
+      const regionFiltered = categoriesToUse.filter(c => isCategoryInRegion(c, isVod, appSelectedRegion));
+      if (regionFiltered.length > 0) {
+        categoriesToUse = regionFiltered;
+      }
+    }
 
     const regions = new Set();
     categoriesToUse.forEach(cat => {
@@ -1790,7 +2075,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     let currentActiveRegion = isVod ? currentVodRegion : currentLiveRegion;
-    if (currentActiveRegion !== "ALL" && !regions.has(currentActiveRegion)) {
+    if (appSelectedRegion !== "ALL") {
+      currentActiveRegion = appSelectedRegion;
+      if (isVod) currentVodRegion = currentActiveRegion;
+      else currentLiveRegion = currentActiveRegion;
+    } else if (currentActiveRegion !== "ALL" && !regions.has(currentActiveRegion)) {
       currentActiveRegion = "ALL";
       if (isVod) currentVodRegion = currentActiveRegion;
       else currentLiveRegion = currentActiveRegion;
@@ -1940,54 +2229,129 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let searchHits = [];
   let searchTimer = null;
+  let searchScope = "all";
+  const searchBackBtn = document.getElementById("searchBackBtn");
+  const searchClearBtn = document.getElementById("searchClearBtn");
 
   function openSearch() {
     if (!searchPanel) return;
     searchPanel.classList.remove("hidden");
-    searchInput.value = "";
+    if (searchInput) {
+      searchInput.value = "";
+      if (searchClearBtn) searchClearBtn.classList.add("hidden");
+      setElementFocus(searchInput);
+    }
     renderSearchResults();
-    setElementFocus(searchInput);
+    updateHeaderBackButton();
   }
 
   function closeSearch() {
     if (!searchPanel) return;
     searchPanel.classList.add("hidden");
-    searchInput.blur();
+    if (searchInput) searchInput.blur();
+    if (deviceLayout === "mobile" && mobileActiveSection === "search") {
+      syncMobileNavState((currentModus === "vod" || currentModus === "series") ? "home" : "live");
+    }
     const card = channelList.querySelector(".channel-card.active") || channelList.querySelector(".channel-card");
     setElementFocus(card || document.querySelector("#modusList [data-modus='favorites']"));
+    updateHeaderBackButton();
   }
 
   function renderSearchResults() {
-    const words = searchInput.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const rawVal = searchInput ? searchInput.value.trim() : "";
+    if (searchClearBtn) searchClearBtn.classList.toggle("hidden", !rawVal);
+    const words = rawVal.toLowerCase().split(/\s+/).filter(Boolean);
     searchHits = [];
+
     if (words.length > 0 && words.join("").length >= 2) {
-      for (let i = 0; i < allStreams.length && searchHits.length < 50; i++) {
-        const name = String(allStreams[i].name || "").toLowerCase();
-        if (words.every((word) => name.indexOf(word) !== -1)) searchHits.push(allStreams[i]);
+      // 1. Live TV channels
+      if (searchScope === "all" || searchScope === "live") {
+        for (let i = 0; i < allStreams.length && searchHits.length < 50; i++) {
+          const item = allStreams[i];
+          const name = String(item.name || "").toLowerCase();
+          if (words.every(w => name.indexOf(w) !== -1)) {
+            searchHits.push({ type: "live", item, rawIndex: i });
+          }
+        }
+      }
+
+      // 2. Movies (VOD)
+      if (searchScope === "all" || searchScope === "vod") {
+        for (let i = 0; i < vodStreams.length && searchHits.length < 100; i++) {
+          const item = vodStreams[i];
+          const name = String(item.name || item.title || "").toLowerCase();
+          if (words.every(w => name.indexOf(w) !== -1)) {
+            searchHits.push({ type: "vod", item });
+          }
+        }
+      }
+
+      // 3. Series
+      if (searchScope === "all" || searchScope === "series") {
+        for (let i = 0; i < seriesStreams.length && searchHits.length < 150; i++) {
+          const item = seriesStreams[i];
+          const name = String(item.name || item.title || "").toLowerCase();
+          if (words.every(w => name.indexOf(w) !== -1)) {
+            searchHits.push({ type: "series", item });
+          }
+        }
       }
     }
+
+    if (!searchResults) return;
     searchResults.innerHTML = "";
-    searchHits.forEach((stream, index) => {
+
+    searchHits.forEach((entry, index) => {
+      const item = entry.item;
       const li = document.createElement("li");
-      li.className = "channel-card focusable";
+      li.className = "search-result-card focusable";
       li.tabIndex = 0;
-      li.dataset.index = index;
-      const name = document.createElement("span");
-      name.className = "channel-name";
-      name.textContent = cleanTitle(stream.name, QUALITY_TAGS);
-      li.appendChild(name);
+      li.dataset.searchIndex = index;
+
+      const title = cleanTitle(item.name || item.title || "", QUALITY_TAGS);
+      const iconUrl = item.stream_icon || item.cover || "";
+      const typeBadges = {
+        live: "📺 Live TV",
+        vod: "🎬 Movie",
+        series: "🍿 Series"
+      };
+      const fallbackEmoji = entry.type === "vod" ? "🎬" : entry.type === "series" ? "🍿" : "📺";
+      const thumbHtml = iconUrl
+        ? `<img src="${iconUrl}" class="search-result-thumb" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+           <div class="search-result-thumb" style="display:none;">${fallbackEmoji}</div>`
+        : `<div class="search-result-thumb">${fallbackEmoji}</div>`;
+
+      li.innerHTML = `
+        ${thumbHtml}
+        <div class="search-result-info">
+          <span class="search-result-title">${title}</span>
+          <span class="search-result-badge">${typeBadges[entry.type] || entry.type}</span>
+        </div>
+      `;
       searchResults.appendChild(li);
     });
-    if (searchEmpty) searchEmpty.classList.toggle("hidden", searchHits.length > 0 || searchInput.value.trim().length < 2);
+
+    if (searchEmpty) {
+      searchEmpty.classList.toggle("hidden", searchHits.length > 0 || rawVal.length < 2);
+    }
   }
 
   function playSearchResult(index) {
-    const stream = searchHits[index];
-    if (!stream) return;
-    currentActiveStreams = searchHits.slice();
+    const entry = searchHits[index];
+    if (!entry) return;
+    const item = entry.item;
     closeSearch();
-    playStream(stream.stream_id, stream.name, stream.stream_icon, index, stream.url);
-    activeerFitScreen();
+
+    if (entry.type === "live") {
+      currentActiveStreams = [item];
+      playStream(item.stream_id, item.name, item.stream_icon, 0, item.url);
+      activeerFitScreen();
+    } else if (entry.type === "vod") {
+      playVodMovie(item.stream_id, item.name || item.title, item.container_extension || "mp4");
+    } else if (entry.type === "series") {
+      const fakeCard = { dataset: { seriesId: item.series_id || item.stream_id, title: item.name || item.title } };
+      openSeries(fakeCard);
+    }
   }
 
   if (searchInput) {
@@ -1999,9 +2363,32 @@ document.addEventListener("DOMContentLoaded", () => {
   if (searchResults) {
     searchResults.addEventListener("click", (e) => {
       const li = e.target.closest("li");
-      if (li) playSearchResult(parseInt(li.dataset.index, 10));
+      if (li && li.dataset.searchIndex !== undefined) {
+        playSearchResult(parseInt(li.dataset.searchIndex, 10));
+      }
     });
   }
+  if (searchClearBtn) {
+    searchClearBtn.addEventListener("click", () => {
+      if (searchInput) {
+        searchInput.value = "";
+        searchClearBtn.classList.add("hidden");
+        renderSearchResults();
+        searchInput.focus();
+      }
+    });
+  }
+  if (searchBackBtn) {
+    searchBackBtn.addEventListener("click", () => closeSearch());
+  }
+  document.querySelectorAll(".search-scope-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll(".search-scope-chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      searchScope = chip.dataset.scope || "all";
+      renderSearchResults();
+    });
+  });
 
   let categorySearchQuery = "";
   const categorySearch = document.getElementById("categorySearch");
@@ -2017,15 +2404,23 @@ document.addEventListener("DOMContentLoaded", () => {
     categoryList.innerHTML = "";
 
     const isVod = (currentModus === "vod" || currentModus === "series");
-    const categoriesToUse = currentModus === "series"
+    let categoriesToUse = currentModus === "series"
       ? (seriesCategories.length ? seriesCategories : vodCategories)
       : (isVod ? vodCategories : allCategories);
+
+    if (appSelectedRegion !== "ALL") {
+      const regionFiltered = categoriesToUse.filter(c => isCategoryInRegion(c, isVod, appSelectedRegion));
+      if (regionFiltered.length > 0) {
+        categoriesToUse = regionFiltered;
+      }
+    }
+
     const activeRegion = isVod ? currentVodRegion : currentLiveRegion;
 
     const hiddenIds = hiddenCategories[categoryKind()];
     const filtered = categoriesToUse.filter(cat => {
       if (hiddenIds.indexOf(String(cat.category_id)) !== -1) return false;
-      if (activeRegion !== "ALL" && extractRegionFromCategory(cat.category_name, isVod) !== activeRegion) return false;
+      if (activeRegion !== "ALL" && !isCategoryInRegion(cat, isVod, activeRegion)) return false;
       if (categorySearchQuery && cleanTitle(cat.category_name, ["HEVC", "VIP"]).toLowerCase().indexOf(categorySearchQuery) === -1) return false;
       return true;
     });
@@ -2215,8 +2610,12 @@ document.addEventListener("DOMContentLoaded", () => {
         div.dataset.title = displayTitle;
 
         const posterSrc = item.stream_icon || item.cover || "";
+        const fallbackIcon = currentModus === "series" ? "🍿" : "🎬";
         div.innerHTML = `
-          <img data-src="${posterSrc}" class="poster-img" alt="" onerror="this.style.visibility='hidden'">
+          <div class="poster-img-container">
+            ${posterSrc ? `<img src="${posterSrc}" class="poster-img" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}
+            <div class="poster-fallback-icon" style="${posterSrc ? 'display:none;' : 'display:flex;'}">${fallbackIcon}</div>
+          </div>
           <div class="poster-info">
             <div class="poster-title">${displayTitle}</div>
           </div>
@@ -2284,7 +2683,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadVisiblePosters();
     applyPendingFocus();
 
-    if (!currentPlayingStreamId && currentActiveStreams.length > 0 && currentModus === "live") {
+    if (!currentPlayingStreamId && currentActiveStreams.length > 0 && currentModus === "live" && deviceLayout !== "mobile") {
       const first = currentActiveStreams[0];
       playStream(first.stream_id, first.name, first.stream_icon, 0, first.url);
     }
@@ -2295,6 +2694,14 @@ document.addEventListener("DOMContentLoaded", () => {
     currentModus = modus;
     document.body.classList.toggle("favorites-mode", modus === "favorites");
     document.querySelectorAll("#modusList .nav-item").forEach(el => el.classList.toggle("active", el.dataset.modus === modus));
+
+    if (deviceLayout === "mobile") {
+      if (modus === "vod" || modus === "series") {
+        syncMobileNavState("home");
+      } else if (modus === "live" || modus === "favorites") {
+        syncMobileNavState("live");
+      }
+    }
 
     if (headerModeIndicator) {
       const modeKeys = { favorites: "modeFavorites", live: "modeLive", vod: "modeMovies", series: "modeSeries" };
@@ -2559,6 +2966,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function playVodMovie(streamId, title, ext) {
     currentVodMovieId = String(streamId);
     currentEpisodeId = null;
+    document.body.classList.add("has-active-stream");
     playerWrapper.classList.remove("hidden");
     activeerFitScreen();
     if (vodOsdTitle) vodOsdTitle.textContent = title;
@@ -2587,6 +2995,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function playSeriesEpisode(episodeId, title, ext) {
     currentEpisodeId = String(episodeId);
     currentVodMovieId = null;
+    document.body.classList.add("has-active-stream");
     playerWrapper.classList.remove("hidden");
     activeerFitScreen();
     if (vodOsdTitle) vodOsdTitle.textContent = title;
@@ -2615,6 +3024,8 @@ document.addEventListener("DOMContentLoaded", () => {
   async function playStream(streamId, name, icon, index, directUrl = "", isReconnect = false) {
     if (index !== undefined) currentStreamIndex = index;
     currentPlayingStreamId = String(streamId);
+    document.body.classList.add("has-active-stream");
+    playerWrapper.classList.remove("hidden");
 
     const activeLi = document.querySelector(`#channelList [data-stream-id="${streamId}"]`);
     if (activeLi) {
@@ -3142,32 +3553,546 @@ document.addEventListener("DOMContentLoaded", () => {
       mobileFullscreenBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         activeerFitScreen();
-        if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.requestOrientation === "function") {
-          window.AndroidExternalPlayer.requestOrientation("landscape");
-        }
       });
     }
 
     window.handleOrientationChange = function(isLandscape) {
       if (deviceLayout !== "mobile") return;
-      if (isLandscape) {
-        if (!isFitScreen && (currentPlayingStreamId || (currentActiveStreams && currentActiveStreams.length > 0))) {
-          activeerFitScreen();
-        }
-      } else {
-        if (isFitScreen) {
-          deactiveerFitScreen();
-        }
+      if (!isLandscape && isFitScreen) {
+        deactiveerFitScreen();
       }
     };
+  }
 
-    window.addEventListener("resize", () => {
-      if (deviceLayout !== "mobile") return;
-      const isLandscape = window.innerWidth > window.innerHeight;
-      if (isLandscape && !isFitScreen && (currentPlayingStreamId || (currentActiveStreams && currentActiveStreams.length > 0))) {
-        activeerFitScreen();
-      } else if (!isLandscape && isFitScreen) {
-        deactiveerFitScreen();
+  const mobileBottomNav = document.getElementById("mobileBottomNav");
+  if (mobileBottomNav) {
+    mobileBottomNav.addEventListener("click", (e) => {
+      const btn = e.target.closest(".mobile-nav-item");
+      if (!btn || !btn.dataset.mobileTab) return;
+      const tab = btn.dataset.mobileTab;
+
+      if (tab === "home") {
+        showSettingsPage(false);
+        closeSearch();
+        syncMobileNavState("home");
+        initMobileHomeScreen();
+      } else if (tab === "search") {
+        showSettingsPage(false);
+        syncMobileNavState("search");
+        openSearch();
+      } else if (tab === "live") {
+        showSettingsPage(false);
+        closeSearch();
+        syncMobileNavState("live");
+        if (currentModus !== "live" && currentModus !== "favorites") {
+          switchModus(favorites && favorites.length > 0 ? "favorites" : "live");
+        }
+      } else if (tab === "profile") {
+        closeSearch();
+        syncMobileNavState("profile");
+        showSettingsPage(true);
+        showSettingsTab("profile");
+      }
+    });
+  }
+
+  // NETFLIX-STYLE HOME SCREEN & VIEW ALL LOGIC
+
+  function closeHomeViewAll() {
+    const page = document.getElementById("homeViewAllPage");
+    if (page) page.classList.add("hidden");
+    updateHeaderBackButton();
+  }
+
+  function renderHomeViewAllGrid() {
+    const grid = document.getElementById("viewAllGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    let items = currentViewAllType === "series" ? (seriesStreams || []) : (vodStreams || []);
+    if (currentViewAllCatId !== "all") {
+      items = items.filter(it => String(it.category_id) === String(currentViewAllCatId));
+    } else if (appSelectedRegion !== "ALL") {
+      const rawCategories = currentViewAllType === "series" ? (seriesCategories || []) : (vodCategories || []);
+      const regionCatIds = new Set(rawCategories.filter(c => isCategoryInRegion(c, true, appSelectedRegion)).map(c => String(c.category_id)));
+      if (regionCatIds.size > 0) {
+        items = items.filter(it => regionCatIds.has(String(it.category_id)));
+      }
+    }
+
+    if (items.length === 0) {
+      for (let i = 1; i <= 15; i++) {
+        const card = document.createElement("div");
+        card.className = "poster-card focusable";
+        card.tabIndex = 0;
+        const fallbackIcon = currentViewAllType === "series" ? "🍿" : "🎬";
+        const itemTitle = currentViewAllType === "series" ? `Series ${i}` : `Movie ${i}`;
+        card.innerHTML = `
+          <div class="poster-img-container">
+            <div class="poster-fallback-icon">${fallbackIcon}</div>
+          </div>
+          <div class="poster-info">
+            <div class="poster-title">${itemTitle}</div>
+          </div>
+        `;
+        grid.appendChild(card);
+      }
+      return;
+    }
+
+    items.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "poster-card focusable";
+      card.tabIndex = 0;
+      const displayTitle = cleanTitle(item.name || item.title || "");
+      const posterSrc = item.stream_icon || item.cover || "";
+      const fallbackIcon = currentViewAllType === "series" ? "🍿" : "🎬";
+
+      card.innerHTML = `
+        <div class="poster-img-container">
+          ${posterSrc ? `<img src="${posterSrc}" class="poster-img" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}
+          <div class="poster-fallback-icon" style="${posterSrc ? 'display:none;' : 'display:flex;'}">${fallbackIcon}</div>
+        </div>
+        <div class="poster-info">
+          <div class="poster-title">${displayTitle}</div>
+        </div>
+      `;
+
+      card.addEventListener("click", () => {
+        closeHomeViewAll();
+        if (currentViewAllType === "vod") {
+          playVodMovie(item.stream_id, item.name, item.container_extension);
+        } else {
+          openSeries({ dataset: { seriesId: item.series_id || item.stream_id, title: item.name } });
+        }
+      });
+
+      grid.appendChild(card);
+    });
+  }
+
+  function openHomeViewAll(type, selectedCatId = "all", selectedCatName = "") {
+    currentViewAllType = type || "vod";
+    currentViewAllCatId = selectedCatId || "all";
+    const page = document.getElementById("homeViewAllPage");
+    const titleEl = document.getElementById("viewAllTitle");
+    const catBar = document.getElementById("viewAllCategoriesBar");
+    if (!page) return;
+
+    if (titleEl) {
+      if (selectedCatName) {
+        titleEl.textContent = cleanTitle(selectedCatName, ["HEVC", "VIP"]);
+      } else {
+        titleEl.textContent = currentViewAllType === "series" ? "Series" : "Movies";
+      }
+    }
+
+    if (catBar) {
+      catBar.innerHTML = "";
+      const rawCategories = currentViewAllType === "series" ? (seriesCategories || []) : (vodCategories || []);
+      const categories = rawCategories.filter(c => isCategoryInRegion(c, true, appSelectedRegion));
+
+      const allChip = document.createElement("button");
+      allChip.className = "home-view-all-cat-chip" + (currentViewAllCatId === "all" ? " active" : "");
+      allChip.textContent = t("allRegions") || "All";
+      allChip.dataset.catId = "all";
+      allChip.onclick = () => {
+        catBar.querySelectorAll(".home-view-all-cat-chip").forEach(c => c.classList.remove("active"));
+        allChip.classList.add("active");
+        currentViewAllCatId = "all";
+        if (titleEl) titleEl.textContent = currentViewAllType === "series" ? "Series" : "Movies";
+        renderHomeViewAllGrid();
+      };
+      catBar.appendChild(allChip);
+
+      (categories.length ? categories : rawCategories).slice(0, 30).forEach(cat => {
+        const chip = document.createElement("button");
+        chip.className = "home-view-all-cat-chip" + (String(cat.category_id) === String(currentViewAllCatId) ? " active" : "");
+        chip.textContent = cleanTitle(cat.category_name, ["HEVC", "VIP"]);
+        chip.dataset.catId = cat.category_id;
+        chip.onclick = async () => {
+          catBar.querySelectorAll(".home-view-all-cat-chip").forEach(c => c.classList.remove("active"));
+          chip.classList.add("active");
+          currentViewAllCatId = cat.category_id;
+          if (titleEl) titleEl.textContent = cleanTitle(cat.category_name, ["HEVC", "VIP"]);
+          if (typeof loadXtreamCategory === "function") {
+            await loadXtreamCategory(currentViewAllType, cat.category_id);
+          }
+          renderHomeViewAllGrid();
+        };
+        catBar.appendChild(chip);
+      });
+    }
+
+    renderHomeViewAllGrid();
+    page.classList.remove("hidden");
+    updateHeaderBackButton();
+  }
+
+  const viewAllBackBtn = document.getElementById("viewAllBackBtn");
+  if (viewAllBackBtn) {
+    viewAllBackBtn.addEventListener("click", closeHomeViewAll);
+  }
+
+  function pickRandomFeaturedItem() {
+    let candidateCategories = [];
+    if (appSelectedRegion === "ALL") {
+      candidateCategories = (vodCategories || []).concat(seriesCategories || []);
+    } else {
+      const regVod = (vodCategories || []).filter(c => isCategoryInRegion(c, true, appSelectedRegion));
+      const regSeries = (seriesCategories || []).filter(c => isCategoryInRegion(c, true, appSelectedRegion));
+      candidateCategories = regVod.concat(regSeries);
+    }
+    const catIds = new Set(candidateCategories.map(c => String(c.category_id)));
+
+    let candidates = [];
+    (vodStreams || []).forEach(m => {
+      if (appSelectedRegion === "ALL" || (catIds.size > 0 && catIds.has(String(m.category_id)))) {
+        candidates.push({ ...m, type: "vod" });
+      }
+    });
+    (seriesStreams || []).forEach(s => {
+      if (appSelectedRegion === "ALL" || (catIds.size > 0 && catIds.has(String(s.category_id)))) {
+        candidates.push({ ...s, type: "series" });
+      }
+    });
+
+    if (candidates.length === 0 && appSelectedRegion === "ALL") {
+      candidates = (vodStreams || []).map(m => ({ ...m, type: "vod" })).concat(
+        (seriesStreams || []).map(s => ({ ...s, type: "series" }))
+      );
+    }
+
+    const withPosters = candidates.filter(c => c.stream_icon || c.cover);
+    const pool = withPosters.length > 0 ? withPosters : candidates;
+
+    if (pool.length > 0) {
+      const randomIndex = Math.floor(Math.random() * pool.length);
+      homeFeaturedItem = pool[randomIndex];
+    }
+  }
+
+  function updateHomeHeroBanner() {
+    const heroBackdrop = document.getElementById("homeHeroBackdrop");
+    const heroTitle = document.getElementById("homeHeroTitle");
+    const heroRating = document.getElementById("homeHeroRating");
+    const heroYear = document.getElementById("homeHeroYear");
+    const heroCategory = document.getElementById("homeHeroCategory");
+    const heroPlayBtn = document.getElementById("homeHeroPlayBtn");
+    const heroInfoBtn = document.getElementById("homeHeroInfoBtn");
+
+    if (homeFeaturedItem) {
+      const displayTitle = cleanTitle(homeFeaturedItem.name || homeFeaturedItem.title || "Featured Movie");
+      if (heroTitle) heroTitle.textContent = displayTitle;
+      const posterSrc = homeFeaturedItem.stream_icon || homeFeaturedItem.cover || "";
+      if (heroBackdrop) {
+        if (posterSrc) {
+          heroBackdrop.src = posterSrc;
+          heroBackdrop.style.display = "block";
+        } else {
+          heroBackdrop.src = "";
+          heroBackdrop.style.display = "none";
+        }
+      }
+      if (heroRating) heroRating.textContent = `★ ${homeFeaturedItem.rating || "8.8"}`;
+      if (heroYear) heroYear.textContent = String(homeFeaturedItem.year || homeFeaturedItem.release_date || "2025").substring(0, 4);
+      if (heroCategory) heroCategory.textContent = homeFeaturedItem.type === "series" ? "TV Series" : "Cinema";
+
+      if (heroPlayBtn) {
+        heroPlayBtn.onclick = () => {
+          if (homeFeaturedItem.type === "vod") {
+            playVodMovie(homeFeaturedItem.stream_id, homeFeaturedItem.name, homeFeaturedItem.container_extension);
+          } else if (homeFeaturedItem.type === "series") {
+            openSeries({ dataset: { seriesId: homeFeaturedItem.series_id || homeFeaturedItem.stream_id, title: homeFeaturedItem.name } });
+          } else {
+            playStream(homeFeaturedItem.stream_id, homeFeaturedItem.name, homeFeaturedItem.stream_icon, 0, homeFeaturedItem.url);
+          }
+        };
+      }
+
+      if (heroInfoBtn) {
+        heroInfoBtn.onclick = () => {
+          if (homeFeaturedItem.type === "series") {
+            openSeries({ dataset: { seriesId: homeFeaturedItem.series_id || homeFeaturedItem.stream_id, title: homeFeaturedItem.name } });
+          } else {
+            showToast(`${displayTitle} • ${homeFeaturedItem.year || "2025"}`);
+          }
+        };
+      }
+    } else {
+      if (heroBackdrop) {
+        heroBackdrop.src = "";
+        heroBackdrop.style.display = "none";
+      }
+      if (heroTitle) heroTitle.textContent = "KC IPTV";
+      if (heroRating) heroRating.textContent = "★ 8.8";
+      if (heroYear) heroYear.textContent = "2025";
+      if (heroCategory) heroCategory.textContent = "Cinema";
+      if (heroPlayBtn) {
+        heroPlayBtn.onclick = () => openHomeViewAll("vod");
+      }
+      if (heroInfoBtn) {
+        heroInfoBtn.onclick = () => showToast("KC IPTV • 2025");
+      }
+    }
+  }
+
+  function startFeaturedCycle() {
+    if (homeFeaturedCycleTimer) clearInterval(homeFeaturedCycleTimer);
+    homeFeaturedCycleTimer = setInterval(() => {
+      if (deviceLayout === "mobile" && mobileActiveSection === "home") {
+        pickRandomFeaturedItem();
+        updateHomeHeroBanner();
+      }
+    }, 10000);
+  }
+
+  async function initMobileHomeScreen() {
+    const homeScreen = document.getElementById("mobileHomeScreen");
+    if (!homeScreen) return;
+    homeScreen.classList.remove("hidden");
+
+    renderMobileHomeScreen();
+
+    if (!xtreamAuth || isFetchingHomeShelves) return;
+    isFetchingHomeShelves = true;
+
+    try {
+      const loadPromises = [];
+
+      // Load top VOD categories for region (Movies)
+      const rawVod = (vodCategories || []);
+      const regionVod = appSelectedRegion === "ALL" ? rawVod : rawVod.filter(c => isCategoryInRegion(c, true, appSelectedRegion));
+      const topVod = regionVod.slice(0, 5);
+      topVod.forEach(cat => {
+        loadPromises.push(loadXtreamCategory("vod", cat.category_id));
+      });
+
+      // Load top Series categories for region
+      const rawSeries = (seriesCategories || []);
+      const regionSeries = appSelectedRegion === "ALL" ? rawSeries : rawSeries.filter(c => isCategoryInRegion(c, true, appSelectedRegion));
+      const topSeries = regionSeries.slice(0, 4);
+      topSeries.forEach(cat => {
+        loadPromises.push(loadXtreamCategory("series", cat.category_id));
+      });
+
+      // Load top Live categories if empty
+      if (Array.isArray(allCategories) && allCategories.length > 0 && allStreams.length === 0) {
+        const rawLive = allCategories;
+        const regionLive = appSelectedRegion === "ALL" ? rawLive : rawLive.filter(c => isCategoryInRegion(c, false, appSelectedRegion));
+        const firstCat = regionLive.length ? regionLive[0] : (appSelectedRegion === "ALL" ? rawLive[0] : null);
+        if (firstCat) loadPromises.push(loadXtreamCategory("live", firstCat.category_id));
+      }
+
+      if (loadPromises.length > 0) {
+        await Promise.all(loadPromises);
+      }
+    } catch (e) {
+      console.warn("Failed loading some home shelves:", e);
+    } finally {
+      isFetchingHomeShelves = false;
+      pickRandomFeaturedItem();
+      renderMobileHomeScreen();
+    }
+  }
+
+  function renderMobileHomeScreen() {
+    const homeScreen = document.getElementById("mobileHomeScreen");
+    if (!homeScreen) return;
+
+    if (!homeFeaturedItem) {
+      pickRandomFeaturedItem();
+    }
+    updateHomeHeroBanner();
+    startFeaturedCycle();
+
+    const shelvesContainer = document.getElementById("homeShelvesContainer");
+    if (!shelvesContainer) return;
+    shelvesContainer.innerHTML = "";
+
+    function renderShelf(title, rawItems, type, catId, catName) {
+      const shelf = document.createElement("section");
+      shelf.className = "home-shelf";
+
+      const header = document.createElement("div");
+      header.className = "home-shelf-header";
+      header.innerHTML = `
+        <div class="home-shelf-title-wrap">
+          <h2 class="home-shelf-title">${title}</h2>
+        </div>
+        <button class="home-shelf-view-all-btn" type="button">
+          <span>View All</span>
+          <span>›</span>
+        </button>
+      `;
+      header.addEventListener("click", () => openHomeViewAll(type, catId, catName));
+      shelf.appendChild(header);
+
+      const scrollRow = document.createElement("div");
+      scrollRow.className = "home-shelf-scroll";
+
+      // If category has no streams yet, load in background
+      if (catId && catId !== "all" && (!rawItems || rawItems.length === 0) && xtreamAuth) {
+        loadXtreamCategory(type, catId).then(() => {
+          if (deviceLayout === "mobile" && mobileActiveSection === "home") {
+            const updated = (type === "vod" ? vodStreams : seriesStreams).filter(s => String(s.category_id) === String(catId));
+            if (updated.length > 0) renderMobileHomeScreen();
+          }
+        }).catch(() => {});
+      }
+
+      // Prepare exactly 10 items (real or placeholder)
+      const displayItems = [];
+      const count = Math.min((rawItems || []).length, 10);
+      for (let i = 0; i < count; i++) {
+        displayItems.push(rawItems[i]);
+      }
+      // If fewer than 10, fill with styled placeholder cards
+      while (displayItems.length < 10) {
+        const num = displayItems.length + 1;
+        displayItems.push({
+          name: type === "series" ? `Series ${num}` : `Movie ${num}`,
+          stream_icon: "",
+          cover: "",
+          isPlaceholder: true
+        });
+      }
+
+      displayItems.forEach((item, idx) => {
+        const card = document.createElement("div");
+        card.className = "home-shelf-card focusable";
+        card.tabIndex = 0;
+        const itemTitle = cleanTitle(item.name || item.title || "");
+        const posterSrc = item.stream_icon || item.cover || "";
+        const fallbackIcon = type === "series" ? "🍿" : "🎬";
+
+        card.innerHTML = `
+          <div class="home-card-poster-container">
+            ${posterSrc ? `<img src="${posterSrc}" class="home-card-poster-img" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}
+            <div class="home-card-fallback-icon" style="${posterSrc ? 'display:none;' : 'display:flex;'}">${fallbackIcon}</div>
+          </div>
+          <div class="home-card-title">${itemTitle}</div>
+        `;
+
+        card.addEventListener("click", () => {
+          if (item.isPlaceholder) {
+            openHomeViewAll(type, catId, catName);
+            return;
+          }
+          if (type === "vod") {
+            playVodMovie(item.stream_id, item.name, item.container_extension);
+          } else if (type === "series") {
+            openSeries({ dataset: { seriesId: item.series_id || item.stream_id, title: item.name } });
+          }
+        });
+
+        scrollRow.appendChild(card);
+      });
+
+      // 11th CARD: View All Card
+      const viewAllCard = document.createElement("div");
+      viewAllCard.className = "home-shelf-view-all-card focusable";
+      viewAllCard.tabIndex = 0;
+      viewAllCard.innerHTML = `
+        <div class="home-card-view-all-container">
+          <div class="home-card-view-all-icon">›</div>
+          <span class="home-card-view-all-text">View All</span>
+        </div>
+        <div class="home-card-title">View All</div>
+      `;
+      viewAllCard.addEventListener("click", () => openHomeViewAll(type, catId, catName));
+      scrollRow.appendChild(viewAllCard);
+
+      shelf.appendChild(scrollRow);
+      shelvesContainer.appendChild(shelf);
+    }
+
+    // Determine category shelves for selected region
+    const rawVod = (vodCategories || []);
+    const rawSeries = (seriesCategories || []);
+    const activeVodCats = appSelectedRegion === "ALL" ? rawVod : rawVod.filter(c => isCategoryInRegion(c, true, appSelectedRegion));
+    const activeSeriesCats = appSelectedRegion === "ALL" ? rawSeries : rawSeries.filter(c => isCategoryInRegion(c, true, appSelectedRegion));
+
+    const shelvesToRender = [];
+
+    // Top Movie categories
+    activeVodCats.slice(0, 4).forEach(cat => {
+      const catStreams = (vodStreams || []).filter(s => String(s.category_id) === String(cat.category_id));
+      shelvesToRender.push({
+        title: `🎬 ${cleanTitle(cat.category_name, ["HEVC", "VIP"])}`,
+        items: catStreams,
+        type: "vod",
+        categoryId: cat.category_id,
+        categoryName: cat.category_name
+      });
+    });
+
+    // Top Series categories
+    activeSeriesCats.slice(0, 3).forEach(cat => {
+      const catStreams = (seriesStreams || []).filter(s => String(s.category_id) === String(cat.category_id));
+      shelvesToRender.push({
+        title: `🍿 ${cleanTitle(cat.category_name, ["HEVC", "VIP"])}`,
+        items: catStreams,
+        type: "series",
+        categoryId: cat.category_id,
+        categoryName: cat.category_name
+      });
+    });
+
+    // Fallback if no categories exist for selected region
+    if (shelvesToRender.length === 0) {
+      const regionLabel = appSelectedRegion === "ALL" ? "" : ` ${appSelectedRegion}`;
+      shelvesToRender.push({
+        title: `🎬${regionLabel} Movies`,
+        items: (vodStreams || []).filter(s => isStreamInRegion(s, "vod", appSelectedRegion)).slice(0, 10),
+        type: "vod",
+        categoryId: "all",
+        categoryName: `${regionLabel} Movies`
+      });
+      shelvesToRender.push({
+        title: `🍿${regionLabel} Series`,
+        items: (seriesStreams || []).filter(s => isStreamInRegion(s, "series", appSelectedRegion)).slice(0, 10),
+        type: "series",
+        categoryId: "all",
+        categoryName: `${regionLabel} Series`
+      });
+    }
+
+    shelvesToRender.forEach(shelfDef => {
+      renderShelf(shelfDef.title, shelfDef.items, shelfDef.type, shelfDef.categoryId, shelfDef.categoryName);
+    });
+
+    updateHeaderBackButton();
+  }
+
+  // OFFLINE STATE: native ConnectivityManager pushes via window.kcSetOnline; browser events as fallback.
+  const offlineState = document.getElementById("offlineState");
+  const offlineRetryBtn = document.getElementById("offlineRetryBtn");
+  let isAppOnline = navigator.onLine !== false;
+
+  function applyOnlineState(online, announce) {
+    const wasOnline = isAppOnline;
+    isAppOnline = !!online;
+    if (offlineState) offlineState.classList.toggle("hidden", isAppOnline);
+    document.body.classList.toggle("is-offline", !isAppOnline);
+    if (isAppOnline && !wasOnline && announce) {
+      showToast(t("backOnline"));
+      if (!xtreamAuth && !currentAuth) initProfile();
+    }
+  }
+
+  window.kcSetOnline = (online) => applyOnlineState(online, true);
+  window.addEventListener("online", () => applyOnlineState(true, true));
+  window.addEventListener("offline", () => applyOnlineState(false, true));
+  applyOnlineState(isAppOnline, false);
+
+  if (offlineRetryBtn) {
+    offlineRetryBtn.addEventListener("click", () => {
+      if (navigator.onLine !== false) {
+        applyOnlineState(true, true);
+        if (xtreamAuth) loginXtream(xtreamAuth.server, xtreamAuth.username, xtreamAuth.password, true);
+      } else {
+        showToast(t("offlineTitle"));
       }
     });
   }

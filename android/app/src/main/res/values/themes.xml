@@ -3,12 +3,22 @@
         <item name="colorPrimary">@color/teal_primary</item>
         <item name="colorPrimaryVariant">@color/teal_primary</item>
         <item name="colorOnPrimary">@color/black</item>
-        <item name="android:statusBarColor">@color/dark_bg</item>
-        <item name="android:navigationBarColor">@color/dark_bg</item>
+        <item name="android:statusBarColor">@color/topbar_bg</item>
+        <item name="android:navigationBarColor">@color/topbar_bg</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="s">@color/splash_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@drawable/app_icon</item>
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="s">@color/splash_bg</item>
     </style>
 
     <style name="Theme.KCIPTVPlayer.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
+        <item name="android:statusBarColor">@color/topbar_bg</item>
+        <item name="android:navigationBarColor">@color/topbar_bg</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="s">@color/splash_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@drawable/app_icon</item>
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="s">@color/splash_bg</item>
     </style>
 </resources>

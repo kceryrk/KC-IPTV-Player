@@ -53,6 +53,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const serverUrlInput = document.getElementById("serverUrl");
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
+  const loginRevealBtn = document.getElementById("loginRevealBtn");
+  const loginAccount = document.getElementById("loginAccount");
+  const loginAccountRows = document.getElementById("loginAccountRows");
 
   const regionList = document.getElementById("regionList");
   const categoryList = document.getElementById("categoryList");
@@ -130,6 +133,14 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.assign(appTranslations.tr, { m3uProfiles: "Kayıtlı listeler", m3uProfileNew: "+ Yeni liste", m3uProfileName: "Liste adı", generateM3uPrompt: "M3U listesi Xtream girişinizden oluşturulsun mu?" });
   Object.assign(appTranslations.nl, { m3uProfiles: "Opgeslagen afspeellijsten", m3uProfileNew: "+ Nieuwe afspeellijst", m3uProfileName: "Naam afspeellijst", generateM3uPrompt: "Zal de M3U-afspeellijst maken op basis van je Xtream-login?" });
   Object.assign(appTranslations.fr, { m3uProfiles: "Playlists enregistrées", m3uProfileNew: "+ Nouvelle playlist", m3uProfileName: "Nom de la playlist", generateM3uPrompt: "Générer la playlist M3U à partir de votre connexion Xtream ?" });
+  Object.assign(appTranslations.en, { showPassword: "Show", hidePassword: "Hide", accountDetails: "Account", accountStatus: "Status", accountExpires: "Expires", accountDaysLeft: "{days} days left", accountExpired: "Expired", accountUnlimited: "Unlimited", accountConnections: "Connections", accountTrial: "Trial", accountCreated: "Created", accountFormats: "Formats", testingConnection: "Testing connection...", connectionOk: "Connection OK" });
+  Object.assign(appTranslations.tr, { showPassword: "Göster", hidePassword: "Gizle", accountDetails: "Hesap", accountStatus: "Durum", accountExpires: "Bitiş", accountDaysLeft: "{days} gün kaldı", accountExpired: "Süresi doldu", accountUnlimited: "Sınırsız", accountConnections: "Bağlantılar", accountTrial: "Deneme", accountCreated: "Oluşturulma", accountFormats: "Formatlar", testingConnection: "Bağlantı test ediliyor...", connectionOk: "Bağlantı tamam" });
+  Object.assign(appTranslations.nl, { showPassword: "Tonen", hidePassword: "Verbergen", accountDetails: "Account", accountStatus: "Status", accountExpires: "Vervalt", accountDaysLeft: "{days} dagen over", accountExpired: "Verlopen", accountUnlimited: "Onbeperkt", accountConnections: "Verbindingen", accountTrial: "Proef", accountCreated: "Aangemaakt", accountFormats: "Formaten", testingConnection: "Verbinding testen...", connectionOk: "Verbinding OK" });
+  Object.assign(appTranslations.fr, { showPassword: "Afficher", hidePassword: "Masquer", accountDetails: "Compte", accountStatus: "Statut", accountExpires: "Expire le", accountDaysLeft: "{days} jours restants", accountExpired: "Expiré", accountUnlimited: "Illimité", accountConnections: "Connexions", accountTrial: "Essai", accountCreated: "Créé le", accountFormats: "Formats", testingConnection: "Test de la connexion...", connectionOk: "Connexion OK" });
+  Object.assign(appTranslations.en, { testConnection: "Test connection", providerIntro: "Sign in once. Your categories open right away, and the full channel list downloads in the background.", providerStepAccount: "Checking account", providerStepCategories: "Loading movies and series", providerStepOpen: "Opening the app", providerStepPlaylist: "Channel list (background)" });
+  Object.assign(appTranslations.tr, { testConnection: "Bağlantıyı test et", providerIntro: "Bir kez giriş yapın. Kategoriler hemen açılır, tam kanal listesi arka planda indirilir.", providerStepAccount: "Hesap kontrol ediliyor", providerStepCategories: "Film ve diziler yükleniyor", providerStepOpen: "Uygulama açılıyor", providerStepPlaylist: "Kanal listesi (arka planda)" });
+  Object.assign(appTranslations.nl, { testConnection: "Verbinding testen", providerIntro: "Meld je één keer aan. Je categorieën openen meteen en de volledige zenderlijst wordt op de achtergrond gedownload.", providerStepAccount: "Account controleren", providerStepCategories: "Films en series laden", providerStepOpen: "App openen", providerStepPlaylist: "Zenderlijst (achtergrond)" });
+  Object.assign(appTranslations.fr, { testConnection: "Tester la connexion", providerIntro: "Connectez-vous une seule fois. Les catégories s’ouvrent tout de suite et la liste complète des chaînes se télécharge en arrière-plan.", providerStepAccount: "Vérification du compte", providerStepCategories: "Chargement des films et séries", providerStepOpen: "Ouverture de l’application", providerStepPlaylist: "Liste des chaînes (arrière-plan)" });
   Object.assign(appTranslations.en, { presetBackgrounds: "Presets" });
   Object.assign(appTranslations.tr, { presetBackgrounds: "Hazır arka planlar" });
   Object.assign(appTranslations.nl, { presetBackgrounds: "Voorinstellingen" });
@@ -319,15 +330,34 @@ document.addEventListener("DOMContentLoaded", () => {
       if (xtreamAuth) sources.push("Xtream");
       if (state === "logged-in" && sources.length) loginStatus.textContent += " · " + sources.join(" + ");
     }
-    const testBtn = document.getElementById("loginTestBtn");
-    if (testBtn) testBtn.classList.toggle("hidden", !(state === "failed" || loginCredentialsRejected));
     if (state === "failed") toggleLoginPanel(true, true);
   }
 
-  // One bar in the settings menu and one on the main screen; both show the same download.
+  // Marks the provider intro steps as done or active; numbers update with the state.
+  function setLoginSteps(doneKeys, activeKey) {
+    document.querySelectorAll("#providerSteps li").forEach((item) => {
+      const key = item.dataset.step;
+      const isDone = doneKeys.includes(key);
+      item.classList.toggle("done", isDone);
+      item.classList.toggle("active", key === activeKey);
+      const number = item.querySelector(".provider-step-n");
+      if (!number) return;
+      const position = Array.from(item.parentNode.children).indexOf(item) + 1;
+      number.textContent = isDone ? "✓" : item.classList.contains("bg") ? "+" : String(position);
+    });
+  }
+
+  function syncMethodSegment() {
+    if (!loginMethod) return;
+    document.querySelectorAll(".method-segment [data-method]").forEach((item) => {
+      item.classList.toggle("on", item.dataset.method === loginMethod.value);
+    });
+  }
+
+  // A single progress bar on the main screen, visible from Settings too.
   function setLoginProgress(percent, text) {
     const width = `${Math.min(100, Math.max(0, Math.round(percent)))}%`;
-    document.querySelectorAll(".login-progress").forEach((box) => {
+    document.querySelectorAll(".app-progress").forEach((box) => {
       box.classList.remove("hidden");
       const bar = box.querySelector(".login-progress-bar");
       const label = box.querySelector(".login-progress-text");
@@ -337,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function hideLoginProgress() {
-    document.querySelectorAll(".login-progress").forEach((box) => box.classList.add("hidden"));
+    document.querySelectorAll(".app-progress").forEach((box) => box.classList.add("hidden"));
   }
 
   // Without saved M3U playlists, the playlist generated from the Xtream login becomes the default.
@@ -956,6 +986,30 @@ document.addEventListener("DOMContentLoaded", () => {
     if (vodProfile) xtreamAuth = { server: vodProfile.server, username: vodProfile.username, password: vodProfile.password };
   }
 
+  // Categories are usable before the playlist finishes: a cached playlist is used first,
+  // otherwise the provider's live categories are listed until the download replaces them.
+  async function showCategoriesWhileDownloading(server, username, password, sourceUrl) {
+    const cached = loadChannelCache(sourceUrl);
+    if (cached) {
+      allStreams = cached.streams;
+      allCategories = cached.categories || [];
+    } else {
+      try {
+        const url = `${server.replace(/\/+$/, "")}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&action=get_live_categories`;
+        const result = await requestText(url);
+        const list = result.status === 200 && result.body.trim() ? JSON.parse(result.body) : null;
+        // The download may have finished while waiting; its categories are then already in place.
+        if (!Array.isArray(list) || !list.length || loadChannelCache(sourceUrl)) return;
+        allStreams = [];
+        allCategories = list.map((cat) => ({ category_id: String(cat.category_id), category_name: cat.category_name }));
+      } catch (error) {
+        return;
+      }
+    }
+    setupRegions();
+    if (currentModus === "live") filterCategories();
+  }
+
   async function loginXtream(server, username, password, background = false) {
     if (loginErrorToast) loginErrorToast.classList.add("hidden");
     if (loginBtn) loginBtn.disabled = true;
@@ -972,6 +1026,7 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error(`${t("playlistUnavailable")} (HTTP ${result.status}${result.failed ? " " + result.failed : ""}, ${result.body.length}B, ${action || "auth"})`);
       };
       let transportError = null;
+      let accountInfo = null;
       const optionalList = async (action) => {
         try {
           const value = await fetchApi(action);
@@ -985,6 +1040,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const account = await fetchApi("");
         if (account && account.user_info && Number(account.user_info.auth) === 0) throw new Error(t("invalidCredentials"));
+        accountInfo = account && account.user_info ? account.user_info : null;
       } catch (error) {
         if (error.message === t("invalidCredentials")) throw error;
         transportError = transportError || error;
@@ -992,6 +1048,8 @@ document.addEventListener("DOMContentLoaded", () => {
       xtreamAuth = { server, username, password };
       loginCredentialsRejected = false;
       store.setItem("iptv_xtream_profile", JSON.stringify({ server, username, password }));
+      renderLoginAccount(accountInfo);
+      setLoginSteps(["account"], "categories");
       if (!background) {
         setLoginState("logged-in");
         showToast(t("loggedIn"));
@@ -1008,20 +1066,25 @@ document.addEventListener("DOMContentLoaded", () => {
       seriesStreams = [];
       Object.keys(loadedCategories).forEach((key) => { delete loadedCategories[key]; });
       setLoginState("logged-in");
+      setLoginSteps(["account", "categories"], "open");
       if (background) {
         if (currentModus === "vod" || currentModus === "series") setupRegions();
       } else {
+        // The playlist download is separate from login, so a download failure does not fail the login.
+        hideLoginProgress();
+        setLoginSteps(["account", "categories", "open"], null);
+        showAppPage();
         const defaultUrl = ensureDefaultXtreamPlaylist(server, username, password);
         if (defaultUrl) {
-          await login(defaultUrl, "", "", false, "m3u");
-        } else {
-          hideLoginProgress();
-          showAppPage();
+          showCategoriesWhileDownloading(server, username, password, defaultUrl);
+          login(defaultUrl, "", "", false, "m3u", true);
         }
       }
     } catch (error) {
       hideLoginProgress();
+      setLoginSteps([], null);
       if (error.message === t("invalidCredentials")) loginCredentialsRejected = true;
+      renderLoginAccount(null);
       setLoginState(currentAuth ? "logged-in" : "failed");
       showLoginError(error.message || t("playlistUnavailable"));
       toggleLoginPanel(true);
@@ -1072,8 +1135,12 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast(t("playlistUnavailable"));
         return;
       }
-      runApiProbe(serverUrlInput.value.trim(), usernameInput.value.trim(), passwordInput.value);
+      runConnectionTest(serverUrlInput.value.trim(), usernameInput.value.trim(), passwordInput.value);
     });
+  }
+
+  if (loginRevealBtn) {
+    loginRevealBtn.addEventListener("click", toggleLoginPasswordVisibility);
   }
 
   if (loginMethod) {
@@ -1082,8 +1149,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (m3uLoginFields) m3uLoginFields.classList.toggle("hidden", !useM3u);
       if (xtreamLoginFields) xtreamLoginFields.classList.toggle("hidden", useM3u);
       if (useM3u) renderM3uProfileOptions(m3uUrlInput ? m3uUrlInput.value.trim() : "");
+      syncMethodSegment();
       setLoginErrorMessage("");
     });
+    syncMethodSegment();
   }
 
   if (m3uProfileSelect) {
@@ -1379,70 +1448,89 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Temporary diagnostic: shows what the TV really receives from the Xtream API.
-  async function runApiProbe(server, username, password) {
-    const box = document.createElement("div");
-    box.style.cssText = "position:fixed;left:20px;bottom:20px;z-index:9999;max-width:90vw;padding:16px 20px;background:rgba(0,0,0,0.92);border:2px solid #ffd200;color:#fff;font:22px/1.4 monospace;white-space:pre-wrap";
-    box.textContent = "API probe running...";
-    document.body.appendChild(box);
-    const base = `${server.replace(/\/+$/, "")}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
-    const tests = [["account", ""], ["live_cat", "&action=get_live_categories"], ["vod_cat", "&action=get_vod_categories"]];
-    const lines = [];
-    const show = () => { box.textContent = "API probe\n" + lines.join("\n"); };
-    const describe = (label, started, status, body) => `${label}: HTTP ${status}, ${body.length}B, ${Date.now() - started}ms, "${body.slice(0, 24).replace(/\s+/g, " ")}"`;
-    for (const [name, suffix] of tests) {
-      const url = base + suffix;
-      let started = Date.now();
-      try {
-        const result = await new Promise((resolve) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open("GET", url, true);
-          xhr.timeout = 30000;
-          xhr.onload = () => resolve({ status: xhr.status, body: xhr.responseText || "" });
-          xhr.onerror = () => resolve({ status: "net-error", body: "" });
-          xhr.ontimeout = () => resolve({ status: "timeout", body: "" });
-          xhr.send();
-        });
-        lines.push(describe(`${name} xhr`, started, result.status, result.body));
-      } catch (error) {
-        lines.push(`${name} xhr: ${error.message}`);
-      }
-      started = Date.now();
-      try {
-        const response = await fetch(url);
-        const body = await response.text();
-        lines.push(describe(`${name} fetch`, started, response.status, body));
-      } catch (error) {
-        lines.push(`${name} fetch: ${error.message}`);
-      }
-      show();
+  async function fetchXtreamAccount(server, username, password) {
+    const url = `${server.replace(/\/+$/, "")}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+    const result = await requestText(url, 15000);
+    if (result.status !== 200 || !result.body.trim()) {
+      throw new Error(`${t("playlistUnavailable")} (HTTP ${result.status}${result.failed ? " " + result.failed : ""})`);
     }
-    const playlistStart = Date.now();
-    await new Promise((resolve) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", `${server.replace(/\/+$/, "")}/get.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&type=m3u_plus&output=ts`, true);
-      xhr.timeout = 30000;
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 2) {
-          lines.push(`playlist: HTTP ${xhr.status}, ${xhr.getResponseHeader("content-length") || "?"}B, ${Date.now() - playlistStart}ms`);
-          xhr.abort();
-          resolve();
-        }
-      };
-      xhr.onerror = () => { lines.push("playlist: net-error"); resolve(); };
-      xhr.ontimeout = () => { lines.push("playlist: timeout"); resolve(); };
-      xhr.send();
+    let data = null;
+    try { data = JSON.parse(result.body); } catch (error) {}
+    if (!data || !data.user_info) throw new Error(t("playlistUnavailable"));
+    if (Number(data.user_info.auth) === 0) throw new Error(t("invalidCredentials"));
+    return data.user_info;
+  }
+
+  // Provider timestamps are Unix seconds; empty or zero means no expiry or creation date.
+  function renderLoginAccount(info) {
+    if (!loginAccount || !loginAccountRows) return;
+    loginAccountRows.textContent = "";
+    if (!info) {
+      loginAccount.classList.add("hidden");
+      return;
+    }
+    const formatDate = (value) => {
+      const seconds = Number(value);
+      return seconds ? new Date(seconds * 1000).toLocaleDateString() : "—";
+    };
+    const expires = Number(info.exp_date);
+    let expiresText = t("accountUnlimited");
+    if (expires) {
+      const days = Math.ceil((expires * 1000 - Date.now()) / 86400000);
+      expiresText = `${formatDate(expires)} · ${days > 0 ? t("accountDaysLeft", { days }) : t("accountExpired")}`;
+    }
+    const formats = Array.isArray(info.allowed_output_formats) && info.allowed_output_formats.length ? info.allowed_output_formats.join(", ") : "—";
+    const rows = [
+      [t("accountStatus"), info.status || "—"],
+      [t("accountExpires"), expiresText],
+      [t("accountConnections"), `${info.active_cons || 0} / ${info.max_connections || "?"}`],
+      [t("accountTrial"), String(info.is_trial) === "1" ? "✓" : "—"],
+      [t("accountCreated"), formatDate(info.created_at)],
+      [t("accountFormats"), formats]
+    ];
+    rows.forEach(([label, value]) => {
+      const row = document.createElement("div");
+      row.className = "login-account-row";
+      const labelEl = document.createElement("span");
+      labelEl.className = "login-account-label";
+      labelEl.textContent = label;
+      const valueEl = document.createElement("span");
+      valueEl.className = "login-account-value";
+      valueEl.textContent = value;
+      row.append(labelEl, valueEl);
+      loginAccountRows.appendChild(row);
     });
-    lines.push(`login: ${username} / ${password.length} chars / ${password.charAt(0)}...${password.slice(-1)}`);
-    lines.push("(closes in 40s)");
-    show();
-    setTimeout(() => box.remove(), 40000);
+    loginAccount.classList.remove("hidden");
+  }
+
+  async function runConnectionTest(server, username, password) {
+    if (!server || !username || !password) {
+      setLoginErrorMessage(t("invalidCredentials"));
+      return;
+    }
+    setLoginErrorMessage("");
+    showToast(t("testingConnection"));
+    try {
+      renderLoginAccount(await fetchXtreamAccount(server, username, password));
+      showToast(t("connectionOk"));
+    } catch (error) {
+      renderLoginAccount(null);
+      showLoginError(error.message);
+    }
+  }
+
+  function toggleLoginPasswordVisibility() {
+    if (!passwordInput || !loginRevealBtn) return;
+    const shown = passwordInput.type === "text";
+    passwordInput.type = shown ? "password" : "text";
+    loginRevealBtn.textContent = t(shown ? "showPassword" : "hidePassword");
   }
 
   async function login(server, username, password, isAuto = false, provider = "xtream", background = false) {
     if (provider === "xtream") return loginXtream(server, username, password, background);
     if (loginErrorToast) loginErrorToast.classList.add("hidden");
     if (loginBtn) loginBtn.disabled = true;
-    setLoginState("logging");
+    if (!background) setLoginState("logging");
 
     try {
       let startMode = "favorites";
@@ -1480,6 +1568,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (background) {
         setupRegions();
         if (currentModus === "favorites") filterChannels();
+        else if (currentModus === "live") filterCategories();
         return;
       }
       showAppPage();
@@ -1491,6 +1580,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (error) {
       hideLoginProgress();
+      if (background) {
+        // A failed background download keeps the signed-in account and only reports the download.
+        showToast(t("playlistUnavailable"));
+        return;
+      }
       setLoginState("failed");
       showLoginError(error.message || t("playlistUnavailable"));
       toggleLoginPanel(true);
@@ -3787,7 +3881,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Login panel: step through visible fields in order
     if (loginForm && !loginForm.classList.contains("hidden") && loginForm.contains(focused)) {
-      const fields = Array.from(loginForm.querySelectorAll(".focusable")).filter((el) => el.offsetParent !== null);
+      const fields = Array.from(loginForm.querySelectorAll(".focusable")).filter((el) => el.offsetParent !== null && el !== loginRevealBtn);
       const idx = fields.indexOf(focused);
       if (isDown || isUp) {
         e.preventDefault();
@@ -3803,6 +3897,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const count = loginMethod.options.length;
         loginMethod.selectedIndex = (loginMethod.selectedIndex + (isRight ? 1 : -1) + count) % count;
         loginMethod.dispatchEvent(new Event("change"));
+      } else if ((isLeft || isRight) && loginRevealBtn && (focused === passwordInput || focused === loginRevealBtn)) {
+        e.preventDefault();
+        setElementFocus(focused === passwordInput ? loginRevealBtn : passwordInput);
+      } else if (isEnter && focused === loginRevealBtn) {
+        e.preventDefault();
+        toggleLoginPasswordVisibility();
       } else if (isEnter && focused === loginBtn) {
         e.preventDefault();
         loginForm.requestSubmit ? loginForm.requestSubmit() : loginBtn.click();
