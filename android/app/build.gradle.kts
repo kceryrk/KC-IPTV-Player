@@ -21,8 +21,8 @@ android {
         applicationId = "com.kciptv.player"
         minSdk = 24
         targetSdk = 37
-        versionCode = 1245
-        versionName = "1.2.45"
+        versionCode = 1258
+        versionName = "1.2.58"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

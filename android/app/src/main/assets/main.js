@@ -94,28 +94,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Dynamic UI feedback elementen
   let toastMsg = document.getElementById("toastMsg") || createUIElement("toastMsg", "toast-msg");
-  let moveBanner = document.getElementById("moveBanner") || createUIElement("moveBanner", "move-banner hidden", "🔴 VERPLAATS-MODUS ACTIEF: Gebruik ⬆/⬇ om te verplaatsen, druk ROOD om te bewaren");
-  let currentLang = store.getItem("iptv_lang") || "tr";
+  let moveBanner = document.getElementById("moveBanner") || createUIElement("moveBanner", "move-banner hidden", "VERPLAATS-MODUS ACTIEF: Gebruik ⬆/⬇ om te verplaatsen, druk ROOD om te bewaren");
   let currentLoginState = "failed";
   const appTranslations = {
     en: {
-      settings: "Settings", language: "Language", autoplayNext: "Play next episode automatically", customization: "Customization", switchProfile: "Change source", resetApp: "Reset app", close: "Close menu", back: "Back", accentColor: "Accent color", highlightColor: "Highlight color", backgroundImage: "Background image URL", apply: "Apply", removeBackground: "Remove image", done: "Done", previous: "Previous", next: "Next", playPause: "Pause / play", serverUrl: "Server URL", username: "Username", password: "Password", login: "Sign in", connecting: "Connecting to IPTV server...", loginFailed: "Login failed.", modes: "MODES", modeFavorites: "★ Favorites", modeLive: "📺 Live TV", modeMovies: "🎬 Movies", modeSeries: "🍿 Series", region: "REGION", categories: "CATEGORIES", allRegions: "🌍 All regions", channels: "CHANNELS", movies: "MOVIES", series: "SERIES", liveNow: "Live TV", noNextProgram: "No upcoming program", vodHint: "Up: controls | Play/Pause: toggle | Left/Right: seek", backToSeries: "← Back to series", noEpisodes: "No episodes found", loadingEpisodes: "Loading episodes...", unableLoad: "Unable to load episodes", favoritesRemoved: "Removed from favorites", favoritesAdded: "Added to favorites", moveOnlyFavorites: "Move mode is only available in Favorites", moveStarted: "Move mode started", positionSaved: "Position saved", channelNotFound: "Channel #{number} not found", autoplay: "Autoplay next episode", colors: "Colors", backgroundApplied: "Background updated", backgroundRemoved: "Background removed", invalidBackground: "Enter a valid HTTP or HTTPS image URL", previousEpisode: "Previous episode", nextEpisode: "Next episode", profileChanged: "Profile changed", appReset: "App reset", zapped: "Playing channel #{number}: {title}", colorRed: "Red", colorBlue: "Blue", colorGreen: "Green", colorRose: "Rose", colorOrange: "Orange", colorGold: "Gold", colorTurquoise: "Turquoise", colorLime: "Lime", colorSky: "Sky blue"
+      settings: "Settings", language: "Language", autoplayNext: "Play next episode automatically", customization: "Customization", switchProfile: "Change source", resetApp: "Reset app", close: "Close menu", back: "Back", accentColor: "Accent color", highlightColor: "Highlight color", backgroundColor: "Background color", bgDefault: "Default", bgAmoled: "AMOLED Black", done: "Done", previous: "Previous", next: "Next", playPause: "Pause / play", serverUrl: "Server URL", username: "Username", password: "Password", login: "Sign in", connecting: "Connecting to IPTV server...", loginFailed: "Login failed.", modes: "MODES", modeFavorites: "Favorites", modeLive: "Live TV", modeMovies: "Movies", modeSeries: "Series", region: "REGION", categories: "CATEGORIES", allRegions: "All regions", channels: "CHANNELS", movies: "MOVIES", series: "SERIES", liveNow: "Live TV", noNextProgram: "No upcoming program", vodHint: "Up: controls | Play/Pause: toggle | Left/Right: seek", backToSeries: "← Back to series", noEpisodes: "No episodes found", loadingEpisodes: "Loading episodes...", unableLoad: "Unable to load episodes", favoritesRemoved: "Removed from favorites", favoritesAdded: "Added to favorites", moveOnlyFavorites: "Move mode is only available in Favorites", moveStarted: "Move mode started", positionSaved: "Position saved", channelNotFound: "Channel #{number} not found", autoplay: "Autoplay next episode", colors: "Colors", previousEpisode: "Previous episode", nextEpisode: "Next episode", profileChanged: "Profile changed", appReset: "App reset", zapped: "Playing channel #{number}: {title}", colorRed: "Red", colorBlue: "Blue", colorGreen: "Green", colorRose: "Rose", colorOrange: "Orange", colorGold: "Gold", colorTurquoise: "Turquoise", colorLime: "Lime", colorSky: "Sky blue"
     },
     tr: {
-      settings: "Ayarlar", language: "Dil", autoplayNext: "Sonraki bölümü otomatik oynat", customization: "Özelleştirme", switchProfile: "Kaynağı değiştir", resetApp: "Uygulamayı sıfırla", close: "Menüyü kapat", back: "Geri", accentColor: "Vurgu rengi", highlightColor: "Öne çıkan renk", backgroundImage: "Arka plan görseli URL'si", apply: "Uygula", removeBackground: "Görseli kaldır", done: "Tamam", previous: "Önceki", next: "Sonraki", playPause: "Duraklat / oynat", serverUrl: "Sunucu URL'si", username: "Kullanıcı adı", password: "Şifre", login: "Giriş yap", connecting: "IPTV sunucusuna bağlanılıyor...", loginFailed: "Giriş başarısız.", modes: "MODLAR", modeFavorites: "★ Favoriler", modeLive: "📺 Canlı TV", modeMovies: "🎬 Filmler", modeSeries: "🍿 Diziler", region: "BÖLGE", categories: "KATEGORİLER", allRegions: "🌍 Tüm bölgeler", channels: "KANALLAR", movies: "FİLMLER", series: "DİZİLER", liveNow: "Canlı yayın", noNextProgram: "Sonraki program yok", vodHint: "Yukarı: kontroller | Oynat/Duraklat: değiştir | Sol/Sağ: sar", backToSeries: "← Dizi listesine dön", noEpisodes: "Bölüm bulunamadı", loadingEpisodes: "Bölümler yükleniyor...", unableLoad: "Bölümler yüklenemedi", favoritesRemoved: "Favorilerden çıkarıldı", favoritesAdded: "Favorilere eklendi", moveOnlyFavorites: "Taşıma modu yalnızca Favorilerde kullanılabilir", moveStarted: "Taşıma başladı", positionSaved: "Sıralama kaydedildi", channelNotFound: "#{number} numaralı kanal bulunamadı", autoplay: "Sonraki bölümü otomatik oynat", colors: "Renkler", backgroundApplied: "Arka plan güncellendi", backgroundRemoved: "Arka plan kaldırıldı", invalidBackground: "Geçerli bir HTTP veya HTTPS görsel URL'si girin", previousEpisode: "Önceki bölüm", nextEpisode: "Sonraki bölüm", profileChanged: "Profil değiştirildi", appReset: "Uygulama sıfırlandı", zapped: "Kanal #{number} açılıyor: {title}", colorRed: "Kırmızı", colorBlue: "Mavi", colorGreen: "Yeşil", colorRose: "Pembe", colorOrange: "Turuncu", colorGold: "Altın", colorTurquoise: "Turkuaz", colorLime: "Fıstık yeşili", colorSky: "Gök mavisi"
+      settings: "Ayarlar", language: "Dil", autoplayNext: "Sonraki bölümü otomatik oynat", customization: "Özelleştirme", switchProfile: "Kaynağı değiştir", resetApp: "Uygulamayı sıfırla", close: "Menüyü kapat", back: "Geri", accentColor: "Vurgu rengi", highlightColor: "Öne çıkan renk", backgroundColor: "Arka plan rengi", bgDefault: "Varsayılan", bgAmoled: "AMOLED Siyah", done: "Tamam", previous: "Önceki", next: "Sonraki", playPause: "Duraklat / oynat", serverUrl: "Sunucu URL'si", username: "Kullanıcı adı", password: "Şifre", login: "Giriş yap", connecting: "IPTV sunucusuna bağlanılıyor...", loginFailed: "Giriş başarısız.", modes: "MODLAR", modeFavorites: "Favoriler", modeLive: "Canlı TV", modeMovies: "Filmler", modeSeries: "Diziler", region: "BÖLGE", categories: "KATEGORİLER", allRegions: "Tüm bölgeler", channels: "KANALLAR", movies: "FİLMLER", series: "DİZİLER", liveNow: "Canlı yayın", noNextProgram: "Sonraki program yok", vodHint: "Yukarı: kontroller | Oynat/Duraklat: değiştir | Sol/Sağ: sar", backToSeries: "← Dizi listesine dön", noEpisodes: "Bölüm bulunamadı", loadingEpisodes: "Bölümler yükleniyor...", unableLoad: "Bölümler yüklenemedi", favoritesRemoved: "Favorilerden çıkarıldı", favoritesAdded: "Favorilere eklendi", moveOnlyFavorites: "Taşıma modu yalnızca Favorilerde kullanılabilir", moveStarted: "Taşıma başladı", positionSaved: "Sıralama kaydedildi", channelNotFound: "#{number} numaralı kanal bulunamadı", autoplay: "Sonraki bölümü otomatik oynat", colors: "Renkler", previousEpisode: "Önceki bölüm", nextEpisode: "Sonraki bölüm", profileChanged: "Profil değiştirildi", appReset: "Uygulama sıfırlandı", zapped: "Kanal #{number} açılıyor: {title}", colorRed: "Kırmızı", colorBlue: "Mavi", colorGreen: "Yeşil", colorRose: "Pembe", colorOrange: "Turuncu", colorGold: "Altın", colorTurquoise: "Turkuaz", colorLime: "Fıstık yeşili", colorSky: "Gök mavisi"
     },
     nl: {
-      settings: "Instellingen", language: "Taal", autoplayNext: "Volgende aflevering automatisch afspelen", customization: "Aanpassen", switchProfile: "Bron wijzigen", resetApp: "App resetten", close: "Menu sluiten", back: "Terug", accentColor: "Accentkleur", highlightColor: "Markeringskleur", backgroundImage: "URL van achtergrondafbeelding", apply: "Toepassen", removeBackground: "Afbeelding verwijderen", done: "Gereed", previous: "Vorige", next: "Volgende", playPause: "Pauzeren / afspelen", serverUrl: "Server-URL", username: "Gebruikersnaam", password: "Wachtwoord", login: "Inloggen", connecting: "Verbinden met IPTV-server...", loginFailed: "Inloggen mislukt.", modes: "MODI", modeFavorites: "★ Favorieten", modeLive: "📺 Live-tv", modeMovies: "🎬 Films", modeSeries: "🍿 Series", region: "REGIO", categories: "CATEGORIEËN", allRegions: "🌍 Alle regio's", channels: "KANALEN", movies: "FILMS", series: "SERIES", liveNow: "Live-uitzending", noNextProgram: "Geen volgend programma", vodHint: "Omhoog: bediening | Afspelen/Pauze: wisselen | Links/Rechts: zoeken", backToSeries: "← Terug naar series", noEpisodes: "Geen afleveringen gevonden", loadingEpisodes: "Afleveringen laden...", unableLoad: "Afleveringen laden mislukt", favoritesRemoved: "Verwijderd uit favorieten", favoritesAdded: "Toegevoegd aan favorieten", moveOnlyFavorites: "Verplaatsen kan alleen in Favorieten", moveStarted: "Verplaatsen gestart", positionSaved: "Positie opgeslagen", channelNotFound: "Kanaal #{number} niet gevonden", autoplay: "Volgende aflevering automatisch afspelen", colors: "Kleuren", backgroundApplied: "Achtergrond bijgewerkt", backgroundRemoved: "Achtergrond verwijderd", invalidBackground: "Voer een geldige HTTP- of HTTPS-afbeeldings-URL in", previousEpisode: "Vorige aflevering", nextEpisode: "Volgende aflevering", profileChanged: "Profiel gewijzigd", appReset: "App gereset", zapped: "Kanaal #{number} wordt afgespeeld: {title}", colorRed: "Rood", colorBlue: "Blauw", colorGreen: "Groen", colorRose: "Roze", colorOrange: "Oranje", colorGold: "Goud", colorTurquoise: "Turquoise", colorLime: "Limoen", colorSky: "Hemelsblauw"
+      settings: "Instellingen", language: "Taal", autoplayNext: "Volgende aflevering automatisch afspelen", customization: "Aanpassen", switchProfile: "Bron wijzigen", resetApp: "App resetten", close: "Menu sluiten", back: "Terug", accentColor: "Accentkleur", highlightColor: "Markeringskleur", backgroundColor: "Achtergrondkleur", bgDefault: "Standaard", bgAmoled: "AMOLED Zwart", done: "Gereed", previous: "Vorige", next: "Volgende", playPause: "Pauzeren / afspelen", serverUrl: "Server-URL", username: "Gebruikersnaam", password: "Wachtwoord", login: "Inloggen", connecting: "Verbinden met IPTV-server...", loginFailed: "Inloggen mislukt.", modes: "MODI", modeFavorites: "Favorieten", modeLive: "Live-tv", modeMovies: "Films", modeSeries: "Series", region: "REGIO", categories: "CATEGORIEËN", allRegions: "Alle regio's", channels: "KANALEN", movies: "FILMS", series: "SERIES", liveNow: "Live-uitzending", noNextProgram: "Geen volgend programma", vodHint: "Omhoog: bediening | Afspelen/Pauze: wisselen | Links/Rechts: zoeken", backToSeries: "← Terug naar series", noEpisodes: "Geen afleveringen gevonden", loadingEpisodes: "Afleveringen laden...", unableLoad: "Afleveringen laden mislukt", favoritesRemoved: "Verwijderd uit favorieten", favoritesAdded: "Toegevoegd aan favorieten", moveOnlyFavorites: "Verplaatsen kan alleen in Favorieten", moveStarted: "Verplaatsen gestart", positionSaved: "Positie opgeslagen", channelNotFound: "Kanaal #{number} niet gevonden", autoplay: "Volgende aflevering automatisch afspelen", colors: "Kleuren", previousEpisode: "Vorige aflevering", nextEpisode: "Volgende aflevering", profileChanged: "Profiel gewijzigd", appReset: "App gereset", zapped: "Kanaal #{number} wordt afgespeeld: {title}", colorRed: "Rood", colorBlue: "Blauw", colorGreen: "Groen", colorRose: "Roze", colorOrange: "Oranje", colorGold: "Goud", colorTurquoise: "Turquoise", colorLime: "Limoen", colorSky: "Hemelsblauw"
     },
     fr: {
-      settings: "Paramètres", language: "Langue", autoplayNext: "Lire automatiquement l’épisode suivant", customization: "Personnalisation", switchProfile: "Changer de source", resetApp: "Réinitialiser l’application", close: "Fermer le menu", back: "Retour", accentColor: "Couleur d’accentuation", highlightColor: "Couleur de surbrillance", backgroundImage: "URL de l’image d’arrière-plan", apply: "Appliquer", removeBackground: "Supprimer l’image", done: "Terminé", previous: "Précédent", next: "Suivant", playPause: "Pause / lecture", serverUrl: "URL du serveur", username: "Nom d’utilisateur", password: "Mot de passe", login: "Connexion", connecting: "Connexion au serveur IPTV...", loginFailed: "Échec de la connexion.", modes: "MODES", modeFavorites: "★ Favoris", modeLive: "📺 TV en direct", modeMovies: "🎬 Films", modeSeries: "🍿 Séries", region: "RÉGION", categories: "CATÉGORIES", allRegions: "🌍 Toutes les régions", channels: "CHAÎNES", movies: "FILMS", series: "SÉRIES", liveNow: "En direct", noNextProgram: "Aucun programme suivant", vodHint: "Haut : commandes | Lecture/Pause : basculer | Gauche/Droite : avancer", backToSeries: "← Retour aux séries", noEpisodes: "Aucun épisode trouvé", loadingEpisodes: "Chargement des épisodes...", unableLoad: "Impossible de charger les épisodes", favoritesRemoved: "Retiré des favoris", favoritesAdded: "Ajouté aux favoris", moveOnlyFavorites: "Le déplacement est réservé aux Favoris", moveStarted: "Déplacement commencé", positionSaved: "Position enregistrée", channelNotFound: "Chaîne #{number} introuvable", autoplay: "Lire automatiquement l’épisode suivant", colors: "Couleurs", backgroundApplied: "Arrière-plan mis à jour", backgroundRemoved: "Arrière-plan supprimé", invalidBackground: "Saisissez une URL d’image HTTP ou HTTPS valide", previousEpisode: "Épisode précédent", nextEpisode: "Épisode suivant", profileChanged: "Profil modifié", appReset: "Application réinitialisée", zapped: "Lecture de la chaîne #{number} : {title}", colorRed: "Rouge", colorBlue: "Bleu", colorGreen: "Vert", colorRose: "Rose", colorOrange: "Orange", colorGold: "Or", colorTurquoise: "Turquoise", colorLime: "Citron vert", colorSky: "Bleu ciel"
+      settings: "Paramètres", language: "Langue", autoplayNext: "Lire automatiquement l’épisode suivant", customization: "Personnalisation", switchProfile: "Changer de source", resetApp: "Réinitialiser l’application", close: "Fermer le menu", back: "Retour", accentColor: "Couleur d’accentuation", highlightColor: "Couleur de surbrillance", backgroundColor: "Couleur d'arrière-plan", bgDefault: "Par défaut", bgAmoled: "Noir AMOLED", done: "Terminé", previous: "Précédent", next: "Suivant", playPause: "Pause / lecture", serverUrl: "URL du serveur", username: "Nom d’utilisateur", password: "Mot de passe", login: "Connexion", connecting: "Connexion au serveur IPTV...", loginFailed: "Échec de la connexion.", modes: "MODES", modeFavorites: "Favoris", modeLive: "TV en direct", modeMovies: "Films", modeSeries: "Séries", region: "RÉGION", categories: "CATÉGORIES", allRegions: "Toutes les régions", channels: "CHAÎNES", movies: "FILMS", series: "SÉRIES", liveNow: "En direct", noNextProgram: "Aucun programme suivant", vodHint: "Haut : commandes | Lecture/Pause : basculer | Gauche/Droite : avancer", backToSeries: "← Retour aux séries", noEpisodes: "Aucun épisode trouvé", loadingEpisodes: "Chargement des épisodes...", unableLoad: "Impossible de charger les épisodes", favoritesRemoved: "Retiré des favoris", favoritesAdded: "Ajouté aux favoris", moveOnlyFavorites: "Le déplacement est réservé aux Favoris", moveStarted: "Déplacement commencé", positionSaved: "Position enregistrée", channelNotFound: "Chaîne #{number} introuvable", autoplay: "Lire automatiquement l’épisode suivant", colors: "Couleurs", previousEpisode: "Épisode précédent", nextEpisode: "Épisode suivant", profileChanged: "Profil modifié", appReset: "Application réinitialisée", zapped: "Lecture de la chaîne #{number} : {title}", colorRed: "Rouge", colorBlue: "Bleu", colorGreen: "Vert", colorRose: "Rose", colorOrange: "Orange", colorGold: "Or", colorTurquoise: "Turquoise", colorLime: "Citron vert", colorSky: "Bleu ciel"
     }
   };
 
-  Object.assign(appTranslations.en, { backgroundPlaceholder: "https://example.com/image.jpg", moveBanner: "MOVE MODE: Use Up/Down to reorder, Red to save", season: "Season {number}", episode: "Episode {number}", channelZap: "CHANNEL ZAP" });
-  Object.assign(appTranslations.tr, { backgroundPlaceholder: "https://example.com/image.jpg", moveBanner: "TAŞIMA MODU: Yukarı/Aşağı ile sırala, kaydetmek için Kırmızı tuşa bas", season: "{number}. Sezon", episode: "{number}. Bölüm", channelZap: "KANAL DEĞİŞTİR" });
-  Object.assign(appTranslations.nl, { backgroundPlaceholder: "https://example.com/image.jpg", moveBanner: "VERPLAATSEN: Gebruik Omhoog/Omlaag om te sorteren, druk op Rood om op te slaan", season: "Seizoen {number}", episode: "Aflevering {number}", channelZap: "KANAAL ZAPPEN" });
-  Object.assign(appTranslations.fr, { backgroundPlaceholder: "https://example.com/image.jpg", moveBanner: "DÉPLACEMENT : utilisez Haut/Bas pour réorganiser, appuyez sur Rouge pour enregistrer", season: "Saison {number}", episode: "Épisode {number}", channelZap: "CHANGEMENT DE CHAÎNE" });
+  function getSystemLanguage() {
+    try {
+      let sysLang = "";
+      if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.getSystemLanguage === "function") {
+        sysLang = window.AndroidExternalPlayer.getSystemLanguage();
+      } else if (navigator.language) {
+        sysLang = navigator.language.split("-")[0].toLowerCase();
+      }
+      if (sysLang && appTranslations[sysLang]) {
+        return sysLang;
+      }
+    } catch (e) {}
+    return "en";
+  }
+
+  let currentLang = getSystemLanguage();
+  window.updateSystemLanguage = function() {
+    const newLang = getSystemLanguage();
+    if (newLang !== currentLang) {
+      applyAppLanguage(newLang);
+    }
+  };
+
+  Object.assign(appTranslations.en, { moveBanner: "MOVE MODE: Use Up/Down to reorder, Red to save", season: "Season {number}", episode: "Episode {number}", channelZap: "CHANNEL ZAP" });
+  Object.assign(appTranslations.tr, { moveBanner: "TAŞIMA MODU: Yukarı/Aşağı ile sırala, kaydetmek için Kırmızı tuşa bas", season: "{number}. Sezon", episode: "{number}. Bölüm", channelZap: "KANAL DEĞİŞTİR" });
+  Object.assign(appTranslations.nl, { moveBanner: "VERPLAATSEN: Gebruik Omhoog/Omlaag om te sorteren, druk op Rood om op te slaan", season: "Seizoen {number}", episode: "Aflevering {number}", channelZap: "KANAAL ZAPPEN" });
+  Object.assign(appTranslations.fr, { moveBanner: "DÉPLACEMENT : utilisez Haut/Bas pour réorganiser, appuyez sur Rouge pour enregistrer", season: "Saison {number}", episode: "Épisode {number}", channelZap: "CHANGEMENT DE CHAÎNE" });
 
   Object.assign(appTranslations.en, { providerLogin: "Provider login", loginMethod: "Login method", xtreamCodes: "Xtream (Movies & Series)", m3uPlaylist: "M3U playlist (Live TV)", m3uUrl: "Playlist URL", loggingIn: "Logging in", loggedIn: "Logged in", loginRequired: "Login failed", noSavedProfile: "No saved profile. Enter your provider details.", invalidCredentials: "The provider rejected the username or password.", playlistUnavailable: "The playlist could not be loaded.", playlistInvalid: "The URL did not return a valid M3U playlist.", loginErrorToast: "Login failed: {reason}" });
   Object.assign(appTranslations.tr, { providerLogin: "Sağlayıcı girişi", loginMethod: "Giriş yöntemi", xtreamCodes: "Xtream (Film ve Dizi)", m3uPlaylist: "M3U listesi (Canlı TV)", m3uUrl: "Oynatma listesi URL'si", loggingIn: "Giriş yapılıyor", loggedIn: "Giriş başarılı", loginRequired: "Giriş başarısız", noSavedProfile: "Kayıtlı profil yok. Sağlayıcı bilgilerini girin.", invalidCredentials: "Sağlayıcı kullanıcı adı veya parolayı kabul etmedi.", playlistUnavailable: "Oynatma listesi yüklenemedi.", playlistInvalid: "URL geçerli bir M3U oynatma listesi döndürmedi.", loginErrorToast: "Giriş başarısız: {reason}" });
@@ -125,15 +147,11 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.assign(appTranslations.tr, { m3uProfiles: "Kayıtlı listeler", m3uProfileNew: "+ Yeni liste", m3uProfileName: "Liste adı", generateM3uPrompt: "M3U listesi Xtream girişinizden oluşturulsun mu?" });
   Object.assign(appTranslations.nl, { m3uProfiles: "Opgeslagen afspeellijsten", m3uProfileNew: "+ Nieuwe afspeellijst", m3uProfileName: "Naam afspeellijst", generateM3uPrompt: "Zal de M3U-afspeellijst maken op basis van je Xtream-login?" });
   Object.assign(appTranslations.fr, { m3uProfiles: "Playlists enregistrées", m3uProfileNew: "+ Nouvelle playlist", m3uProfileName: "Nom de la playlist", generateM3uPrompt: "Générer la playlist M3U à partir de votre connexion Xtream ?" });
-  Object.assign(appTranslations.en, { presetBackgrounds: "Presets" });
-  Object.assign(appTranslations.tr, { presetBackgrounds: "Hazır arka planlar" });
-  Object.assign(appTranslations.nl, { presetBackgrounds: "Voorinstellingen" });
-  Object.assign(appTranslations.fr, { presetBackgrounds: "Préréglages" });
-  Object.assign(appTranslations.en, { m3uGenerateXtream: "⚡ Generate from Xtream", clockFormat: "Clock format", colorTab: "Color", backgroundTab: "Background", clockTab: "Clock" });
-  Object.assign(appTranslations.tr, { m3uGenerateXtream: "⚡ Xtream'den oluştur", clockFormat: "Saat biçimi", colorTab: "Renk", backgroundTab: "Arka plan", clockTab: "Saat" });
-  Object.assign(appTranslations.nl, { m3uGenerateXtream: "⚡ Genereren uit Xtream", clockFormat: "Klokweergave", colorTab: "Kleur", backgroundTab: "Achtergrond", clockTab: "Klok" });
-  Object.assign(appTranslations.fr, { m3uGenerateXtream: "⚡ Générer depuis Xtream", clockFormat: "Format de l'horloge", colorTab: "Couleur", backgroundTab: "Arrière-plan", clockTab: "Horloge" });
-  const languageOptions = { en: "🇬🇧", tr: "🇹🇷", nl: "🇳🇱", fr: "🇫🇷" };
+  Object.assign(appTranslations.en, { m3uGenerateXtream: "Generate from Xtream", clockFormat: "Clock format", colorTab: "Color", clockTab: "Clock" });
+  Object.assign(appTranslations.tr, { m3uGenerateXtream: "Xtream'den oluştur", clockFormat: "Saat biçimi", colorTab: "Renk", clockTab: "Saat" });
+  Object.assign(appTranslations.nl, { m3uGenerateXtream: "Genereren uit Xtream", clockFormat: "Klokweergave", colorTab: "Kleur", clockTab: "Klok" });
+  Object.assign(appTranslations.fr, { m3uGenerateXtream: "Générer depuis Xtream", clockFormat: "Format de l'horloge", colorTab: "Couleur", clockTab: "Horloge" });
+  const languageOptions = { en: "EN", tr: "TR", nl: "NL", fr: "FR" };
   Object.assign(appTranslations.en, { generalTab: "General", playbackTab: "Playback", profileTab: "Source" });
   Object.assign(appTranslations.tr, { generalTab: "Genel", playbackTab: "Oynatma", profileTab: "Kaynak" });
   Object.assign(appTranslations.nl, { generalTab: "Algemeen", playbackTab: "Afspelen", profileTab: "Bron" });
@@ -146,17 +164,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     return text;
   }
-  Object.assign(appTranslations.en, {"hintFavorite": "Favorite", "hintReorder": "Reorder", "hintHide": "Hide category", "hintSearch": "Search", "searchTitle": "Search channels", "searchPlaceholder": "Type a channel name", "searchNoResults": "No channels found", "categoryHidden": "Category hidden", "resetHidden": "Show hidden categories", "hiddenReset": "Hidden categories restored", "refreshInterval": "Refresh lists", "refreshOff": "Off", uiScale: "Interface scale", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Large", menuStyle: "Menu display mode", menuOneAtATime: "One menu open at a time", menuAllVisible: "Multi-column cascading", materialTheme: "Material You palette", androidExternalPlayer: "Use Android external player", emptyFavorites: "No favorites added yet", deviceLayout: "Device layout", layoutMobile: "Mobile (Portrait)", layoutTv: "TV (Landscape)", navHome: "Home", navSearch: "Search", navLiveTv: "Live TV", navProfile: "Profile", copyPlaylist: "Copy playlist URL", regionSetting: "Region", allRegions: "All regions"});
-  Object.assign(appTranslations.tr, {"hintFavorite": "Favori", "hintReorder": "Sırala", "hintHide": "Kategoriyi gizle", "hintSearch": "Ara", "searchTitle": "Kanal ara", "searchPlaceholder": "Kanal adını yazın", "searchNoResults": "Kanal bulunamadı", "categoryHidden": "Kategori gizlendi", "resetHidden": "Gizli kategorileri göster", "hiddenReset": "Gizli kategoriler geri yüklendi", "refreshInterval": "Listeleri yenile", "refreshOff": "Kapalı", uiScale: "Arayüz boyutu", uiScaleCompact: "Küçük", uiScaleDefault: "Normal", uiScaleLarge: "Büyük", menuStyle: "Menü görünüm modu", menuOneAtATime: "Tek menü açık", menuAllVisible: "Çoklu sütun", materialTheme: "Material You paleti", androidExternalPlayer: "Harici oynatıcı kullan", emptyFavorites: "Henüz favori eklenmedi", deviceLayout: "Cihaz düzeni", layoutMobile: "Mobil (Dikey)", layoutTv: "TV (Yatay)", navHome: "Ana Sayfa", navSearch: "Ara", navLiveTv: "Canlı TV", navProfile: "Profil", copyPlaylist: "Oynatma listesini kopyala", regionSetting: "Bölge", allRegions: "Tüm bölgeler"});
-  Object.assign(appTranslations.nl, {"hintFavorite": "Favoriet", "hintReorder": "Verplaatsen", "hintHide": "Categorie verbergen", "hintSearch": "Zoeken", "searchTitle": "Zoek kanalen", "searchPlaceholder": "Typ een kanaalnaam", "searchNoResults": "Geen kanalen gevonden", "categoryHidden": "Categorie verborgen", "resetHidden": "Verborgen categorieën tonen", "hiddenReset": "Verborgen categorieën hersteld", "refreshInterval": "Lijsten vernieuwen", "refreshOff": "Uit", uiScale: "Interface-schaal", uiScaleCompact: "Compact", uiScaleDefault: "Normaal", uiScaleLarge: "Groot", menuStyle: "Menuweergave", menuOneAtATime: "Eén menu tegelijk open", menuAllVisible: "Meerdere kolommen", materialTheme: "Material You-palet", androidExternalPlayer: "Externe speler gebruiken", emptyFavorites: "Nog geen favorieten toegevoegd", deviceLayout: "Apparaatindeling", layoutMobile: "Mobiel (Staand)", layoutTv: "TV (Liggend)", navHome: "Start", navSearch: "Zoeken", navLiveTv: "Live TV", navProfile: "Profiel", copyPlaylist: "Afspeellijst kopiëren", regionSetting: "Regio", allRegions: "Alle regio's"});
-  Object.assign(appTranslations.fr, {"hintFavorite": "Favori", "hintReorder": "Déplacer", "hintHide": "Masquer la catégorie", "hintSearch": "Rechercher", "searchTitle": "Rechercher des chaînes", "searchPlaceholder": "Saisissez un nom de chaîne", "searchNoResults": "Aucune chaîne trouvée", "categoryHidden": "Catégorie masquée", "resetHidden": "Afficher les catégories masquées", "hiddenReset": "Catégories masquées restaurées", "refreshInterval": "Actualiser les listes", "refreshOff": "Désactivé", uiScale: "Échelle de l'interface", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Grand", menuStyle: "Mode d'affichage du menu", menuOneAtATime: "Un seul menu ouvert à la fois", menuAllVisible: "Colonnes multiples", materialTheme: "Palette Material You", androidExternalPlayer: "Utiliser le lecteur externe", emptyFavorites: "Aucun favori ajouté pour l'instant", deviceLayout: "Disposition", layoutMobile: "Mobile (Portrait)", layoutTv: "TV (Paysage)", navHome: "Accueil", navSearch: "Recherche", navLiveTv: "Direct", navProfile: "Profil", copyPlaylist: "Copier l'URL de la playlist", regionSetting: "Région", allRegions: "Toutes les régions"});
+  Object.assign(appTranslations.en, {"hintFavorite": "Favorite", "hintReorder": "Reorder", "hintHide": "Hide category", "hintSearch": "Search", "searchTitle": "Search channels", "searchPlaceholder": "Type a channel name", "searchNoResults": "No channels found", "categoryHidden": "Category hidden", "resetHidden": "Show hidden categories", "hiddenReset": "Hidden categories restored", "refreshInterval": "Refresh lists", "refreshOff": "Off", uiScale: "Interface scale", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Large", menuStyle: "Menu display mode", menuOneAtATime: "One menu open at a time", menuAllVisible: "Multi-column cascading", materialTheme: "Material You palette", paletteSystem: "System (Material You, default)", androidExternalPlayer: "Use Android external player", emptyFavorites: "No favorites added yet", deviceLayout: "Device layout", layoutMobile: "Mobile (Portrait)", layoutTv: "TV (Landscape)", navHome: "Home", navSearch: "Search", navLiveTv: "Live TV", navProfile: "Profile", copyPlaylist: "Copy playlist URL", regionSetting: "Region", allRegions: "All regions"});
+  Object.assign(appTranslations.tr, {"hintFavorite": "Favori", "hintReorder": "Sırala", "hintHide": "Kategoriyi gizle", "hintSearch": "Ara", "searchTitle": "Kanal ara", "searchPlaceholder": "Kanal adını yazın", "searchNoResults": "Kanal bulunamadı", "categoryHidden": "Kategori gizlendi", "resetHidden": "Gizli kategorileri göster", "hiddenReset": "Gizli kategoriler geri yüklendi", "refreshInterval": "Listeleri yenile", "refreshOff": "Kapalı", uiScale: "Arayüz boyutu", uiScaleCompact: "Küçük", uiScaleDefault: "Normal", uiScaleLarge: "Büyük", menuStyle: "Menü görünüm modu", menuOneAtATime: "Tek menü açık", menuAllVisible: "Çoklu sütun", materialTheme: "Material You paleti", paletteSystem: "Sistem (Material You, varsayılan)", androidExternalPlayer: "Harici oynatıcı kullan", emptyFavorites: "Henüz favori eklenmedi", deviceLayout: "Cihaz düzeni", layoutMobile: "Mobil (Dikey)", layoutTv: "TV (Yatay)", navHome: "Ana Sayfa", navSearch: "Ara", navLiveTv: "Canlı TV", navProfile: "Profil", copyPlaylist: "Oynatma listesini kopyala", regionSetting: "Bölge", allRegions: "Tüm bölgeler"});
+  Object.assign(appTranslations.nl, {"hintFavorite": "Favoriet", "hintReorder": "Verplaatsen", "hintHide": "Categorie verbergen", "hintSearch": "Zoeken", "searchTitle": "Zoek kanalen", "searchPlaceholder": "Typ een kanaalnaam", "searchNoResults": "Geen kanalen gevonden", "categoryHidden": "Categorie verborgen", "resetHidden": "Verborgen categorieën tonen", "hiddenReset": "Verborgen categorieën hersteld", "refreshInterval": "Lijsten vernieuwen", "refreshOff": "Uit", uiScale: "Interface-schaal", uiScaleCompact: "Compact", uiScaleDefault: "Normaal", uiScaleLarge: "Groot", menuStyle: "Menuweergave", menuOneAtATime: "Eén menu tegelijk open", menuAllVisible: "Meerdere kolommen", materialTheme: "Material You-palet", paletteSystem: "Systeem (Material You, standaard)", androidExternalPlayer: "Externe speler gebruiken", emptyFavorites: "Nog geen favorieten toegevoegd", deviceLayout: "Apparaatindeling", layoutMobile: "Mobiel (Staand)", layoutTv: "TV (Liggend)", navHome: "Start", navSearch: "Zoeken", navLiveTv: "Live TV", navProfile: "Profiel", copyPlaylist: "Afspeellijst kopiëren", regionSetting: "Regio", allRegions: "Alle regio's"});
+  Object.assign(appTranslations.fr, {"hintFavorite": "Favori", "hintReorder": "Déplacer", "hintHide": "Masquer la catégorie", "hintSearch": "Rechercher", "searchTitle": "Rechercher des chaînes", "searchPlaceholder": "Saisissez un nom de chaîne", "searchNoResults": "Aucune chaîne trouvée", "categoryHidden": "Catégorie masquée", "resetHidden": "Afficher les catégories masquées", "hiddenReset": "Catégories masquées restaurées", "refreshInterval": "Actualiser les listes", "refreshOff": "Désactivé", uiScale: "Échelle de l'interface", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Grand", menuStyle: "Mode d'affichage du menu", menuOneAtATime: "Un seul menu ouvert à la fois", menuAllVisible: "Colonnes multiples", materialTheme: "Palette Material You", paletteSystem: "Système (Material You, par défaut)", androidExternalPlayer: "Utiliser le lecteur externe", emptyFavorites: "Aucun favori ajouté pour l'instant", deviceLayout: "Disposition", layoutMobile: "Mobile (Portrait)", layoutTv: "TV (Paysage)", navHome: "Accueil", navSearch: "Recherche", navLiveTv: "Direct", navProfile: "Profil", copyPlaylist: "Copier l'URL de la playlist", regionSetting: "Région", allRegions: "Toutes les régions"});
   Object.assign(appTranslations.en, { offlineTitle: "You're offline", offlineSubtitle: "Check your internet connection and try again.", retry: "Retry", backOnline: "Back online" });
   Object.assign(appTranslations.tr, { offlineTitle: "Çevrimdışısınız", offlineSubtitle: "İnternet bağlantınızı kontrol edip tekrar deneyin.", retry: "Tekrar dene", backOnline: "Tekrar çevrimiçi" });
   Object.assign(appTranslations.nl, { offlineTitle: "Je bent offline", offlineSubtitle: "Controleer je internetverbinding en probeer het opnieuw.", retry: "Opnieuw", backOnline: "Weer online" });
   Object.assign(appTranslations.fr, { offlineTitle: "Vous êtes hors ligne", offlineSubtitle: "Vérifiez votre connexion Internet et réessayez.", retry: "Réessayer", backOnline: "De nouveau en ligne" });
   let singleMenuMode = store.getItem("iptv_single_menu") !== "false";
   let uiScale = store.getItem("iptv_ui_scale") || "default";
-  let materialPalette = store.getItem("iptv_palette") || "dynamic-blue";
+  let materialPalette = store.getItem("iptv_palette") || "system";
   let mobileActiveSection = "home";
   let appSelectedRegion = store.getItem("iptv_app_region") || "ALL";
   var homeFeaturedItem = null;
@@ -164,15 +182,24 @@ document.addEventListener("DOMContentLoaded", () => {
   var isFetchingHomeShelves = false;
   var currentViewAllType = "vod";
   var currentViewAllCatId = "all";
-  let deviceLayout = store.getItem("iptv_device_layout");
-  if (!deviceLayout) {
-    if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.getDeviceLayout === "function") {
-      deviceLayout = window.AndroidExternalPlayer.getDeviceLayout();
-    } else {
-      deviceLayout = (window.innerHeight > window.innerWidth) ? "mobile" : "tv";
+  function detectDeviceLayout() {
+    if (window.AndroidExternalPlayer) {
+      if (typeof window.AndroidExternalPlayer.isMobileDevice === "function" && window.AndroidExternalPlayer.isMobileDevice()) {
+        const saved = store.getItem("iptv_device_layout");
+        return (saved === "tv") ? "tv" : "mobile";
+      }
+      if (typeof window.AndroidExternalPlayer.getDeviceLayout === "function") {
+        const nativeLayout = window.AndroidExternalPlayer.getDeviceLayout();
+        if (nativeLayout === "mobile" || nativeLayout === "tv") return nativeLayout;
+      }
     }
+    const saved = store.getItem("iptv_device_layout");
+    if (saved === "mobile" || saved === "tv") return saved;
+    const isPortrait = window.innerHeight > window.innerWidth;
+    const hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    return (isPortrait || hasTouch) ? "mobile" : "tv";
   }
-  if (!deviceLayout) deviceLayout = "mobile";
+  let deviceLayout = detectDeviceLayout();
 
   const NON_REGION_WORDS = new Set([
     "VIP", "HEVC", "FHD", "UHD", "4K", "SD", "HD", "KINO", "FILM", "SERIES", "MOVIES",
@@ -339,6 +366,128 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Canvas lens: draws an edge-only refraction rim on the nav thumb. The centre stays clear;
+  // the rim bends toward the direction of motion and updates every frame while moving.
+  const navLens = (() => {
+    let canvas = null;
+    let ctx = null;
+    let raf = 0;
+    let until = 0;
+    let dragging = false;
+    let lastLeft = null;
+    let vel = 0;
+    const indicator = () => document.querySelector("#mobileBottomNav .mobile-nav-indicator");
+    const draw = (ind) => {
+      if (!canvas) {
+        canvas = document.createElement("canvas");
+        canvas.className = "mobile-nav-lens";
+        ind.appendChild(canvas);
+        ctx = canvas.getContext("2d");
+      }
+      const w = ind.offsetWidth;
+      const h = ind.offsetHeight;
+      if (!w || !h) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const pw = Math.round(w * dpr);
+      const ph = Math.round(h * dpr);
+      if (canvas.width !== pw || canvas.height !== ph) {
+        canvas.width = pw;
+        canvas.height = ph;
+      }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      const r = h / 2;
+      const speedAbs = Math.min(1, Math.abs(vel) / 12);
+      const shift = Math.max(-18, Math.min(18, vel * 1.2));
+      const band = 7 + speedAbs * 8;
+      const inset = 1.5;
+      const rimPath = (dx, dy, pad) => {
+        const x = inset + dx - pad / 2;
+        const y = inset + dy - pad / 2;
+        const rw = w - inset * 2 + pad;
+        const rh = h - inset * 2 + pad;
+        ctx.beginPath();
+        ctx.roundRect(x, y, rw, rh, Math.max(0, r - inset + pad / 2));
+      };
+      // Soft centre-to-edge falloff: transparent middle, brighter rim.
+      const g = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.12, w / 2, h / 2, Math.max(w, h) * 0.55);
+      g.addColorStop(0, "rgba(255,255,255,0)");
+      g.addColorStop(1, "rgba(255,255,255,0.10)");
+      ctx.fillStyle = g;
+      rimPath(0, 0, 0);
+      ctx.fill();
+      // Refraction band: wide edge strokes displaced toward the motion, with chromatic split.
+      const strokes = [
+        { dx: shift - 2.5, color: "rgba(255,80,110,0.35)", lw: band },
+        { dx: shift + 2.5, color: "rgba(80,160,255,0.35)", lw: band },
+        { dx: shift, color: "rgba(255,255,255,0.2)", lw: 1.5 + speedAbs * 1.5 },
+      ];
+      for (const s of strokes) {
+        ctx.strokeStyle = s.color;
+        ctx.lineWidth = s.lw;
+        rimPath(s.dx, 0, 0);
+        ctx.stroke();
+      }
+    };
+    // Sets --mag (0..1) on each nav item from its distance to the lens centre; 0 when the lens is at rest.
+    const magnify = (ind, live) => {
+      const rect = ind.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      document.querySelectorAll("#mobileBottomNav .mobile-nav-item").forEach(btn => {
+        let m = 0;
+        if (live) {
+          const b = btn.getBoundingClientRect();
+          const t = Math.max(0, 1 - Math.abs(b.left + b.width / 2 - cx) / (rect.width * 0.75));
+          m = t * t * (3 - 2 * t);
+        }
+        btn.style.setProperty("--mag", m.toFixed(3));
+      });
+    };
+    const loop = () => {
+      const ind = indicator();
+      raf = 0;
+      if (!ind) return;
+      const left = ind.getBoundingClientRect().left;
+      const dx = lastLeft === null ? 0 : left - lastLeft;
+      lastLeft = left;
+      vel = vel * 0.8 + dx * 0.2;
+      draw(ind);
+      const live = dragging || performance.now() < until || Math.abs(vel) > 0.05;
+      magnify(ind, true);
+      if (live) {
+        raf = requestAnimationFrame(loop);
+      } else {
+        vel = 0;
+        draw(ind);
+        lastLeft = null;
+      }
+    };
+    const kick = (ms = 700) => {
+      until = Math.max(until, performance.now() + ms);
+      if (!raf) raf = requestAnimationFrame(loop);
+    };
+    return {
+      kick,
+      setDragging(value) {
+        dragging = value;
+        kick(0);
+      },
+    };
+  })();
+
+  function moveMobileNavIndicator(item, animate = true) {
+    const indicator = document.querySelector("#mobileBottomNav .mobile-nav-indicator");
+    if (!indicator || !item) return;
+    if (!animate) indicator.style.transition = "none";
+    indicator.style.width = `${item.offsetWidth}px`;
+    indicator.style.transform = `translateX(${item.offsetLeft}px)`;
+    if (!animate) {
+      void indicator.offsetWidth;
+      indicator.style.transition = "";
+    }
+    navLens.kick();
+  }
+
   function syncMobileNavState(activeTab) {
     if (activeTab) mobileActiveSection = activeTab;
     document.body.classList.remove("mobile-sec-home", "mobile-sec-live", "mobile-sec-search", "mobile-sec-profile");
@@ -346,6 +495,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("#mobileBottomNav .mobile-nav-item").forEach(btn => {
       btn.classList.toggle("active", btn.dataset.mobileTab === mobileActiveSection);
     });
+    moveMobileNavIndicator(document.querySelector(`#mobileBottomNav .mobile-nav-item[data-mobile-tab="${mobileActiveSection}"]`));
     if (mobileActiveSection === "home" && typeof renderMobileHomeScreen === "function") {
       renderMobileHomeScreen();
     }
@@ -457,20 +607,82 @@ document.addEventListener("DOMContentLoaded", () => {
     updateSettingsSelection();
   }
 
+  function getSystemMaterialColors() {
+    if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.getSystemMaterialYouColors === "function") {
+      try {
+        const raw = window.AndroidExternalPlayer.getSystemMaterialYouColors();
+        const data = typeof raw === "string" ? JSON.parse(raw) : raw;
+        if (data && data.available) {
+          return data;
+        }
+      } catch (e) {
+        console.warn("Failed to get system Material You colors:", e);
+      }
+    }
+    return null;
+  }
+
   function applyMaterialPalette(paletteName) {
-    if (!MATERIAL_PALETTES[paletteName]) paletteName = "dynamic-blue";
+    if (!paletteName || (paletteName !== "system" && !MATERIAL_PALETTES[paletteName])) {
+      paletteName = "system";
+    }
     materialPalette = paletteName;
     store.setItem("iptv_palette", materialPalette);
-    const pal = MATERIAL_PALETTES[materialPalette];
+
+    let pal;
+    if (materialPalette === "system") {
+      const sys = getSystemMaterialColors();
+      if (sys) {
+        pal = {
+          primary: sys.primary || "#a8c7fa",
+          onPrimary: sys.onPrimary || "#043063",
+          primaryContainer: sys.primaryContainer || "#1c4479",
+          onPrimaryContainer: sys.onPrimaryContainer || "#d3e3fd",
+          secondary: sys.secondary || "#bec6dc",
+          onSecondary: sys.onSecondary || "#283141",
+          secondaryContainer: sys.secondaryContainer || "#3e4759",
+          onSecondaryContainer: sys.onSecondaryContainer || "#dae2f9",
+          tertiary: sys.tertiary || "#ddbcde",
+          surface: sys.surface || "#121318",
+          surfaceDim: sys.surfaceDim || "#0c0d12",
+          surfaceVariant: sys.surfaceVariant || "#1a1b21",
+          surfaceContainer: sys.surfaceContainer || "#202127",
+          surfaceContainerHigh: sys.surfaceContainerHigh || "#2b2c34",
+          surfaceContainerHighest: sys.surfaceContainerHighest || "#31333a",
+          onSurface: sys.onSurface || "#e2e2e9",
+          onSurfaceVariant: sys.onSurfaceVariant || "#c4c6cf",
+          outline: sys.outline || "#8e9099",
+          outlineVariant: sys.outlineVariant || "#44474f",
+          accent: sys.accent || sys.primary || "#a8c7fa",
+          highlight: sys.highlight || sys.tertiary || "#ffd700"
+        };
+      } else {
+        pal = MATERIAL_PALETTES["dynamic-blue"];
+      }
+    } else {
+      pal = MATERIAL_PALETTES[materialPalette];
+    }
+
     const root = document.documentElement;
     root.style.setProperty("--md-sys-color-primary", pal.primary);
     root.style.setProperty("--md-sys-color-on-primary", pal.onPrimary);
     root.style.setProperty("--md-sys-color-primary-container", pal.primaryContainer);
     root.style.setProperty("--md-sys-color-on-primary-container", pal.onPrimaryContainer);
+    if (pal.secondary) root.style.setProperty("--md-sys-color-secondary", pal.secondary);
+    if (pal.onSecondary) root.style.setProperty("--md-sys-color-on-secondary", pal.onSecondary);
+    if (pal.secondaryContainer) root.style.setProperty("--md-sys-color-secondary-container", pal.secondaryContainer);
+    if (pal.onSecondaryContainer) root.style.setProperty("--md-sys-color-on-secondary-container", pal.onSecondaryContainer);
+    if (pal.tertiary) root.style.setProperty("--md-sys-color-tertiary", pal.tertiary);
     root.style.setProperty("--md-sys-color-surface", pal.surface);
+    if (pal.surfaceDim) root.style.setProperty("--md-sys-color-surface-dim", pal.surfaceDim);
     root.style.setProperty("--md-sys-color-surface-variant", pal.surfaceVariant);
     root.style.setProperty("--md-sys-color-surface-container", pal.surfaceContainer);
     root.style.setProperty("--md-sys-color-surface-container-high", pal.surfaceContainerHigh);
+    if (pal.surfaceContainerHighest) root.style.setProperty("--md-sys-color-surface-container-highest", pal.surfaceContainerHighest);
+    if (pal.onSurface) root.style.setProperty("--md-sys-color-on-surface", pal.onSurface);
+    if (pal.onSurfaceVariant) root.style.setProperty("--md-sys-color-on-surface-variant", pal.onSurfaceVariant);
+    if (pal.outline) root.style.setProperty("--md-sys-color-outline", pal.outline);
+    if (pal.outlineVariant) root.style.setProperty("--md-sys-color-outline-variant", pal.outlineVariant);
 
     if (typeof themeConfig !== "undefined" && !themeConfig.customAccent) {
       themeConfig.accent = pal.accent;
@@ -480,6 +692,12 @@ document.addEventListener("DOMContentLoaded", () => {
     syncStatusBarColor();
     updateSettingsSelection();
   }
+
+  window.updateSystemMaterialYouColors = function() {
+    if (materialPalette === "system") {
+      applyMaterialPalette("system");
+    }
+  };
   let autoplayNext = store.getItem("iptv_autoplay_next") === "true";
   let refreshTimer = null;
   let movingRegion = null;
@@ -702,6 +920,9 @@ document.addEventListener("DOMContentLoaded", () => {
     settingsPage.querySelectorAll(".settings-item[data-setting='uiScale']").forEach(btn => {
       btn.classList.toggle("active", btn.dataset.value === uiScale);
     });
+    settingsPage.querySelectorAll(".settings-item[data-setting='backgroundColor']").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.value === currentBgColor);
+    });
     settingsPage.querySelectorAll(".settings-item[data-setting='deviceLayout']").forEach(btn => {
       btn.classList.toggle("active", btn.dataset.value === deviceLayout);
     });
@@ -734,10 +955,19 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-i18n-title]").forEach(element => {
       element.title = t(element.dataset.i18nTitle);
     });
-    if (settingsButton) settingsButton.textContent = `⚙ ${t("settings")}`;
+    if (settingsButton) {
+      const sLabel = settingsButton.querySelector("span[data-i18n='settings']");
+      if (sLabel) sLabel.textContent = t("settings");
+    }
     if (headerModeIndicator) {
       const modeKeys = { favorites: "modeFavorites", live: "modeLive", vod: "modeMovies", series: "modeSeries" };
-      headerModeIndicator.textContent = t(modeKeys[currentModus]);
+      const modeSvgs = {
+        favorites: '<svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>',
+        live: '<svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>',
+        vod: '<svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>',
+        series: '<svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>'
+      };
+      headerModeIndicator.innerHTML = (modeSvgs[currentModus] || "") + ` <span>${t(modeKeys[currentModus])}</span>`;
     }
     if (contentTitle) {
       contentTitle.textContent = selectedSeries ? selectedSeries.title : t(currentModus === "vod" ? "movies" : currentModus === "series" ? "series" : "channels");
@@ -752,38 +982,43 @@ document.addEventListener("DOMContentLoaded", () => {
     if (moveBanner) moveBanner.textContent = t("moveBanner");
   }
 
-  const DEFAULT_BACKGROUND = "";
-
-  function normalizeBackgroundSource(value) {
-    const url = String(value || "").trim();
-    if (!url) return "";
-    try {
-      const parsed = new URL(url);
-      return parsed.protocol === "https:" || parsed.protocol === "http:" ? parsed.href : "";
-    } catch (error) {
-      return "";
-    }
-  }
-
   function loadThemeConfig() {
     try {
       const saved = JSON.parse(store.getItem("iptv_theme") || "{}");
-      const backgroundImage = saved.backgroundImage === undefined
-        ? DEFAULT_BACKGROUND
-        : normalizeBackgroundSource(saved.backgroundImage);
       return {
         accent: /^#[0-9a-f]{6}$/i.test(saved.accent || "") ? saved.accent : "#e50914",
-        highlight: /^#[0-9a-f]{6}$/i.test(saved.highlight || "") ? saved.highlight : "#ffd700",
-        backgroundImage
+        highlight: /^#[0-9a-f]{6}$/i.test(saved.highlight || "") ? saved.highlight : "#ffd700"
       };
     } catch (error) {
-      return { accent: "#e50914", highlight: "#ffd700", backgroundImage: DEFAULT_BACKGROUND };
+      return { accent: "#e50914", highlight: "#ffd700" };
     }
   }
 
   let themeConfig = loadThemeConfig();
+  let currentBgColor = store.getItem("iptv_bg_color") || "default";
+
+  function applyBackgroundColor(mode) {
+    currentBgColor = mode === "amoled" ? "amoled" : "default";
+    store.setItem("iptv_bg_color", currentBgColor);
+    document.body.classList.toggle("theme-amoled", currentBgColor === "amoled");
+    document.documentElement.classList.toggle("theme-amoled", currentBgColor === "amoled");
+    updateSettingsSelection();
+    if (currentBgColor === "amoled") {
+      if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setStatusBarColor === "function") {
+        window.AndroidExternalPlayer.setStatusBarColor("#000000");
+      }
+    } else {
+      syncStatusBarColor();
+    }
+  }
 
   function syncStatusBarColor() {
+    if (currentBgColor === "amoled") {
+      if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setStatusBarColor === "function") {
+        window.AndroidExternalPlayer.setStatusBarColor("#000000");
+      }
+      return;
+    }
     if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setStatusBarColor === "function") {
       setTimeout(() => {
         const header = document.querySelector(".app-header");
@@ -813,22 +1048,7 @@ document.addEventListener("DOMContentLoaded", () => {
       swatch.classList.toggle("selected", selected);
       swatch.setAttribute("aria-pressed", String(selected));
     });
-    if (backgroundImageInput) backgroundImageInput.value = themeConfig.backgroundImage;
-    document.querySelectorAll(".background-preset").forEach(preset => {
-      preset.classList.toggle("selected", preset.dataset.preset === themeConfig.backgroundImage);
-    });
 
-    if (appPage) {
-      if (themeConfig.backgroundImage) {
-        appPage.style.backgroundImage = `url("${themeConfig.backgroundImage}")`;
-        appPage.style.backgroundSize = "cover";
-        appPage.style.backgroundPosition = "center";
-        document.body.classList.add("kc-has-bg");
-      } else {
-        appPage.style.backgroundImage = "none";
-        document.body.classList.remove("kc-has-bg");
-      }
-    }
     store.setItem("iptv_theme", JSON.stringify(themeConfig));
     syncStatusBarColor();
   }
@@ -839,21 +1059,7 @@ document.addEventListener("DOMContentLoaded", () => {
     applyThemeConfig();
   }
 
-  function updateBackgroundImage(value) {
-    const url = value.trim();
-    if (!url) {
-      themeConfig.backgroundImage = "";
-    } else {
-      const normalized = normalizeBackgroundSource(url);
-      if (!normalized) {
-        showToast(t("invalidBackground"));
-        return;
-      }
-      themeConfig.backgroundImage = normalized;
-    }
-    applyThemeConfig();
-    showToast(t(url ? "backgroundApplied" : "backgroundRemoved"));
-  }
+  function updateBackgroundImage() {}
 
   function centerCustomizationNav(item) {
     const nav = customizationPage && customizationPage.querySelector(".customization-nav");
@@ -911,6 +1117,11 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast(`${t("uiScale")}: ${value}`);
         return;
       }
+      case "backgroundColor": {
+        applyBackgroundColor(value);
+        showToast(value === "amoled" ? (t("bgAmoled") || "AMOLED Black") : (t("bgDefault") || "Default"));
+        return;
+      }
       case "deviceLayout": {
         applyDeviceLayout(value, true);
         showToast(`${t("deviceLayout")}: ${value === "tv" ? t("layoutTv") : t("layoutMobile")}`);
@@ -926,7 +1137,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       case "materialPalette": {
         applyMaterialPalette(value);
-        showToast(value);
+        showToast(value === "system" ? t("paletteSystem") : value);
         return;
       }
       case "customization":
@@ -994,8 +1205,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let clock24h = store.getItem("iptv_clock_24h") === "1";
 
   function updateClockFormatButton() {
-    const button = document.getElementById("clockFormatButton");
-    if (button) button.textContent = `🕐 ${clock24h ? "24" : "12"} h`;
+    const textEl = document.getElementById("clockFormatText");
+    if (textEl) {
+      textEl.textContent = `${clock24h ? "24" : "12"} h`;
+    } else {
+      const button = document.getElementById("clockFormatButton");
+      if (button) button.textContent = `${clock24h ? "24" : "12"} h`;
+    }
   }
 
   const updateClocks = () => {
@@ -1687,19 +1903,13 @@ document.addEventListener("DOMContentLoaded", () => {
     customizationPage.querySelectorAll(".customization-nav .settings-item").forEach(item => {
       item.addEventListener("focus", () => centerCustomizationNav(item));
     });
-    customizationPage.querySelectorAll(".background-preset").forEach(preset => {
-      preset.addEventListener("click", () => updateBackgroundImage(preset.dataset.preset));
-    });
   }
 
-  const applyBackgroundButton = document.getElementById("applyBackgroundButton");
-  const clearBackgroundButton = document.getElementById("clearBackgroundButton");
   const customizationDone = document.getElementById("customizationDone");
-  if (applyBackgroundButton) applyBackgroundButton.addEventListener("click", () => updateBackgroundImage(backgroundImageInput.value));
-  if (clearBackgroundButton) clearBackgroundButton.addEventListener("click", () => updateBackgroundImage(""));
   if (customizationDone) customizationDone.addEventListener("click", () => showCustomizationPage(false));
 
   applyThemeConfig();
+  applyBackgroundColor(currentBgColor);
   applyMaterialPalette(materialPalette);
   applyUiScale(uiScale);
   applyDeviceLayout(deviceLayout, false);
@@ -2257,20 +2467,86 @@ document.addEventListener("DOMContentLoaded", () => {
     updateHeaderBackButton();
   }
 
+  function normalizeSearchText(str) {
+    if (!str) return "";
+    return String(str)
+      .replace(/[İIı]/g, "i")
+      .replace(/[Çç]/g, "c")
+      .replace(/[Ğğ]/g, "g")
+      .replace(/[Öö]/g, "o")
+      .replace(/[Şş]/g, "s")
+      .replace(/[Üü]/g, "u")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function damerauLevenshtein(a, b) {
+    if (a === b) return 0;
+    var la = a.length;
+    var lb = b.length;
+    if (Math.abs(la - lb) > 2) return 99;
+    var d = [];
+    for (var i = 0; i <= la; i++) d[i] = [i];
+    for (var j = 0; j <= lb; j++) d[0][j] = j;
+    for (var i = 1; i <= la; i++) {
+      for (var j = 1; j <= lb; j++) {
+        var cost = a[i - 1] === b[j - 1] ? 0 : 1;
+        d[i][j] = Math.min(
+          d[i - 1][j] + 1,
+          d[i][j - 1] + 1,
+          d[i - 1][j - 1] + cost
+        );
+        if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+          d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+        }
+      }
+    }
+    return d[la][lb];
+  }
+
+  function fuzzyWordMatch(qWord, tWords) {
+    if (qWord.length <= 2) return false;
+    var maxDist = qWord.length <= 4 ? 1 : 2;
+    for (var i = 0; i < tWords.length; i++) {
+      var tw = tWords[i];
+      if (tw.length < 2) continue;
+      if (tw.indexOf(qWord) !== -1 || qWord.indexOf(tw) !== -1) return true;
+      if (Math.abs(tw.length - qWord.length) <= maxDist) {
+        if (damerauLevenshtein(qWord, tw) <= maxDist) return true;
+      }
+    }
+    return false;
+  }
+
+  function searchScore(targetName, qNorm, qWords, qCompact) {
+    if (!targetName) return 0;
+    var tNorm = normalizeSearchText(targetName);
+    if (tNorm.indexOf(qNorm) !== -1) return 3;
+    if (qWords.every(function(w) { return tNorm.indexOf(w) !== -1; })) return 2;
+    var tCompact = tNorm.replace(/[^a-z0-9]/g, "");
+    if (qCompact.length >= 3 && tCompact.indexOf(qCompact) !== -1) return 2;
+    var tWords = tNorm.split(/[^a-z0-9]+/).filter(Boolean);
+    if (qWords.every(function(w) { return tNorm.indexOf(w) !== -1 || fuzzyWordMatch(w, tWords); })) return 1;
+    return 0;
+  }
+
   function renderSearchResults() {
     const rawVal = searchInput ? searchInput.value.trim() : "";
     if (searchClearBtn) searchClearBtn.classList.toggle("hidden", !rawVal);
-    const words = rawVal.toLowerCase().split(/\s+/).filter(Boolean);
+    const qNorm = normalizeSearchText(rawVal);
+    const qWords = qNorm.split(/\s+/).filter(Boolean);
+    const qCompact = qNorm.replace(/[^a-z0-9]/g, "");
     searchHits = [];
 
-    if (words.length > 0 && words.join("").length >= 2) {
+    if (qWords.length > 0 && qWords.join("").length >= 2) {
       // 1. Live TV channels
       if (searchScope === "all" || searchScope === "live") {
         for (let i = 0; i < allStreams.length && searchHits.length < 50; i++) {
           const item = allStreams[i];
-          const name = String(item.name || "").toLowerCase();
-          if (words.every(w => name.indexOf(w) !== -1)) {
-            searchHits.push({ type: "live", item, rawIndex: i });
+          const score = searchScore(item.name, qNorm, qWords, qCompact);
+          if (score > 0) {
+            searchHits.push({ type: "live", item: item, rawIndex: i, score: score });
           }
         }
       }
@@ -2279,9 +2555,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (searchScope === "all" || searchScope === "vod") {
         for (let i = 0; i < vodStreams.length && searchHits.length < 100; i++) {
           const item = vodStreams[i];
-          const name = String(item.name || item.title || "").toLowerCase();
-          if (words.every(w => name.indexOf(w) !== -1)) {
-            searchHits.push({ type: "vod", item });
+          const score = searchScore(item.name || item.title, qNorm, qWords, qCompact);
+          if (score > 0) {
+            searchHits.push({ type: "vod", item: item, score: score });
           }
         }
       }
@@ -2290,12 +2566,15 @@ document.addEventListener("DOMContentLoaded", () => {
       if (searchScope === "all" || searchScope === "series") {
         for (let i = 0; i < seriesStreams.length && searchHits.length < 150; i++) {
           const item = seriesStreams[i];
-          const name = String(item.name || item.title || "").toLowerCase();
-          if (words.every(w => name.indexOf(w) !== -1)) {
-            searchHits.push({ type: "series", item });
+          const score = searchScore(item.name || item.title, qNorm, qWords, qCompact);
+          if (score > 0) {
+            searchHits.push({ type: "series", item: item, score: score });
           }
         }
       }
+
+      // Rank exact & substring matches before typo matches
+      searchHits.sort(function(a, b) { return b.score - a.score; });
     }
 
     if (!searchResults) return;
@@ -2311,15 +2590,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const title = cleanTitle(item.name || item.title || "", QUALITY_TAGS);
       const iconUrl = item.stream_icon || item.cover || "";
       const typeBadges = {
-        live: "📺 Live TV",
-        vod: "🎬 Movie",
-        series: "🍿 Series"
+        live: '<svg class="ui-svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg> Live TV',
+        vod: '<svg class="ui-svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg> Movie',
+        series: '<svg class="ui-svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg> Series'
       };
-      const fallbackEmoji = entry.type === "vod" ? "🎬" : entry.type === "series" ? "🍿" : "📺";
+      const fallbackSvg = entry.type === "vod"
+        ? '<svg class="ui-svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>'
+        : entry.type === "series"
+        ? '<svg class="ui-svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>'
+        : '<svg class="ui-svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>';
       const thumbHtml = iconUrl
         ? `<img src="${iconUrl}" class="search-result-thumb" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-           <div class="search-result-thumb" style="display:none;">${fallbackEmoji}</div>`
-        : `<div class="search-result-thumb">${fallbackEmoji}</div>`;
+           <div class="search-result-thumb" style="display:none;">${fallbackSvg}</div>`
+        : `<div class="search-result-thumb">${fallbackSvg}</div>`;
 
       li.innerHTML = `
         ${thumbHtml}
@@ -2358,6 +2641,14 @@ document.addEventListener("DOMContentLoaded", () => {
     searchInput.addEventListener("input", () => {
       if (searchTimer) clearTimeout(searchTimer);
       searchTimer = setTimeout(renderSearchResults, 200);
+    });
+    searchInput.addEventListener("focus", () => {
+      const wrapper = searchInput.closest(".search-input-wrapper");
+      if (wrapper) wrapper.classList.add("focused");
+    });
+    searchInput.addEventListener("blur", () => {
+      const wrapper = searchInput.closest(".search-input-wrapper");
+      if (wrapper) wrapper.classList.remove("focused");
     });
   }
   if (searchResults) {
@@ -2421,7 +2712,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const filtered = categoriesToUse.filter(cat => {
       if (hiddenIds.indexOf(String(cat.category_id)) !== -1) return false;
       if (activeRegion !== "ALL" && !isCategoryInRegion(cat, isVod, activeRegion)) return false;
-      if (categorySearchQuery && cleanTitle(cat.category_name, ["HEVC", "VIP"]).toLowerCase().indexOf(categorySearchQuery) === -1) return false;
+      if (categorySearchQuery) {
+        const cqNorm = normalizeSearchText(categorySearchQuery);
+        const cqWords = cqNorm.split(/\s+/).filter(Boolean);
+        const cqCompact = cqNorm.replace(/[^a-z0-9]/g, "");
+        if (searchScore(cleanTitle(cat.category_name, ["HEVC", "VIP"]), cqNorm, cqWords, cqCompact) === 0) return false;
+      }
       return true;
     });
 
@@ -2610,7 +2906,9 @@ document.addEventListener("DOMContentLoaded", () => {
         div.dataset.title = displayTitle;
 
         const posterSrc = item.stream_icon || item.cover || "";
-        const fallbackIcon = currentModus === "series" ? "🍿" : "🎬";
+        const fallbackIcon = currentModus === "series"
+          ? '<svg class="ui-svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>'
+          : '<svg class="ui-svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>';
         div.innerHTML = `
           <div class="poster-img-container">
             ${posterSrc ? `<img src="${posterSrc}" class="poster-img" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}
@@ -2705,7 +3003,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (headerModeIndicator) {
       const modeKeys = { favorites: "modeFavorites", live: "modeLive", vod: "modeMovies", series: "modeSeries" };
-      headerModeIndicator.textContent = t(modeKeys[modus]) || "TV";
+      const modeSvgs = {
+        favorites: '<svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>',
+        live: '<svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>',
+        vod: '<svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>',
+        series: '<svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>'
+      };
+      headerModeIndicator.innerHTML = (modeSvgs[modus] || "") + ` <span>${t(modeKeys[modus]) || "TV"}</span>`;
     }
 
     setupRegions();
@@ -2724,10 +3028,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const listPosition = wasInList ? Array.prototype.indexOf.call(channelList.children, focusedNow) : -1;
     if (idx >= 0) {
       favorites.splice(idx, 1);
-      showToast(`⭐ ${t("favoritesRemoved")}`);
+      showToast(t("favoritesRemoved"));
     } else {
       favorites.push(sId);
-      showToast(`⭐ ${t("favoritesAdded")}`);
+      showToast(t("favoritesAdded"));
     }
     saveFavorites(favorites);
     cacheFavoriteStreams();
@@ -2749,7 +3053,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function toggleMoveMode(streamId) {
     if (currentModus !== "favorites") {
-      showToast(`⚠️ ${t("moveOnlyFavorites")}`);
+      showToast(t("moveOnlyFavorites"));
       return;
     }
     if (!streamId) return;
@@ -2757,11 +3061,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!movingStreamId) {
       movingStreamId = sId;
       moveBanner.classList.remove("hidden");
-      showToast(`🔴 ${t("moveStarted")}`);
+      showToast(t("moveStarted"));
     } else {
       movingStreamId = null;
       moveBanner.classList.add("hidden");
-      showToast(`✅ ${t("positionSaved")}`);
+      showToast(t("positionSaved"));
     }
     filterChannels();
   }
@@ -3153,7 +3457,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateVodPlayPauseIcon() {
-    if (vodPlayPauseIcon) vodPlayPauseIcon.textContent = video.paused ? "▶" : "⏸";
+    if (vodPlayPauseIcon) {
+      vodPlayPauseIcon.innerHTML = video.paused
+        ? '<svg class="ui-svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'
+        : '<svg class="ui-svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+    }
   }
 
   function showVodControls(focusToggle = false) {
@@ -3193,7 +3501,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const baseTime = seekPreviewTime === null ? video.currentTime : seekPreviewTime;
     seekPreviewTime = Math.max(0, Math.min(video.duration, baseTime + direction * 10));
     if (vodSeekPreview) {
-      vodSeekPreview.textContent = `${direction < 0 ? "◀" : "▶"} ${formatTime(seekPreviewTime)}`;
+      const seekIconSvg = direction < 0
+        ? '<svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>'
+        : '<svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>';
+      vodSeekPreview.innerHTML = `${seekIconSvg} <span>${formatTime(seekPreviewTime)}</span>`;
       vodSeekPreview.classList.remove("hidden");
     }
     if (vodProgressBar) vodProgressBar.style.width = `${(seekPreviewTime / video.duration) * 100}%`;
@@ -3233,9 +3544,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (targetIdx >= 0 && targetIdx < currentActiveStreams.length) {
       const target = currentActiveStreams[targetIdx];
       playStream(target.stream_id, target.name, target.stream_icon, targetIdx, target.url);
-      showToast(`📺 ${t("zapped", { number: num, title: cleanTitle(target.name) })}`);
+      showToast(t("zapped", { number: num, title: cleanTitle(target.name) }));
     } else {
-      showToast(`⚠️ ${t("channelNotFound", { number: num })}`);
+      showToast(t("channelNotFound", { number: num }));
     }
   }
 
@@ -3340,6 +3651,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function centerInList(element, instant) {
     const container = element.parentElement;
     if (!container) return;
+    if (document.body.classList.contains("layout-mobile")) {
+      if (container._wheelPad) {
+        container.style.paddingTop = "";
+        container.style.paddingBottom = "";
+        container._wheelPad = null;
+      }
+      return;
+    }
     const isWheel = (container.classList.contains("nav-list") && container.id !== "modusList") || container.classList.contains("channel-grid");
     if (!isWheel || container.clientHeight === 0) return;
     const pad = Math.max(0, Math.round(container.clientHeight / 2 - element.offsetHeight / 2));
@@ -3358,6 +3677,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!element) return;
     document.querySelectorAll(".focused").forEach(el => el.classList.remove("focused"));
     element.classList.add("focused");
+    if (element.classList.contains("search-input-field")) {
+      const searchWrapper = element.closest(".search-input-wrapper");
+      if (searchWrapper) searchWrapper.classList.add("focused");
+    }
 
     // Expand the column first: a collapsed column is display:none and cannot take focus.
     const parentCol = element.closest(".col-nav");
@@ -3566,6 +3889,72 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const mobileBottomNav = document.getElementById("mobileBottomNav");
   if (mobileBottomNav) {
+    const navIndicator = mobileBottomNav.querySelector(".mobile-nav-indicator");
+    let navDrag = null;
+
+    const navItems = () => Array.from(mobileBottomNav.querySelectorAll(".mobile-nav-item"));
+    const nearestNavItem = (clientX) => {
+      let best = null;
+      let bestDist = Infinity;
+      navItems().forEach(item => {
+        const r = item.getBoundingClientRect();
+        const d = Math.abs(clientX - (r.left + r.width / 2));
+        if (d < bestDist) { bestDist = d; best = item; }
+      });
+      return best;
+    };
+
+    mobileBottomNav.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0 || !e.target.closest(".mobile-nav-item")) return;
+      navDrag = { id: e.pointerId, startX: e.clientX, dragging: false };
+    });
+    mobileBottomNav.addEventListener("pointermove", (e) => {
+      if (!navDrag || e.pointerId !== navDrag.id) return;
+      if (!navDrag.dragging) {
+        if (Math.abs(e.clientX - navDrag.startX) < 6) return;
+        navDrag.dragging = true;
+        mobileBottomNav.classList.add("is-dragging");
+        mobileBottomNav.setPointerCapture(e.pointerId);
+      }
+      const items = navItems();
+      const width = items[0].offsetWidth;
+      const navRect = mobileBottomNav.getBoundingClientRect();
+      const minX = items[0].offsetLeft;
+      const maxX = items[items.length - 1].offsetLeft;
+      const x = Math.min(maxX, Math.max(minX, e.clientX - navRect.left - width / 2));
+      navIndicator.style.width = `${width}px`;
+      navIndicator.style.transform = `translateX(${x}px)`;
+      const speed = Math.abs(e.clientX - (navDrag.lastX ?? e.clientX));
+      navDrag.lastX = e.clientX;
+      navLens.setDragging(true);
+      setNavGlassScale(8 + Math.min(14, speed * 2));
+    });
+    const setNavGlassScale = (value) => {
+      const disp = document.getElementById("kcGlassDisp");
+      if (disp) disp.setAttribute("scale", String(value));
+    };
+    const endNavDrag = (e) => {
+      if (!navDrag || e.pointerId !== navDrag.id) return;
+      const wasDragging = navDrag.dragging;
+      navDrag = null;
+      navLens.setDragging(false);
+      setNavGlassScale(8);
+      if (!wasDragging) return;
+      mobileBottomNav.classList.remove("is-dragging");
+      const target = nearestNavItem(e.clientX);
+      if (!target) return;
+      if (target.classList.contains("active")) {
+        moveMobileNavIndicator(target);
+      } else {
+        target.click();
+      }
+    };
+    mobileBottomNav.addEventListener("pointerup", endNavDrag);
+    mobileBottomNav.addEventListener("pointercancel", endNavDrag);
+    window.addEventListener("resize", () => {
+      moveMobileNavIndicator(mobileBottomNav.querySelector(".mobile-nav-item.active"), false);
+    });
+
     mobileBottomNav.addEventListener("click", (e) => {
       const btn = e.target.closest(".mobile-nav-item");
       if (!btn || !btn.dataset.mobileTab) return;
@@ -3625,7 +4014,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const card = document.createElement("div");
         card.className = "poster-card focusable";
         card.tabIndex = 0;
-        const fallbackIcon = currentViewAllType === "series" ? "🍿" : "🎬";
+        const fallbackIcon = currentViewAllType === "series"
+          ? '<svg class="ui-svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>'
+          : '<svg class="ui-svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>';
         const itemTitle = currentViewAllType === "series" ? `Series ${i}` : `Movie ${i}`;
         card.innerHTML = `
           <div class="poster-img-container">
@@ -3646,7 +4037,9 @@ document.addEventListener("DOMContentLoaded", () => {
       card.tabIndex = 0;
       const displayTitle = cleanTitle(item.name || item.title || "");
       const posterSrc = item.stream_icon || item.cover || "";
-      const fallbackIcon = currentViewAllType === "series" ? "🍿" : "🎬";
+      const fallbackIcon = currentViewAllType === "series"
+        ? '<svg class="ui-svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>'
+        : '<svg class="ui-svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>';
 
       card.innerHTML = `
         <div class="poster-img-container">
@@ -3794,7 +4187,12 @@ document.addEventListener("DOMContentLoaded", () => {
           heroBackdrop.style.display = "none";
         }
       }
-      if (heroRating) heroRating.textContent = `★ ${homeFeaturedItem.rating || "8.8"}`;
+      const ratingVal = document.getElementById("homeHeroRatingValue");
+      if (ratingVal) {
+        ratingVal.textContent = homeFeaturedItem.rating || "8.8";
+      } else if (heroRating) {
+        heroRating.innerHTML = `<svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> <span>${homeFeaturedItem.rating || "8.8"}</span>`;
+      }
       if (heroYear) heroYear.textContent = String(homeFeaturedItem.year || homeFeaturedItem.release_date || "2025").substring(0, 4);
       if (heroCategory) heroCategory.textContent = homeFeaturedItem.type === "series" ? "TV Series" : "Cinema";
 
@@ -3825,7 +4223,12 @@ document.addEventListener("DOMContentLoaded", () => {
         heroBackdrop.style.display = "none";
       }
       if (heroTitle) heroTitle.textContent = "KC IPTV";
-      if (heroRating) heroRating.textContent = "★ 8.8";
+      const ratingVal = document.getElementById("homeHeroRatingValue");
+      if (ratingVal) {
+        ratingVal.textContent = "8.8";
+      } else if (heroRating) {
+        heroRating.innerHTML = `<svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> <span>8.8</span>`;
+      }
       if (heroYear) heroYear.textContent = "2025";
       if (heroCategory) heroCategory.textContent = "Cinema";
       if (heroPlayBtn) {
@@ -3914,15 +4317,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const shelf = document.createElement("section");
       shelf.className = "home-shelf";
 
+      const shelfIconSvg = type === "series"
+        ? '<svg class="ui-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>'
+        : '<svg class="ui-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>';
+
       const header = document.createElement("div");
       header.className = "home-shelf-header";
       header.innerHTML = `
         <div class="home-shelf-title-wrap">
-          <h2 class="home-shelf-title">${title}</h2>
+          <h2 class="home-shelf-title">${shelfIconSvg} <span>${title}</span></h2>
         </div>
         <button class="home-shelf-view-all-btn" type="button">
           <span>View All</span>
-          <span>›</span>
+          <svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
         </button>
       `;
       header.addEventListener("click", () => openHomeViewAll(type, catId, catName));
@@ -3964,7 +4371,9 @@ document.addEventListener("DOMContentLoaded", () => {
         card.tabIndex = 0;
         const itemTitle = cleanTitle(item.name || item.title || "");
         const posterSrc = item.stream_icon || item.cover || "";
-        const fallbackIcon = type === "series" ? "🍿" : "🎬";
+        const fallbackIcon = type === "series"
+          ? '<svg class="ui-svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>'
+          : '<svg class="ui-svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>';
 
         card.innerHTML = `
           <div class="home-card-poster-container">
@@ -3995,7 +4404,7 @@ document.addEventListener("DOMContentLoaded", () => {
       viewAllCard.tabIndex = 0;
       viewAllCard.innerHTML = `
         <div class="home-card-view-all-container">
-          <div class="home-card-view-all-icon">›</div>
+          <div class="home-card-view-all-icon"><svg class="ui-svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg></div>
           <span class="home-card-view-all-text">View All</span>
         </div>
         <div class="home-card-title">View All</div>
@@ -4019,7 +4428,7 @@ document.addEventListener("DOMContentLoaded", () => {
     activeVodCats.slice(0, 4).forEach(cat => {
       const catStreams = (vodStreams || []).filter(s => String(s.category_id) === String(cat.category_id));
       shelvesToRender.push({
-        title: `🎬 ${cleanTitle(cat.category_name, ["HEVC", "VIP"])}`,
+        title: cleanTitle(cat.category_name, ["HEVC", "VIP"]),
         items: catStreams,
         type: "vod",
         categoryId: cat.category_id,
@@ -4031,7 +4440,7 @@ document.addEventListener("DOMContentLoaded", () => {
     activeSeriesCats.slice(0, 3).forEach(cat => {
       const catStreams = (seriesStreams || []).filter(s => String(s.category_id) === String(cat.category_id));
       shelvesToRender.push({
-        title: `🍿 ${cleanTitle(cat.category_name, ["HEVC", "VIP"])}`,
+        title: cleanTitle(cat.category_name, ["HEVC", "VIP"]),
         items: catStreams,
         type: "series",
         categoryId: cat.category_id,
@@ -4043,18 +4452,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (shelvesToRender.length === 0) {
       const regionLabel = appSelectedRegion === "ALL" ? "" : ` ${appSelectedRegion}`;
       shelvesToRender.push({
-        title: `🎬${regionLabel} Movies`,
+        title: `${regionLabel} Movies`.trim(),
         items: (vodStreams || []).filter(s => isStreamInRegion(s, "vod", appSelectedRegion)).slice(0, 10),
         type: "vod",
         categoryId: "all",
-        categoryName: `${regionLabel} Movies`
+        categoryName: `${regionLabel} Movies`.trim()
       });
       shelvesToRender.push({
-        title: `🍿${regionLabel} Series`,
+        title: `${regionLabel} Series`.trim(),
         items: (seriesStreams || []).filter(s => isStreamInRegion(s, "series", appSelectedRegion)).slice(0, 10),
         type: "series",
         categoryId: "all",
-        categoryName: `${regionLabel} Series`
+        categoryName: `${regionLabel} Series`.trim()
       });
     }
 
@@ -4508,6 +4917,236 @@ document.addEventListener("DOMContentLoaded", () => {
     commitVodSeek();
   });
 
+  // Welcome screen: first start only, skipped when credentials.local.js is present (testing builds)
+  var welcomeScreen = document.getElementById("welcomeScreen");
+  var welcomeFlickerLayer = document.getElementById("wcFlicker");
+  var welcomeScreenEl = document.getElementById("wcScreen");
+  var welcomePrompt = document.getElementById("wcPrompt");
+  var welcomeTop = document.getElementById("wcTop");
+  var welcomeBottom = document.getElementById("wcBottom");
+  var welcomeLine = document.getElementById("wcLine");
+  var welcomeBlack = document.getElementById("wcBlack");
+  var appPageEl = document.getElementById("appPage");
+  var welcomeSeenKey = "iptv_welcome_seen";
+  var welcomeTexts = {
+    tr: { prompt: "Başlamak için OK'e bas", loading: "Yükleniyor..." },
+    en: { prompt: "Press OK to get started", loading: "Loading..." },
+    nl: { prompt: "Druk op OK om te beginnen", loading: "Laden..." },
+    fr: { prompt: "Appuyez sur OK pour commencer", loading: "Chargement..." }
+  };
+  var welcomeActive = false;
+  var welcomeLeaving = false;
+  var welcomeTimers = [];
+  var welcomeFadeInMs = 1000;
+  var welcomeIntroBus = null;
+
+  function welcomeLater(fn, ms) {
+    welcomeTimers.push(setTimeout(fn, ms));
+  }
+  function welcomeRandom(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  function welcomeFlickerOnce() {
+    if (!welcomeActive) return;
+    var dim = Math.random() < 0.55;
+    if (welcomeScreen) welcomeScreen.style.setProperty("--wc-flick", dim ? welcomeRandom(0.45, 0.9).toFixed(2) : "1");
+    if (welcomeFlickerLayer) welcomeFlickerLayer.style.opacity = dim ? welcomeRandom(0, 0.12).toFixed(3) : "0";
+    welcomeLater(function() {
+      if (welcomeScreen) welcomeScreen.style.setProperty("--wc-flick", "1");
+      if (welcomeFlickerLayer) welcomeFlickerLayer.style.opacity = "0";
+      welcomeLater(welcomeFlickerLoop, welcomeRandom(40, 500));
+    }, welcomeRandom(40, 180));
+  }
+  function welcomeFlickerLoop() {
+    welcomeLater(welcomeFlickerOnce, welcomeRandom(400, 3500));
+  }
+
+  function welcomeFinish() {
+    welcomeTimers.forEach(clearTimeout);
+    welcomeTimers = [];
+    welcomeActive = false;
+    if (welcomeScreen) welcomeScreen.classList.add("wc-hidden");
+  }
+
+  function welcomeRevealSettings() {
+    if (welcomeBlack) {
+      welcomeBlack.classList.remove("wc-intro");
+      welcomeBlack.classList.add("wc-show");
+    }
+    if (appPageEl) appPageEl.style.visibility = "";
+    if (settingsButton) settingsButton.setAttribute("aria-expanded", "true");
+    showSettingsPage(true);
+    showSettingsTab("profile");
+    var sourceTab = settingsPage ? settingsPage.querySelector(".customization-tab[data-tab='profile']") : null;
+    if (sourceTab) setElementFocus(sourceTab);
+    // Only the black layer is left, so the fade doesn't repaint the animated welcome on the TV
+    if (welcomeScreen) {
+      welcomeScreen.classList.add("wc-slim");
+      welcomeScreen.classList.add("wc-fade");
+    }
+    welcomeLater(welcomeFinish, 750);
+  }
+
+  // Original sounds, synthesized with Web Audio so no licensed asset is needed.
+  var welcomeAudio = null;
+  function welcomeGetAudio() {
+    if (welcomeAudio) return welcomeAudio;
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    try {
+      welcomeAudio = new Ctx();
+    } catch (error) {
+      welcomeAudio = null;
+    }
+    return welcomeAudio;
+  }
+  function welcomePlayIntro() {
+    if (welcomeLeaving) return;
+    var ctx = welcomeGetAudio();
+    if (!ctx) return;
+    if (ctx.state === "suspended") ctx.resume().catch(function() {});
+    var t = ctx.currentTime + 0.05;
+    welcomeIntroBus = ctx.createGain();
+    welcomeIntroBus.connect(ctx.destination);
+    // Two low notes that ring out like a piano with the sustain pedal down
+    welcomePianoNote(ctx, welcomeIntroBus, 130.81, t, 8.0, 0.6);
+    welcomePianoNote(ctx, welcomeIntroBus, 98.0, t + 1.0, 9.0, 0.6);
+  }
+  // Fades the intro out when the welcome is dismissed, instead of cutting it off
+  function welcomeFadeIntro() {
+    if (!welcomeIntroBus || !welcomeAudio) return;
+    var now = welcomeAudio.currentTime;
+    welcomeIntroBus.gain.cancelScheduledValues(now);
+    welcomeIntroBus.gain.setTargetAtTime(0, now, 0.25);
+  }
+  // Struck-string tone: higher partials die away faster, so the note softens into a long tail
+  function welcomePianoNote(ctx, out, freq, start, dur, gain) {
+    var partials = [
+      { mult: 1, level: 1.0, decay: 1.0 },
+      { mult: 2, level: 0.45, decay: 0.6 },
+      { mult: 3, level: 0.2, decay: 0.35 },
+      { mult: 4, level: 0.09, decay: 0.2 },
+      { mult: 5, level: 0.04, decay: 0.12 }
+    ];
+    var total = partials.reduce(function(sum, p) { return sum + p.level; }, 0);
+    partials.forEach(function(p) {
+      var osc = ctx.createOscillator();
+      var env = ctx.createGain();
+      var peak = (gain * p.level) / total;
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq * p.mult, start);
+      env.gain.setValueAtTime(0.0001, start);
+      env.gain.exponentialRampToValueAtTime(peak, start + 0.008);
+      env.gain.exponentialRampToValueAtTime(0.0001, start + dur * p.decay);
+      osc.connect(env);
+      env.connect(out);
+      osc.start(start);
+      osc.stop(start + dur + 0.05);
+    });
+  }
+  function welcomePlayTvClose() {
+    var ctx = welcomeGetAudio();
+    if (!ctx) return;
+    if (ctx.state === "suspended") ctx.resume().catch(function() {});
+    var t = ctx.currentTime + 0.01;
+    // Downward sweep, like a CRT losing its high voltage: attack, short hold, then a long fade out
+    var sweepDur = 0.9;
+    var osc = ctx.createOscillator();
+    var amp = ctx.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(900, t);
+    osc.frequency.exponentialRampToValueAtTime(40, t + sweepDur);
+    amp.gain.setValueAtTime(0.0001, t);
+    amp.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
+    amp.gain.setValueAtTime(0.25, t + 0.3);
+    amp.gain.linearRampToValueAtTime(0, t + sweepDur);
+    osc.connect(amp);
+    amp.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + sweepDur + 0.05);
+    // Short click at the moment the line collapses
+    var len = Math.floor(ctx.sampleRate * 0.02);
+    var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    var data = buf.getChannelData(0);
+    for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    var src = ctx.createBufferSource();
+    var clickGain = ctx.createGain();
+    clickGain.gain.value = 0.45;
+    src.buffer = buf;
+    src.connect(clickGain);
+    clickGain.connect(ctx.destination);
+    src.start(t);
+  }
+
+  function welcomeStart() {
+    if (welcomeLeaving) return;
+    welcomeLeaving = true;
+    welcomeFadeIntro();
+    store.setItem(welcomeSeenKey, "1");
+    var texts = welcomeTexts[currentLang] || welcomeTexts.en;
+    if (welcomePrompt) welcomePrompt.textContent = texts.loading;
+    if (welcomeTop) welcomeTop.classList.add("wc-close");
+    if (welcomeBottom) welcomeBottom.classList.add("wc-close");
+    welcomeLater(function() {
+      if (welcomeLine) welcomeLine.classList.add("wc-show");
+    }, 420);
+    welcomeLater(function() {
+      if (welcomeLine) welcomeLine.classList.add("wc-collapse");
+      welcomePlayTvClose();
+    }, 620);
+    welcomeLater(welcomeRevealSettings, 900);
+  }
+
+  // Capture phase so the welcome screen consumes every key before the app handles it.
+  window.addEventListener("keydown", function(e) {
+    if (!welcomeActive) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    var key = e.keyCode || e.which;
+    if (key === 13 || e.key === "Enter") welcomeStart();
+  }, true);
+
+  if (welcomeScreen) {
+    welcomeScreen.addEventListener("click", function(e) {
+      if (!welcomeActive) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      welcomeStart();
+    });
+  }
+
+  function maybeShowWelcome() {
+    document.documentElement.classList.remove("wc-pending");
+    if (!welcomeScreen || window.KC_DEFAULT_LOGIN || store.getItem(welcomeSeenKey)) return;
+    var texts = welcomeTexts[currentLang] || welcomeTexts.en;
+    if (welcomePrompt) welcomePrompt.textContent = texts.prompt;
+    welcomeActive = true;
+    // The main menu stays hidden until OK, so it can't cover the welcome
+    if (appPageEl) appPageEl.style.visibility = "hidden";
+    welcomeScreen.classList.remove("wc-hidden");
+    // The picture starts black and fades up; the intro sound waits until it is fully visible
+    if (welcomeBlack) {
+      welcomeBlack.classList.add("wc-show", "wc-intro");
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          welcomeBlack.classList.remove("wc-show");
+        });
+      });
+    }
+    welcomeFlickerLoop();
+    welcomeLater(welcomePlayIntro, welcomeFadeInMs);
+  }
+
   initProfile();
   scheduleListRefresh();
+  maybeShowWelcome();
+
+  const kcSplash = document.getElementById("kcSplash");
+  if (kcSplash) {
+    setTimeout(() => {
+      kcSplash.classList.add("kc-splash-done");
+      setTimeout(() => kcSplash.remove(), 450);
+    }, 1200);
+  }
 });

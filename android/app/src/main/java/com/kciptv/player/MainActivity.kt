@@ -6,11 +6,13 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -25,6 +27,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -38,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     private val tag = "KCIPTV"
     private var isPlayerFullscreen = false
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
+    var lastStatusBarColor: Int? = null
 
     private fun isNetworkOnline(): Boolean {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return true
@@ -98,8 +102,9 @@ class MainActivity : AppCompatActivity() {
                 controller.hide(WindowInsetsCompat.Type.systemBars())
             } else {
                 WindowCompat.setDecorFitsSystemWindows(window, true)
-                window.statusBarColor = android.graphics.Color.parseColor("#15221e")
-                window.navigationBarColor = android.graphics.Color.parseColor("#15221e")
+                val barColor = lastStatusBarColor ?: android.graphics.Color.parseColor("#15221e")
+                window.statusBarColor = barColor
+                window.navigationBarColor = barColor
                 controller.isAppearanceLightStatusBars = false
                 controller.show(WindowInsetsCompat.Type.statusBars())
                 controller.hide(WindowInsetsCompat.Type.navigationBars())
@@ -145,7 +150,8 @@ class MainActivity : AppCompatActivity() {
 
         // Setup layout orientation from preferences or device type
         val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
-        val isTvDevice = uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+        val isTvDevice = uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION ||
+                         packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val defaultLayout = if (isTvDevice) "tv" else "mobile"
         val savedLayout = prefs.getString(PREF_DEVICE_LAYOUT, defaultLayout) ?: defaultLayout
@@ -284,6 +290,13 @@ class MainActivity : AppCompatActivity() {
         registerNetworkCallback()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (::webView.isInitialized) {
+            webView.evaluateJavascript("window.updateSystemMaterialYouColors && window.updateSystemMaterialYouColors(); window.updateSystemLanguage && window.updateSystemLanguage();", null)
+        }
+    }
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         val isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -291,6 +304,9 @@ class MainActivity : AppCompatActivity() {
         val layout = prefs.getString(PREF_DEVICE_LAYOUT, "mobile") ?: "mobile"
         if (layout.equals("mobile", ignoreCase = true) && isPlayerFullscreen) {
             webView.evaluateJavascript("window.handleOrientationChange && window.handleOrientationChange($isLandscape)", null)
+        }
+        if (::webView.isInitialized) {
+            webView.evaluateJavascript("window.updateSystemMaterialYouColors && window.updateSystemMaterialYouColors(); window.updateSystemLanguage && window.updateSystemLanguage();", null)
         }
     }
 
@@ -328,9 +344,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         @JavascriptInterface
+        fun isMobileDevice(): Boolean {
+            val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
+            val isTv = uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION ||
+                       context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+            return !isTv
+        }
+
+        @JavascriptInterface
         fun getDeviceLayout(): String {
             val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
-            val isTvDevice = uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+            val isTvDevice = uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION ||
+                             context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
             val defaultLayout = if (isTvDevice) "tv" else "mobile"
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             return prefs.getString(PREF_DEVICE_LAYOUT, defaultLayout) ?: defaultLayout
@@ -347,12 +372,58 @@ class MainActivity : AppCompatActivity() {
                 val activity = context as? MainActivity ?: return@post
                 try {
                     val color = android.graphics.Color.parseColor(colorHex)
+                    activity.lastStatusBarColor = color
                     activity.window.statusBarColor = color
                     activity.window.navigationBarColor = color
                 } catch (e: Exception) {
                     Log.w("KCIPTV", "Invalid statusBarColor $colorHex: ${e.message}")
                 }
             }
+        }
+
+        @JavascriptInterface
+        fun getSystemLanguage(): String {
+            return java.util.Locale.getDefault().language.lowercase()
+        }
+
+        @JavascriptInterface
+        fun getSystemMaterialYouColors(): String {
+            val json = org.json.JSONObject()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                try {
+                    fun c(resId: Int): String {
+                        val colorInt = ContextCompat.getColor(context, resId)
+                        return String.format("#%06X", (0xFFFFFF and colorInt))
+                    }
+                    json.put("available", true)
+                    json.put("primary", c(android.R.color.system_accent1_200))
+                    json.put("onPrimary", c(android.R.color.system_accent1_800))
+                    json.put("primaryContainer", c(android.R.color.system_accent1_700))
+                    json.put("onPrimaryContainer", c(android.R.color.system_accent1_100))
+                    json.put("secondary", c(android.R.color.system_accent2_200))
+                    json.put("onSecondary", c(android.R.color.system_accent2_800))
+                    json.put("secondaryContainer", c(android.R.color.system_accent2_700))
+                    json.put("onSecondaryContainer", c(android.R.color.system_accent2_100))
+                    json.put("tertiary", c(android.R.color.system_accent3_200))
+                    json.put("surface", c(android.R.color.system_neutral1_900))
+                    json.put("surfaceDim", c(android.R.color.system_neutral1_1000))
+                    json.put("surfaceVariant", c(android.R.color.system_neutral2_800))
+                    json.put("surfaceContainer", c(android.R.color.system_neutral2_800))
+                    json.put("surfaceContainerHigh", c(android.R.color.system_neutral2_700))
+                    json.put("surfaceContainerHighest", c(android.R.color.system_neutral2_600))
+                    json.put("onSurface", c(android.R.color.system_neutral1_100))
+                    json.put("onSurfaceVariant", c(android.R.color.system_neutral2_200))
+                    json.put("outline", c(android.R.color.system_neutral2_400))
+                    json.put("outlineVariant", c(android.R.color.system_neutral2_700))
+                    json.put("accent", c(android.R.color.system_accent1_200))
+                    json.put("highlight", c(android.R.color.system_accent3_200))
+                    return json.toString()
+                } catch (e: Exception) {
+                    Log.w("KCIPTV", "Failed to retrieve Material You colors: ${e.message}")
+                }
+            }
+            json.put("available", false)
+            return json.toString()
         }
 
         @JavascriptInterface

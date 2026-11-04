@@ -7,6 +7,7 @@ This folder holds the packaged app files for release and install. Only the files
 1. **Naming:** every tracked build includes its version in the file name:
    - Samsung Tizen: `KCIPTVPlayer-tizen-<version>.wgt`, for example `KCIPTVPlayer-tizen-1.2.58.wgt`
    - LG webOS: `KCIPTVPlayer-webos-<version>.ipk`, for example `KCIPTVPlayer-webos-1.2.58.ipk`
+   - Android: `KCIPTVPlayer-android-<version>.apk`, for example `KCIPTVPlayer-android-1.2.58.apk` (the signed release build, copied from `android/app/build/outputs/apk/release/app-release.apk`)
 2. **Only versioned builds are tracked.** Files without a version in their name, and `.ipk` files that don't match the webOS naming above, are ignored by [.gitignore](../.gitignore).
 3. **No credentials:** only store builds that don't include `credentials.local.js`. Packages built with credentials are for private testing and must not go into a release.
 4. **Keep the 5 most recent versions.** Delete older versioned builds, and any file without a version in its name.

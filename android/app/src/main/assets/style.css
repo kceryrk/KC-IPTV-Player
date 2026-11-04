@@ -1479,10 +1479,15 @@ body.speler-fit-screen .epg-preview-panel {
   padding: 0 16px;
   gap: 8px;
   height: 44px;
+  transition: box-shadow 0.15s ease;
 }
 
-.search-input-wrapper:focus-within {
-  box-shadow: 0 0 0 2px var(--md-sys-color-primary);
+.search-input-wrapper:focus-within,
+.search-input-wrapper.focused,
+.search-input-wrapper:has(:focus),
+.search-input-wrapper:has(.focused) {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--md-sys-color-primary) !important;
 }
 
 .search-input-icon {
@@ -1498,6 +1503,20 @@ body.speler-fit-screen .epg-preview-panel {
   color: var(--md-sys-color-on-surface);
   font-size: 1rem;
   padding: 0;
+  -webkit-appearance: none;
+}
+
+#searchInput,
+#searchInput:focus,
+#searchInput.focused,
+.search-input-field:focus,
+.search-input-field.focused,
+input.search-input-field.focusable:focus,
+input.search-input-field.focusable.focused {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  -webkit-appearance: none;
 }
 
 .search-clear-btn {
@@ -2007,9 +2026,10 @@ body.layout-mobile:not(.speler-fit-screen) .mobile-fullscreen-btn {
   }
 
   body.layout-mobile #colContent .col-title {
-    padding: 6px 14px;
-    font-size: 0.95rem !important;
+    padding: 4px 14px 2px 14px;
+    font-size: 0.85rem !important;
     border-bottom: none !important;
+    margin: 0 !important;
   }
 
   body.layout-mobile #colContent .col-content-wrapper {
@@ -2026,7 +2046,7 @@ body.layout-mobile:not(.speler-fit-screen) .mobile-fullscreen-btn {
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 8px 8px 88px 8px;
+    padding: 4px 8px 88px 8px !important;
     gap: 8px;
   }
 
@@ -2548,16 +2568,88 @@ body.layout-mobile:not(.speler-fit-screen) .mobile-fullscreen-btn {
     left: 16px;
     right: 16px;
     height: 62px;
-    background: var(--md-sys-color-surface-container-high);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--md-sys-color-outline-variant);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, 0.18) 100%),
+      var(--md-sys-color-surface-container-high);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-top-color: rgba(255, 255, 255, 0.28);
     border-radius: 999px;
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      inset 0 -2px 6px rgba(0, 0, 0, 0.35),
+      0 14px 34px rgba(0, 0, 0, 0.6),
+      0 3px 8px rgba(0, 0, 0, 0.35);
     z-index: 3500;
     align-items: center;
     justify-content: space-around;
     padding: 4px 8px;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: none;
+  }
+
+  body.layout-mobile .mobile-nav-indicator {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 0;
+    width: 0;
+    transform: translateX(0);
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: 0;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 45%, rgba(255, 255, 255, 0.06) 100%);
+    backdrop-filter: blur(3px) saturate(200%) brightness(1.15);
+    -webkit-backdrop-filter: blur(3px) saturate(200%) brightness(1.15);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+      inset 0 2px 3px rgba(255, 255, 255, 0.25),
+      inset 0 -2px 4px rgba(255, 255, 255, 0.08),
+      inset 3px 0 6px -2px rgba(255, 255, 255, 0.12),
+      inset -3px 0 6px -2px rgba(255, 255, 255, 0.12),
+      0 6px 16px rgba(0, 0, 0, 0.35);
+    transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  body.layout-mobile .mobile-bottom-nav.is-dragging .mobile-nav-indicator {
+    transition: none;
+  }
+
+  body.layout-mobile .mobile-nav-indicator::before,
+  body.layout-mobile .mobile-nav-indicator::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  /* Top specular sheen and bottom inner shade give the thumb a curved, raised look. */
+  body.layout-mobile .mobile-nav-indicator::before {
+    background:
+      radial-gradient(120% 70% at 30% 0%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 60%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.22) 100%);
+  }
+
+  /* Gradient edge: brighter at the top-left, fading toward the bottom-right. */
+  body.layout-mobile .mobile-nav-indicator::after {
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.05) 45%, rgba(255, 255, 255, 0.25));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  body.layout-mobile .mobile-nav-lens {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    pointer-events: none;
   }
 
   body.layout-mobile .mobile-nav-item {
@@ -2573,14 +2665,27 @@ body.layout-mobile:not(.speler-fit-screen) .mobile-fullscreen-btn {
     gap: 3px;
     border-radius: 999px;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    transition: color 0.2s cubic-bezier(0.2, 0, 0, 1);
     padding: 4px 0;
+    position: relative;
+    z-index: 1;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    outline: none;
+  }
+
+  body.layout-mobile .mobile-nav-item:focus,
+  body.layout-mobile .mobile-nav-item:active {
+    background: transparent;
+    outline: none;
+    box-shadow: none;
   }
 
   body.layout-mobile .mobile-nav-item .mobile-nav-icon {
     width: 22px;
     height: 22px;
-    transition: transform 0.2s ease;
+    transform: scale(calc(1 + var(--mag, 0) * 0.6));
   }
 
   body.layout-mobile .mobile-nav-item .mobile-nav-label {
@@ -2588,15 +2693,15 @@ body.layout-mobile:not(.speler-fit-screen) .mobile-fullscreen-btn {
     font-weight: 600;
     letter-spacing: 0.2px;
     line-height: 1;
+    transform: scale(calc(1 + var(--mag, 0) * 0.35));
   }
 
   body.layout-mobile .mobile-nav-item.active {
-    background: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-on-primary-container);
   }
 
   body.layout-mobile .mobile-nav-item.active .mobile-nav-icon {
-    transform: translateY(-1px) scale(1.06);
+    transform: translateY(-1px) scale(calc(1.06 + var(--mag, 0) * 0.6));
   }
 
   /* 6. SETTINGS OVERLAY FOR MOBILE */
@@ -2726,3 +2831,349 @@ body.layout-mobile.speler-fit-screen video {
   width: 100vw !important;
   height: 100vh !important;
 }
+
+/* SVG Icon Utility */
+.ui-svg {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* AMOLED Pure Black Theme */
+body.theme-amoled,
+html.theme-amoled {
+  background-color: #000000 !important;
+}
+
+body.theme-amoled {
+  --md-sys-color-surface: #000000 !important;
+  --md-sys-color-surface-dim: #000000 !important;
+  --md-sys-color-surface-container: #000000 !important;
+  --md-sys-color-surface-container-high: #0b0b0b !important;
+  --md-sys-color-surface-container-highest: #141414 !important;
+  --md-sys-color-outline-variant: #222222 !important;
+}
+
+body.theme-amoled .app-header {
+  background-color: #000000 !important;
+  border-bottom: 1px solid #1a1a1a !important;
+}
+
+body.theme-amoled #mobileBottomNav {
+  background-color: #000000 !important;
+  border-top: 1px solid #1a1a1a !important;
+}
+
+body.theme-amoled .app-page,
+body.theme-amoled .customization-page,
+body.theme-amoled .customization-header,
+body.theme-amoled .customization-nav,
+body.theme-amoled .customization-content,
+body.theme-amoled .customization-pane,
+body.theme-amoled .col-nav,
+body.theme-amoled .channel-panel,
+body.theme-amoled #homeViewAllPage,
+body.theme-amoled .home-screen-container,
+body.theme-amoled .search-overlay {
+  background-color: #000000 !important;
+}
+
+body.theme-amoled .customization-section {
+  background: #080808 !important;
+  border: 1px solid #1c1c1c !important;
+}
+
+body.theme-amoled .settings-item {
+  background: #111111;
+  border-color: #242424;
+}
+
+body.theme-amoled .settings-item:hover {
+  background: #1a1a1a;
+}
+
+body.theme-amoled .settings-item.active {
+  background: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+}
+
+body.theme-amoled .channel-card,
+body.theme-amoled .poster-card,
+body.theme-amoled .home-card {
+  background-color: #0a0a0a !important;
+  border-color: #1f1f1f !important;
+}
+
+/* First launch: the main menu stays hidden until main.js shows the welcome or reveals the app */
+html.wc-pending #appPage {
+  visibility: hidden;
+}
+
+/* Welcome screen: first start only. Overlay sits above the app (z-index 9000). */
+#welcomeScreen {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9000;
+  overflow: hidden;
+  color: #fff;
+  font-family: "Outfit", sans-serif;
+  transition: opacity 0.7s ease;
+}
+#welcomeScreen.wc-hidden { display: none; }
+#welcomeScreen.wc-fade { opacity: 0; }
+#welcomeScreen .wc-haze {
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  bottom: -10%;
+  left: -10%;
+  background: linear-gradient(120deg, #2a4a6a, #5a2a45, #2a5a6a, #4a2a6a);
+  animation: wcHazeDrift 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes wcHazeDrift {
+  from { transform: translateX(-5%); }
+  to { transform: translateX(5%); }
+}
+#welcomeScreen .wc-crt {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+#welcomeScreen .wc-scan {
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.28) 0 2px, transparent 2px 4px);
+}
+#welcomeScreen .wc-roll {
+  left: 0;
+  right: 0;
+  height: 120px;
+  top: 0;
+  transform: translateY(-120px);
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.07), transparent);
+  animation: wcRoll 6s linear infinite;
+  will-change: transform;
+}
+@keyframes wcRoll {
+  from { transform: translateY(-120px); }
+  to { transform: translateY(100vh); }
+}
+#welcomeScreen .wc-vignette {
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+#welcomeScreen .wc-flicker {
+  background: #000;
+  opacity: 0;
+}
+#welcomeScreen .wc-screen {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+  filter: brightness(var(--wc-flick, 1));
+}
+#welcomeScreen .wc-logo {
+  width: 220px;
+  height: 220px;
+  margin: 0 0 24px;
+  filter: drop-shadow(0 0 24px rgba(255, 255, 255, 0.35));
+}
+#welcomeScreen .wc-app-name {
+  margin: 0 0 56px;
+  font-size: 3rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(63, 210, 255, 0.5), 0 3px 8px rgba(0, 0, 0, 0.5);
+}
+#welcomeScreen .wc-iptv {
+  background: linear-gradient(90deg, #3fd2ff, #ff4fd8, #ffd700);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+#welcomeScreen .wc-prompt {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #9aa0b4;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+/* Power-off transition: top and bottom bands close to the middle, a bright line collapses, then the screen fades to Settings */
+#welcomeScreen .wc-off {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: #000;
+  z-index: 20;
+  transform: scaleY(0);
+}
+#welcomeScreen .wc-off.wc-top { top: 0; transform-origin: top center; }
+#welcomeScreen .wc-off.wc-bottom { bottom: 0; transform-origin: bottom center; }
+#welcomeScreen .wc-off.wc-close { animation: wcCloseIn 0.45s cubic-bezier(0.6, 0, 0.9, 0.4) forwards; }
+@keyframes wcCloseIn { to { transform: scaleY(1); } }
+#welcomeScreen .wc-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  margin-top: -1.5px;
+  background: #fff;
+  z-index: 21;
+  transform: scaleX(0);
+  opacity: 0;
+  box-shadow: 0 0 18px 4px rgba(255, 255, 255, 0.7);
+}
+#welcomeScreen .wc-line.wc-show { opacity: 1; transform: scaleX(1); }
+#welcomeScreen .wc-line.wc-collapse { animation: wcLineCollapse 0.3s ease-in forwards; }
+@keyframes wcLineCollapse {
+  0% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(0.002); opacity: 0; }
+}
+#welcomeScreen .wc-black {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: #000;
+  z-index: 19;
+  opacity: 0;
+}
+#welcomeScreen .wc-black.wc-show { opacity: 1; }
+/* Duration must match welcomeFadeInMs in main.js */
+#welcomeScreen .wc-black.wc-intro { transition: opacity 1s ease-out; will-change: opacity; }
+#welcomeScreen.wc-slim > :not(.wc-black) { display: none; }
+
+/* Start splash: same haze, scanlines, roll and vignette as the welcome screen, no text. Sits under the welcome screen. */
+#kcSplash {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9100;
+  overflow: hidden;
+  background: #2a4a6a;
+  transition: opacity 0.4s ease;
+}
+#kcSplash.kc-splash-done { opacity: 0; pointer-events: none; }
+#kcSplash .wc-haze {
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  bottom: -10%;
+  left: -10%;
+  background: linear-gradient(120deg, #2a4a6a, #5a2a45, #2a5a6a, #4a2a6a);
+  animation: wcHazeDrift 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+#kcSplash .wc-crt {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+#kcSplash .wc-scan {
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.28) 0 2px, transparent 2px 4px);
+}
+#kcSplash .wc-roll {
+  height: 120px;
+  transform: translateY(-120px);
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.07), transparent);
+  animation: wcRoll 6s linear infinite;
+  will-change: transform;
+}
+#kcSplash .wc-vignette {
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+#kcSplash .wc-screen {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#kcSplash .wc-logo {
+  width: 220px;
+  height: 220px;
+  filter: drop-shadow(0 0 24px rgba(255, 255, 255, 0.35));
+}
+
+/* DEPTH PASS: shared glass-style depth for cards, buttons and chips */
+body.layout-mobile .channel-card,
+body.layout-mobile .poster-card,
+body.layout-mobile .search-result-card,
+body.layout-mobile .home-shelf-card .home-card-poster-container,
+body.layout-mobile .home-hero-play-btn,
+body.layout-mobile .home-hero-info-btn,
+body.layout-mobile .home-shelf-view-all-btn,
+body.layout-mobile .home-view-all-cat-chip,
+body.layout-mobile .search-scope-chip,
+body.layout-mobile .customization-tab,
+body.layout-mobile .login-btn {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.28),
+    0 10px 22px rgba(0, 0, 0, 0.45);
+}
+
+body.layout-mobile .home-shelf-card .home-card-poster-container,
+body.layout-mobile .poster-card,
+body.layout-mobile .channel-card {
+  position: relative;
+}
+
+body.layout-mobile .home-shelf-card .home-card-poster-container::after,
+body.layout-mobile .poster-card::after,
+body.layout-mobile .channel-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(170deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 40%, rgba(0, 0, 0, 0.22) 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.10);
+}
+
+/* Selected state gets a glass lens rim, matching the nav thumb */
+body.layout-mobile .home-view-all-cat-chip.active,
+body.layout-mobile .search-scope-chip.active,
+body.layout-mobile .customization-tab.active,
+body.layout-mobile .channel-card.active,
+body.layout-mobile .home-shelf-card.active .home-card-poster-container {
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.35),
+    inset 0 10px 18px rgba(255, 255, 255, 0.14),
+    inset 0 -8px 14px rgba(0, 0, 0, 0.25),
+    0 0 0 2px rgba(120, 170, 255, 0.35),
+    0 10px 22px rgba(0, 0, 0, 0.45);
+}
+
+

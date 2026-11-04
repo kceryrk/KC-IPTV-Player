@@ -15,7 +15,7 @@ The Android client runs a hybrid architecture pairing a high-performance native 
 ```
 android/
 ├── app/
-│   ├── build.gradle.kts           # AGP 9.4.1, compileSdk 37, minSdk 24, signingConfigs
+│   ├── build.gradle.kts           # AGP 9.5.0, compileSdk 37, minSdk 24, signingConfigs
 │   └── src/main/
 │       ├── AndroidManifest.xml    # Permissions (INTERNET, ACCESS_NETWORK_STATE)
 │       ├── java/.../MainActivity.kt # WebView setup, JS bridges, DNS fallback, Back dispatcher

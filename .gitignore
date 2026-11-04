@@ -11,6 +11,7 @@ Thumbs.db
 !/builds/README.md
 !/builds/KCIPTVPlayer-tizen-[0-9]*.[0-9]*.wgt
 !/builds/KCIPTVPlayer-webos-[0-9]*.[0-9]*.ipk
+!/builds/KCIPTVPlayer-android-[0-9]*.[0-9]*.apk
 
 # Backups
 *backup*.js
