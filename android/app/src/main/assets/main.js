@@ -1157,6 +1157,15 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast(`${t("refreshInterval")}: ${refreshHours ? refreshHours + " h" : t("refreshOff")}`);
         return;
       }
+      case "supportDev": {
+        const supportUrl = "https://ko-fi.com/kaecr";
+        if (window.AndroidExternalPlayer && window.AndroidExternalPlayer.openUrl) {
+          window.AndroidExternalPlayer.openUrl(supportUrl);
+        } else {
+          window.open(supportUrl, "_blank");
+        }
+        return;
+      }
       case "resetHidden":
         hiddenCategories = { live: [], vod: [], series: [] };
         regionPrefs.hidden = { live: [], vod: [] };

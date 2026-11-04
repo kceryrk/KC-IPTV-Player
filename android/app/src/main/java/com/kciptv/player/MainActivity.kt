@@ -558,6 +558,20 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        @JavascriptInterface
+        fun openUrl(url: String) {
+            Handler(Looper.getMainLooper()).post {
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    context.startActivity(intent)
+                } catch (ex: Exception) {
+                    Log.e("KCIPTV", "openUrl failed", ex)
+                }
+            }
+        }
     }
 
     override fun onDestroy() {

@@ -1,5 +1,7 @@
 # KC IPTV Player
 
+[![Support on Ko-fi](https://img.shields.io/badge/Support%20on-Ko--fi-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/kaecr)
+
 A modern, high-performance IPTV & VOD player designed for Smart TVs, mobile phones, and tablets. It supports **LG webOS**, **Samsung Tizen**, and **Android** devices with a shared responsive web-core and native platform integrations.
 
 | Platform | Status | Current Version | Target Format | Handover & Details |
