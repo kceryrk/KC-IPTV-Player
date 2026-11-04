@@ -11,7 +11,7 @@ A modern, high-performance IPTV & VOD player designed for Smart TVs, mobile phon
 | **Samsung Tizen TV** | Working (Tizen 6.0+) | **`1.2.58`** | Packaged `.wgt` | [`tizen/HANDOVER.md`](tizen/HANDOVER.md) |
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/kceryrk/KC-IPTV-Player/main/webos/icon.png" alt="KC IPTV Player icon" width="160" />
+  <img src="https://raw.githubusercontent.com/kceryrk/KC-IPTV-Player/main/tizen/icon.png" alt="KC IPTV Player icon" width="160" />
 </p>
 
 ---
