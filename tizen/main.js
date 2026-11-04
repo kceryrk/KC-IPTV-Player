@@ -4381,6 +4381,192 @@ document.addEventListener("DOMContentLoaded", () => {
     commitVodSeek();
   });
 
+  // Welcome screen: first start only, skipped when credentials.local.js is present (testing builds)
+  const welcomeScreen = document.getElementById("welcomeScreen");
+  const welcomeFlickerLayer = document.getElementById("wcFlicker");
+  const welcomeScreenEl = document.getElementById("wcScreen");
+  const welcomePrompt = document.getElementById("wcPrompt");
+  const welcomeTop = document.getElementById("wcTop");
+  const welcomeBottom = document.getElementById("wcBottom");
+  const welcomeLine = document.getElementById("wcLine");
+  const welcomeBlack = document.getElementById("wcBlack");
+  const appPageEl = document.getElementById("appPage");
+  const welcomeSeenKey = "iptv_welcome_seen";
+  const welcomeTexts = {
+    tr: { prompt: "Başlamak için OK'e bas", loading: "Yükleniyor..." },
+    en: { prompt: "Press OK to get started", loading: "Loading..." }
+  };
+  let welcomeActive = false;
+  let welcomeLeaving = false;
+  let welcomeTimers = [];
+
+  function welcomeLater(fn, ms) {
+    welcomeTimers.push(setTimeout(fn, ms));
+  }
+  function welcomeRandom(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  function welcomeFlickerOnce() {
+    if (!welcomeActive) return;
+    const dim = Math.random() < 0.55;
+    welcomeScreen.style.setProperty("--wc-flick", dim ? welcomeRandom(0.45, 0.9).toFixed(2) : "1");
+    welcomeFlickerLayer.style.opacity = dim ? welcomeRandom(0, 0.12).toFixed(3) : "0";
+    welcomeLater(() => {
+      welcomeScreen.style.setProperty("--wc-flick", "1");
+      welcomeFlickerLayer.style.opacity = "0";
+      welcomeLater(welcomeFlickerLoop, welcomeRandom(40, 500));
+    }, welcomeRandom(40, 180));
+  }
+  function welcomeFlickerLoop() {
+    welcomeLater(welcomeFlickerOnce, welcomeRandom(400, 3500));
+  }
+
+  function welcomeFinish() {
+    welcomeTimers.forEach(clearTimeout);
+    welcomeTimers = [];
+    welcomeActive = false;
+    welcomeScreen.classList.add("wc-hidden");
+    applyAnimationsSetting();
+  }
+
+  function welcomeRevealSettings() {
+    welcomeBlack.classList.add("wc-show");
+    appPageEl.style.visibility = "";
+    toggleSettingsMenu(true);
+    showCustomizationTab("source");
+    const sourceTab = settingsPanel.querySelector(".customization-tab[data-tab='source']");
+    if (sourceTab) setElementFocus(sourceTab);
+    // Only the black layer is left, so the fade doesn't repaint the animated welcome on the TV
+    welcomeScreen.classList.add("wc-slim");
+    welcomeScreen.classList.add("wc-fade");
+    welcomeLater(welcomeFinish, 750);
+  }
+
+  // Original sounds, synthesized with Web Audio so no licensed asset is needed.
+  let welcomeAudio = null;
+  function welcomeGetAudio() {
+    if (welcomeAudio) return welcomeAudio;
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    try {
+      welcomeAudio = new Ctx();
+    } catch (error) {
+      welcomeAudio = null;
+    }
+    return welcomeAudio;
+  }
+  function welcomeTone(ctx, type, freq, start, dur, gain, freqEnd) {
+    const osc = ctx.createOscillator();
+    const amp = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, start);
+    if (freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd, start + dur);
+    amp.gain.setValueAtTime(0.0001, start);
+    amp.gain.exponentialRampToValueAtTime(gain, start + 0.02);
+    amp.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+    osc.connect(amp);
+    amp.connect(ctx.destination);
+    osc.start(start);
+    osc.stop(start + dur + 0.05);
+  }
+  function welcomePlayIntro() {
+    const ctx = welcomeGetAudio();
+    if (!ctx) return;
+    if (ctx.state === "suspended") ctx.resume().catch(() => {});
+    const t = ctx.currentTime + 0.05;
+    // Two low notes that ring out like a piano with the sustain pedal down
+    welcomePianoNote(ctx, 130.81, t, 5.0, 0.6);
+    welcomePianoNote(ctx, 98.0, t + 0.9, 6.0, 0.6);
+  }
+  // Struck-string tone: higher partials die away faster, so the note softens into a long tail
+  function welcomePianoNote(ctx, freq, start, dur, gain) {
+    const partials = [
+      { mult: 1, level: 1.0, decay: 1.0 },
+      { mult: 2, level: 0.45, decay: 0.6 },
+      { mult: 3, level: 0.2, decay: 0.35 },
+      { mult: 4, level: 0.09, decay: 0.2 },
+      { mult: 5, level: 0.04, decay: 0.12 }
+    ];
+    const total = partials.reduce((sum, p) => sum + p.level, 0);
+    partials.forEach((p) => {
+      const osc = ctx.createOscillator();
+      const env = ctx.createGain();
+      const peak = (gain * p.level) / total;
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq * p.mult, start);
+      env.gain.setValueAtTime(0.0001, start);
+      env.gain.exponentialRampToValueAtTime(peak, start + 0.008);
+      env.gain.exponentialRampToValueAtTime(0.0001, start + dur * p.decay);
+      osc.connect(env);
+      env.connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + dur + 0.05);
+    });
+  }
+  function welcomePlayTvClose() {
+    const ctx = welcomeGetAudio();
+    if (!ctx) return;
+    if (ctx.state === "suspended") ctx.resume().catch(() => {});
+    const t = ctx.currentTime + 0.01;
+    // Downward sweep, like a CRT losing its high voltage
+    welcomeTone(ctx, "sawtooth", 900, t, 0.28, 0.5, 40);
+    // Short click at the moment the line collapses
+    const len = Math.floor(ctx.sampleRate * 0.02);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    const src = ctx.createBufferSource();
+    const clickGain = ctx.createGain();
+    clickGain.gain.value = 0.9;
+    src.buffer = buf;
+    src.connect(clickGain);
+    clickGain.connect(ctx.destination);
+    src.start(t);
+  }
+
+  function welcomeStart() {
+    if (welcomeLeaving) return;
+    welcomeLeaving = true;
+    store.setItem(welcomeSeenKey, "1");
+    const texts = welcomeTexts[currentLang] || welcomeTexts.en;
+    welcomePrompt.textContent = texts.loading;
+    welcomeTop.classList.add("wc-close");
+    welcomeBottom.classList.add("wc-close");
+    welcomeLater(() => welcomeLine.classList.add("wc-show"), 420);
+    welcomeLater(() => {
+      welcomeLine.classList.add("wc-collapse");
+      welcomePlayTvClose();
+    }, 620);
+    welcomeLater(welcomeRevealSettings, 900);
+  }
+
+  // Capture phase so the welcome screen consumes every key before the app handles it.
+  window.addEventListener("keydown", (e) => {
+    if (!welcomeActive) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    const key = e.keyCode || e.which;
+    if (key === 13 || e.key === "Enter") welcomeStart();
+  }, true);
+
+  function maybeShowWelcome() {
+    document.documentElement.classList.remove("wc-pending");
+    if (!welcomeScreen || window.KC_DEFAULT_LOGIN || store.getItem(welcomeSeenKey)) return;
+    const texts = welcomeTexts[currentLang] || welcomeTexts.en;
+    welcomePrompt.textContent = texts.prompt;
+    welcomeActive = true;
+    // The main menu stays hidden until OK, so it can't cover the welcome
+    appPageEl.style.visibility = "hidden";
+    // The welcome is artwork, so it animates even when the Animations setting is off.
+    document.body.classList.remove("no-animations");
+    welcomeScreen.classList.remove("wc-hidden");
+    welcomeFlickerLoop();
+    // Start the intro after the welcome's first paint so the sound and the screen begin together
+    requestAnimationFrame(() => requestAnimationFrame(welcomePlayIntro));
+  }
+
   initProfile();
   scheduleListRefresh();
+  maybeShowWelcome();
 });

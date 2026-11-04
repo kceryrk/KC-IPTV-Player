@@ -5,8 +5,8 @@ A modern, high-performance IPTV & VOD player designed for Smart TVs, mobile phon
 | Platform | Status | Current Version | Target Format | Handover & Details |
 |----------|--------|-----------------|---------------|-------------------|
 | **Android** | Released & Active | **`1.2.45`** | Signed `.apk` | [`android/HANDOVER.md`](android/HANDOVER.md) |
-| **LG webOS TV** | Released | **`1.2.57`** | Packaged `.ipk` | [`webos/HANDOVER.md`](webos/HANDOVER.md) |
-| **Samsung Tizen TV** | Working (Tizen 6.0+) | **`1.2.57`** | Packaged `.wgt` | [`tizen/HANDOVER.md`](tizen/HANDOVER.md) |
+| **LG webOS TV** | Released | **`1.2.58`** | Packaged `.ipk` | [`webos/HANDOVER.md`](webos/HANDOVER.md) |
+| **Samsung Tizen TV** | Working (Tizen 6.0+) | **`1.2.58`** | Packaged `.wgt` | [`tizen/HANDOVER.md`](tizen/HANDOVER.md) |
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/kceryrk/KC-IPTV-Player/main/webos/icon.png" alt="KC IPTV Player icon" width="160" />
@@ -109,7 +109,7 @@ Optional: create a `credentials.local.js` for the platform you're building (see 
    This creates `dist/com.iptv.webosapp_<version>_all.ipk`.
 2. Install it. This replaces the existing app and keeps its data, so you don't need to uninstall first:
    ```bash
-   ares-install --device lg-tv dist/com.iptv.webosapp_1.2.57_all.ipk
+   ares-install --device lg-tv dist/com.iptv.webosapp_1.2.58_all.ipk
    ```
 3. Launch it:
    ```bash

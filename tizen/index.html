@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KC IPTV PLAYER</title>
   <link rel="stylesheet" href="style.css">
+  <script>
+    // First launch: keep the main menu hidden until main.js decides whether to show the welcome
+    try { if (!localStorage.getItem("iptv_welcome_seen")) document.documentElement.classList.add("wc-pending"); } catch (e) {}
+  </script>
   <script src="libs-loader.js"></script>
 </head>
 <body>
@@ -30,6 +34,31 @@
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol>
     <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20zM12 10v4M12 17.5v.5"/></symbol>
   </svg>
+
+  <!-- EERSTE START WELKOM (verborgen als credentials.local.js aanwezig is) -->
+  <div id="welcomeScreen" class="wc-hidden" aria-hidden="true">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"></svg>
+    <div class="wc-haze"></div>
+    <div class="wc-screen" id="wcScreen">
+      <svg class="wc-logo" viewBox="0 0 100 100" aria-hidden="true">
+        <g fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M38 24 L50 36 L62 24"/>
+          <rect x="16" y="36" width="68" height="48" rx="12"/>
+        </g>
+        <path d="M42 47 L62 60 L42 73 Z" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+      </svg>
+      <h1 class="wc-app-name">KC <span class="wc-iptv">IPTV</span> Player</h1>
+      <p class="wc-prompt" id="wcPrompt"></p>
+    </div>
+    <div class="wc-crt wc-scan"></div>
+    <div class="wc-crt wc-roll"></div>
+    <div class="wc-crt wc-vignette"></div>
+    <div class="wc-crt wc-flicker" id="wcFlicker"></div>
+    <div class="wc-off wc-top" id="wcTop"></div>
+    <div class="wc-off wc-bottom" id="wcBottom"></div>
+    <div class="wc-line" id="wcLine"></div>
+    <div class="wc-black" id="wcBlack"></div>
+  </div>
 
   <!-- VISUELE NUMMER ZAP OVERLAY IN HET MIDDEN VAN HET SCHERM -->
   <div id="numZapOverlay" class="num-zap-overlay-center hidden">

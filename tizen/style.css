@@ -3138,3 +3138,161 @@ body.speler-fit-screen .app-progress {
   width: 0;
   height: 0;
 }
+
+/* First launch: the main menu stays hidden until main.js shows the welcome or reveals the app */
+html.wc-pending #appPage {
+  visibility: hidden;
+}
+
+/* Welcome screen: first start only. Overlay sits above the app (z-index 9000). */
+#welcomeScreen {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9000;
+  overflow: hidden;
+  color: #fff;
+  font-family: "Outfit", sans-serif;
+  transition: opacity 0.7s ease;
+}
+#welcomeScreen.wc-hidden { display: none; }
+#welcomeScreen.wc-fade { opacity: 0; }
+#welcomeScreen .wc-haze {
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  bottom: -10%;
+  left: -10%;
+  background: linear-gradient(120deg, #2a4a6a, #5a2a45, #2a5a6a, #4a2a6a);
+  animation: wcHazeDrift 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes wcHazeDrift {
+  from { transform: translateX(-5%); }
+  to { transform: translateX(5%); }
+}
+#welcomeScreen .wc-crt {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+#welcomeScreen .wc-scan {
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.28) 0 2px, transparent 2px 4px);
+}
+#welcomeScreen .wc-roll {
+  left: 0;
+  right: 0;
+  height: 120px;
+  top: 0;
+  transform: translateY(-120px);
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.07), transparent);
+  animation: wcRoll 6s linear infinite;
+  will-change: transform;
+}
+@keyframes wcRoll {
+  from { transform: translateY(-120px); }
+  to { transform: translateY(100vh); }
+}
+#welcomeScreen .wc-vignette {
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+#welcomeScreen .wc-flicker {
+  background: #000;
+  opacity: 0;
+}
+#welcomeScreen .wc-screen {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+  filter: brightness(var(--wc-flick, 1));
+}
+#welcomeScreen .wc-logo {
+  width: 220px;
+  height: 220px;
+  margin: 0 0 24px;
+  filter: drop-shadow(0 0 24px rgba(255, 255, 255, 0.35));
+}
+#welcomeScreen .wc-app-name {
+  margin: 0 0 56px;
+  font-size: 3rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(63, 210, 255, 0.5), 0 3px 8px rgba(0, 0, 0, 0.5);
+}
+#welcomeScreen .wc-iptv {
+  background: linear-gradient(90deg, #3fd2ff, #ff4fd8, #ffd700);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+#welcomeScreen .wc-prompt {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #9aa0b4;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+/* Power-off transition: top and bottom bands close to the middle, a bright line collapses, then the screen fades to Settings */
+#welcomeScreen .wc-off {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: #000;
+  z-index: 20;
+  transform: scaleY(0);
+}
+#welcomeScreen .wc-off.wc-top { top: 0; transform-origin: top center; }
+#welcomeScreen .wc-off.wc-bottom { bottom: 0; transform-origin: bottom center; }
+#welcomeScreen .wc-off.wc-close { animation: wcCloseIn 0.45s cubic-bezier(0.6, 0, 0.9, 0.4) forwards; }
+@keyframes wcCloseIn { to { transform: scaleY(1); } }
+#welcomeScreen .wc-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  margin-top: -1.5px;
+  background: #fff;
+  z-index: 21;
+  transform: scaleX(0);
+  opacity: 0;
+  box-shadow: 0 0 18px 4px rgba(255, 255, 255, 0.7);
+}
+#welcomeScreen .wc-line.wc-show { opacity: 1; transform: scaleX(1); }
+#welcomeScreen .wc-line.wc-collapse { animation: wcLineCollapse 0.3s ease-in forwards; }
+@keyframes wcLineCollapse {
+  0% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(0.002); opacity: 0; }
+}
+#welcomeScreen .wc-black {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: #000;
+  z-index: 19;
+  opacity: 0;
+}
+#welcomeScreen .wc-black.wc-show { opacity: 1; }
+#welcomeScreen.wc-slim > :not(.wc-black) { display: none; }
