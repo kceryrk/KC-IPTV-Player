@@ -180,4 +180,6 @@ Find packaged releases for all platforms on GitHub:
 
 ## License & Notice
 
-This project is maintained for personal and private backup use. All brand names, stream formats, and logos are property of their respective owners.
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See [LICENSE](LICENSE) for the full text.
+
+This software is provided without warranty. It does not include any IPTV content or subscriptions; you are responsible for the streams and accounts you use with it. All brand names, stream formats, and logos are property of their respective owners.
