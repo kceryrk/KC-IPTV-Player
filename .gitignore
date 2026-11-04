@@ -6,6 +6,11 @@ Thumbs.db
 *.ipk
 *.zip
 *-release.apk
+# builds/: only KCIPTVPlayer-<platform>-<version> builds are tracked; everything else is ignored
+/builds/*
+!/builds/README.md
+!/builds/KCIPTVPlayer-tizen-[0-9]*.[0-9]*.wgt
+!/builds/KCIPTVPlayer-webos-[0-9]*.[0-9]*.ipk
 
 # Backups
 *backup*.js
@@ -38,6 +43,7 @@ tizen/signature1.xml
 *.log
 
 # Secrets / environment
+.credentials_vault/
 webos/credentials.local.js
 tizen/credentials.local.js
 android/**/credentials.local.js
