@@ -45,6 +45,17 @@ android/
 - Native back button interactions are captured in [`MainActivity.kt`](file:///Users/kamil/Desktop/KC-IPTV-Player/android/app/src/main/java/com/kciptv/player/MainActivity.kt) using Android's `OnBackPressedCallback`.
 - Calls `window.handleAppBack()` in JavaScript to cleanly close open menus, settings overlays, and fullscreen video before falling back to exit.
 
+### Device Form-Factor Recognition (TV, Tablet & Mobile Phone)
+- **Native Device Detection (`MainActivity.detectDeviceType`):**
+  - **TV:** Identified via `UI_MODE_TYPE_TELEVISION`, `FEATURE_LEANBACK`, `FEATURE_TELEVISION`, or lack of touchscreen hardware. Locks to landscape.
+  - **Tablet:** Identified on non-TV touchscreen devices when `smallestScreenWidthDp >= 600` or large screen layout with diagonal screen size >= 6.8". Rotates freely (`SCREEN_ORIENTATION_SENSOR`).
+  - **Mobile Phone:** Portable touch device with `smallestScreenWidthDp < 600`. Defaults to portrait orientation, rotating to landscape during fullscreen video.
+- **Dedicated Tablet Mode:**
+  - Preserves touch-first gestures and navigation while scaling card grids dynamically (4 columns portrait, 6 columns landscape).
+  - Side-by-side Live TV layout in landscape orientation (channels on the left, video preview on the right).
+  - Floating pill navigation bar and centered modal dialogs for tablet ergonomics.
+  - JavaScript bridge APIs: `getDeviceType()`, `isTabletDevice()`, `isTvDevice()`, `isMobileDevice()`, `isPhoneDevice()`, `getDeviceLayout()`, and `setDeviceLayout()`.
+
 ### Fullscreen Touch & Swipe Gestures
 - Added pointer and touch listeners on `#playerWrapper` in fullscreen Live TV mode.
 - **Vertical Swipe:** Swipe Up = Next Channel, Swipe Down = Previous Channel.

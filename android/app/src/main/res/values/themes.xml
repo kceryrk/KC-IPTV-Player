@@ -8,7 +8,6 @@
         <item name="android:windowBackground">@drawable/splash_haze</item>
         <item name="android:windowSplashScreenBackground" tools:targetApi="s">@color/splash_bg</item>
         <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@drawable/splash_logo</item>
-        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="s">@color/splash_bg</item>
     </style>
 
     <style name="Theme.KCIPTVPlayer.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
@@ -19,6 +18,5 @@
         <item name="android:windowBackground">@drawable/splash_haze</item>
         <item name="android:windowSplashScreenBackground" tools:targetApi="s">@color/splash_bg</item>
         <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@drawable/splash_logo</item>
-        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="s">@color/splash_bg</item>
     </style>
 </resources>

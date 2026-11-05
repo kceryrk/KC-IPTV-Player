@@ -101,6 +101,7 @@
                 <h2 data-i18n="deviceLayout">Device layout</h2>
                 <div class="settings-row">
                   <button class="settings-item focusable" data-setting="deviceLayout" data-value="mobile" type="button" tabindex="0"><svg class="ui-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg> <span data-i18n="layoutMobile">Mobile (Portrait)</span></button>
+                  <button class="settings-item focusable" data-setting="deviceLayout" data-value="tablet" type="button" tabindex="0"><svg class="ui-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21 4H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H3V6h18v12z"/></svg> <span data-i18n="layoutTablet">Tablet (Auto-rotate)</span></button>
                   <button class="settings-item focusable" data-setting="deviceLayout" data-value="tv" type="button" tabindex="0"><svg class="ui-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg> <span data-i18n="layoutTv">TV (Landscape)</span></button>
                 </div>
               </section>
@@ -152,6 +153,33 @@
                   <input id="androidExternalPlayerToggle" class="focusable" type="checkbox" tabindex="0">
                 </label>
               </section>
+              <section class="customization-section">
+                <h2 data-i18n="skipDurationSetting">Double-tap skip / rewind</h2>
+                <div class="settings-row">
+                  <button class="settings-item focusable" data-setting="skipSeconds" data-value="5" type="button" tabindex="0">5s</button>
+                  <button class="settings-item focusable active" data-setting="skipSeconds" data-value="10" type="button" tabindex="0">10s</button>
+                  <button class="settings-item focusable" data-setting="skipSeconds" data-value="15" type="button" tabindex="0">15s</button>
+                  <button class="settings-item focusable" data-setting="skipSeconds" data-value="30" type="button" tabindex="0">30s</button>
+                  <button class="settings-item focusable" data-setting="skipSeconds" data-value="60" type="button" tabindex="0">60s</button>
+                </div>
+              </section>
+              <section class="customization-section">
+                <h2 data-i18n="osdStyleSetting">Player OSD style</h2>
+                <div class="settings-row">
+                  <button class="settings-item focusable active" data-setting="osdStyle" data-value="glass" data-i18n="osdStyleGlass" type="button" tabindex="0">Liquid Glass</button>
+                  <button class="settings-item focusable" data-setting="osdStyle" data-value="black" data-i18n="osdStyleBlack" type="button" tabindex="0">Black Opacity</button>
+                </div>
+              </section>
+              <section class="customization-section">
+                <h2 data-i18n="osdOpacitySetting">Player OSD transparency</h2>
+                <div class="settings-row">
+                  <button class="settings-item focusable" data-setting="osdOpacity" data-value="15" type="button" tabindex="0">15%</button>
+                  <button class="settings-item focusable active" data-setting="osdOpacity" data-value="25" type="button" tabindex="0">25%</button>
+                  <button class="settings-item focusable" data-setting="osdOpacity" data-value="40" type="button" tabindex="0">40%</button>
+                  <button class="settings-item focusable" data-setting="osdOpacity" data-value="60" type="button" tabindex="0">60%</button>
+                  <button class="settings-item focusable" data-setting="osdOpacity" data-value="80" type="button" tabindex="0">80%</button>
+                </div>
+              </section>
             </div>
 
             <div class="customization-pane hidden" data-pane="customization">
@@ -202,7 +230,7 @@
 
               <section class="customization-section">
                 <h2 data-i18n="clockFormat">Clock format</h2>
-                <button id="clockFormatButton" class="settings-item focusable" type="button" tabindex="0"><svg class="ui-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> <span id="clockFormatText">12 h</span></button>
+                <button id="clockFormatButton" class="settings-item focusable" type="button" tabindex="0"><svg class="ui-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> <span id="clockFormatText">24 h</span></button>
               </section>
             </div>
 
@@ -210,13 +238,14 @@
               <form id="loginForm" class="login-settings-form">
                 <div class="login-panel-header">
                   <h2 data-i18n="providerLogin">Provider login</h2>
-                  <div class="source-switch">
-                    <span class="source-switch-arrow" aria-hidden="true"><svg class="ui-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></span>
-                    <select id="loginMethod" class="focusable" tabindex="0">
+                  <div class="source-switch login-method-slider" id="loginMethodSlider">
+                    <span class="login-method-indicator" id="loginMethodIndicator" aria-hidden="true"></span>
+                    <button type="button" class="login-method-option focusable active" data-method="xtream" tabindex="0">Xtream</button>
+                    <button type="button" class="login-method-option focusable" data-method="m3u" tabindex="0">M3U</button>
+                    <select id="loginMethod" class="hidden" tabindex="-1" aria-hidden="true">
                       <option value="xtream">Xtream</option>
                       <option value="m3u">M3U</option>
                     </select>
-                    <span class="source-switch-arrow" aria-hidden="true"><svg class="ui-svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></span>
                   </div>
                 </div>
 
@@ -258,35 +287,35 @@
                   <button type="submit" id="loginBtn" class="login-btn primary focusable" data-i18n="login" tabindex="0">Sign in</button>
                   <button type="button" id="loginTestBtn" class="login-btn secondary focusable" tabindex="0">
                     <span id="testBtnSpinner" class="btn-infinity-spinner hidden"></span>
-                    <span id="testBtnText">Test connection</span>
+                    <span id="testBtnText" data-i18n="testConnection">Test connection</span>
                   </button>
                 </div>
 
                 <!-- XTREAM ACCOUNT INFO & DIAGNOSTIC CARD -->
                 <div id="accountInfoCard" class="account-info-card hidden">
                   <div class="account-card-header">
-                    <div class="account-badge" id="accountStatusBadge">Aktif</div>
+                    <div class="account-badge" id="accountStatusBadge" data-i18n="accountActive">Active</div>
                     <div class="account-expires-badge" id="accountExpiresBadge">--</div>
                   </div>
                   <div class="account-card-grid">
                     <div class="account-card-item">
-                      <span class="account-item-label">Bitiş Tarihi</span>
+                      <span class="account-item-label" data-i18n="accountExpDateLabel">Expiration Date</span>
                       <span class="account-item-value" id="accountExpDate">--</span>
                     </div>
                     <div class="account-card-item">
-                      <span class="account-item-label">Kalan Süre</span>
+                      <span class="account-item-label" data-i18n="accountTimeLeftLabel">Time Remaining</span>
                       <span class="account-item-value highlight" id="accountTimeLeft">--</span>
                     </div>
                     <div class="account-card-item">
-                      <span class="account-item-label">Bağlantılar</span>
+                      <span class="account-item-label" data-i18n="accountConnectionsLabel">Connections</span>
                       <span class="account-item-value" id="accountConnections">--</span>
                     </div>
                     <div class="account-card-item">
-                      <span class="account-item-label">Hesap Türü</span>
+                      <span class="account-item-label" data-i18n="accountTypeLabel">Account Type</span>
                       <span class="account-item-value" id="accountType">--</span>
                     </div>
                     <div class="account-card-item full-width">
-                      <span class="account-item-label">Sunucu & Formatlar</span>
+                      <span class="account-item-label" data-i18n="accountServerLabel">Server & Formats</span>
                       <span class="account-item-value" id="accountServerDetails">--</span>
                     </div>
                   </div>
@@ -341,7 +370,14 @@
       <!-- KOLOM 3: INHOUD -->
       <div class="col-nav channel-panel" id="colContent" data-col="3">
         <div class="col-content-wrapper">
-          <div class="col-title" id="contentTitle">KANALLAR</div>
+          <div class="col-title-row">
+            <div class="col-title" id="contentTitle">KANALLAR</div>
+            <button id="categorySubFilterBtn" class="sub-filter-toggle-btn focusable hidden" type="button" tabindex="0">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+              <span id="categorySubFilterBtnLabel" data-i18n="filterBtn">Filter</span>
+            </button>
+          </div>
+          <div id="categorySubFilterChips" class="sub-filter-chips hidden"></div>
           <div id="channelList" class="channel-grid"></div>
         </div>
       </div>
@@ -360,21 +396,101 @@
         <!-- INFINITY LOADING ANIMATION OVERLAY -->
         <div id="playerLoadingOverlay" class="player-loading-overlay hidden">
           <div class="infinity-loader-wrap">
-            <svg class="infinity-loader" viewBox="0 0 100 60" width="80" height="48" aria-hidden="true">
+            <svg class="infinity-loader" viewBox="0 0 100 60" width="84" height="50" aria-hidden="true">
               <defs>
-                <linearGradient id="infinityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="var(--md-sys-color-primary, #a8c7fa)" />
-                  <stop offset="50%" stop-color="var(--highlight, #ffd700)" />
-                  <stop offset="100%" stop-color="var(--accent, #7bdcb5)" />
+                <linearGradient id="infinityGrad" gradientUnits="userSpaceOnUse" x1="8" y1="10" x2="92" y2="50">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="32%" stop-color="#818cf8" />
+                  <stop offset="68%" stop-color="#f472b6" />
+                  <stop offset="100%" stop-color="#facc15" />
+                  <animateTransform attributeName="gradientTransform" type="rotate" from="0 50 30" to="360 50 30" dur="2.2s" repeatCount="indefinite" />
                 </linearGradient>
               </defs>
-              <path class="infinity-bg" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
-              <path class="infinity-path" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+              <g id="infinityCometGroup">
+                <path class="infinity-seg seg-10" pathLength="240" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+                <path class="infinity-seg seg-9" pathLength="240" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+                <path class="infinity-seg seg-8" pathLength="240" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+                <path class="infinity-seg seg-7" pathLength="240" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+                <path class="infinity-seg seg-6" pathLength="240" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+                <path class="infinity-seg seg-5" pathLength="240" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+                <path class="infinity-seg seg-4" pathLength="240" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+                <path class="infinity-seg seg-3" pathLength="240" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+                <path class="infinity-seg seg-2" pathLength="240" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+                <path class="infinity-seg seg-1" pathLength="240" d="M 50,30 C 65,12 88,12 88,30 C 88,48 65,48 50,30 C 35,12 12,12 12,30 C 12,48 35,48 50,30 Z" />
+              </g>
             </svg>
             <div id="playerLoadingText" class="player-loading-text">Yükleniyor...</div>
           </div>
         </div>
+
+        <!-- DOUBLE-TAP SEEK RIPPLE INDICATOR -->
+        <div id="vodDoubleTapLeft" class="vod-doubletap-indicator left hidden" aria-hidden="true">
+          <div class="vod-doubletap-bubble">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>
+            <span id="vodDoubleTapLeftText">-10s</span>
+          </div>
+        </div>
+        <div id="vodDoubleTapRight" class="vod-doubletap-indicator right hidden" aria-hidden="true">
+          <div class="vod-doubletap-bubble">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
+            <span id="vodDoubleTapRightText">+10s</span>
+          </div>
+        </div>
+
+        <!-- FLOATING PIP OVERLAY BADGE (Dismiss hint when dragging down) -->
+        <div id="pipDismissHint" class="pip-dismiss-hint hidden" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </div>
+
+        <!-- LIVE TV HORIZONTAL SWIPE CHANNEL PREVIEW PANEL (AI Breathing Dots + Radial Glow + 3D Chevron) -->
+        <div id="liveSwipePreview" class="live-swipe-preview hidden" aria-hidden="true">
+          <div class="live-swipe-glow"></div>
+          <div class="live-swipe-dots-layer live-swipe-dots-a"></div>
+          <div class="live-swipe-dots-layer live-swipe-dots-b"></div>
+          <div class="live-swipe-content">
+            <div class="live-swipe-row" id="liveSwipeRow">
+              <div class="live-swipe-logo-box">
+                <img id="liveSwipeLogoImg" class="live-swipe-logo-img hidden" alt="">
+                <div id="liveSwipeLogoFallback" class="live-swipe-logo-fallback">TV</div>
+              </div>
+              <div class="live-swipe-chevron-wrap" id="liveSwipeChevronWrap">
+                <svg class="live-swipe-chevron-3d" viewBox="0 0 44 44" width="38" height="38" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="swipeChevGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#ffffff" />
+                      <stop offset="52%" stop-color="var(--accent, #dbeafe)" />
+                      <stop offset="100%" stop-color="var(--highlight, #7dd3fc)" />
+                    </linearGradient>
+                    <linearGradient id="swipeChevDepth" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="var(--accent, #3b82f6)" stop-opacity="0.72" />
+                      <stop offset="100%" stop-color="var(--md-sys-color-primary-container, #1d4ed8)" stop-opacity="0.95" />
+                    </linearGradient>
+                    <filter id="swipeChevShadow" x="-30%" y="-30%" width="160%" height="160%">
+                      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.6" />
+                    </filter>
+                  </defs>
+                  <g filter="url(#swipeChevShadow)">
+                    <!-- Volumetric 3D Extruded Back Layer -->
+                    <path d="M 16.5 11.5 L 29.5 23.5 L 16.5 35.5" fill="none" stroke="url(#swipeChevDepth)" stroke-width="6.8" stroke-linecap="round" stroke-linejoin="round" />
+                    <!-- Illuminated Specular Front Pill Layer -->
+                    <path d="M 14 9.5 L 27 21.5 L 14 33.5" fill="none" stroke="url(#swipeChevGrad)" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round" />
+                    <!-- Top-Edge Specular Rim Highlight -->
+                    <path d="M 14.3 9.2 L 26.8 21.2" fill="none" stroke="#ffffff" stroke-opacity="0.95" stroke-width="2.1" stroke-linecap="round" />
+                  </g>
+                </svg>
+              </div>
+            </div>
+            <div id="liveSwipeChName" class="live-swipe-ch-name">Channel</div>
+          </div>
+        </div>
         
+        <!-- VOD CENTER PLAY/PAUSE BUTTON (Wakes with VOD OSD) -->
+        <button id="vodCenterPlayPauseBtn" class="vod-center-play-btn hidden" type="button" aria-label="Play / Pause">
+          <svg id="vodCenterPlayPauseSvg" viewBox="0 0 24 24" width="34" height="34" fill="currentColor">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+          </svg>
+        </button>
+
         <!-- VOD PAUSE OVERLAY ICON -->
         <div id="vodPauseIcon" class="vod-pause-overlay hidden">
           <div class="vod-pause-circle"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></div>
@@ -432,19 +548,89 @@
           <span class="osd-clock" id="osdClock">00:00</span>
         </div>
 
+        <!-- SUBTITLE OVERLAY -->
+        <div id="vodSubtitleOverlay" class="vod-subtitle-overlay hidden" aria-live="polite"></div>
+
         <!-- VOD LIQUID GLASS OSD -->
         <div class="vod-osd-overlay hidden" id="vodOsdContainer">
           <div class="vod-osd-header">
             <h2 id="vodOsdTitle">Film Adı</h2>
-            <span class="vod-osd-clock" id="vodOsdClock">00:00</span>
+            <div class="osd-actions">
+              <span class="vod-osd-clock" id="vodOsdClock">00:00</span>
+              <button id="vodSettingsBtn" class="osd-action-btn vod-dots-btn focusable" type="button" tabindex="0" title="Player Settings" aria-label="Player Settings">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+              </button>
+            </div>
           </div>
-          <div class="vod-progress-bar-container">
-            <div class="vod-progress-bar" id="vodProgressBar"></div>
+          <div class="vod-timeline-wrapper" id="vodTimelineWrapper">
+            <div class="vod-timeline-tooltip hidden" id="vodTimelineTooltip">00:00:00</div>
+            <div class="vod-progress-bar-container" id="vodProgressBarContainer">
+              <div class="vod-progress-buffered" id="vodProgressBuffered"></div>
+              <div class="vod-progress-bar" id="vodProgressBar"></div>
+              <div class="vod-progress-thumb" id="vodProgressThumb"></div>
+            </div>
           </div>
           <div class="vod-osd-controls">
             <span id="vodCurrentTime">00:00:00</span>
             <span class="vod-hint" data-i18n="vodHint">Back: Exit | Pause: Pause | Left/Right: Seek</span>
             <span id="vodDuration">00:00:00</span>
+          </div>
+        </div>
+
+        <!-- VOD SETTINGS POPOVER (3-DOTS MENU) -->
+        <div id="vodSettingsPopover" class="vod-settings-popover hidden" role="dialog" aria-label="VOD Settings">
+          <div class="vod-settings-header">
+            <span class="vod-settings-title" data-i18n="vodPlayerSettings">Playback Settings</span>
+            <button id="vodSettingsCloseBtn" class="vod-settings-close focusable" type="button" tabindex="0" aria-label="Close">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+          </div>
+          <div class="vod-settings-tabs">
+            <button type="button" class="vod-settings-tab active focusable" data-vod-tab="audio" tabindex="0" data-i18n="vodAudioTab">Audio</button>
+            <button type="button" class="vod-settings-tab focusable" data-vod-tab="subtitles" tabindex="0" data-i18n="vodSubtitlesTab">Subtitles</button>
+            <button type="button" class="vod-settings-tab focusable" data-vod-tab="video" tabindex="0" data-i18n="vodVideoTab">Video</button>
+          </div>
+          <div class="vod-settings-body">
+            <!-- AUDIO TAB -->
+            <div class="vod-settings-pane" data-vod-pane="audio">
+              <div class="vod-settings-label" data-i18n="vodAudioTrackLabel">Audio Source / Language</div>
+              <div id="vodAudioTrackList" class="vod-track-list"></div>
+            </div>
+            <!-- SUBTITLES TAB -->
+            <div class="vod-settings-pane hidden" data-vod-pane="subtitles">
+              <div class="vod-settings-label" data-i18n="vodSubtitleTrackLabel">Subtitle Track</div>
+              <div id="vodSubtitleTrackList" class="vod-track-list"></div>
+              <div class="vod-settings-label" style="margin-top:10px;" data-i18n="vodSubtitleSizeLabel">Subtitle Size</div>
+              <div class="vod-chip-row" id="vodSubtitleSizeGroup">
+                <button type="button" class="vod-option-chip focusable" data-sub-size="small" tabindex="0" data-i18n="sizeSmall">Small</button>
+                <button type="button" class="vod-option-chip active focusable" data-sub-size="normal" tabindex="0" data-i18n="sizeNormal">Normal</button>
+                <button type="button" class="vod-option-chip focusable" data-sub-size="large" tabindex="0" data-i18n="sizeLarge">Large</button>
+              </div>
+            </div>
+            <!-- VIDEO TAB -->
+            <div class="vod-settings-pane hidden" data-vod-pane="video">
+              <div class="vod-settings-label" data-i18n="vodAspectRatioLabel">Aspect Ratio / Fit</div>
+              <div class="vod-chip-row" id="vodAspectGroup">
+                <button type="button" class="vod-option-chip active focusable" data-aspect="contain" tabindex="0" data-i18n="aspectFit">Fit</button>
+                <button type="button" class="vod-option-chip focusable" data-aspect="cover" tabindex="0" data-i18n="aspectFill">Fill / Crop</button>
+                <button type="button" class="vod-option-chip focusable" data-aspect="fill" tabindex="0" data-i18n="aspectStretch">16:9 Stretch</button>
+                <button type="button" class="vod-option-chip focusable" data-aspect="zoom" tabindex="0" data-i18n="aspectZoom">Zoom</button>
+              </div>
+              <div class="vod-settings-label" style="margin-top:10px;" data-i18n="vodSpeedLabel">Playback Speed</div>
+              <div class="vod-chip-row" id="vodSpeedGroup">
+                <button type="button" class="vod-option-chip focusable" data-speed="0.75" tabindex="0">0.75x</button>
+                <button type="button" class="vod-option-chip active focusable" data-speed="1" tabindex="0">1x</button>
+                <button type="button" class="vod-option-chip focusable" data-speed="1.25" tabindex="0">1.25x</button>
+                <button type="button" class="vod-option-chip focusable" data-speed="1.5" tabindex="0">1.5x</button>
+                <button type="button" class="vod-option-chip focusable" data-speed="2" tabindex="0">2x</button>
+              </div>
+            </div>
+          </div>
+          <div class="vod-settings-footer">
+            <button id="vodExternalPlayerBtn" class="vod-external-player-row focusable" type="button" tabindex="0">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+              <span data-i18n="openExternalPlayer">Open in External Player</span>
+            </button>
           </div>
         </div>
       </div>
@@ -493,6 +679,7 @@
         <div style="width: 38px;"></div>
       </div>
       <div id="viewAllCategoriesBar" class="home-view-all-categories-bar"></div>
+      <div id="viewAllSubFilterBar" class="home-view-all-subfilter-bar hidden"></div>
       <div class="home-view-all-content">
         <div id="viewAllGrid" class="home-view-all-grid"></div>
       </div>

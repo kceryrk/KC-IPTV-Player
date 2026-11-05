@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Same TV logo as the welcome screen, drawn in white on the splash background -->
+<!-- Modern TV icon properly centered and padded within 288x288 viewport so it never clips in Android 12+ 192dp circular mask -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="160dp"
-    android:height="160dp"
-    android:viewportWidth="100"
-    android:viewportHeight="100">
-    <path
-        android:pathData="M38,24 L50,36 L62,24"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="7"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round" />
-    <path
-        android:pathData="M28,36 H76 A12,12 0 0 1 88,48 V72 A12,12 0 0 1 76,84 H28 A12,12 0 0 1 16,72 V48 A12,12 0 0 1 28,36 Z"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="7"
-        android:strokeLineJoin="round" />
-    <path
-        android:pathData="M42,47 L62,60 L42,73 Z"
-        android:fillColor="#FFFFFF"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="3"
-        android:strokeLineJoin="round" />
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+    <!-- Center of canvas is (144, 144). Android 12 mask is a circle with diameter 192, radius 96.
+         Safe inner zone is radius ~75.
+         Scaled TV icon fits nicely inside the safe area. -->
+    <group
+        android:pivotX="50"
+        android:pivotY="54"
+        android:scaleX="1.6"
+        android:scaleY="1.6"
+        android:translateX="64"
+        android:translateY="57">
+        <!-- Antenna -->
+        <path
+            android:pathData="M38,24 L50,36 L62,24"
+            android:strokeColor="#A8C7FA"
+            android:strokeWidth="5"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <!-- TV Outer Body -->
+        <path
+            android:pathData="M28,36 H76 A12,12 0 0 1 88,48 V72 A12,12 0 0 1 76,84 H28 A12,12 0 0 1 16,72 V48 A12,12 0 0 1 28,36 Z"
+            android:fillColor="#1C4479"
+            android:strokeColor="#A8C7FA"
+            android:strokeWidth="4.5"
+            android:strokeLineJoin="round" />
+        <!-- Play Triangle -->
+        <path
+            android:pathData="M44,48 L64,60 L44,72 Z"
+            android:fillColor="#FFFFFF"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="1.5"
+            android:strokeLineJoin="round" />
+    </group>
 </vector>

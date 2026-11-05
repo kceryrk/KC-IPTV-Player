@@ -1,7 +1,7 @@
 <resources>
     <color name="black">#000000</color>
     <color name="dark_bg">#121318</color>
-    <color name="topbar_bg">#15221e</color>
-    <color name="splash_bg">#2a4a6a</color>
-    <color name="teal_primary">#1ecfbc</color>
+    <color name="topbar_bg">#000000</color>
+    <color name="splash_bg">#121318</color>
+    <color name="teal_primary">#a8c7fa</color>
 </resources>

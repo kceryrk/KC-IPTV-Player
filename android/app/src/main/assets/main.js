@@ -77,8 +77,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const vodOsdTitle = document.getElementById("vodOsdTitle");
   const vodOsdClock = document.getElementById("vodOsdClock");
   const vodProgressBar = document.getElementById("vodProgressBar");
+  const vodProgressBuffered = document.getElementById("vodProgressBuffered");
+  const vodProgressThumb = document.getElementById("vodProgressThumb");
+  const vodTimelineWrapper = document.getElementById("vodTimelineWrapper");
+  const vodTimelineTooltip = document.getElementById("vodTimelineTooltip");
+  const vodProgressBarContainer = document.getElementById("vodProgressBarContainer");
   const vodCurrentTime = document.getElementById("vodCurrentTime");
   const vodDuration = document.getElementById("vodDuration");
+  const vodDoubleTapLeft = document.getElementById("vodDoubleTapLeft");
+  const vodDoubleTapRight = document.getElementById("vodDoubleTapRight");
+  const vodDoubleTapLeftText = document.getElementById("vodDoubleTapLeftText");
+  const vodDoubleTapRightText = document.getElementById("vodDoubleTapRightText");
+  const pipDismissHint = document.getElementById("pipDismissHint");
+  const liveSwipePreview = document.getElementById("liveSwipePreview");
+  const liveSwipeLogoImg = document.getElementById("liveSwipeLogoImg");
+  const liveSwipeLogoFallback = document.getElementById("liveSwipeLogoFallback");
+  const liveSwipeChName = document.getElementById("liveSwipeChName");
 
   const numZapOverlay = document.getElementById("numZapOverlay");
   const numZapText = document.getElementById("numZapText");
@@ -90,6 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const backgroundImageInput = document.getElementById("backgroundImageInput");
   const vodPlaybackControls = document.getElementById("vodPlaybackControls");
   const vodPlayPauseIcon = document.getElementById("vodPlayPauseIcon");
+  const vodCenterPlayPauseBtn = document.getElementById("vodCenterPlayPauseBtn");
+  const vodCenterPlayPauseSvg = document.getElementById("vodCenterPlayPauseSvg");
   const vodSeekPreview = document.getElementById("vodSeekPreview");
 
   // Dynamic UI feedback elementen
@@ -164,14 +180,71 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     return text;
   }
-  Object.assign(appTranslations.en, {"hintFavorite": "Favorite", "hintReorder": "Reorder", "hintHide": "Hide category", "hintSearch": "Search", "searchTitle": "Search channels", "searchPlaceholder": "Type a channel name", "searchNoResults": "No channels found", "categoryHidden": "Category hidden", "resetHidden": "Show hidden categories", "hiddenReset": "Hidden categories restored", "refreshInterval": "Refresh lists", "refreshOff": "Off", uiScale: "Interface scale", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Large", menuStyle: "Menu display mode", menuOneAtATime: "One menu open at a time", menuAllVisible: "Multi-column cascading", materialTheme: "Material You palette", paletteSystem: "System (Material You, default)", androidExternalPlayer: "Use Android external player", emptyFavorites: "No favorites added yet", deviceLayout: "Device layout", layoutMobile: "Mobile (Portrait)", layoutTv: "TV (Landscape)", navHome: "Home", navSearch: "Search", navLiveTv: "Live TV", navProfile: "Profile", copyPlaylist: "Copy playlist URL", regionSetting: "Region", allRegions: "All regions"});
-  Object.assign(appTranslations.tr, {"hintFavorite": "Favori", "hintReorder": "Sırala", "hintHide": "Kategoriyi gizle", "hintSearch": "Ara", "searchTitle": "Kanal ara", "searchPlaceholder": "Kanal adını yazın", "searchNoResults": "Kanal bulunamadı", "categoryHidden": "Kategori gizlendi", "resetHidden": "Gizli kategorileri göster", "hiddenReset": "Gizli kategoriler geri yüklendi", "refreshInterval": "Listeleri yenile", "refreshOff": "Kapalı", uiScale: "Arayüz boyutu", uiScaleCompact: "Küçük", uiScaleDefault: "Normal", uiScaleLarge: "Büyük", menuStyle: "Menü görünüm modu", menuOneAtATime: "Tek menü açık", menuAllVisible: "Çoklu sütun", materialTheme: "Material You paleti", paletteSystem: "Sistem (Material You, varsayılan)", androidExternalPlayer: "Harici oynatıcı kullan", emptyFavorites: "Henüz favori eklenmedi", deviceLayout: "Cihaz düzeni", layoutMobile: "Mobil (Dikey)", layoutTv: "TV (Yatay)", navHome: "Ana Sayfa", navSearch: "Ara", navLiveTv: "Canlı TV", navProfile: "Profil", copyPlaylist: "Oynatma listesini kopyala", regionSetting: "Bölge", allRegions: "Tüm bölgeler"});
-  Object.assign(appTranslations.nl, {"hintFavorite": "Favoriet", "hintReorder": "Verplaatsen", "hintHide": "Categorie verbergen", "hintSearch": "Zoeken", "searchTitle": "Zoek kanalen", "searchPlaceholder": "Typ een kanaalnaam", "searchNoResults": "Geen kanalen gevonden", "categoryHidden": "Categorie verborgen", "resetHidden": "Verborgen categorieën tonen", "hiddenReset": "Verborgen categorieën hersteld", "refreshInterval": "Lijsten vernieuwen", "refreshOff": "Uit", uiScale: "Interface-schaal", uiScaleCompact: "Compact", uiScaleDefault: "Normaal", uiScaleLarge: "Groot", menuStyle: "Menuweergave", menuOneAtATime: "Eén menu tegelijk open", menuAllVisible: "Meerdere kolommen", materialTheme: "Material You-palet", paletteSystem: "Systeem (Material You, standaard)", androidExternalPlayer: "Externe speler gebruiken", emptyFavorites: "Nog geen favorieten toegevoegd", deviceLayout: "Apparaatindeling", layoutMobile: "Mobiel (Staand)", layoutTv: "TV (Liggend)", navHome: "Start", navSearch: "Zoeken", navLiveTv: "Live TV", navProfile: "Profiel", copyPlaylist: "Afspeellijst kopiëren", regionSetting: "Regio", allRegions: "Alle regio's"});
-  Object.assign(appTranslations.fr, {"hintFavorite": "Favori", "hintReorder": "Déplacer", "hintHide": "Masquer la catégorie", "hintSearch": "Rechercher", "searchTitle": "Rechercher des chaînes", "searchPlaceholder": "Saisissez un nom de chaîne", "searchNoResults": "Aucune chaîne trouvée", "categoryHidden": "Catégorie masquée", "resetHidden": "Afficher les catégories masquées", "hiddenReset": "Catégories masquées restaurées", "refreshInterval": "Actualiser les listes", "refreshOff": "Désactivé", uiScale: "Échelle de l'interface", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Grand", menuStyle: "Mode d'affichage du menu", menuOneAtATime: "Un seul menu ouvert à la fois", menuAllVisible: "Colonnes multiples", materialTheme: "Palette Material You", paletteSystem: "Système (Material You, par défaut)", androidExternalPlayer: "Utiliser le lecteur externe", emptyFavorites: "Aucun favori ajouté pour l'instant", deviceLayout: "Disposition", layoutMobile: "Mobile (Portrait)", layoutTv: "TV (Paysage)", navHome: "Accueil", navSearch: "Recherche", navLiveTv: "Direct", navProfile: "Profil", copyPlaylist: "Copier l'URL de la playlist", regionSetting: "Région", allRegions: "Toutes les régions"});
-  Object.assign(appTranslations.en, { offlineTitle: "You're offline", offlineSubtitle: "Check your internet connection and try again.", retry: "Retry", backOnline: "Back online" });
-  Object.assign(appTranslations.tr, { offlineTitle: "Çevrimdışısınız", offlineSubtitle: "İnternet bağlantınızı kontrol edip tekrar deneyin.", retry: "Tekrar dene", backOnline: "Tekrar çevrimiçi" });
-  Object.assign(appTranslations.nl, { offlineTitle: "Je bent offline", offlineSubtitle: "Controleer je internetverbinding en probeer het opnieuw.", retry: "Opnieuw", backOnline: "Weer online" });
-  Object.assign(appTranslations.fr, { offlineTitle: "Vous êtes hors ligne", offlineSubtitle: "Vérifiez votre connexion Internet et réessayez.", retry: "Réessayer", backOnline: "De nouveau en ligne" });
+  Object.assign(appTranslations.en, {"hintFavorite": "Favorite", "hintReorder": "Reorder", "hintHide": "Hide category", "hintSearch": "Search", "searchTitle": "Search channels", "searchPlaceholder": "Type a channel name", "searchNoResults": "No channels found", "categoryHidden": "Category hidden", "resetHidden": "Show hidden categories", "hiddenReset": "Hidden categories restored", "refreshInterval": "Refresh lists", "refreshOff": "Off", uiScale: "Interface scale", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Large", menuStyle: "Menu display mode", menuOneAtATime: "One menu open at a time", menuAllVisible: "Multi-column cascading", materialTheme: "Material You palette", paletteSystem: "System (Material You, default)", androidExternalPlayer: "Use Android external player", emptyFavorites: "No favorites added yet", deviceLayout: "Device layout", layoutMobile: "Mobile (Portrait)", layoutTablet: "Tablet (Auto-rotate)", layoutTv: "TV (Landscape)", navHome: "Home", navSearch: "Search", navLiveTv: "Live TV", navProfile: "Profile", copyPlaylist: "Copy playlist URL", regionSetting: "Region", allRegions: "All regions"});
+  Object.assign(appTranslations.tr, {"hintFavorite": "Favori", "hintReorder": "Sırala", "hintHide": "Kategoriyi gizle", "hintSearch": "Ara", "searchTitle": "Kanal ara", "searchPlaceholder": "Kanal adını yazın", "searchNoResults": "Kanal bulunamadı", "categoryHidden": "Kategori gizlendi", "resetHidden": "Gizli kategorileri göster", "hiddenReset": "Gizli kategoriler geri yüklendi", "refreshInterval": "Listeleri yenile", "refreshOff": "Kapalı", uiScale: "Arayüz boyutu", uiScaleCompact: "Küçük", uiScaleDefault: "Normal", uiScaleLarge: "Büyük", menuStyle: "Menü görünüm modu", menuOneAtATime: "Tek menü açık", menuAllVisible: "Çoklu sütun", materialTheme: "Material You paleti", paletteSystem: "Sistem (Material You, varsayılan)", androidExternalPlayer: "Harici oynatıcı kullan", emptyFavorites: "Henüz favori eklenmedi", deviceLayout: "Cihaz düzeni", layoutMobile: "Mobil (Dikey)", layoutTablet: "Tablet (Otomatik Döndürme)", layoutTv: "TV (Yatay)", navHome: "Ana Sayfa", navSearch: "Ara", navLiveTv: "Canlı TV", navProfile: "Profil", copyPlaylist: "Oynatma listesini kopyala", regionSetting: "Bölge", allRegions: "Tüm bölgeler"});
+  Object.assign(appTranslations.nl, {"hintFavorite": "Favoriet", "hintReorder": "Verplaatsen", "hintHide": "Categorie verbergen", "hintSearch": "Zoeken", "searchTitle": "Zoek kanalen", "searchPlaceholder": "Typ een kanaalnaam", "searchNoResults": "Geen kanalen gevonden", "categoryHidden": "Categorie verborgen", "resetHidden": "Verborgen categorieën tonen", "hiddenReset": "Verborgen categorieën hersteld", "refreshInterval": "Lijsten vernieuwen", "refreshOff": "Uit", uiScale: "Interface-schaal", uiScaleCompact: "Compact", uiScaleDefault: "Normaal", uiScaleLarge: "Groot", menuStyle: "Menuweergave", menuOneAtATime: "Eén menu tegelijk open", menuAllVisible: "Meerdere kolommen", materialTheme: "Material You-palet", paletteSystem: "Systeem (Material You, standaard)", androidExternalPlayer: "Externe speler gebruiken", emptyFavorites: "Nog geen favorieten toegevoegd", deviceLayout: "Apparaatindeling", layoutMobile: "Mobiel (Staand)", layoutTablet: "Tablet (Automatisch draaien)", layoutTv: "TV (Liggend)", navHome: "Start", navSearch: "Zoeken", navLiveTv: "Live TV", navProfile: "Profiel", copyPlaylist: "Afspeellijst kopiëren", regionSetting: "Regio", allRegions: "Alle regio's"});
+  Object.assign(appTranslations.fr, {"hintFavorite": "Favori", "hintReorder": "Déplacer", "hintHide": "Masquer la catégorie", "hintSearch": "Rechercher", "searchTitle": "Rechercher des chaînes", "searchPlaceholder": "Saisissez un nom de chaîne", "searchNoResults": "Aucune chaîne trouvée", "categoryHidden": "Catégorie masquée", "resetHidden": "Afficher les catégories masquées", "hiddenReset": "Catégories masquées restaurées", "refreshInterval": "Actualiser les listes", "refreshOff": "Désactivé", uiScale: "Échelle de l'interface", uiScaleCompact: "Compact", uiScaleDefault: "Normal", uiScaleLarge: "Grand", menuStyle: "Mode d'affichage du menu", menuOneAtATime: "Un seul menu ouvert à la fois", menuAllVisible: "Colonnes multiples", materialTheme: "Palette Material You", paletteSystem: "Système (Material You, par défaut)", androidExternalPlayer: "Utiliser le lecteur externe", emptyFavorites: "Aucun favori ajouté pour l'instant", deviceLayout: "Disposition", layoutMobile: "Mobile (Portrait)", layoutTablet: "Tablette (Rotation auto)", layoutTv: "TV (Paysage)", navHome: "Accueil", navSearch: "Recherche", navLiveTv: "Direct", navProfile: "Profil", copyPlaylist: "Copier l'URL de la playlist", regionSetting: "Région", allRegions: "Toutes les régions"});
+  Object.assign(appTranslations.en, {
+    offlineTitle: "You're offline", offlineSubtitle: "Check your internet connection and try again.", retry: "Retry", backOnline: "Back online", streamPlaybackFailed: "Unable to play stream. Check format or try external player.", vodLoading: "Loading {title}...", buffering: "Buffering...", xtreamRequiredForVod: "Xtream account required to play movies and series.", skipDurationSetting: "Double-tap skip / rewind", osdStyleSetting: "Player OSD style", osdStyleGlass: "Liquid Glass", osdStyleBlack: "Black Opacity", osdOpacitySetting: "Player OSD transparency",
+    vodPlayerSettings: "Playback Settings", vodAudioTab: "Audio", vodSubtitlesTab: "Subtitles", vodVideoTab: "Video",
+    vodAudioTrackLabel: "Audio Source / Language", vodSubtitleTrackLabel: "Subtitle Track", vodSubtitleSizeLabel: "Subtitle Size",
+    sizeSmall: "Small", sizeNormal: "Normal", sizeLarge: "Large",
+    vodAspectRatioLabel: "Aspect Ratio / Fit", aspectFit: "Fit", aspectFill: "Fill / Crop", aspectStretch: "16:9 Stretch", aspectZoom: "Zoom",
+    vodSpeedLabel: "Playback Speed", openExternalPlayer: "Open in External Player",
+    accountActive: "Active", accountExpDateLabel: "Expiration Date", accountTimeLeftLabel: "Time Remaining", accountConnectionsLabel: "Connections", accountTypeLabel: "Account Type", accountServerLabel: "Server & Formats",
+    testConnection: "Test connection", checkingConnection: "Checking...", filterBtn: "Filter"
+  });
+  Object.assign(appTranslations.tr, {
+    offlineTitle: "Çevrimdışısınız", offlineSubtitle: "İnternet bağlantınızı kontrol edip tekrar deneyin.", retry: "Tekrar dene", backOnline: "Tekrar çevrimiçi", streamPlaybackFailed: "Akış oynatılamadı. Formatı kontrol edin veya harici oynatıcı deneyin.", vodLoading: "{title} yükleniyor...", buffering: "Ara belleğe alınıyor...", xtreamRequiredForVod: "Film ve dizileri oynatmak için Xtream hesabı gereklidir.", skipDurationSetting: "Çift dokunuş ileri / geri sarma", osdStyleSetting: "Oynatıcı OSD stili", osdStyleGlass: "Liquid Glass (Sıvı Cam)", osdStyleBlack: "Siyah Opaklık", osdOpacitySetting: "Oynatıcı OSD saydamlığı",
+    vodPlayerSettings: "Oynatma Ayarları", vodAudioTab: "Ses", vodSubtitlesTab: "Altyazılar", vodVideoTab: "Video",
+    vodAudioTrackLabel: "Ses Kaynağı / Dili", vodSubtitleTrackLabel: "Altyazı Parçası", vodSubtitleSizeLabel: "Altyazı Boyutu",
+    sizeSmall: "Küçük", sizeNormal: "Normal", sizeLarge: "Büyük",
+    vodAspectRatioLabel: "En Boy Oranı / Sığdırma", aspectFit: "Sığdır", aspectFill: "Doldur / Kırp", aspectStretch: "16:9 Uzat", aspectZoom: "Yakınlaştır",
+    vodSpeedLabel: "Oynatma Hızı", openExternalPlayer: "Harici Oynatıcıda Aç",
+    accountActive: "Aktif", accountExpDateLabel: "Bitiş Tarihi", accountTimeLeftLabel: "Kalan Süre", accountConnectionsLabel: "Bağlantılar", accountTypeLabel: "Hesap Türü", accountServerLabel: "Sunucu & Formatlar",
+    testConnection: "Bağlantıyı test et", checkingConnection: "Kontrol ediliyor...", filterBtn: "Filtrele"
+  });
+  Object.assign(appTranslations.nl, {
+    offlineTitle: "Je bent offline", offlineSubtitle: "Controleer je internetverbinding en probeer het opnieuw.", retry: "Opnieuw", backOnline: "Weer online", streamPlaybackFailed: "Kan stream niet afspelen. Controleer het formaat of probeer een externe speler.", vodLoading: "{title} laden...", buffering: "Bufferen...", xtreamRequiredForVod: "Xtream-account vereist voor films en series.", skipDurationSetting: "Dubbeltik vooruit / achteruit", osdStyleSetting: "Speler OSD-stijl", osdStyleGlass: "Liquid Glass", osdStyleBlack: "Zwarte dekking", osdOpacitySetting: "Speler OSD-transparantie",
+    vodPlayerSettings: "Afspeelinstellingen", vodAudioTab: "Audio", vodSubtitlesTab: "Ondertitels", vodVideoTab: "Video",
+    vodAudioTrackLabel: "Audiobron / Taal", vodSubtitleTrackLabel: "Ondertitelspoor", vodSubtitleSizeLabel: "Ondertitelgrootte",
+    sizeSmall: "Klein", sizeNormal: "Normaal", sizeLarge: "Groot",
+    vodAspectRatioLabel: "Beeldverhouding / Pasvorm", aspectFit: "Passend", aspectFill: "Vullen / Bijsnijden", aspectStretch: "16:9 Uitrekken", aspectZoom: "Zoomen",
+    vodSpeedLabel: "Afspeelsnelheid", openExternalPlayer: "Openen in externe speler",
+    accountActive: "Actief", accountExpDateLabel: "Vervaldatum", accountTimeLeftLabel: "Resterende tijd", accountConnectionsLabel: "Verbindingen", accountTypeLabel: "Accounttype", accountServerLabel: "Server & Formaten",
+    testConnection: "Verbinding testen", checkingConnection: "Controleren...", filterBtn: "Filter"
+  });
+  Object.assign(appTranslations.fr, {
+    offlineTitle: "Vous êtes hors ligne", offlineSubtitle: "Vérifiez votre connexion Internet et réessayez.", retry: "Réessayer", backOnline: "De nouveau en ligne", streamPlaybackFailed: "Impossible de lire le flux. Vérifiez le format ou essayez un lecteur externe.", vodLoading: "Chargement de {title}...", buffering: "Mise en mémoire tampon...", xtreamRequiredForVod: "Compte Xtream requis pour les films et séries.", skipDurationSetting: "Double-tap avancer / reculer", osdStyleSetting: "Style OSD du lecteur", osdStyleGlass: "Liquid Glass", osdStyleBlack: "Opacité noire", osdOpacitySetting: "Transparence OSD du lecteur",
+    vodPlayerSettings: "Paramètres de lecture", vodAudioTab: "Audio", vodSubtitlesTab: "Sous-titres", vodVideoTab: "Vidéo",
+    vodAudioTrackLabel: "Source audio / Langue", vodSubtitleTrackLabel: "Piste de sous-titres", vodSubtitleSizeLabel: "Taille des sous-titres",
+    sizeSmall: "Petit", sizeNormal: "Normal", sizeLarge: "Grand",
+    vodAspectRatioLabel: "Format d'image", aspectFit: "Ajuster", aspectFill: "Remplir", aspectStretch: "16:9 Étirer", aspectZoom: "Zoom",
+    vodSpeedLabel: "Vitesse de lecture", openExternalPlayer: "Ouvrir dans le lecteur externe",
+    accountActive: "Actif", accountExpDateLabel: "Date d'expiration", accountTimeLeftLabel: "Temps restant", accountConnectionsLabel: "Connexions", accountTypeLabel: "Type de compte", accountServerLabel: "Serveur & Formats",
+    testConnection: "Tester la connexion", checkingConnection: "Vérification...", filterBtn: "Filtrer"
+  });
+  let vodSkipSeconds = parseInt(store.getItem("iptv_vod_skip_sec") || "10", 10);
+  if (![5, 10, 15, 30, 60].includes(vodSkipSeconds)) vodSkipSeconds = 10;
+  let osdStyle = store.getItem("iptv_osd_style") || "glass";
+  if (osdStyle !== "glass" && osdStyle !== "black") osdStyle = "glass";
+  let osdOpacity = parseInt(store.getItem("iptv_osd_opacity") || "25", 10);
+  if (![15, 25, 40, 60, 80].includes(osdOpacity)) osdOpacity = 25;
+
+  function applyOsdAppearance() {
+    document.body.classList.toggle("osd-style-black", osdStyle === "black");
+    document.body.classList.toggle("osd-style-glass", osdStyle === "glass");
+    const alpha = Math.max(0.08, Math.min(0.92, osdOpacity / 100));
+    const btnAlpha = Math.max(0.06, Math.min(0.85, alpha * 0.64));
+    const blurPx = osdStyle === "black" ? 0 : Math.round(4 + alpha * 14);
+    const btnBlurPx = osdStyle === "black" ? 0 : Math.round(2 + alpha * 10);
+    const root = document.documentElement;
+    root.style.setProperty("--osd-alpha", alpha.toFixed(2));
+    root.style.setProperty("--osd-btn-alpha", btnAlpha.toFixed(2));
+    root.style.setProperty("--osd-blur", `${blurPx}px`);
+    root.style.setProperty("--osd-btn-blur", `${btnBlurPx}px`);
+  }
+  let isPipMode = false;
   let singleMenuMode = store.getItem("iptv_single_menu") !== "false";
   let uiScale = store.getItem("iptv_ui_scale") || "default";
   let materialPalette = store.getItem("iptv_palette") || "system";
@@ -182,24 +255,37 @@ document.addEventListener("DOMContentLoaded", () => {
   var isFetchingHomeShelves = false;
   var currentViewAllType = "vod";
   var currentViewAllCatId = "all";
-  function detectDeviceLayout() {
-    if (window.AndroidExternalPlayer) {
-      if (typeof window.AndroidExternalPlayer.isMobileDevice === "function" && window.AndroidExternalPlayer.isMobileDevice()) {
-        const saved = store.getItem("iptv_device_layout");
-        return (saved === "tv") ? "tv" : "mobile";
-      }
-      if (typeof window.AndroidExternalPlayer.getDeviceLayout === "function") {
-        const nativeLayout = window.AndroidExternalPlayer.getDeviceLayout();
-        if (nativeLayout === "mobile" || nativeLayout === "tv") return nativeLayout;
-      }
+  function detectDeviceType() {
+    if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.getDeviceType === "function") {
+      try {
+        const type = window.AndroidExternalPlayer.getDeviceType();
+        if (type === "mobile" || type === "tablet" || type === "tv") return type;
+      } catch (e) {}
     }
-    const saved = store.getItem("iptv_device_layout");
-    if (saved === "mobile" || saved === "tv") return saved;
-    const isPortrait = window.innerHeight > window.innerWidth;
+    if (window.tizen || window.webOS) return "tv";
     const hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-    return (isPortrait || hasTouch) ? "mobile" : "tv";
+    if (!hasTouch) return "tv";
+    const minDim = Math.min(window.screen.width || window.innerWidth, window.screen.height || window.innerHeight);
+    if (minDim >= 600) return "tablet";
+    return "mobile";
+  }
+
+  function detectDeviceLayout() {
+    const saved = store.getItem("iptv_device_layout");
+    if (saved === "mobile" || saved === "tablet" || saved === "tv") return saved;
+    if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.getDeviceLayout === "function") {
+      try {
+        const nativeLayout = window.AndroidExternalPlayer.getDeviceLayout();
+        if (nativeLayout === "mobile" || nativeLayout === "tablet" || nativeLayout === "tv") return nativeLayout;
+      } catch (e) {}
+    }
+    return detectDeviceType();
   }
   let deviceLayout = detectDeviceLayout();
+
+  function isTouchLayout() {
+    return deviceLayout === "mobile" || deviceLayout === "tablet";
+  }
 
   const NON_REGION_WORDS = new Set([
     "VIP", "HEVC", "FHD", "UHD", "4K", "SD", "HD", "KINO", "FILM", "SERIES", "MOVIES",
@@ -289,6 +375,127 @@ document.addEventListener("DOMContentLoaded", () => {
     return false;
   }
 
+  // CATEGORY GROUPING HELPER (groups categories ending in years or numbers, e.g. "Action 2024", "Action 2025")
+  var activeCategoryGroupData = null; // { parentName, subCategories: [{ label, catId }], activeSubCatId }
+  var activeSubCategoryId = null;
+
+  function parseCategoryTrailingGroup(name) {
+    if (!name) return null;
+    const clean = cleanTitle(name, ["HEVC", "VIP"]).trim();
+    // Match trailing 4-digit year (19xx, 20xx) or trailing numbers/parenthesized year
+    const match = clean.match(/^(.*?)\s*(?:[\(\[\-:]?\s*(20\d\d|19\d\d|\d{1,3})\s*[\)\]]?)$/i);
+    if (match && match[1] && match[1].trim().length >= 3) {
+      return {
+        baseName: match[1].trim(),
+        subLabel: match[2].trim()
+      };
+    }
+    return null;
+  }
+
+  function groupCategoriesByTrailingNumber(catList) {
+    if (!Array.isArray(catList)) return [];
+    const baseMap = new Map();
+
+    catList.forEach(cat => {
+      const parsed = parseCategoryTrailingGroup(cat.category_name);
+      if (parsed) {
+        const key = parsed.baseName.toLowerCase();
+        if (!baseMap.has(key)) baseMap.set(key, []);
+        baseMap.get(key).push({ cat, parsed });
+      }
+    });
+
+    const result = [];
+    const handledCatIds = new Set();
+
+    catList.forEach(cat => {
+      if (handledCatIds.has(String(cat.category_id))) return;
+      const parsed = parseCategoryTrailingGroup(cat.category_name);
+      if (parsed) {
+        const key = parsed.baseName.toLowerCase();
+        const cluster = baseMap.get(key) || [];
+        if (cluster.length >= 2) {
+          // Found grouped category!
+          const subCats = cluster.map(item => ({
+            label: item.parsed.subLabel,
+            category_id: item.cat.category_id,
+            category_name: item.cat.category_name
+          })).sort((a, b) => b.label.localeCompare(a.label, undefined, { numeric: true }));
+
+          cluster.forEach(item => handledCatIds.add(String(item.cat.category_id)));
+
+          result.push({
+            category_id: subCats[0].category_id, // default to newest
+            category_name: cluster[0].parsed.baseName,
+            isGrouped: true,
+            subCategories: subCats
+          });
+          return;
+        }
+      }
+      result.push(cat);
+    });
+
+    return result;
+  }
+
+  function updateCategorySubFilterBar(groupedCat) {
+    const filterBtn = document.getElementById("categorySubFilterBtn");
+    const chipsContainer = document.getElementById("categorySubFilterChips");
+    if (!filterBtn || !chipsContainer) return;
+
+    if (!groupedCat || !groupedCat.isGrouped || !groupedCat.subCategories || groupedCat.subCategories.length <= 1) {
+      filterBtn.classList.add("hidden");
+      chipsContainer.classList.add("hidden");
+      chipsContainer.innerHTML = "";
+      activeCategoryGroupData = null;
+      return;
+    }
+
+    activeCategoryGroupData = {
+      parentName: groupedCat.category_name,
+      subCategories: groupedCat.subCategories,
+      activeSubCatId: activeSubCategoryId || "all"
+    };
+
+    filterBtn.classList.remove("hidden");
+    chipsContainer.innerHTML = "";
+
+    // "All" sub-filter chip
+    const allChip = document.createElement("button");
+    allChip.type = "button";
+    allChip.className = "sub-filter-chip" + (activeCategoryGroupData.activeSubCatId === "all" ? " active" : "");
+    allChip.textContent = t("allRegions") || "All";
+    allChip.onclick = () => {
+      activeSubCategoryId = "all";
+      activeCategoryGroupData.activeSubCatId = "all";
+      updateCategorySubFilterBar(groupedCat);
+      filterChannels();
+    };
+    chipsContainer.appendChild(allChip);
+
+    groupedCat.subCategories.forEach(sub => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "sub-filter-chip" + (String(activeCategoryGroupData.activeSubCatId) === String(sub.category_id) ? " active" : "");
+      chip.textContent = sub.label;
+      chip.onclick = () => {
+        activeSubCategoryId = sub.category_id;
+        activeCategoryGroupData.activeSubCatId = sub.category_id;
+        updateCategorySubFilterBar(groupedCat);
+        filterChannels();
+      };
+      chipsContainer.appendChild(chip);
+    });
+
+    filterBtn.onclick = () => {
+      const isHidden = chipsContainer.classList.contains("hidden");
+      chipsContainer.classList.toggle("hidden", !isHidden);
+      filterBtn.classList.toggle("active", isHidden);
+    };
+  }
+
   function isStreamInRegion(stream, kind, region) {
     if (!region || region === "ALL") return true;
     if (!stream) return false;
@@ -350,7 +557,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateHeaderBackButton() {
     const btn = document.getElementById("headerBackBtn");
     if (!btn) return;
-    if (deviceLayout === "mobile") {
+    if (isTouchLayout()) {
       const homeViewAll = document.getElementById("homeViewAllPage");
       const viewAllOpen = homeViewAll && !homeViewAll.classList.contains("hidden");
       const searchOpen = searchPanel && !searchPanel.classList.contains("hidden");
@@ -505,8 +712,17 @@ document.addEventListener("DOMContentLoaded", () => {
   function applyDeviceLayout(layout, notifyNative = true) {
     deviceLayout = layout || "mobile";
     store.setItem("iptv_device_layout", deviceLayout);
-    document.body.classList.remove("layout-mobile", "layout-tv");
-    document.body.classList.add(deviceLayout === "tv" ? "layout-tv" : "layout-mobile");
+    document.body.classList.remove("layout-mobile", "layout-tv", "layout-tablet");
+    if (deviceLayout === "tv") {
+      document.body.classList.add("layout-tv");
+    } else if (deviceLayout === "tablet") {
+      document.body.classList.add("layout-mobile", "layout-tablet");
+    } else {
+      document.body.classList.add("layout-mobile");
+    }
+    try {
+      document.body.dataset.deviceType = detectDeviceType();
+    } catch (e) {}
     syncMobileNavState(mobileActiveSection);
 
     if (notifyNative && window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setDeviceLayout === "function") {
@@ -664,15 +880,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const root = document.documentElement;
+    const toRgb = (color, fallback = "168, 199, 250") => {
+      const m = String(color || "").match(/[0-9a-f]{2}/gi);
+      return m && m.length >= 3 ? m.slice(0, 3).map(v => parseInt(v, 16)).join(", ") : fallback;
+    };
     root.style.setProperty("--md-sys-color-primary", pal.primary);
+    root.style.setProperty("--md-sys-color-primary-rgb", toRgb(pal.primary, "168, 199, 250"));
     root.style.setProperty("--md-sys-color-on-primary", pal.onPrimary);
     root.style.setProperty("--md-sys-color-primary-container", pal.primaryContainer);
     root.style.setProperty("--md-sys-color-on-primary-container", pal.onPrimaryContainer);
-    if (pal.secondary) root.style.setProperty("--md-sys-color-secondary", pal.secondary);
+    if (pal.secondary) {
+      root.style.setProperty("--md-sys-color-secondary", pal.secondary);
+      root.style.setProperty("--md-sys-color-secondary-rgb", toRgb(pal.secondary, "190, 198, 220"));
+    }
     if (pal.onSecondary) root.style.setProperty("--md-sys-color-on-secondary", pal.onSecondary);
     if (pal.secondaryContainer) root.style.setProperty("--md-sys-color-secondary-container", pal.secondaryContainer);
     if (pal.onSecondaryContainer) root.style.setProperty("--md-sys-color-on-secondary-container", pal.onSecondaryContainer);
-    if (pal.tertiary) root.style.setProperty("--md-sys-color-tertiary", pal.tertiary);
+    if (pal.tertiary) {
+      root.style.setProperty("--md-sys-color-tertiary", pal.tertiary);
+      root.style.setProperty("--md-sys-color-tertiary-rgb", toRgb(pal.tertiary, "221, 188, 222"));
+    }
     root.style.setProperty("--md-sys-color-surface", pal.surface);
     if (pal.surfaceDim) root.style.setProperty("--md-sys-color-surface-dim", pal.surfaceDim);
     root.style.setProperty("--md-sys-color-surface-variant", pal.surfaceVariant);
@@ -684,9 +911,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (pal.outline) root.style.setProperty("--md-sys-color-outline", pal.outline);
     if (pal.outlineVariant) root.style.setProperty("--md-sys-color-outline-variant", pal.outlineVariant);
 
-    if (typeof themeConfig !== "undefined" && !themeConfig.customAccent) {
-      themeConfig.accent = pal.accent;
-      themeConfig.highlight = pal.highlight;
+    if (typeof themeConfig !== "undefined") {
+      themeConfig.accent = pal.accent || pal.primary;
+      themeConfig.highlight = pal.highlight || pal.tertiary || "#ffd700";
       applyThemeConfig();
     }
     syncStatusBarColor();
@@ -882,7 +1109,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.remove("speler-fit-screen");
       }
       settingsPage.classList.remove("hidden");
-      if (deviceLayout === "mobile") {
+      if (isTouchLayout()) {
         syncMobileNavState("profile");
       }
       showSettingsTab("general");
@@ -890,7 +1117,7 @@ document.addEventListener("DOMContentLoaded", () => {
       setElementFocus(settingsPage.querySelector(".customization-tab"));
     } else {
       settingsPage.classList.add("hidden");
-      if (deviceLayout === "mobile" && mobileActiveSection === "profile") {
+      if (isTouchLayout() && mobileActiveSection === "profile") {
         syncMobileNavState((currentModus === "vod" || currentModus === "series") ? "home" : "live");
       }
       setElementFocus(settingsButton);
@@ -934,6 +1161,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     settingsPage.querySelectorAll(".settings-item[data-setting='refreshCycle']").forEach(btn => {
       btn.classList.toggle("active", parseInt(btn.dataset.value, 10) === refreshHours);
+    });
+    settingsPage.querySelectorAll(".settings-item[data-setting='skipSeconds']").forEach(btn => {
+      btn.classList.toggle("active", parseInt(btn.dataset.value, 10) === vodSkipSeconds);
+    });
+    settingsPage.querySelectorAll(".settings-item[data-setting='osdStyle']").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.value === osdStyle);
+    });
+    settingsPage.querySelectorAll(".settings-item[data-setting='osdOpacity']").forEach(btn => {
+      btn.classList.toggle("active", parseInt(btn.dataset.value, 10) === osdOpacity);
     });
     updateFavoritesTab();
   }
@@ -1013,7 +1249,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function syncStatusBarColor() {
-    if (currentBgColor === "amoled") {
+    if (isTouchLayout() || currentBgColor === "amoled") {
       if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setStatusBarColor === "function") {
         window.AndroidExternalPlayer.setStatusBarColor("#000000");
       }
@@ -1124,7 +1360,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       case "deviceLayout": {
         applyDeviceLayout(value, true);
-        showToast(`${t("deviceLayout")}: ${value === "tv" ? t("layoutTv") : t("layoutMobile")}`);
+        const layoutLabels = {
+          tv: t("layoutTv"),
+          tablet: t("layoutTablet"),
+          mobile: t("layoutMobile")
+        };
+        showToast(`${t("deviceLayout")}: ${layoutLabels[value] || value}`);
         return;
       }
       case "singleMenu": {
@@ -1155,6 +1396,37 @@ document.addEventListener("DOMContentLoaded", () => {
         updateSettingsSelection();
         scheduleListRefresh();
         showToast(`${t("refreshInterval")}: ${refreshHours ? refreshHours + " h" : t("refreshOff")}`);
+        return;
+      }
+      case "skipSeconds": {
+        const sec = parseInt(value, 10);
+        if ([5, 10, 15, 30, 60].includes(sec)) {
+          vodSkipSeconds = sec;
+          store.setItem("iptv_vod_skip_sec", String(vodSkipSeconds));
+          updateSettingsSelection();
+          showToast(`${t("skipDurationSetting")}: ${vodSkipSeconds}s`);
+        }
+        return;
+      }
+      case "osdStyle": {
+        if (value === "glass" || value === "black") {
+          osdStyle = value;
+          store.setItem("iptv_osd_style", osdStyle);
+          applyOsdAppearance();
+          updateSettingsSelection();
+          showToast(`${t("osdStyleSetting")}: ${osdStyle === "black" ? t("osdStyleBlack") : t("osdStyleGlass")}`);
+        }
+        return;
+      }
+      case "osdOpacity": {
+        const op = parseInt(value, 10);
+        if ([15, 25, 40, 60, 80].includes(op)) {
+          osdOpacity = op;
+          store.setItem("iptv_osd_opacity", String(osdOpacity));
+          applyOsdAppearance();
+          updateSettingsSelection();
+          showToast(`${t("osdOpacitySetting")}: ${osdOpacity}%`);
+        }
         return;
       }
       case "supportDev": {
@@ -1211,7 +1483,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return text.replace(/\s{2,}/g, " ").trim();
   }
 
-  let clock24h = store.getItem("iptv_clock_24h") === "1";
+  let clock24h = store.getItem("iptv_clock_24h") !== "0";
 
   function updateClockFormatButton() {
     const textEl = document.getElementById("clockFormatText");
@@ -1234,15 +1506,331 @@ document.addEventListener("DOMContentLoaded", () => {
   updateClocks();
   setInterval(updateClocks, 1000);
 
-  video.addEventListener("timeupdate", () => {
-    if (video.duration && isFinite(video.duration)) {
-      const displayedTime = seekPreviewTime === null ? video.currentTime : seekPreviewTime;
-      const pct = (displayedTime / video.duration) * 100;
-      if (vodProgressBar) vodProgressBar.style.width = `${pct}%`;
-      if (vodCurrentTime) vodCurrentTime.textContent = formatTime(displayedTime);
-      if (vodDuration) vodDuration.textContent = formatTime(video.duration);
+  let isTimelineScrubbing = false;
+  let wasPlayingBeforeScrub = false;
+  let pendingVodSeekTime = null;
+  let vodHasLoadedMetadata = false;
+  let isVodSeeking = false;
+  let vodSeekWatchdogTimer = null;
+  let activeVodResolvedUrl = "";
+  let vodNativeAudioActive = false;
+  let vodDiscoveredTracks = { audioTracks: [], subtitleTracks: [] };
+  let selectedVodAudioGroup = -1;
+  let selectedVodAudioTrack = -1;
+  let selectedVodSubtitleGroup = -1;
+  let selectedVodSubtitleTrack = -1;
+  let vodAspectRatio = "contain";
+  let vodPlaybackSpeed = 1.0;
+  let vodSubtitleSize = "normal";
+
+  // Native ExoPlayer callbacks for audio/subtitle track updates and cue text
+  window.onNativeVodTracksUpdated = function(tracksData) {
+    try {
+      const data = typeof tracksData === "string" ? JSON.parse(tracksData) : tracksData;
+      if (data && typeof data === "object") {
+        vodDiscoveredTracks = {
+          audioTracks: Array.isArray(data.audioTracks) ? data.audioTracks : [],
+          subtitleTracks: Array.isArray(data.subtitleTracks) ? data.subtitleTracks : []
+        };
+        renderVodAudioTrackList();
+        renderVodSubtitleTrackList();
+      }
+    } catch (e) {
+      console.warn("onNativeVodTracksUpdated parse error:", e);
+    }
+  };
+
+  window.onNativeSubtitleCue = function(cueText) {
+    const overlay = document.getElementById("vodSubtitleOverlay");
+    if (!overlay) return;
+    if (cueText && typeof cueText === "string" && cueText.trim()) {
+      overlay.innerHTML = `<span>${escapeAttr(cueText.trim())}</span>`;
+      overlay.classList.remove("hidden");
+    } else {
+      overlay.innerHTML = "";
+      overlay.classList.add("hidden");
+    }
+  };
+
+  function checkVodAudioSupportAndFallback() {
+    if (vodNativeAudioActive) return;
+    if ((currentModus !== "vod" && currentModus !== "series") || (!currentVodMovieId && !currentEpisodeId)) return;
+    if (!window.AndroidExternalPlayer || typeof window.AndroidExternalPlayer.startVodAudioFallback !== "function") return;
+    if (!activeVodResolvedUrl) return;
+    if (video.paused || video.currentTime < 0.35) return;
+
+    let decodedAudioBytes = null;
+    if (typeof video.webkitAudioDecodedByteCount === "number") {
+      decodedAudioBytes = video.webkitAudioDecodedByteCount;
+    }
+    let hasAudioTrack = null;
+    if (typeof video.mozHasAudio === "boolean") {
+      hasAudioTrack = video.mozHasAudio;
+    } else if (video.audioTracks && typeof video.audioTracks.length === "number") {
+      hasAudioTrack = video.audioTracks.length > 0;
+    }
+
+    const webViewFailedAudio = (decodedAudioBytes !== null && decodedAudioBytes === 0 && video.currentTime >= 0.45) ||
+      (hasAudioTrack === false && video.currentTime >= 0.45);
+
+    if (webViewFailedAudio) {
+      vodNativeAudioActive = true;
+      video.muted = true;
+      try {
+        window.AndroidExternalPlayer.startVodAudioFallback(
+          activeVodResolvedUrl,
+          video.currentTime || 0,
+          !video.paused
+        );
+      } catch (e) {
+        console.warn("startVodAudioFallback error:", e);
+      }
+    }
+  }
+
+  function syncVodAudioCompanion() {
+    if (!vodNativeAudioActive) return;
+    if (!window.AndroidExternalPlayer || typeof window.AndroidExternalPlayer.syncVodAudioFallback !== "function") return;
+    try {
+      window.AndroidExternalPlayer.syncVodAudioFallback(
+        video.currentTime || 0,
+        !video.paused && !video.ended
+      );
+    } catch (e) {}
+  }
+
+  function stopVodAudioCompanion() {
+    if (vodNativeAudioActive) {
+      vodNativeAudioActive = false;
+      video.muted = false;
+    }
+    const overlay = document.getElementById("vodSubtitleOverlay");
+    if (overlay) {
+      overlay.innerHTML = "";
+      overlay.classList.add("hidden");
+    }
+    vodDiscoveredTracks = { audioTracks: [], subtitleTracks: [] };
+    selectedVodAudioGroup = -1;
+    selectedVodAudioTrack = -1;
+    selectedVodSubtitleGroup = -1;
+    selectedVodSubtitleTrack = -1;
+    if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.stopVodAudioFallback === "function") {
+      try {
+        window.AndroidExternalPlayer.stopVodAudioFallback();
+      } catch (e) {}
+    }
+  }
+
+  function performReliableVodSeek(targetSeconds) {
+    if (!video) return;
+    const dur = video.duration;
+    const hasValidDuration = dur && isFinite(dur) && dur > 0;
+    const clamped = hasValidDuration
+      ? Math.max(0, Math.min(Math.max(0, dur - 0.25), targetSeconds))
+      : Math.max(0, targetSeconds);
+
+    clearVodLoadTimer();
+    if (vodSeekWatchdogTimer) {
+      clearTimeout(vodSeekWatchdogTimer);
+      vodSeekWatchdogTimer = null;
+    }
+
+    if (video.readyState < 1) {
+      pendingVodSeekTime = clamped;
+      showPlayerLoading(t("buffering"));
+      return;
+    }
+
+    pendingVodSeekTime = null;
+    isVodSeeking = true;
+    showPlayerLoading(t("buffering"));
+
+    // Inform native companion of explicit user seek immediately so it seeks directly without waiting for drift sync
+    if (vodNativeAudioActive && window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.seekVodAudioFallback === "function") {
+      try {
+        window.AndroidExternalPlayer.seekVodAudioFallback(clamped, !video.paused);
+      } catch (_) {}
+    }
+
+    // Always use standard currentTime assignment so Chromium/Exo media pipeline issues an exact HTTP 206 Range request
+    try {
+      video.currentTime = clamped;
+    } catch (e) {}
+
+    if (hlsPlayer && typeof hlsPlayer.startLoad === "function") {
+      try { hlsPlayer.startLoad(clamped); } catch (_) {}
+    }
+
+    const p = video.play();
+    if (p && typeof p.catch === "function") {
+      p.catch(() => {});
+    }
+
+    // Watchdog: if the server takes a moment to respond to the Range request, nudge play() without resetting the source
+    vodSeekWatchdogTimer = setTimeout(() => {
+      vodSeekWatchdogTimer = null;
+      if (!isVodSeeking) return;
+      if ((currentModus === "vod" || currentModus === "series") && (currentVodMovieId || currentEpisodeId)) {
+        if (video.paused && wasPlayingBeforeScrub !== false) {
+          const retryPlay = video.play();
+          if (retryPlay && typeof retryPlay.catch === "function") retryPlay.catch(() => {});
+        }
+        if (video.readyState >= 3) {
+          isVodSeeking = false;
+          hidePlayerLoading();
+        }
+      }
+    }, 3500);
+
+    if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
+    updateVodPlayPauseIcon();
+  }
+
+  function updateVodTimelineVisuals(displayedTime, duration) {
+    if (!duration || !isFinite(duration)) return;
+    const clamped = Math.max(0, Math.min(duration, displayedTime));
+    const pct = (clamped / duration) * 100;
+    if (vodProgressBar) vodProgressBar.style.width = `${pct}%`;
+    if (vodProgressThumb) vodProgressThumb.style.left = `${pct}%`;
+    if (vodCurrentTime) vodCurrentTime.textContent = formatTime(clamped);
+    if (vodDuration) vodDuration.textContent = formatTime(duration);
+    if (vodProgressBuffered && video.buffered && video.buffered.length > 0) {
+      try {
+        let bufEnd = 0;
+        for (let i = 0; i < video.buffered.length; i++) {
+          const start = video.buffered.start(i);
+          const end = video.buffered.end(i);
+          if (clamped >= start - 1 && clamped <= end + 1) {
+            bufEnd = end;
+            break;
+          }
+          if (end > bufEnd) bufEnd = end;
+        }
+        const bufPct = Math.min(100, Math.max(0, (bufEnd / duration) * 100));
+        vodProgressBuffered.style.width = `${bufPct}%`;
+      } catch (e) {}
+    }
+  }
+
+  video.addEventListener("loadedmetadata", () => {
+    if ((currentModus === "vod" || currentModus === "series") && (currentVodMovieId || currentEpisodeId)) {
+      vodHasLoadedMetadata = true;
+      clearVodLoadTimer();
+      if (pendingVodSeekTime !== null) {
+        const target = pendingVodSeekTime;
+        pendingVodSeekTime = null;
+        try { video.currentTime = target; } catch (_) {}
+      }
     }
   });
+
+  video.addEventListener("timeupdate", () => {
+    if (isTimelineScrubbing) return;
+    if (!video.paused && video.readyState >= 2) {
+      isVodSeeking = false;
+      hidePlayerLoading();
+    }
+    if ((currentModus === "vod" || currentModus === "series") && (currentVodMovieId || currentEpisodeId)) {
+      if (!vodNativeAudioActive && video.currentTime >= 0.45 && video.currentTime <= 8.0) {
+        checkVodAudioSupportAndFallback();
+      } else if (vodNativeAudioActive) {
+        syncVodAudioCompanion();
+      }
+    }
+    if (video.duration && isFinite(video.duration)) {
+      const displayedTime = seekPreviewTime === null ? video.currentTime : seekPreviewTime;
+      updateVodTimelineVisuals(displayedTime, video.duration);
+    }
+  });
+  video.addEventListener("seeked", () => {
+    isVodSeeking = false;
+    if (vodSeekWatchdogTimer) {
+      clearTimeout(vodSeekWatchdogTimer);
+      vodSeekWatchdogTimer = null;
+    }
+    if (video.readyState >= 2) {
+      hidePlayerLoading();
+    }
+    if ((currentModus === "vod" || currentModus === "series") && (currentVodMovieId || currentEpisodeId)) {
+      if (video.paused && wasPlayingBeforeScrub !== false) {
+        const p = video.play();
+        if (p && typeof p.catch === "function") p.catch(() => {});
+      }
+      if (vodNativeAudioActive) {
+        syncVodAudioCompanion();
+      }
+      updateVodPlayPauseIcon();
+    }
+  });
+  video.addEventListener("loadeddata", hidePlayerLoading);
+
+  if (vodTimelineWrapper) {
+    let lastScrubInfo = null;
+    const computeTimeFromPointer = (clientX) => {
+      if (!video.duration || !isFinite(video.duration)) return null;
+      const rect = (vodProgressBarContainer || vodTimelineWrapper).getBoundingClientRect();
+      if (!rect.width) return null;
+      const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+      return { time: ratio * video.duration, pct: ratio * 100 };
+    };
+
+    vodTimelineWrapper.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+      if (!video.duration || !isFinite(video.duration)) return;
+      isTimelineScrubbing = true;
+      wasPlayingBeforeScrub = !video.paused;
+      vodTimelineWrapper.classList.add("is-scrubbing");
+      try { vodTimelineWrapper.setPointerCapture(e.pointerId); } catch (err) {}
+      const info = computeTimeFromPointer(e.clientX);
+      if (info) {
+        lastScrubInfo = info;
+        updateVodTimelineVisuals(info.time, video.duration);
+        if (vodTimelineTooltip) {
+          vodTimelineTooltip.textContent = formatTime(info.time);
+          vodTimelineTooltip.style.left = `${Math.max(6, Math.min(94, info.pct))}%`;
+          vodTimelineTooltip.classList.remove("hidden");
+        }
+      }
+      showVodOSD();
+    });
+
+    vodTimelineWrapper.addEventListener("pointermove", (e) => {
+      if (!isTimelineScrubbing) return;
+      e.stopPropagation();
+      const info = computeTimeFromPointer(e.clientX);
+      if (info && video.duration && isFinite(video.duration)) {
+        lastScrubInfo = info;
+        updateVodTimelineVisuals(info.time, video.duration);
+        if (vodTimelineTooltip) {
+          vodTimelineTooltip.textContent = formatTime(info.time);
+          vodTimelineTooltip.style.left = `${Math.max(6, Math.min(94, info.pct))}%`;
+          vodTimelineTooltip.classList.remove("hidden");
+        }
+      }
+      showVodOSD();
+    });
+
+    const endScrub = (e) => {
+      if (!isTimelineScrubbing) return;
+      e.stopPropagation();
+      isTimelineScrubbing = false;
+      vodTimelineWrapper.classList.remove("is-scrubbing");
+      if (vodTimelineTooltip) vodTimelineTooltip.classList.add("hidden");
+      try { vodTimelineWrapper.releasePointerCapture(e.pointerId); } catch (err) {}
+      const info = computeTimeFromPointer(e.clientX) || lastScrubInfo;
+      lastScrubInfo = null;
+      if (info && video.duration && isFinite(video.duration)) {
+        seekPreviewTime = null;
+        updateVodTimelineVisuals(info.time, video.duration);
+        performReliableVodSeek(info.time);
+      }
+      showVodOSD();
+    };
+
+    vodTimelineWrapper.addEventListener("pointerup", endScrub);
+    vodTimelineWrapper.addEventListener("pointercancel", endScrub);
+    vodTimelineWrapper.addEventListener("click", (e) => e.stopPropagation());
+  }
 
   function formatTime(seconds) {
     if (isNaN(seconds) || !isFinite(seconds)) return "00:00:00";
@@ -1346,7 +1934,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initProfile() {
     showAppPage();
-    if (deviceLayout === "mobile") {
+    if (isTouchLayout()) {
       syncMobileNavState("home");
       initMobileHomeScreen();
     }
@@ -1390,7 +1978,7 @@ document.addEventListener("DOMContentLoaded", () => {
         currentLiveRegion = "ALL";
         setLoginState("logging");
         switchModus("favorites");
-        if (currentActiveStreams.length > 0 && deviceLayout !== "mobile") {
+        if (currentActiveStreams.length > 0 && !isTouchLayout()) {
           const first = currentActiveStreams[0];
           playStream(first.stream_id, first.name, first.stream_icon, 0, first.url);
           activeerFitScreen();
@@ -1470,7 +2058,7 @@ document.addEventListener("DOMContentLoaded", () => {
         showAppPage();
         showToast(t("loggedIn"));
         setupRegions();
-        if (deviceLayout === "mobile") {
+        if (isTouchLayout()) {
           syncMobileNavState("home");
           initMobileHomeScreen();
         } else {
@@ -1493,7 +2081,7 @@ document.addEventListener("DOMContentLoaded", () => {
           setLoginState("logged-in");
           showAppPage();
           setupRegions();
-          if (deviceLayout === "mobile") {
+          if (isTouchLayout()) {
             syncMobileNavState("home");
             initMobileHomeScreen();
           } else {
@@ -1598,7 +2186,274 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  const vodExternalPlayerBtn = document.getElementById("vodExternalPlayerBtn");
+  if (vodExternalPlayerBtn) {
+    vodExternalPlayerBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const url = (activeVodCandidates && activeVodCandidates[activeVodCandidateIdx])
+        || (activeVodCandidates && activeVodCandidates[0])
+        || video.getAttribute("src")
+        || "";
+      if (url && window.AndroidExternalPlayer) {
+        try { video.pause(); } catch (err) {}
+        hidePlayerLoading();
+        window.AndroidExternalPlayer.openPlayer(url);
+        showToast("Harici oynatıcıda açılıyor...");
+      } else {
+        showToast(t("streamPlaybackFailed"));
+      }
+    });
+  }
+
+  // VOD 3-DOTS PLAYBACK SETTINGS POPOVER LOGIC
+  const vodSettingsBtn = document.getElementById("vodSettingsBtn");
+  const vodSettingsPopover = document.getElementById("vodSettingsPopover");
+  const vodSettingsCloseBtn = document.getElementById("vodSettingsCloseBtn");
+
+  function openVodSettings(show = true) {
+    if (!vodSettingsPopover) return;
+    if (show) {
+      probeNativeVodTracks();
+      vodSettingsPopover.classList.remove("hidden");
+      if (vodSettingsBtn) vodSettingsBtn.classList.add("active");
+    } else {
+      vodSettingsPopover.classList.add("hidden");
+      if (vodSettingsBtn) vodSettingsBtn.classList.remove("active");
+    }
+  }
+
+  function probeNativeVodTracks() {
+    if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.getVodTracksJson === "function") {
+      try {
+        const rawJson = window.AndroidExternalPlayer.getVodTracksJson();
+        if (rawJson) {
+          const parsed = JSON.parse(rawJson);
+          vodDiscoveredTracks = {
+            audioTracks: Array.isArray(parsed.audioTracks) ? parsed.audioTracks : [],
+            subtitleTracks: Array.isArray(parsed.subtitleTracks) ? parsed.subtitleTracks : []
+          };
+        }
+      } catch (e) {}
+    }
+    renderVodAudioTrackList();
+    renderVodSubtitleTrackList();
+  }
+
+  function renderVodAudioTrackList() {
+    const list = document.getElementById("vodAudioTrackList");
+    if (!list) return;
+    list.innerHTML = "";
+
+    // Default / Stream Native Audio Option (WebView / HTML5)
+    const defaultItem = document.createElement("button");
+    defaultItem.type = "button";
+    defaultItem.className = "vod-track-item" + (!vodNativeAudioActive ? " active" : "");
+    defaultItem.innerHTML = `
+      <span>Default Stream Audio</span>
+      ${!vodNativeAudioActive ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>' : ''}
+    `;
+    defaultItem.onclick = () => {
+      vodNativeAudioActive = false;
+      video.muted = false;
+      if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.stopVodAudioFallback === "function") {
+        try { window.AndroidExternalPlayer.stopVodAudioFallback(); } catch (_) {}
+      }
+      renderVodAudioTrackList();
+      showToast("Audio: Default Stream");
+    };
+    list.appendChild(defaultItem);
+
+    const tracks = vodDiscoveredTracks.audioTracks || [];
+    tracks.forEach((track) => {
+      const isSelected = vodNativeAudioActive && selectedVodAudioGroup === track.groupIndex && selectedVodAudioTrack === track.trackIndex;
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "vod-track-item" + (isSelected ? " active" : "");
+      item.innerHTML = `
+        <span>${escapeAttr(track.label || `Track ${track.trackIndex + 1}`)}</span>
+        ${isSelected ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>' : ''}
+      `;
+      item.onclick = () => {
+        selectedVodAudioGroup = track.groupIndex;
+        selectedVodAudioTrack = track.trackIndex;
+        vodNativeAudioActive = true;
+        video.muted = true;
+        if (window.AndroidExternalPlayer) {
+          try {
+            if (typeof window.AndroidExternalPlayer.startVodAudioFallback === "function") {
+              window.AndroidExternalPlayer.startVodAudioFallback(activeVodResolvedUrl, video.currentTime || 0, !video.paused);
+            }
+            if (typeof window.AndroidExternalPlayer.selectVodAudioTrack === "function") {
+              window.AndroidExternalPlayer.selectVodAudioTrack(track.groupIndex, track.trackIndex);
+            }
+          } catch (e) {}
+        }
+        renderVodAudioTrackList();
+        showToast(`Audio: ${track.label}`);
+      };
+      list.appendChild(item);
+    });
+
+    if (tracks.length === 0 && activeVodResolvedUrl) {
+      const hint = document.createElement("div");
+      hint.style.cssText = "font-size:0.8rem;color:rgba(255,255,255,0.6);padding:6px 0;";
+      hint.textContent = "Multi-track audio enabled. ExoPlayer companion active.";
+      list.appendChild(hint);
+    }
+  }
+
+  function renderVodSubtitleTrackList() {
+    const list = document.getElementById("vodSubtitleTrackList");
+    if (!list) return;
+    list.innerHTML = "";
+
+    // Off Option
+    const isOff = selectedVodSubtitleGroup === -1 && selectedVodSubtitleTrack === -1;
+    const offItem = document.createElement("button");
+    offItem.type = "button";
+    offItem.className = "vod-track-item" + (isOff ? " active" : "");
+    offItem.innerHTML = `
+      <span>${t("off") || "Off"}</span>
+      ${isOff ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>' : ''}
+    `;
+    offItem.onclick = () => {
+      selectedVodSubtitleGroup = -1;
+      selectedVodSubtitleTrack = -1;
+      const overlay = document.getElementById("vodSubtitleOverlay");
+      if (overlay) {
+        overlay.innerHTML = "";
+        overlay.classList.add("hidden");
+      }
+      if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.selectVodSubtitleTrack === "function") {
+        try { window.AndroidExternalPlayer.selectVodSubtitleTrack(-1, -1); } catch (_) {}
+      }
+      renderVodSubtitleTrackList();
+      showToast("Subtitles: Off");
+    };
+    list.appendChild(offItem);
+
+    const tracks = vodDiscoveredTracks.subtitleTracks || [];
+    tracks.forEach((track) => {
+      const isSelected = selectedVodSubtitleGroup === track.groupIndex && selectedVodSubtitleTrack === track.trackIndex;
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "vod-track-item" + (isSelected ? " active" : "");
+      item.innerHTML = `
+        <span>${escapeAttr(track.label || `Subtitle ${track.trackIndex + 1}`)}</span>
+        ${isSelected ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>' : ''}
+      `;
+      item.onclick = () => {
+        selectedVodSubtitleGroup = track.groupIndex;
+        selectedVodSubtitleTrack = track.trackIndex;
+        if (window.AndroidExternalPlayer) {
+          try {
+            if (!vodNativeAudioActive && typeof window.AndroidExternalPlayer.startVodAudioFallback === "function") {
+              // Prepare ExoPlayer in background with companion volume 0 so subtitle cues are extracted without hijacking audio
+              window.AndroidExternalPlayer.startVodAudioFallback(activeVodResolvedUrl, video.currentTime || 0, !video.paused);
+            }
+            if (typeof window.AndroidExternalPlayer.selectVodSubtitleTrack === "function") {
+              window.AndroidExternalPlayer.selectVodSubtitleTrack(track.groupIndex, track.trackIndex);
+            }
+          } catch (e) {}
+        }
+        renderVodSubtitleTrackList();
+        showToast(`Subtitles: ${track.label}`);
+      };
+      list.appendChild(item);
+    });
+
+    if (tracks.length === 0) {
+      const hint = document.createElement("div");
+      hint.style.cssText = "font-size:0.8rem;color:rgba(255,255,255,0.6);padding:6px 0;";
+      hint.textContent = "No embedded subtitle tracks found in this stream.";
+      list.appendChild(hint);
+    }
+  }
+
+  function applyVodAspectRatio(aspect) {
+    vodAspectRatio = aspect || "contain";
+    if (!video) return;
+    video.classList.remove("aspect-contain", "aspect-cover", "aspect-fill", "aspect-zoom");
+    video.classList.add(`aspect-${vodAspectRatio}`);
+    document.querySelectorAll("#vodAspectGroup .vod-option-chip").forEach(chip => {
+      chip.classList.toggle("active", chip.dataset.aspect === vodAspectRatio);
+    });
+  }
+
+  function applyVodPlaybackSpeed(speed) {
+    vodPlaybackSpeed = parseFloat(speed) || 1.0;
+    if (video) {
+      try { video.playbackRate = vodPlaybackSpeed; } catch (_) {}
+    }
+    if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setVodPlaybackSpeed === "function") {
+      try { window.AndroidExternalPlayer.setVodPlaybackSpeed(vodPlaybackSpeed); } catch (_) {}
+    }
+    document.querySelectorAll("#vodSpeedGroup .vod-option-chip").forEach(chip => {
+      chip.classList.toggle("active", parseFloat(chip.dataset.speed) === vodPlaybackSpeed);
+    });
+  }
+
+  function applyVodSubtitleSize(size) {
+    vodSubtitleSize = size || "normal";
+    const overlay = document.getElementById("vodSubtitleOverlay");
+    if (overlay) {
+      overlay.classList.remove("sub-size-small", "sub-size-normal", "sub-size-large");
+      overlay.classList.add(`sub-size-${vodSubtitleSize}`);
+    }
+    document.querySelectorAll("#vodSubtitleSizeGroup .vod-option-chip").forEach(chip => {
+      chip.classList.toggle("active", chip.dataset.subSize === vodSubtitleSize);
+    });
+  }
+
+  if (vodSettingsBtn) {
+    vodSettingsBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openVodSettings(vodSettingsPopover && vodSettingsPopover.classList.contains("hidden"));
+    });
+  }
+
+  if (vodSettingsCloseBtn) {
+    vodSettingsCloseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openVodSettings(false);
+    });
+  }
+
+  document.querySelectorAll(".vod-settings-tab").forEach(tab => {
+    tab.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const tabName = tab.dataset.vodTab;
+      document.querySelectorAll(".vod-settings-tab").forEach(t => t.classList.toggle("active", t === tab));
+      document.querySelectorAll(".vod-settings-pane").forEach(p => p.classList.toggle("hidden", p.dataset.vodPane !== tabName));
+    });
+  });
+
+  document.querySelectorAll("#vodAspectGroup .vod-option-chip").forEach(chip => {
+    chip.addEventListener("click", (e) => {
+      e.stopPropagation();
+      applyVodAspectRatio(chip.dataset.aspect);
+    });
+  });
+
+  document.querySelectorAll("#vodSpeedGroup .vod-option-chip").forEach(chip => {
+    chip.addEventListener("click", (e) => {
+      e.stopPropagation();
+      applyVodPlaybackSpeed(chip.dataset.speed);
+    });
+  });
+
+  document.querySelectorAll("#vodSubtitleSizeGroup .vod-option-chip").forEach(chip => {
+    chip.addEventListener("click", (e) => {
+      e.stopPropagation();
+      applyVodSubtitleSize(chip.dataset.subSize);
+    });
+  });
+
   window.handleAppBack = function() {
+    if (isFitScreen) {
+      enterPipMode();
+      return "true";
+    }
     const homeViewAll = document.getElementById("homeViewAllPage");
     if (homeViewAll && !homeViewAll.classList.contains("hidden")) {
       if (typeof closeHomeViewAll === "function") closeHomeViewAll();
@@ -1615,13 +2470,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (searchPanel && !searchPanel.classList.contains("hidden")) {
       closeSearch();
-      return "true";
-    }
-    if (isFitScreen) {
-      if (currentModus === "vod" || currentModus === "series") {
-        video.pause();
-      }
-      deactiveerFitScreen();
       return "true";
     }
     if (selectedSeries) {
@@ -1679,7 +2527,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function setTestLoading(loading) {
     if (loginTestBtn) loginTestBtn.disabled = loading;
     if (testBtnSpinner) testBtnSpinner.classList.toggle("hidden", !loading);
-    if (testBtnText) testBtnText.textContent = loading ? "Kontrol ediliyor..." : "Test connection";
+    if (testBtnText) testBtnText.textContent = loading ? (t("checkingConnection") || "Checking connection...") : (t("testConnection") || "Test connection");
   }
 
   function displayAccountInfo(data) {
@@ -1696,15 +2544,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const userInfo = (data && data.user_info) || {};
     const serverInfo = (data && data.server_info) || {};
 
-    const status = userInfo.status || "Aktif";
+    const status = userInfo.status || (currentLang === "tr" ? "Aktif" : "Active");
     const isActive = status.toLowerCase() === "active" || status.toLowerCase() === "aktif";
     if (statusBadge) {
       statusBadge.textContent = status;
       statusBadge.classList.toggle("expired", !isActive);
     }
 
-    let expDateStr = "Sınırsız / Unlimited";
-    let timeLeftStr = "Sınırsız";
+    let expDateStr = currentLang === "tr" ? "Sınırsız / Unlimited" : "Unlimited";
+    let timeLeftStr = currentLang === "tr" ? "Sınırsız" : "Unlimited";
     let isExpired = false;
 
     if (userInfo.exp_date && userInfo.exp_date !== "null" && userInfo.exp_date !== "0") {
@@ -1740,15 +2588,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const activeCons = userInfo.active_cons !== undefined ? userInfo.active_cons : "0";
     const maxCons = userInfo.max_connections !== undefined ? userInfo.max_connections : "1";
-    if (connEl) connEl.textContent = `${activeCons} / ${maxCons} aktif bağlantı`;
+    if (connEl) connEl.textContent = `${activeCons} / ${maxCons} ${currentLang === "tr" ? "aktif bağlantı" : "active connections"}`;
 
     const isTrial = userInfo.is_trial === "1";
-    if (typeEl) typeEl.textContent = isTrial ? "Deneme (Trial)" : "Standart Hesap";
+    if (typeEl) typeEl.textContent = isTrial ? (currentLang === "tr" ? "Deneme (Trial)" : "Trial Account") : (currentLang === "tr" ? "Standart Hesap" : "Standard Account");
 
     const formats = Array.isArray(userInfo.allowed_output_formats) ? userInfo.allowed_output_formats.join(", ") : "ts, m3u8";
     const srvUrl = serverInfo.url ? `${serverInfo.server_protocol || "http"}://${serverInfo.url}:${serverInfo.port || "8080"}` : (serverUrlInput ? serverUrlInput.value.trim() : "");
     const tz = serverInfo.timezone || "UTC";
-    if (serverDetailsEl) serverDetailsEl.textContent = `${srvUrl} (${tz}) · Çıktı: [${formats}]`;
+    if (serverDetailsEl) serverDetailsEl.textContent = `${srvUrl} (${tz}) · ${currentLang === "tr" ? "Çıktı" : "Output"}: [${formats}]`;
   }
 
   if (loginTestBtn) {
@@ -1757,37 +2605,37 @@ document.addEventListener("DOMContentLoaded", () => {
       if (loginMethod && loginMethod.value === "m3u") {
         const m3uUrl = m3uUrlInput ? m3uUrlInput.value.trim() : "";
         if (!m3uUrl) {
-          showLoginError("Lütfen bir M3U URL'si girin.");
+          showLoginError(currentLang === "tr" ? "Lütfen bir M3U URL'si girin." : "Please enter an M3U playlist URL.");
           return;
         }
         setTestLoading(true);
         try {
           const res = await requestText(m3uUrl, 25000);
           if (res.status === 200 && res.body.trim().startsWith("#EXTM3U")) {
-            showToast("M3U bağlantısı başarılı!");
+            showToast(currentLang === "tr" ? "M3U bağlantısı başarılı!" : "M3U connection successful!");
             if (accountInfoCard) {
               accountInfoCard.classList.remove("hidden");
               const statusBadge = document.getElementById("accountStatusBadge");
-              if (statusBadge) { statusBadge.textContent = "Aktif (M3U)"; statusBadge.classList.remove("expired"); }
+              if (statusBadge) { statusBadge.textContent = "Active (M3U)"; statusBadge.classList.remove("expired"); }
               const expiresBadge = document.getElementById("accountExpiresBadge");
-              if (expiresBadge) expiresBadge.textContent = "Geçerli liste";
+              if (expiresBadge) expiresBadge.textContent = currentLang === "tr" ? "Geçerli liste" : "Valid playlist";
               const expDateEl = document.getElementById("accountExpDate");
-              if (expDateEl) expDateEl.textContent = "M3U Akışı";
+              if (expDateEl) expDateEl.textContent = "M3U Stream";
               const timeLeftEl = document.getElementById("accountTimeLeft");
               const lineCount = res.body.split("\n").length;
-              if (timeLeftEl) timeLeftEl.textContent = `${lineCount} satır`;
+              if (timeLeftEl) timeLeftEl.textContent = `${lineCount} ${currentLang === "tr" ? "satır" : "lines"}`;
               const connEl = document.getElementById("accountConnections");
-              if (connEl) connEl.textContent = "Doğrudan akış";
+              if (connEl) connEl.textContent = currentLang === "tr" ? "Doğrudan akış" : "Direct stream";
               const typeEl = document.getElementById("accountType");
               if (typeEl) typeEl.textContent = "M3U Playlist";
               const serverDetailsEl = document.getElementById("accountServerDetails");
               if (serverDetailsEl) serverDetailsEl.textContent = m3uUrl.slice(0, 50) + "...";
             }
           } else {
-            showLoginError(`M3U hatası: ${res.failed || "HTTP " + res.status}`);
+            showLoginError(`M3U error: ${res.failed || "HTTP " + res.status}`);
           }
         } catch (e) {
-          showLoginError(e.message || "Ağ hatası");
+          showLoginError(e.message || (currentLang === "tr" ? "Ağ hatası" : "Network error"));
         } finally {
           setTestLoading(false);
         }
@@ -1799,7 +2647,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const password = passwordInput.value.trim();
 
       if (!server || !username || !password) {
-        showLoginError("Lütfen sunucu adresi, kullanıcı adı ve şifreyi doldurun.");
+        showLoginError(currentLang === "tr" ? "Lütfen sunucu adresi, kullanıcı adı ve şifreyi doldurun." : "Please fill in Server URL, Username, and Password.");
         return;
       }
 
@@ -1816,31 +2664,55 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
               }
               displayAccountInfo(data);
-              showToast("Bağlantı başarılı!");
+              showToast(currentLang === "tr" ? "Bağlantı başarılı!" : "Connection successful!");
               return;
             }
           } catch (pe) {
-            showLoginError("Geçersiz API yanıtı: " + res.body.slice(0, 60));
+            showLoginError((currentLang === "tr" ? "Geçersiz API yanıtı: " : "Invalid API response: ") + res.body.slice(0, 60));
             return;
           }
         }
         showLoginError(`${t("playlistUnavailable")} (${res.failed || "HTTP " + res.status})`);
       } catch (err) {
-        showLoginError("Bağlantı kurulamadı: " + (err.message || "Ağ hatası"));
+        showLoginError((currentLang === "tr" ? "Bağlantı kurulamadı: " : "Could not connect: ") + (err.message || "Network error"));
       } finally {
         setTestLoading(false);
       }
     });
   }
 
+  // LOGIN METHOD SLIDER LOGIC
+  const loginMethodSlider = document.getElementById("loginMethodSlider");
+  function syncLoginMethodSlider(method) {
+    if (!loginMethodSlider) return;
+    loginMethodSlider.setAttribute("data-active-method", method);
+    loginMethodSlider.querySelectorAll(".login-method-option").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.method === method);
+    });
+  }
+
+  if (loginMethodSlider) {
+    loginMethodSlider.querySelectorAll(".login-method-option").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const method = btn.dataset.method;
+        if (loginMethod && loginMethod.value !== method) {
+          loginMethod.value = method;
+          loginMethod.dispatchEvent(new Event("change"));
+        }
+      });
+    });
+  }
+
   if (loginMethod) {
     loginMethod.addEventListener("change", () => {
       const useM3u = loginMethod.value === "m3u";
+      syncLoginMethodSlider(loginMethod.value);
       if (m3uLoginFields) m3uLoginFields.classList.toggle("hidden", !useM3u);
       if (xtreamLoginFields) xtreamLoginFields.classList.toggle("hidden", useM3u);
       if (useM3u) renderM3uProfileOptions(m3uUrlInput ? m3uUrlInput.value.trim() : "");
       setLoginErrorMessage("");
     });
+    syncLoginMethodSlider(loginMethod.value);
   }
 
   if (m3uProfileSelect) {
@@ -1921,6 +2793,7 @@ document.addEventListener("DOMContentLoaded", () => {
   applyBackgroundColor(currentBgColor);
   applyMaterialPalette(materialPalette);
   applyUiScale(uiScale);
+  applyOsdAppearance();
   applyDeviceLayout(deviceLayout, false);
   applyAppLanguage(currentLang);
 
@@ -2065,7 +2938,7 @@ document.addEventListener("DOMContentLoaded", () => {
             seriesStreams = seriesStreams.concat(list);
           }
           loadedCategories[key] = true;
-          if (deviceLayout === "mobile" && mobileActiveSection === "home" && typeof renderMobileHomeScreen === "function") {
+          if (isTouchLayout() && mobileActiveSection === "home" && typeof renderMobileHomeScreen === "function") {
             renderMobileHomeScreen();
           }
           return true;
@@ -2178,7 +3051,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showAppPage();
       switchModus(startMode);
 
-      if (currentActiveStreams.length > 0 && deviceLayout !== "mobile") {
+      if (currentActiveStreams.length > 0 && !isTouchLayout()) {
         const firstStream = currentActiveStreams[0];
         playStream(firstStream.stream_id, firstStream.name, firstStream.stream_icon, 0, firstStream.url);
         activeerFitScreen();
@@ -2193,6 +3066,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function activeerFitScreen() {
+    isPipMode = false;
+    document.body.classList.remove("player-pip-mode");
+    if (playerWrapper) {
+      playerWrapper.classList.remove("is-pip-dragging");
+      playerWrapper.style.transform = "";
+      playerWrapper.style.opacity = "";
+    }
+    if (pipDismissHint) pipDismissHint.classList.add("hidden");
     isFitScreen = true;
     document.body.classList.add("speler-fit-screen");
     if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setFullscreen === "function") {
@@ -2203,16 +3084,83 @@ document.addEventListener("DOMContentLoaded", () => {
         window.AndroidExternalPlayer.requestOrientation("landscape");
       }
     }
-    if (currentModus === "live" || currentModus === "favorites") {
+    const isVodPlaying = !!(currentVodMovieId || currentEpisodeId);
+    if (isVodPlaying && !currentPlayingStreamId) {
+      currentModus = currentEpisodeId ? "series" : "vod";
+      showVodOSD();
+    } else if (currentModus === "live" || currentModus === "favorites") {
       showLiveOSD();
     } else if (currentModus === "vod" || currentModus === "series") {
       showVodOSD();
     }
   }
 
+  function enterPipMode() {
+    if (!isFitScreen) return;
+    isFitScreen = false;
+    isPipMode = true;
+    document.body.classList.remove("speler-fit-screen");
+    document.body.classList.add("player-pip-mode");
+    document.body.classList.add("has-active-stream");
+    if (playerWrapper) {
+      playerWrapper.classList.remove("hidden", "is-pip-dragging");
+      playerWrapper.style.transform = "";
+      playerWrapper.style.opacity = "";
+    }
+    if (pipDismissHint) pipDismissHint.classList.add("hidden");
+    if (vodOsdContainer) vodOsdContainer.classList.add("hidden");
+    if (vodCenterPlayPauseBtn) vodCenterPlayPauseBtn.classList.add("hidden");
+    if (vodPlaybackControls) vodPlaybackControls.classList.add("hidden");
+    if (osdContainer) osdContainer.classList.add("hidden");
+    if (osdClockBubble) osdClockBubble.classList.add("hidden");
+    if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setFullscreen === "function") {
+      window.AndroidExternalPlayer.setFullscreen(false);
+    }
+    if (deviceLayout === "mobile") {
+      if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.requestOrientation === "function") {
+        window.AndroidExternalPlayer.requestOrientation("portrait");
+      }
+    }
+    updateHeaderBackButton();
+  }
+
+  function closePipMode() {
+    isPipMode = false;
+    isFitScreen = false;
+    document.body.classList.remove("player-pip-mode", "speler-fit-screen", "has-active-stream");
+    if (playerWrapper) {
+      playerWrapper.classList.remove("is-pip-dragging");
+      playerWrapper.style.transform = "";
+      playerWrapper.style.opacity = "";
+      playerWrapper.classList.add("hidden");
+    }
+    if (pipDismissHint) pipDismissHint.classList.add("hidden");
+    currentVodMovieId = null;
+    currentEpisodeId = null;
+    currentPlayingStreamId = null;
+    destroyStreamPlayers();
+    try {
+      video.pause();
+      video.removeAttribute("src");
+    } catch (e) {}
+    if (vodOsdContainer) vodOsdContainer.classList.add("hidden");
+    if (vodCenterPlayPauseBtn) vodCenterPlayPauseBtn.classList.add("hidden");
+    if (vodPlaybackControls) vodPlaybackControls.classList.add("hidden");
+    if (osdContainer) osdContainer.classList.add("hidden");
+    if (osdClockBubble) osdClockBubble.classList.add("hidden");
+    updateHeaderBackButton();
+  }
+
   function deactiveerFitScreen() {
     isFitScreen = false;
-    document.body.classList.remove("speler-fit-screen");
+    isPipMode = false;
+    document.body.classList.remove("speler-fit-screen", "player-pip-mode");
+    if (playerWrapper) {
+      playerWrapper.classList.remove("is-pip-dragging");
+      playerWrapper.style.transform = "";
+      playerWrapper.style.opacity = "";
+    }
+    if (pipDismissHint) pipDismissHint.classList.add("hidden");
     if (window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.setFullscreen === "function") {
       window.AndroidExternalPlayer.setFullscreen(false);
     }
@@ -2233,12 +3181,24 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 50);
     }
     if (currentModus === "vod" || currentModus === "series") {
+      currentVodMovieId = null;
+      currentEpisodeId = null;
+      destroyStreamPlayers();
+      try {
+        video.pause();
+        video.removeAttribute("src");
+      } catch (e) {}
+      document.body.classList.remove("has-active-stream");
       playerWrapper.classList.add("hidden");
+      if (vodOsdContainer) vodOsdContainer.classList.add("hidden");
+      if (vodCenterPlayPauseBtn) vodCenterPlayPauseBtn.classList.add("hidden");
+      if (vodPlaybackControls) vodPlaybackControls.classList.add("hidden");
       setTimeout(() => {
         const targetFocus = lastFocusedPoster || document.querySelector("#channelList .poster-card") || document.querySelector(".focusable");
         if (targetFocus) setElementFocus(targetFocus);
       }, 50);
     }
+    updateHeaderBackButton();
   }
 
   function findCurrentColumnIndex() {
@@ -2251,7 +3211,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setColumnFocus(activeColIdx) {
-    if (deviceLayout === "mobile") return;
+    if (isTouchLayout()) return;
     const cols = [
       document.getElementById("colModus"),
       document.getElementById("colRegions"),
@@ -2468,7 +3428,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!searchPanel) return;
     searchPanel.classList.add("hidden");
     if (searchInput) searchInput.blur();
-    if (deviceLayout === "mobile" && mobileActiveSection === "search") {
+    if (isTouchLayout() && mobileActiveSection === "search") {
       syncMobileNavState((currentModus === "vod" || currentModus === "series") ? "home" : "live");
     }
     const card = channelList.querySelector(".channel-card.active") || channelList.querySelector(".channel-card");
@@ -2639,7 +3599,7 @@ document.addEventListener("DOMContentLoaded", () => {
       playStream(item.stream_id, item.name, item.stream_icon, 0, item.url);
       activeerFitScreen();
     } else if (entry.type === "vod") {
-      playVodMovie(item.stream_id, item.name || item.title, item.container_extension || "mp4");
+      playVodMovie(item.stream_id, item.name || item.title, item.container_extension || "mp4", item.url || item.direct_source || "");
     } else if (entry.type === "series") {
       const fakeCard = { dataset: { seriesId: item.series_id || item.stream_id, title: item.name || item.title } };
       openSeries(fakeCard);
@@ -2718,7 +3678,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const activeRegion = isVod ? currentVodRegion : currentLiveRegion;
 
     const hiddenIds = hiddenCategories[categoryKind()];
-    const filtered = categoriesToUse.filter(cat => {
+    let filtered = categoriesToUse.filter(cat => {
       if (hiddenIds.indexOf(String(cat.category_id)) !== -1) return false;
       if (activeRegion !== "ALL" && !isCategoryInRegion(cat, isVod, activeRegion)) return false;
       if (categorySearchQuery) {
@@ -2730,20 +3690,31 @@ document.addEventListener("DOMContentLoaded", () => {
       return true;
     });
 
+    // Group categories with trailing numbers/years
+    filtered = groupCategoriesByTrailingNumber(filtered);
+
     filtered.forEach((cat, index) => {
       const li = document.createElement("li");
       li.className = "nav-item focusable" + (index === 0 ? " active" : "");
       li.dataset.catId = cat.category_id;
       li.tabIndex = 0;
-      li.textContent = cleanTitle(cat.category_name, ["HEVC", "VIP"]);
+      const baseLabel = cleanTitle(cat.category_name, ["HEVC", "VIP"]);
+      if (cat.isGrouped && cat.subCategories) {
+        li.innerHTML = `<span>${escapeAttr(baseLabel)}</span><span class="cat-group-badge">${cat.subCategories.length}</span>`;
+      } else {
+        li.textContent = baseLabel;
+      }
       categoryList.appendChild(li);
     });
 
     if (filtered.length > 0) {
       currentCategoryId = filtered[0].category_id;
+      activeSubCategoryId = "all";
+      updateCategorySubFilterBar(filtered[0]);
       filterChannels();
     } else if (channelList) {
       channelList.innerHTML = "";
+      updateCategorySubFilterBar(null);
     }
   }
 
@@ -2782,6 +3753,9 @@ document.addEventListener("DOMContentLoaded", () => {
         card.className = "episode-card grid-item focusable";
         card.dataset.episodeId = episodeId;
         card.dataset.containerExtension = episode.container_extension || episode.container || "mp4";
+        if (episode.url || episode.direct_source) {
+          card.dataset.directUrl = episode.url || episode.direct_source;
+        }
         card.dataset.title = episode.title || episode.name || `Episode ${episode.episode_num || ""}`;
         card.tabIndex = 0;
 
@@ -2798,20 +3772,129 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  async function openSeries(seriesCard) {
-    const seriesId = seriesCard.dataset.seriesId;
-    if (!seriesId || !xtreamAuth) return;
+  function renderTouchSeriesModal(isLoading = false) {
+    const page = document.getElementById("homeViewAllPage");
+    const titleEl = document.getElementById("viewAllTitle");
+    const catBar = document.getElementById("viewAllCategoriesBar");
+    const grid = document.getElementById("viewAllGrid");
+    if (!page || !grid || !selectedSeries) return;
 
+    if (titleEl) titleEl.textContent = cleanTitle(selectedSeries.title || t("series"));
+    grid.innerHTML = "";
+    grid.className = "home-view-all-grid series-episodes-grid";
+
+    if (catBar) {
+      catBar.innerHTML = "";
+    }
+
+    if (isLoading) {
+      const loading = document.createElement("div");
+      loading.className = "season-heading";
+      loading.textContent = t("loadingEpisodes");
+      grid.appendChild(loading);
+      page.classList.remove("hidden");
+      updateHeaderBackButton();
+      return;
+    }
+
+    if (!selectedSeries.seasons || selectedSeries.seasons.length === 0) {
+      const emptyState = document.createElement("div");
+      emptyState.className = "season-heading";
+      emptyState.textContent = t("noEpisodes");
+      grid.appendChild(emptyState);
+      page.classList.remove("hidden");
+      updateHeaderBackButton();
+      return;
+    }
+
+    let activeSeasonIndex = 0;
+
+    const renderSeasonEpisodes = (seasonIdx) => {
+      grid.innerHTML = "";
+      const seasonsToShow = seasonIdx === -1 ? selectedSeries.seasons : [selectedSeries.seasons[seasonIdx]].filter(Boolean);
+      seasonsToShow.forEach(season => {
+        if (seasonsToShow.length > 1) {
+          const heading = document.createElement("div");
+          heading.className = "season-heading";
+          heading.textContent = season.name;
+          grid.appendChild(heading);
+        }
+        (season.episodes || []).forEach(episode => {
+          const episodeId = episode.id || episode.stream_id;
+          if (!episodeId) return;
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = "episode-card focusable";
+          card.dataset.episodeId = episodeId;
+          card.dataset.containerExtension = episode.container_extension || episode.container || "mp4";
+          card.dataset.title = episode.title || episode.name || `Episode ${episode.episode_num || ""}`;
+          card.tabIndex = 0;
+
+          const episodeNumber = document.createElement("span");
+          episodeNumber.className = "episode-number";
+          episodeNumber.textContent = `${season.name} · ${t("episode", { number: episode.episode_num || "?" })}`;
+          const episodeTitle = document.createElement("span");
+          episodeTitle.className = "episode-title";
+          episodeTitle.textContent = card.dataset.title;
+          card.appendChild(episodeNumber);
+          card.appendChild(episodeTitle);
+
+          card.addEventListener("click", () => {
+            playSeriesEpisode(episodeId, card.dataset.title, card.dataset.containerExtension, episode.url || episode.direct_source || "");
+          });
+          grid.appendChild(card);
+        });
+      });
+    };
+
+    if (catBar && selectedSeries.seasons.length > 1) {
+      selectedSeries.seasons.forEach((season, idx) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "home-view-all-cat-chip" + (idx === activeSeasonIndex ? " active" : "");
+        chip.textContent = season.name;
+        chip.onclick = () => {
+          activeSeasonIndex = idx;
+          catBar.querySelectorAll(".home-view-all-cat-chip").forEach(c => c.classList.remove("active"));
+          chip.classList.add("active");
+          renderSeasonEpisodes(idx);
+        };
+        catBar.appendChild(chip);
+      });
+    }
+
+    renderSeasonEpisodes(activeSeasonIndex);
+    page.classList.remove("hidden");
+    updateHeaderBackButton();
+  }
+
+  async function openSeries(seriesCard) {
+    const seriesId = seriesCard && seriesCard.dataset ? seriesCard.dataset.seriesId : null;
+    const auth = xtreamAuth || (currentAuth && currentAuth.provider === "xtream" ? currentAuth : null);
+    if (!auth) {
+      showToast(t("xtreamRequiredForVod"));
+      return;
+    }
+    if (!seriesId) {
+      showToast(t("unableLoad"));
+      return;
+    }
+
+    currentModus = "series";
     selectedSeries = { id: seriesId, title: seriesCard.dataset.title, seasons: [] };
-    channelList.innerHTML = "";
-    contentTitle.textContent = selectedSeries.title;
-    const loading = document.createElement("div");
-    loading.className = "season-heading";
-    loading.textContent = t("loadingEpisodes");
-    channelList.appendChild(loading);
+    if (isTouchLayout()) {
+      renderTouchSeriesModal(true);
+    } else {
+      channelList.innerHTML = "";
+      contentTitle.textContent = selectedSeries.title;
+      const loading = document.createElement("div");
+      loading.className = "season-heading";
+      loading.textContent = t("loadingEpisodes");
+      channelList.appendChild(loading);
+    }
 
     try {
-      const url = `${xtreamAuth.server}/player_api.php?username=${xtreamAuth.username}&password=${xtreamAuth.password}&action=get_series_info&series_id=${encodeURIComponent(seriesId)}`;
+      const url = `${auth.server.replace(/\/+$/, "")}/player_api.php?username=${encodeURIComponent(auth.username)}&password=${encodeURIComponent(auth.password)}&action=get_series_info&series_id=${encodeURIComponent(seriesId)}`;
       const response = await requestText(url);
       if (response.status !== 200 || !response.body.trim()) throw new Error("Series details unavailable");
       const info = JSON.parse(response.body);
@@ -2822,16 +3905,24 @@ document.addEventListener("DOMContentLoaded", () => {
         const seasonEpisodes = Array.isArray(episodes) ? episodes : episodes[seasonKey];
         return {
           number: Array.isArray(episodes) ? "" : seasonKey,
-          name: Array.isArray(episodes) ? "Episodes" : `Season ${seasonKey}`,
+          name: Array.isArray(episodes) ? "Episodes" : t("season", { number: seasonKey }) || `Season ${seasonKey}`,
           episodes: Array.isArray(seasonEpisodes) ? seasonEpisodes : []
         };
       }).filter(season => season.episodes.length > 0);
-      renderSeriesEpisodes();
-      const firstEpisode = channelList.querySelector(".episode-card");
-      setElementFocus(firstEpisode || channelList.querySelector(".series-back"));
+      if (isTouchLayout()) {
+        renderTouchSeriesModal(false);
+      } else {
+        renderSeriesEpisodes();
+        const firstEpisode = channelList.querySelector(".episode-card");
+        setElementFocus(firstEpisode || channelList.querySelector(".series-back"));
+      }
     } catch (error) {
       selectedSeries = null;
-      filterChannels();
+      if (isTouchLayout()) {
+        closeHomeViewAll();
+      } else {
+        filterChannels();
+      }
       showToast(`${t("unableLoad")}: ${error && error.message ? error.message : error}`);
     }
   }
@@ -2886,7 +3977,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (currentModus === "vod" || currentModus === "series") {
-      playerWrapper.classList.add("hidden");
+      if (!isPipMode && !isFitScreen) playerWrapper.classList.add("hidden");
       colContent.classList.add("vod-mode-active");
       channelList.className = "netflix-grid";
       contentTitle.textContent = t(currentModus === "vod" ? "movies" : "series");
@@ -2897,7 +3988,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       let streamsToUse = (currentModus === "vod") ? vodStreams : seriesStreams;
-      let filteredVod = streamsToUse.filter(s => String(s.category_id) === String(currentCategoryId));
+      let targetCatIds = new Set();
+      if (activeCategoryGroupData && activeCategoryGroupData.subCategories) {
+        if (activeSubCategoryId && activeSubCategoryId !== "all") {
+          targetCatIds.add(String(activeSubCategoryId));
+        } else {
+          activeCategoryGroupData.subCategories.forEach(sub => targetCatIds.add(String(sub.category_id)));
+        }
+      } else {
+        targetCatIds.add(String(currentCategoryId));
+      }
+
+      let filteredVod = streamsToUse.filter(s => targetCatIds.has(String(s.category_id)));
       if (filteredVod.length === 0) filteredVod = streamsToUse.slice(0, 40);
       currentVodItems = currentModus === "vod" ? filteredVod : [];
 
@@ -2911,6 +4013,9 @@ document.addEventListener("DOMContentLoaded", () => {
           div.dataset.streamId = item.stream_id;
         }
         div.dataset.containerExtension = item.container_extension || "mp4";
+        if (item.url || item.direct_source) {
+          div.dataset.directUrl = item.url || item.direct_source;
+        }
         const displayTitle = cleanTitle(item.name || item.title || "");
         div.dataset.title = displayTitle;
 
@@ -2990,7 +4095,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadVisiblePosters();
     applyPendingFocus();
 
-    if (!currentPlayingStreamId && currentActiveStreams.length > 0 && currentModus === "live" && deviceLayout !== "mobile") {
+    if (!currentPlayingStreamId && !isPipMode && currentActiveStreams.length > 0 && currentModus === "live" && !isTouchLayout()) {
       const first = currentActiveStreams[0];
       playStream(first.stream_id, first.name, first.stream_icon, 0, first.url);
     }
@@ -3002,7 +4107,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.toggle("favorites-mode", modus === "favorites");
     document.querySelectorAll("#modusList .nav-item").forEach(el => el.classList.toggle("active", el.dataset.modus === modus));
 
-    if (deviceLayout === "mobile") {
+    if (isTouchLayout()) {
       if (modus === "vod" || modus === "series") {
         syncMobileNavState("home");
       } else if (modus === "live" || modus === "favorites") {
@@ -3203,6 +4308,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const playerLoadingOverlay = document.getElementById("playerLoadingOverlay");
   const playerLoadingText = document.getElementById("playerLoadingText");
+  let vodLoadTimer = null;
+  let vodFallbackAttempted = false;
+  let activeVodCandidates = [];
+  let activeVodCandidateIdx = 0;
+
+  function clearVodLoadTimer() {
+    if (vodLoadTimer) {
+      clearTimeout(vodLoadTimer);
+      vodLoadTimer = null;
+    }
+  }
 
   function showPlayerLoading(text) {
     if (playerLoadingOverlay) {
@@ -3212,20 +4328,214 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function hidePlayerLoading() {
+    clearVodLoadTimer();
     if (playerLoadingOverlay) {
       playerLoadingOverlay.classList.add("hidden");
     }
   }
 
+  function tryNextVodCandidateOrFail(reason = "") {
+    if (currentModus !== "vod" && currentModus !== "series") return;
+    if (!currentVodMovieId && !currentEpisodeId) return;
+
+    if (activeVodCandidates.length > 0 && activeVodCandidateIdx + 1 < activeVodCandidates.length) {
+      activeVodCandidateIdx += 1;
+      const nextUrl = activeVodCandidates[activeVodCandidateIdx];
+      startVodUrlPlayback(nextUrl, false);
+      return;
+    }
+
+    if (currentModus === "vod" && currentVodMovieId && !vodFallbackAttempted && xtreamAuth) {
+      vodFallbackAttempted = true;
+      const infoUrl = `${xtreamAuth.server.replace(/\/+$/, "")}/player_api.php?username=${encodeURIComponent(xtreamAuth.username)}&password=${encodeURIComponent(xtreamAuth.password)}&action=get_vod_info&vod_id=${encodeURIComponent(currentVodMovieId)}`;
+      requestText(infoUrl, 10000).then((res) => {
+        if (currentModus !== "vod" || !currentVodMovieId) return;
+        if (res && res.status === 200 && res.body) {
+          try {
+            const data = JSON.parse(res.body);
+            const md = (data && data.movie_data) || {};
+            const infoDirect = md.direct_source || (data && data.info && data.info.direct_source) || "";
+            const infoExt = md.container_extension || "";
+            const extra = buildVodCandidateUrls("movie", currentVodMovieId, infoExt, infoDirect, xtreamAuth);
+            const unseen = extra.filter(u => !activeVodCandidates.includes(u));
+            if (unseen.length > 0) {
+              activeVodCandidates = activeVodCandidates.concat(unseen);
+              activeVodCandidateIdx += 1;
+              startVodUrlPlayback(activeVodCandidates[activeVodCandidateIdx], false);
+              return;
+            }
+          } catch (e) {}
+        }
+        hidePlayerLoading();
+        const errDetail = reason ? ` (${reason})` : "";
+        showToast(`${t("streamPlaybackFailed")}${errDetail}`);
+      }).catch(() => {
+        hidePlayerLoading();
+        const errDetail = reason ? ` (${reason})` : "";
+        showToast(`${t("streamPlaybackFailed")}${errDetail}`);
+      });
+      return;
+    }
+
+    hidePlayerLoading();
+    const errDetail = reason ? ` (${reason})` : "";
+    showToast(`${t("streamPlaybackFailed")}${errDetail}`);
+  }
+
+  let vodPlaybackSessionId = 0;
+
+  function startVodUrlPlayback(url, resetCandidates = false) {
+    if (!url) {
+      hidePlayerLoading();
+      showToast(t("streamPlaybackFailed"));
+      return;
+    }
+
+    vodHasLoadedMetadata = false;
+    isVodSeeking = false;
+    pendingVodSeekTime = null;
+    stopVodAudioCompanion();
+    activeVodResolvedUrl = url;
+    const sessionId = ++vodPlaybackSessionId;
+
+    clearVodLoadTimer();
+    vodLoadTimer = setTimeout(() => {
+      if (sessionId !== vodPlaybackSessionId) return;
+      if ((currentModus === "vod" || currentModus === "series") && (currentVodMovieId || currentEpisodeId)) {
+        if (!vodHasLoadedMetadata && video.readyState < 1) {
+          tryNextVodCandidateOrFail("timeout");
+        }
+      }
+    }, 12000);
+
+    if (hlsPlayer) {
+      try { hlsPlayer.destroy(); } catch (e) {}
+      hlsPlayer = null;
+    }
+    if (mpegTsPlayer) {
+      try { mpegTsPlayer.destroy(); } catch (e) {}
+      mpegTsPlayer = null;
+    }
+
+    try {
+      video.pause();
+    } catch (e) {}
+
+    const beginStreamWithUrl = (finalUrl) => {
+      if (sessionId !== vodPlaybackSessionId) return;
+      activeVodResolvedUrl = finalUrl;
+      if (window.Hls && Hls.isSupported() && /\.m3u8(?:$|[?#])/i.test(finalUrl)) {
+        playWithHls(finalUrl);
+      } else if (/\.ts(?:$|[?#])/i.test(finalUrl) && window.mpegts && mpegts.isSupported()) {
+        mpegTsPlayer = mpegts.createPlayer({ type: "mpegts", isLive: false, url: finalUrl });
+        mpegTsPlayer.on(mpegts.Events.ERROR, () => {
+          if (!vodHasLoadedMetadata) tryNextVodCandidateOrFail("format");
+        });
+        mpegTsPlayer.attachMediaElement(video);
+        mpegTsPlayer.load();
+        Promise.resolve(mpegTsPlayer.play()).catch(() => {
+          if (!vodHasLoadedMetadata) tryNextVodCandidateOrFail("play");
+        });
+      } else {
+        video.preload = "auto";
+        video.src = finalUrl;
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch((err) => {
+            if (err && err.name === "AbortError") return;
+            console.warn("VOD play() rejected:", err);
+            if (!vodHasLoadedMetadata) {
+              tryNextVodCandidateOrFail(err && err.message ? err.message : "");
+            }
+          });
+        }
+      }
+    };
+
+    // Resolve Xtream 302 redirect URL up front so WebView's native media player can send direct HTTP Range requests to the storage server
+    if (
+      window.AndroidExternalPlayer &&
+      typeof window.AndroidExternalPlayer.resolveRedirectUrl === "function" &&
+      !/\.m3u8(?:$|[?#])/i.test(url)
+    ) {
+      setTimeout(() => {
+        if (sessionId !== vodPlaybackSessionId) return;
+        let resolvedUrl = url;
+        try {
+          const r = window.AndroidExternalPlayer.resolveRedirectUrl(url);
+          if (r && typeof r === "string" && /^https?:\/\//i.test(r)) {
+            resolvedUrl = r;
+          }
+        } catch (e) {}
+        beginStreamWithUrl(resolvedUrl);
+      }, 0);
+    } else {
+      beginStreamWithUrl(url);
+    }
+  }
+
+  video.addEventListener("loadstart", () => {
+    if ((currentModus === "vod" || currentModus === "series") && (currentVodMovieId || currentEpisodeId)) {
+      const label = vodOsdTitle && vodOsdTitle.textContent ? vodOsdTitle.textContent : t("movies");
+      showPlayerLoading(t("vodLoading", { title: label }));
+    }
+  });
   video.addEventListener("playing", () => {
     liveReconnectAttempts = 0;
+    vodHasLoadedMetadata = true;
+    isVodSeeking = false;
+    hidePlayerLoading();
+    updateVodPlayPauseIcon();
+    if ((currentModus === "vod" || currentModus === "series") && (currentVodMovieId || currentEpisodeId)) {
+      if (vodNativeAudioActive) {
+        syncVodAudioCompanion();
+      } else {
+        setTimeout(checkVodAudioSupportAndFallback, 550);
+      }
+    }
+  });
+  video.addEventListener("pause", () => {
+    if (vodNativeAudioActive && window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.pauseVodAudioFallback === "function") {
+      try { window.AndroidExternalPlayer.pauseVodAudioFallback(); } catch (e) {}
+    }
+  });
+  video.addEventListener("canplay", () => {
+    vodHasLoadedMetadata = true;
+    isVodSeeking = false;
     hidePlayerLoading();
   });
-  video.addEventListener("canplay", hidePlayerLoading);
-  video.addEventListener("waiting", () => showPlayerLoading("Ara belleğe alınıyor..."));
+  video.addEventListener("waiting", () => {
+    showPlayerLoading(t("buffering"));
+    if (vodNativeAudioActive && window.AndroidExternalPlayer && typeof window.AndroidExternalPlayer.pauseVodAudioFallback === "function") {
+      try { window.AndroidExternalPlayer.pauseVodAudioFallback(); } catch (e) {}
+    }
+  });
   video.addEventListener("error", () => {
-    hidePlayerLoading();
-    if (lastLive) scheduleLiveReconnect();
+    const mediaErr = video.error;
+    // Ignore spurious error events when src was intentionally cleared
+    if (!video.getAttribute("src") && !hlsPlayer && !mpegTsPlayer) {
+      return;
+    }
+    if (lastLive) {
+      hidePlayerLoading();
+      scheduleLiveReconnect();
+      return;
+    }
+    if ((currentModus === "vod" || currentModus === "series") && (currentVodMovieId || currentEpisodeId)) {
+      if (vodHasLoadedMetadata && isVodSeeking) {
+        // Transient range seek error: recover at current position without wiping the movie
+        isVodSeeking = false;
+        hidePlayerLoading();
+        const p = video.play();
+        if (p && typeof p.catch === "function") p.catch(() => {});
+        return;
+      }
+      const codeMap = { 1: "aborted", 2: "network", 3: "decode", 4: "format unsupported" };
+      const codeReason = mediaErr && mediaErr.code ? (codeMap[mediaErr.code] || `code ${mediaErr.code}`) : "error";
+      tryNextVodCandidateOrFail(codeReason);
+    } else {
+      hidePlayerLoading();
+    }
   });
   video.addEventListener("ended", () => {
     hidePlayerLoading();
@@ -3234,6 +4544,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function destroyStreamPlayers() {
     lastLive = null;
+    vodFallbackAttempted = false;
+    vodHasLoadedMetadata = false;
+    isVodSeeking = false;
+    pendingVodSeekTime = null;
+    activeVodResolvedUrl = "";
+    stopVodAudioCompanion();
+    vodPlaybackSessionId++;
+    if (vodSeekWatchdogTimer) {
+      clearTimeout(vodSeekWatchdogTimer);
+      vodSeekWatchdogTimer = null;
+    }
+    activeVodCandidates = [];
+    activeVodCandidateIdx = 0;
     hidePlayerLoading();
     if (liveReconnectTimer) {
       clearTimeout(liveReconnectTimer);
@@ -3266,75 +4589,148 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     hlsPlayer.loadSource(url);
     hlsPlayer.attachMedia(video);
-    hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(console.error));
+    hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => {
+      video.play().catch((err) => {
+        if (err && err.name === "AbortError") return;
+        if (currentModus === "vod" || currentModus === "series") {
+          tryNextVodCandidateOrFail("HLS play");
+        }
+      });
+    });
     hlsPlayer.on(Hls.Events.ERROR, (event, data) => {
       if (data && data.fatal) {
         try { hlsPlayer.destroy(); } catch (e) {}
         hlsPlayer = null;
-        scheduleLiveReconnect();
+        if (lastLive) {
+          scheduleLiveReconnect();
+        } else if (currentModus === "vod" || currentModus === "series") {
+          tryNextVodCandidateOrFail(data.details || "HLS error");
+        }
       }
     });
   }
 
-  function playVodMovie(streamId, title, ext) {
-    currentVodMovieId = String(streamId);
-    currentEpisodeId = null;
-    document.body.classList.add("has-active-stream");
-    playerWrapper.classList.remove("hidden");
-    activeerFitScreen();
-    if (vodOsdTitle) vodOsdTitle.textContent = title;
-    if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
-    showVodOSD();
-    showPlayerLoading(`${cleanTitle(title) || "Film"} yükleniyor...`);
-
-    destroyStreamPlayers();
-
-    video.muted = false;
-    video.volume = 1.0;
-
-    const directMovieUrl = `${xtreamAuth.server}/movie/${xtreamAuth.username}/${xtreamAuth.password}/${streamId}.${ext || 'mp4'}`;
-    if (useAndroidExternalPlayer && window.AndroidExternalPlayer) {
-      window.AndroidExternalPlayer.openPlayer(directMovieUrl);
-      return;
+  function buildVodCandidateUrls(kind, id, ext, directUrl, auth) {
+    const urls = [];
+    const add = (u) => {
+      if (u && !urls.includes(u)) urls.push(u);
+    };
+    if (directUrl) add(directUrl);
+    if (auth && auth.server && auth.username && auth.password && id) {
+      const base = `${auth.server.replace(/\/+$/, "")}/${kind}/${encodeURIComponent(auth.username)}/${encodeURIComponent(auth.password)}/${id}`;
+      const cleanExt = (ext || "mp4").replace(/^\./, "").toLowerCase();
+      add(`${base}.${cleanExt}`);
+      if (cleanExt !== "mp4") add(`${base}.mp4`);
+      if (cleanExt !== "mkv") add(`${base}.mkv`);
+      if (cleanExt !== "m3u8") add(`${base}.m3u8`);
     }
-
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
-    video.src = directMovieUrl;
-    video.play().catch(console.error);
+    return urls;
   }
 
-  function playSeriesEpisode(episodeId, title, ext) {
-    currentEpisodeId = String(episodeId);
-    currentVodMovieId = null;
+  function playVodMovie(streamId, title, ext, directUrl = "") {
+    if (!streamId && !directUrl) {
+      showToast(t("streamPlaybackFailed"));
+      return;
+    }
+    const auth = xtreamAuth || (currentAuth && currentAuth.provider === "xtream" ? currentAuth : null);
+    const candidates = buildVodCandidateUrls("movie", streamId, ext, directUrl, auth);
+    if (candidates.length === 0) {
+      showToast(t("xtreamRequiredForVod"));
+      return;
+    }
+
+    currentModus = "vod";
+    currentPlayingStreamId = null;
+    currentVodMovieId = String(streamId);
+    currentEpisodeId = null;
+
+    destroyStreamPlayers();
+    activeVodCandidates = candidates;
+    activeVodCandidateIdx = 0;
+
+    if (osdTimeout) {
+      clearTimeout(osdTimeout);
+      osdTimeout = null;
+    }
+    if (osdContainer) osdContainer.classList.add("hidden");
+    if (osdClockBubble) osdClockBubble.classList.add("hidden");
+
+    const cleanName = cleanTitle(title) || title || "Movie";
     document.body.classList.add("has-active-stream");
     playerWrapper.classList.remove("hidden");
     activeerFitScreen();
-    if (vodOsdTitle) vodOsdTitle.textContent = title;
+    if (vodOsdTitle) vodOsdTitle.textContent = cleanName;
     if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
     showVodOSD();
-    showPlayerLoading(`${cleanTitle(title) || "Bölüm"} yükleniyor...`);
-
-    destroyStreamPlayers();
+    showPlayerLoading(t("vodLoading", { title: cleanName }));
 
     video.muted = false;
     video.volume = 1.0;
 
-    const episodeUrl = `${xtreamAuth.server}/series/${xtreamAuth.username}/${xtreamAuth.password}/${episodeId}.${ext || "mp4"}`;
     if (useAndroidExternalPlayer && window.AndroidExternalPlayer) {
-      window.AndroidExternalPlayer.openPlayer(episodeUrl);
+      hidePlayerLoading();
+      window.AndroidExternalPlayer.openPlayer(candidates[0]);
       return;
     }
 
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
-    video.src = episodeUrl;
-    video.play().catch(console.error);
+    startVodUrlPlayback(candidates[0], true);
+  }
+
+  function playSeriesEpisode(episodeId, title, ext, directUrl = "") {
+    if (!episodeId && !directUrl) {
+      showToast(t("streamPlaybackFailed"));
+      return;
+    }
+    const auth = xtreamAuth || (currentAuth && currentAuth.provider === "xtream" ? currentAuth : null);
+    const candidates = buildVodCandidateUrls("series", episodeId, ext, directUrl, auth);
+    if (candidates.length === 0) {
+      showToast(t("xtreamRequiredForVod"));
+      return;
+    }
+
+    currentModus = "series";
+    currentPlayingStreamId = null;
+    currentEpisodeId = String(episodeId);
+    currentVodMovieId = null;
+
+    destroyStreamPlayers();
+    activeVodCandidates = candidates;
+    activeVodCandidateIdx = 0;
+
+    if (osdTimeout) {
+      clearTimeout(osdTimeout);
+      osdTimeout = null;
+    }
+    if (osdContainer) osdContainer.classList.add("hidden");
+    if (osdClockBubble) osdClockBubble.classList.add("hidden");
+
+    const cleanName = cleanTitle(title) || title || "Episode";
+    document.body.classList.add("has-active-stream");
+    playerWrapper.classList.remove("hidden");
+    activeerFitScreen();
+    if (vodOsdTitle) vodOsdTitle.textContent = cleanName;
+    if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
+    showVodOSD();
+    showPlayerLoading(t("vodLoading", { title: cleanName }));
+
+    video.muted = false;
+    video.volume = 1.0;
+
+    if (useAndroidExternalPlayer && window.AndroidExternalPlayer) {
+      hidePlayerLoading();
+      window.AndroidExternalPlayer.openPlayer(candidates[0]);
+      return;
+    }
+
+    startVodUrlPlayback(candidates[0], true);
   }
 
   async function playStream(streamId, name, icon, index, directUrl = "", isReconnect = false) {
+    if (currentModus === "vod" || currentModus === "series") {
+      currentModus = "live";
+    }
+    currentVodMovieId = null;
+    currentEpisodeId = null;
     if (index !== undefined) currentStreamIndex = index;
     currentPlayingStreamId = String(streamId);
     document.body.classList.add("has-active-stream");
@@ -3428,34 +4824,87 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function hideLiveOSD() {
+    if (osdTimeout) {
+      clearTimeout(osdTimeout);
+      osdTimeout = null;
+    }
+    if (osdContainer) osdContainer.classList.add("hidden");
+    if (osdClockBubble) osdClockBubble.classList.add("hidden");
+  }
+
+  function hideVodOSD() {
+    if (vodOsdTimeout) {
+      clearTimeout(vodOsdTimeout);
+      vodOsdTimeout = null;
+    }
+    if (vodOsdContainer) vodOsdContainer.classList.add("hidden");
+    if (vodCenterPlayPauseBtn) vodCenterPlayPauseBtn.classList.add("hidden");
+    if (vodPlaybackControls) {
+      vodPlaybackControls.classList.add("hidden");
+      if (vodPlaybackControls.contains(document.activeElement)) {
+        document.activeElement.blur();
+        document.activeElement.classList.remove("focused");
+      }
+    }
+  }
+
+  function toggleLiveOSD() {
+    if (osdContainer && !osdContainer.classList.contains("hidden")) {
+      hideLiveOSD();
+    } else {
+      showLiveOSD();
+    }
+  }
+
+  function toggleVodControls() {
+    const isOsdVisible = (vodOsdContainer && !vodOsdContainer.classList.contains("hidden")) ||
+      (vodCenterPlayPauseBtn && !vodCenterPlayPauseBtn.classList.contains("hidden"));
+    if (isOsdVisible) {
+      hideVodOSD();
+    } else {
+      showVodControls();
+    }
+  }
+
   function showLiveOSD() {
+    if (vodOsdTimeout) {
+      clearTimeout(vodOsdTimeout);
+      vodOsdTimeout = null;
+    }
+    if (vodOsdContainer) vodOsdContainer.classList.add("hidden");
+    if (vodCenterPlayPauseBtn) vodCenterPlayPauseBtn.classList.add("hidden");
+    if (vodPlaybackControls) vodPlaybackControls.classList.add("hidden");
     if (osdContainer) osdContainer.classList.remove("hidden");
     if (osdClockBubble) osdClockBubble.classList.remove("hidden");
     if (osdTimeout) clearTimeout(osdTimeout);
     osdTimeout = setTimeout(() => {
-      if (osdContainer) osdContainer.classList.add("hidden");
-      if (osdClockBubble) osdClockBubble.classList.add("hidden");
+      hideLiveOSD();
     }, 4500);
   }
 
   function showVodOSD() {
+    if (osdTimeout) {
+      clearTimeout(osdTimeout);
+      osdTimeout = null;
+    }
+    if (osdContainer) osdContainer.classList.add("hidden");
+    if (osdClockBubble) osdClockBubble.classList.add("hidden");
     if (vodOsdContainer) vodOsdContainer.classList.remove("hidden");
+    if (vodCenterPlayPauseBtn && !isPipMode) {
+      updateVodPlayPauseIcon();
+      vodCenterPlayPauseBtn.classList.remove("hidden");
+    }
     if (vodOsdTimeout) clearTimeout(vodOsdTimeout);
     vodOsdTimeout = setTimeout(() => {
-      if (vodOsdContainer) vodOsdContainer.classList.add("hidden");
-      if (vodPlaybackControls) {
-        vodPlaybackControls.classList.add("hidden");
-        if (vodPlaybackControls.contains(document.activeElement)) {
-          document.activeElement.blur();
-          document.activeElement.classList.remove("focused");
-        }
-      }
+      hideVodOSD();
     }, 5000);
   }
 
   function togglePlayPauseVod() {
     if (video.paused) {
-      video.play();
+      const p = video.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
       if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
     } else {
       video.pause();
@@ -3466,11 +4915,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateVodPlayPauseIcon() {
+    const isPaused = video.paused;
     if (vodPlayPauseIcon) {
-      vodPlayPauseIcon.innerHTML = video.paused
+      vodPlayPauseIcon.innerHTML = isPaused
         ? '<svg class="ui-svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'
         : '<svg class="ui-svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
     }
+    if (vodCenterPlayPauseSvg) {
+      vodCenterPlayPauseSvg.innerHTML = isPaused
+        ? '<path d="M8 5v14l11-7z"/>'
+        : '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    }
+  }
+
+  if (vodCenterPlayPauseBtn) {
+    vodCenterPlayPauseBtn.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+    });
+    vodCenterPlayPauseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      togglePlayPauseVod();
+    });
   }
 
   function showVodControls(focusToggle = false) {
@@ -3508,7 +4973,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function queueVodSeek(direction) {
     if (!video.duration || !isFinite(video.duration)) return;
     const baseTime = seekPreviewTime === null ? video.currentTime : seekPreviewTime;
-    seekPreviewTime = Math.max(0, Math.min(video.duration, baseTime + direction * 10));
+    const stepSec = vodSkipSeconds || 10;
+    seekPreviewTime = Math.max(0, Math.min(video.duration, baseTime + direction * stepSec));
     if (vodSeekPreview) {
       const seekIconSvg = direction < 0
         ? '<svg class="ui-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>'
@@ -3516,18 +4982,66 @@ document.addEventListener("DOMContentLoaded", () => {
       vodSeekPreview.innerHTML = `${seekIconSvg} <span>${formatTime(seekPreviewTime)}</span>`;
       vodSeekPreview.classList.remove("hidden");
     }
-    if (vodProgressBar) vodProgressBar.style.width = `${(seekPreviewTime / video.duration) * 100}%`;
-    if (vodCurrentTime) vodCurrentTime.textContent = formatTime(seekPreviewTime);
+    updateVodTimelineVisuals(seekPreviewTime, video.duration);
     if (seekTimer) clearTimeout(seekTimer);
     seekTimer = setTimeout(commitVodSeek, 450);
     showVodOSD();
   }
 
+  let doubleTapAccum = 0;
+  let doubleTapDirection = 0;
+  let doubleTapResetTimer = null;
+
+  function triggerVodDoubleTap(direction) {
+    if (!video.duration || !isFinite(video.duration)) return;
+    const stepSec = vodSkipSeconds || 10;
+    if (doubleTapDirection !== direction) {
+      doubleTapAccum = 0;
+      doubleTapDirection = direction;
+    }
+    doubleTapAccum += stepSec;
+    const delta = direction * stepSec;
+    const baseTime = seekPreviewTime !== null ? seekPreviewTime : video.currentTime;
+    const targetTime = Math.max(0, Math.min(video.duration, baseTime + delta));
+    seekPreviewTime = null;
+    updateVodTimelineVisuals(targetTime, video.duration);
+    performReliableVodSeek(targetTime);
+    showVodOSD();
+
+    const indicator = direction < 0 ? vodDoubleTapLeft : vodDoubleTapRight;
+    const otherIndicator = direction < 0 ? vodDoubleTapRight : vodDoubleTapLeft;
+    const label = direction < 0 ? vodDoubleTapLeftText : vodDoubleTapRightText;
+    if (otherIndicator) {
+      otherIndicator.classList.remove("active", "show");
+      otherIndicator.classList.add("hidden");
+    }
+    if (label) label.textContent = `${direction < 0 ? "-" : "+"}${doubleTapAccum}s`;
+    if (indicator) {
+      indicator.classList.remove("hidden", "active", "show");
+      void indicator.offsetWidth;
+      indicator.classList.add("active", "show");
+    }
+    if (doubleTapResetTimer) clearTimeout(doubleTapResetTimer);
+    doubleTapResetTimer = setTimeout(() => {
+      doubleTapAccum = 0;
+      doubleTapDirection = 0;
+      if (vodDoubleTapLeft) {
+        vodDoubleTapLeft.classList.remove("active", "show");
+        vodDoubleTapLeft.classList.add("hidden");
+      }
+      if (vodDoubleTapRight) {
+        vodDoubleTapRight.classList.remove("active", "show");
+        vodDoubleTapRight.classList.add("hidden");
+      }
+    }, 650);
+  }
+
   function commitVodSeek() {
     if (seekPreviewTime === null) return;
-    video.currentTime = seekPreviewTime;
+    const target = seekPreviewTime;
     seekPreviewTime = null;
     if (vodSeekPreview) vodSeekPreview.classList.add("hidden");
+    performReliableVodSeek(target);
     showVodControls();
   }
 
@@ -3543,7 +5057,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!video.duration || isNaN(video.duration)) return;
     let targetTime = video.currentTime + seconds;
     targetTime = Math.max(0, Math.min(targetTime, video.duration));
-    video.currentTime = targetTime;
+    performReliableVodSeek(targetTime);
     showVodOSD();
   }
 
@@ -3802,6 +5316,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function getAdjacentLiveChannel(delta) {
+    if (!currentActiveStreams || currentActiveStreams.length === 0) return null;
+    const nextIdx = (currentStreamIndex + delta + currentActiveStreams.length) % currentActiveStreams.length;
+    return currentActiveStreams[nextIdx] || null;
+  }
+
   function changeLiveChannel(delta) {
     if (!currentActiveStreams || currentActiveStreams.length === 0) return;
     currentStreamIndex = (currentStreamIndex + delta + currentActiveStreams.length) % currentActiveStreams.length;
@@ -3812,24 +5332,213 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // FULLSCREEN GESTURES & TOUCH CONTROLS (Swipe changes live channels)
+  let liveSwipePreviewDelta = 0;
+  let liveSwipeAnimTimer = null;
+
+  function updateLiveSwipePreviewTarget(delta) {
+    if (!liveSwipePreview) return;
+    const target = getAdjacentLiveChannel(delta);
+    if (!target) return;
+    liveSwipePreview.classList.toggle("side-right", delta > 0);
+    liveSwipePreview.classList.toggle("side-left", delta < 0);
+    liveSwipePreview.classList.remove("hidden");
+
+    if (liveSwipePreviewDelta !== delta) {
+      liveSwipePreviewDelta = delta;
+      const cleanName = cleanTitle(target.name || "") || "Channel";
+      if (liveSwipeChName) liveSwipeChName.textContent = cleanName;
+      const iconUrl = (target.stream_icon || target.logo || target.tvg_logo || target.icon || "").trim();
+      if (liveSwipeLogoImg && liveSwipeLogoFallback) {
+        if (iconUrl) {
+          liveSwipeLogoImg.classList.remove("hidden");
+          liveSwipeLogoImg.style.display = "block";
+          liveSwipeLogoFallback.classList.add("hidden");
+          liveSwipeLogoFallback.style.display = "none";
+          liveSwipeLogoImg.onerror = () => {
+            liveSwipeLogoImg.classList.add("hidden");
+            liveSwipeLogoImg.style.display = "none";
+            liveSwipeLogoFallback.classList.remove("hidden");
+            liveSwipeLogoFallback.style.display = "flex";
+          };
+          liveSwipeLogoImg.src = iconUrl;
+        } else {
+          liveSwipeLogoImg.src = "";
+          liveSwipeLogoImg.classList.add("hidden");
+          liveSwipeLogoImg.style.display = "none";
+          liveSwipeLogoFallback.classList.remove("hidden");
+          liveSwipeLogoFallback.style.display = "flex";
+        }
+      }
+    }
+  }
+
+  function resetLiveSwipeVisuals(animate = true) {
+    if (liveSwipeAnimTimer) {
+      clearTimeout(liveSwipeAnimTimer);
+      liveSwipeAnimTimer = null;
+    }
+    liveSwipePreviewDelta = 0;
+    if (video) {
+      video.style.transition = animate ? "transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)" : "none";
+      video.style.transform = "translate3d(0, 0, 0)";
+      if (animate) {
+        setTimeout(() => {
+          if (video) {
+            video.style.transition = "";
+            video.style.transform = "";
+          }
+        }, 260);
+      }
+    }
+    if (liveSwipePreview) {
+      liveSwipePreview.style.transition = animate ? "opacity 0.22s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)" : "none";
+      liveSwipePreview.style.opacity = "0";
+      liveSwipePreview.style.transform = "translate3d(0, 0, 0)";
+      if (animate) {
+        liveSwipeAnimTimer = setTimeout(() => {
+          if (liveSwipePreview) {
+            liveSwipePreview.classList.add("hidden");
+            liveSwipePreview.style.transition = "";
+            liveSwipePreview.style.transform = "";
+          }
+        }, 240);
+      } else {
+        liveSwipePreview.classList.add("hidden");
+      }
+    }
+  }
+
+  // FULLSCREEN GESTURES, DOUBLE-TAP SEEK & FLOATING PIP CONTROLS
   let pointerStartX = 0;
   let pointerStartY = 0;
   let pointerStartTime = 0;
   let pointerActive = false;
   let isSwipeHandled = false;
+  let isSwipeDownFromTop = false;
+  let isLiveHorizontalSwiping = false;
+  let isPipPointerActive = false;
+  let pipDragDeltaX = 0;
+  let pipDragDeltaY = 0;
+  let lastVodTapTime = 0;
+  let lastVodTapZone = 0;
+  let singleTapVodTimer = null;
 
   if (playerWrapper) {
     playerWrapper.addEventListener("pointerdown", (e) => {
+      if (e.target.closest("#vodOsdContainer, #vodCenterPlayPauseBtn, #vodPlaybackControls, #osdContainer, #mobileFullscreenBtn")) {
+        return;
+      }
+      if (isPipMode) {
+        isPipPointerActive = true;
+        pointerStartX = e.clientX;
+        pointerStartY = e.clientY;
+        pointerStartTime = Date.now();
+        pipDragDeltaX = 0;
+        pipDragDeltaY = 0;
+        isSwipeHandled = false;
+        playerWrapper.classList.add("is-pip-dragging");
+        try { playerWrapper.setPointerCapture(e.pointerId); } catch (_) {}
+        return;
+      }
       if (!isFitScreen) return;
       pointerStartX = e.clientX;
       pointerStartY = e.clientY;
       pointerStartTime = Date.now();
       pointerActive = true;
       isSwipeHandled = false;
+      isLiveHorizontalSwiping = false;
+      isSwipeDownFromTop = pointerStartY <= window.innerHeight * 0.45;
+    }, { passive: true });
+
+    playerWrapper.addEventListener("pointermove", (e) => {
+      if (isPipPointerActive && isPipMode) {
+        pipDragDeltaX = e.clientX - pointerStartX;
+        pipDragDeltaY = e.clientY - pointerStartY;
+        if (Math.hypot(pipDragDeltaX, pipDragDeltaY) > 6) {
+          isSwipeHandled = true;
+        }
+        const scale = pipDragDeltaY > 0 ? Math.max(0.82, 1 - pipDragDeltaY / 380) : 1;
+        const opacity = pipDragDeltaY > 20 ? Math.max(0.35, 1 - (pipDragDeltaY - 20) / 180) : 1;
+        playerWrapper.style.transform = `translate3d(${pipDragDeltaX}px, ${pipDragDeltaY}px, 0) scale(${scale})`;
+        playerWrapper.style.opacity = String(opacity);
+        if (pipDismissHint) {
+          pipDismissHint.classList.toggle("hidden", pipDragDeltaY < 35);
+        }
+        return;
+      }
+      if (!pointerActive || !isFitScreen) return;
+      const diffX = e.clientX - pointerStartX;
+      const diffY = e.clientY - pointerStartY;
+      const absX = Math.abs(diffX);
+      const absY = Math.abs(diffY);
+      const isLiveMode = currentModus === "live" || currentModus === "favorites";
+
+      // Interactive horizontal channel swipe preview on Live TV
+      if (isLiveMode && (isLiveHorizontalSwiping || (absX > 14 && absX > absY * 1.15))) {
+        isLiveHorizontalSwiping = true;
+        isSwipeHandled = true;
+        playerWrapper.classList.remove("is-pip-dragging");
+        playerWrapper.style.transform = "";
+        playerWrapper.style.borderRadius = "";
+
+        const w = playerWrapper.clientWidth || window.innerWidth || 360;
+        const maxShift = w / 8; // Move up to 1/8th of player width
+        const rawRatio = Math.min(1, absX / (w * 0.28));
+        // Smooth damping curve approaching 1/8th width
+        const easedProgress = 1 - Math.pow(1 - rawRatio, 1.65);
+        const shiftX = Math.sign(diffX) * easedProgress * maxShift;
+        const delta = diffX < 0 ? 1 : -1;
+
+        updateLiveSwipePreviewTarget(delta);
+        if (video) {
+          video.style.transition = "none";
+          video.style.transform = `translate3d(${shiftX}px, 0, 0)`;
+        }
+        if (liveSwipePreview) {
+          liveSwipePreview.style.transition = "none";
+          liveSwipePreview.style.opacity = String(Math.min(1, easedProgress * 1.35));
+          const nudge = (1 - easedProgress) * (diffX < 0 ? 18 : -18);
+          liveSwipePreview.style.transform = `translate3d(${nudge}px, 0, 0)`;
+        }
+        return;
+      }
+
+      if (!isLiveHorizontalSwiping && isSwipeDownFromTop && diffY > 12 && diffY > absX * 1.15) {
+        isSwipeHandled = true;
+        playerWrapper.classList.add("is-pip-dragging");
+        const progress = Math.min(1, diffY / (window.innerHeight * 0.55));
+        const scale = 1 - progress * 0.42;
+        const translateY = diffY * 0.55;
+        playerWrapper.style.transform = `translate3d(${diffX * 0.25}px, ${translateY}px, 0) scale(${scale})`;
+        playerWrapper.style.borderRadius = `${Math.round(progress * 22)}px`;
+      }
     }, { passive: true });
 
     playerWrapper.addEventListener("pointerup", (e) => {
+      if (isPipPointerActive) {
+        isPipPointerActive = false;
+        try { playerWrapper.releasePointerCapture(e.pointerId); } catch (_) {}
+        playerWrapper.classList.remove("is-pip-dragging");
+        if (pipDismissHint) pipDismissHint.classList.add("hidden");
+        const totalMove = Math.hypot(pipDragDeltaX, pipDragDeltaY);
+        if (totalMove < 10) {
+          isSwipeHandled = true;
+          activeerFitScreen();
+          return;
+        }
+        if (pipDragDeltaY > 55) {
+          playerWrapper.style.transform = `translate3d(${pipDragDeltaX}px, ${pipDragDeltaY + 140}px, 0) scale(0.65)`;
+          playerWrapper.style.opacity = "0";
+          setTimeout(() => {
+            closePipMode();
+          }, 220);
+        } else {
+          playerWrapper.style.transform = "";
+          playerWrapper.style.opacity = "";
+        }
+        return;
+      }
+
       if (!pointerActive || !isFitScreen) return;
       pointerActive = false;
       const diffX = e.clientX - pointerStartX;
@@ -3839,14 +5548,62 @@ document.addEventListener("DOMContentLoaded", () => {
       const absY = Math.abs(diffY);
       const minSwipeDistance = 35;
 
+      playerWrapper.classList.remove("is-pip-dragging");
+      playerWrapper.style.borderRadius = "";
+
+      if (isLiveHorizontalSwiping) {
+        isLiveHorizontalSwiping = false;
+        isSwipeHandled = true;
+        const w = playerWrapper.clientWidth || window.innerWidth || 360;
+        const commitThreshold = Math.max(42, w * 0.11);
+        if (absX >= commitThreshold) {
+          const delta = diffX < 0 ? 1 : -1;
+          const enterFrom = diffX < 0 ? Math.round(w / 8) : -Math.round(w / 8);
+          const previewCenterShift = diffX < 0 ? -Math.round(w * 0.18) : Math.round(w * 0.18);
+          if (liveSwipePreview) {
+            liveSwipePreview.style.transition = "transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.26s ease";
+            liveSwipePreview.style.transform = `translate3d(${previewCenterShift}px, 0, 0) scale(1.06)`;
+            liveSwipePreview.style.opacity = "0";
+          }
+          changeLiveChannel(delta);
+          if (video) {
+            video.style.transition = "none";
+            video.style.transform = `translate3d(${enterFrom}px, 0, 0)`;
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                if (video) {
+                  video.style.transition = "transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)";
+                  video.style.transform = "translate3d(0, 0, 0)";
+                }
+              });
+            });
+          }
+          liveSwipeAnimTimer = setTimeout(() => {
+            resetLiveSwipeVisuals(false);
+          }, 300);
+        } else {
+          resetLiveSwipeVisuals(true);
+        }
+        return;
+      }
+
+      // Swipe down from top -> animate out of fullscreen into Picture-in-Picture (PiP)
+      if (isSwipeDownFromTop && diffY >= 50 && absY > absX * 1.15) {
+        isSwipeHandled = true;
+        enterPipMode();
+        return;
+      }
+      playerWrapper.style.transform = "";
+
       if ((absX >= minSwipeDistance || absY >= minSwipeDistance) && elapsed < 800) {
         isSwipeHandled = true;
         if (currentModus === "live" || currentModus === "favorites") {
           if (absY >= absX) {
-            // Vertical swipe: UP = Next channel (+1), DOWN = Previous channel (-1)
-            changeLiveChannel(diffY < 0 ? 1 : -1);
+            // Swiping up from bottom only wakes/shows the Live TV OSD instead of changing channels
+            if (diffY < 0) {
+              showLiveOSD();
+            }
           } else {
-            // Horizontal swipe: LEFT = Next channel (+1), RIGHT = Previous channel (-1)
             changeLiveChannel(diffX < 0 ? 1 : -1);
           }
         } else if (currentModus === "vod" || currentModus === "series") {
@@ -3859,12 +5616,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     playerWrapper.addEventListener("pointercancel", () => {
       pointerActive = false;
+      isPipPointerActive = false;
+      isLiveHorizontalSwiping = false;
+      resetLiveSwipeVisuals(true);
+      if (playerWrapper) {
+        playerWrapper.classList.remove("is-pip-dragging");
+        playerWrapper.style.transform = "";
+        playerWrapper.style.opacity = "";
+        playerWrapper.style.borderRadius = "";
+      }
+      if (pipDismissHint) pipDismissHint.classList.add("hidden");
     }, { passive: true });
 
     playerWrapper.addEventListener("click", (e) => {
+      if (e.target.closest("#vodOsdContainer, #vodCenterPlayPauseBtn, #vodPlaybackControls, #osdContainer, #mobileFullscreenBtn")) {
+        return;
+      }
       if (isSwipeHandled) {
         isSwipeHandled = false;
         e.stopPropagation();
+        return;
+      }
+      if (isPipMode) {
+        activeerFitScreen();
         return;
       }
       if (!isFitScreen) {
@@ -3873,9 +5647,32 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       } else {
         if (currentModus === "live" || currentModus === "favorites") {
-          showLiveOSD();
+          toggleLiveOSD();
         } else if (currentModus === "vod" || currentModus === "series") {
-          showVodOSD();
+          const rect = playerWrapper.getBoundingClientRect();
+          const relX = e.clientX - rect.left;
+          const zone = relX <= rect.width / 3 ? -1 : (relX >= (rect.width * 2) / 3 ? 1 : 0);
+          const now = Date.now();
+          if (zone !== 0 && (now - lastVodTapTime < 320) && lastVodTapZone === zone) {
+            if (singleTapVodTimer) {
+              clearTimeout(singleTapVodTimer);
+              singleTapVodTimer = null;
+            }
+            lastVodTapTime = now;
+            triggerVodDoubleTap(zone);
+            return;
+          }
+          lastVodTapTime = now;
+          lastVodTapZone = zone;
+          if (zone !== 0) {
+            if (singleTapVodTimer) clearTimeout(singleTapVodTimer);
+            singleTapVodTimer = setTimeout(() => {
+              singleTapVodTimer = null;
+              toggleVodControls();
+            }, 250);
+          } else {
+            toggleVodControls();
+          }
         }
       }
     });
@@ -3891,7 +5688,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.handleOrientationChange = function(isLandscape) {
       if (deviceLayout !== "mobile") return;
       if (!isLandscape && isFitScreen) {
-        deactiveerFitScreen();
+        enterPipMode();
       }
     };
   }
@@ -3969,6 +5766,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!btn || !btn.dataset.mobileTab) return;
       const tab = btn.dataset.mobileTab;
 
+      closeHomeViewAll();
       if (tab === "home") {
         showSettingsPage(false);
         closeSearch();
@@ -3999,12 +5797,18 @@ document.addEventListener("DOMContentLoaded", () => {
   function closeHomeViewAll() {
     const page = document.getElementById("homeViewAllPage");
     if (page) page.classList.add("hidden");
+    const grid = document.getElementById("viewAllGrid");
+    if (grid && grid.classList.contains("series-episodes-grid")) {
+      selectedSeries = null;
+      grid.className = "home-view-all-grid";
+    }
     updateHeaderBackButton();
   }
 
   function renderHomeViewAllGrid() {
     const grid = document.getElementById("viewAllGrid");
     if (!grid) return;
+    grid.className = "home-view-all-grid";
     grid.innerHTML = "";
 
     let items = currentViewAllType === "series" ? (seriesStreams || []) : (vodStreams || []);
@@ -4019,6 +5823,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (items.length === 0) {
+      if (xtreamAuth) {
+        if (currentViewAllCatId && currentViewAllCatId !== "all" && !loadedCategories[`${currentViewAllType}:${currentViewAllCatId}`]) {
+          const loading = document.createElement("div");
+          loading.className = "season-heading";
+          loading.textContent = t("connecting");
+          grid.appendChild(loading);
+          loadXtreamCategory(currentViewAllType, currentViewAllCatId).then((ok) => {
+            if (!ok) showToast(t("playlistUnavailable"));
+            renderHomeViewAllGrid();
+          });
+          return;
+        }
+        if (currentViewAllCatId === "all") {
+          const rawCategories = currentViewAllType === "series" ? (seriesCategories || []) : (vodCategories || []);
+          const regionCats = appSelectedRegion === "ALL" ? rawCategories : rawCategories.filter(c => isCategoryInRegion(c, true, appSelectedRegion));
+          const catsToLoad = (regionCats.length ? regionCats : rawCategories)
+            .filter(c => !loadedCategories[`${currentViewAllType}:${c.category_id}`])
+            .slice(0, 3);
+          if (catsToLoad.length > 0) {
+            const loading = document.createElement("div");
+            loading.className = "season-heading";
+            loading.textContent = t("connecting");
+            grid.appendChild(loading);
+            Promise.all(catsToLoad.map(c => loadXtreamCategory(currentViewAllType, c.category_id))).then((results) => {
+              if (!results.some(Boolean)) showToast(t("playlistUnavailable"));
+              renderHomeViewAllGrid();
+            });
+            return;
+          }
+        }
+      }
       for (let i = 1; i <= 15; i++) {
         const card = document.createElement("div");
         card.className = "poster-card focusable";
@@ -4035,6 +5870,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="poster-title">${itemTitle}</div>
           </div>
         `;
+        card.addEventListener("click", () => {
+          showToast(xtreamAuth ? t("playlistUnavailable") : t("xtreamRequiredForVod"));
+        });
         grid.appendChild(card);
       }
       return;
@@ -4061,11 +5899,10 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
 
       card.addEventListener("click", () => {
-        closeHomeViewAll();
         if (currentViewAllType === "vod") {
-          playVodMovie(item.stream_id, item.name, item.container_extension);
+          playVodMovie(item.stream_id, item.name || item.title, item.container_extension, item.url || item.direct_source || "");
         } else {
-          openSeries({ dataset: { seriesId: item.series_id || item.stream_id, title: item.name } });
+          openSeries({ dataset: { seriesId: item.series_id || item.stream_id, title: item.name || item.title } });
         }
       });
 
@@ -4093,6 +5930,7 @@ document.addEventListener("DOMContentLoaded", () => {
       catBar.innerHTML = "";
       const rawCategories = currentViewAllType === "series" ? (seriesCategories || []) : (vodCategories || []);
       const categories = rawCategories.filter(c => isCategoryInRegion(c, true, appSelectedRegion));
+      const groupedCategories = groupCategoriesByTrailingNumber(categories.length ? categories : rawCategories);
 
       const allChip = document.createElement("button");
       allChip.className = "home-view-all-cat-chip" + (currentViewAllCatId === "all" ? " active" : "");
@@ -4102,21 +5940,66 @@ document.addEventListener("DOMContentLoaded", () => {
         catBar.querySelectorAll(".home-view-all-cat-chip").forEach(c => c.classList.remove("active"));
         allChip.classList.add("active");
         currentViewAllCatId = "all";
+        const subBar = document.getElementById("viewAllSubFilterBar");
+        if (subBar) { subBar.innerHTML = ""; subBar.classList.add("hidden"); }
         if (titleEl) titleEl.textContent = currentViewAllType === "series" ? "Series" : "Movies";
         renderHomeViewAllGrid();
       };
       catBar.appendChild(allChip);
 
-      (categories.length ? categories : rawCategories).slice(0, 30).forEach(cat => {
+      groupedCategories.slice(0, 30).forEach(cat => {
         const chip = document.createElement("button");
         chip.className = "home-view-all-cat-chip" + (String(cat.category_id) === String(currentViewAllCatId) ? " active" : "");
-        chip.textContent = cleanTitle(cat.category_name, ["HEVC", "VIP"]);
+        const catBaseLabel = cleanTitle(cat.category_name, ["HEVC", "VIP"]);
+        if (cat.isGrouped && cat.subCategories) {
+          chip.innerHTML = `<span>${escapeAttr(catBaseLabel)}</span><span class="cat-group-badge">${cat.subCategories.length}</span>`;
+        } else {
+          chip.textContent = catBaseLabel;
+        }
         chip.dataset.catId = cat.category_id;
         chip.onclick = async () => {
           catBar.querySelectorAll(".home-view-all-cat-chip").forEach(c => c.classList.remove("active"));
           chip.classList.add("active");
           currentViewAllCatId = cat.category_id;
-          if (titleEl) titleEl.textContent = cleanTitle(cat.category_name, ["HEVC", "VIP"]);
+          if (titleEl) titleEl.textContent = catBaseLabel;
+
+          const subBar = document.getElementById("viewAllSubFilterBar");
+          if (subBar) {
+            if (cat.isGrouped && cat.subCategories && cat.subCategories.length > 1) {
+              subBar.innerHTML = "";
+              subBar.classList.remove("hidden");
+              const allSub = document.createElement("button");
+              allSub.className = "sub-filter-chip active";
+              allSub.textContent = t("allRegions") || "All";
+              allSub.onclick = () => {
+                subBar.querySelectorAll(".sub-filter-chip").forEach(sc => sc.classList.remove("active"));
+                allSub.classList.add("active");
+                currentViewAllCatId = cat.category_id;
+                renderHomeViewAllGrid();
+              };
+              subBar.appendChild(allSub);
+
+              cat.subCategories.forEach(sub => {
+                const subChip = document.createElement("button");
+                subChip.className = "sub-filter-chip";
+                subChip.textContent = sub.label;
+                subChip.onclick = async () => {
+                  subBar.querySelectorAll(".sub-filter-chip").forEach(sc => sc.classList.remove("active"));
+                  subChip.classList.add("active");
+                  currentViewAllCatId = sub.category_id;
+                  if (typeof loadXtreamCategory === "function") {
+                    await loadXtreamCategory(currentViewAllType, sub.category_id);
+                  }
+                  renderHomeViewAllGrid();
+                };
+                subBar.appendChild(subChip);
+              });
+            } else {
+              subBar.innerHTML = "";
+              subBar.classList.add("hidden");
+            }
+          }
+
           if (typeof loadXtreamCategory === "function") {
             await loadXtreamCategory(currentViewAllType, cat.category_id);
           }
@@ -4208,9 +6091,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (heroPlayBtn) {
         heroPlayBtn.onclick = () => {
           if (homeFeaturedItem.type === "vod") {
-            playVodMovie(homeFeaturedItem.stream_id, homeFeaturedItem.name, homeFeaturedItem.container_extension);
+            playVodMovie(homeFeaturedItem.stream_id, homeFeaturedItem.name || homeFeaturedItem.title, homeFeaturedItem.container_extension, homeFeaturedItem.url || homeFeaturedItem.direct_source || "");
           } else if (homeFeaturedItem.type === "series") {
-            openSeries({ dataset: { seriesId: homeFeaturedItem.series_id || homeFeaturedItem.stream_id, title: homeFeaturedItem.name } });
+            openSeries({ dataset: { seriesId: homeFeaturedItem.series_id || homeFeaturedItem.stream_id, title: homeFeaturedItem.name || homeFeaturedItem.title } });
           } else {
             playStream(homeFeaturedItem.stream_id, homeFeaturedItem.name, homeFeaturedItem.stream_icon, 0, homeFeaturedItem.url);
           }
@@ -4220,7 +6103,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (heroInfoBtn) {
         heroInfoBtn.onclick = () => {
           if (homeFeaturedItem.type === "series") {
-            openSeries({ dataset: { seriesId: homeFeaturedItem.series_id || homeFeaturedItem.stream_id, title: homeFeaturedItem.name } });
+            openSeries({ dataset: { seriesId: homeFeaturedItem.series_id || homeFeaturedItem.stream_id, title: homeFeaturedItem.name || homeFeaturedItem.title } });
           } else {
             showToast(`${displayTitle} • ${homeFeaturedItem.year || "2025"}`);
           }
@@ -4241,7 +6124,23 @@ document.addEventListener("DOMContentLoaded", () => {
       if (heroYear) heroYear.textContent = "2025";
       if (heroCategory) heroCategory.textContent = "Cinema";
       if (heroPlayBtn) {
-        heroPlayBtn.onclick = () => openHomeViewAll("vod");
+        heroPlayBtn.onclick = () => {
+          if (!xtreamAuth && (!vodStreams || vodStreams.length === 0)) {
+            showToast(t("xtreamRequiredForVod"));
+            return;
+          }
+          pickRandomFeaturedItem();
+          if (homeFeaturedItem) {
+            updateHomeHeroBanner();
+            if (homeFeaturedItem.type === "vod") {
+              playVodMovie(homeFeaturedItem.stream_id, homeFeaturedItem.name || homeFeaturedItem.title, homeFeaturedItem.container_extension, homeFeaturedItem.url || homeFeaturedItem.direct_source || "");
+            } else if (homeFeaturedItem.type === "series") {
+              openSeries({ dataset: { seriesId: homeFeaturedItem.series_id || homeFeaturedItem.stream_id, title: homeFeaturedItem.name || homeFeaturedItem.title } });
+            }
+          } else {
+            openHomeViewAll("vod");
+          }
+        };
       }
       if (heroInfoBtn) {
         heroInfoBtn.onclick = () => showToast("KC IPTV • 2025");
@@ -4252,7 +6151,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function startFeaturedCycle() {
     if (homeFeaturedCycleTimer) clearInterval(homeFeaturedCycleTimer);
     homeFeaturedCycleTimer = setInterval(() => {
-      if (deviceLayout === "mobile" && mobileActiveSection === "home") {
+      if (isTouchLayout() && mobileActiveSection === "home") {
         pickRandomFeaturedItem();
         updateHomeHeroBanner();
       }
@@ -4350,7 +6249,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // If category has no streams yet, load in background
       if (catId && catId !== "all" && (!rawItems || rawItems.length === 0) && xtreamAuth) {
         loadXtreamCategory(type, catId).then(() => {
-          if (deviceLayout === "mobile" && mobileActiveSection === "home") {
+          if (isTouchLayout() && mobileActiveSection === "home") {
             const updated = (type === "vod" ? vodStreams : seriesStreams).filter(s => String(s.category_id) === String(catId));
             if (updated.length > 0) renderMobileHomeScreen();
           }
@@ -4388,19 +6287,25 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="home-card-poster-container">
             ${posterSrc ? `<img src="${posterSrc}" class="home-card-poster-img" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}
             <div class="home-card-fallback-icon" style="${posterSrc ? 'display:none;' : 'display:flex;'}">${fallbackIcon}</div>
+            <div class="home-card-title-overlay">
+              <div class="home-card-title">${itemTitle}</div>
+            </div>
           </div>
-          <div class="home-card-title">${itemTitle}</div>
         `;
 
         card.addEventListener("click", () => {
           if (item.isPlaceholder) {
+            if (!xtreamAuth) {
+              showToast(t("xtreamRequiredForVod"));
+              return;
+            }
             openHomeViewAll(type, catId, catName);
             return;
           }
           if (type === "vod") {
-            playVodMovie(item.stream_id, item.name, item.container_extension);
+            playVodMovie(item.stream_id, item.name || item.title, item.container_extension, item.url || item.direct_source || "");
           } else if (type === "series") {
-            openSeries({ dataset: { seriesId: item.series_id || item.stream_id, title: item.name } });
+            openSeries({ dataset: { seriesId: item.series_id || item.stream_id, title: item.name || item.title } });
           }
         });
 
@@ -4416,7 +6321,6 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="home-card-view-all-icon"><svg class="ui-svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg></div>
           <span class="home-card-view-all-text">View All</span>
         </div>
-        <div class="home-card-title">View All</div>
       `;
       viewAllCard.addEventListener("click", () => openHomeViewAll(type, catId, catName));
       scrollRow.appendChild(viewAllCard);
@@ -4571,22 +6475,22 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      if (li.dataset.episodeId && currentModus === "series") {
+      if (li.dataset.episodeId) {
         lastFocusedPoster = li;
-        playSeriesEpisode(li.dataset.episodeId, li.dataset.title, li.dataset.containerExtension);
+        playSeriesEpisode(li.dataset.episodeId, li.dataset.title, li.dataset.containerExtension, li.dataset.directUrl || "");
         return;
       }
 
-      if (currentModus === "series") {
+      if (li.dataset.seriesId || currentModus === "series") {
         lastFocusedPoster = li;
         openSeries(li);
         return;
       }
 
       if (!li.dataset.streamId) return;
-      if (currentModus === "vod") {
+      if (currentModus === "vod" || li.classList.contains("poster-card")) {
         lastFocusedPoster = li;
-        playVodMovie(li.dataset.streamId, li.dataset.title, li.dataset.containerExtension);
+        playVodMovie(li.dataset.streamId, li.dataset.title, li.dataset.containerExtension, li.dataset.directUrl || "");
       } else {
         const selectedStreamId = String(li.dataset.streamId);
         if ((currentModus === "live" || currentModus === "favorites") && !isFitScreen && currentPlayingStreamId === selectedStreamId) {
