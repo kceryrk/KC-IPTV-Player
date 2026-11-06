@@ -1,14 +1,15 @@
 # KC IPTV Player
 
 [![Support on Ko-fi](https://img.shields.io/badge/Support%20on-Ko--fi-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/kaecr)
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
 
-A modern, high-performance IPTV & VOD player designed for Smart TVs, mobile phones, and tablets. It supports **LG webOS**, **Samsung Tizen**, and **Android** devices with a shared responsive web-core and native platform integrations.
+A modern, high-performance IPTV & VOD player designed for Smart TVs, mobile phones, and tablets. Built with a shared responsive web-core and native platform integrations across **Android**, **LG webOS**, and **Samsung Tizen**.
 
-| Platform | Status | Current Version | Target Format | Handover & Details |
-|----------|--------|-----------------|---------------|-------------------|
-| **Android** | Released & Active | **`1.2.45`** | Signed `.apk` | [`android/HANDOVER.md`](android/HANDOVER.md) |
-| **LG webOS TV** | Released | **`1.2.58`** | Packaged `.ipk` | [`webos/HANDOVER.md`](webos/HANDOVER.md) |
-| **Samsung Tizen TV** | Working (Tizen 6.0+) | **`1.2.58`** | Packaged `.wgt` | [`tizen/HANDOVER.md`](tizen/HANDOVER.md) |
+| Platform | Status | Current Version | Target Package | Handover & Architecture |
+|----------|--------|-----------------|----------------|------------------------|
+| **Android** | Released & Active | **`1.2.59`** | Signed `.apk` | [`android/HANDOVER.md`](android/HANDOVER.md) |
+| **LG webOS TV** | Released | **`1.2.58`** | Packaged `.ipk` | [`webos/WebOSHANDOVER.md`](webos/WebOSHANDOVER.md) |
+| **Samsung Tizen TV** | Working (Tizen 6.0+) | **`1.2.58`** | Packaged `.wgt` | [`tizen/Tizen HANDOVER.md`](<tizen/Tizen HANDOVER.md>) |
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/kceryrk/KC-IPTV-Player/main/tizen/icon.png" alt="KC IPTV Player icon" width="160" />
@@ -16,14 +17,33 @@ A modern, high-performance IPTV & VOD player designed for Smart TVs, mobile phon
 
 ---
 
+## ⚡ Quick Shortcuts & References
+
+- 📦 **Prebuilt Packages:** [`builds/`](builds/) (Versioned release packages ready for sideloading & install)
+- 📜 **Builds Rules & Sideload Guide:** [`builds/README.md`](builds/README.md)
+- 📱 **Android Handover:** [`android/HANDOVER.md`](android/HANDOVER.md)
+- 📺 **LG webOS Handover:** [`webos/WebOSHANDOVER.md`](webos/WebOSHANDOVER.md)
+- 📺 **Samsung Tizen Handover:** [`tizen/Tizen HANDOVER.md`](<tizen/Tizen HANDOVER.md>)
+- 🛠️ **Fixes & Troubleshooting Archive:** [`FIX_IPTV.md`](FIX_IPTV.md)
+- ⚖️ **License (GPL-3.0):** [`LICENSE`](LICENSE)
+
+---
+
 ## Highlights & Features
 
 - **Multi-Source Support:** Full Xtream Codes API (Live, VOD, Series) and raw M3U / M3U_PLUS playlist compatibility.
-- **Material You & Modern Theming:** Material 3 dark surface palette with rounded cards, fluid touch states, and customizable presets (Aurora, Dark Space, Sunset).
-- **Fullscreen Swipe Gestures (Mobile/Tablet):**
-  - Swipe **Up / Left**: Next Channel.
-  - Swipe **Down / Right**: Previous Channel.
-  - Tap: Toggle OSD playback banner & VOD timeline scrub.
+- **Material You & Modern Theming:** Material 3 dark surface palette with rounded cards, liquid glass pill OSD styling, custom theme presets (Aurora, Dark Space, Sunset), and fluid navigation lenses.
+- **Smart Category Filtering:** Automatic grouped sub-category filtering for multi-year series and duplicate named categories.
+- **Fullscreen Gestures & Dynamic Channel Switching (Mobile/Tablet):**
+  - **Swipe Left / Right:** Dynamic channel preview showing next channel logo, chevron indicator, and breathing AI glow effect with 1/8th swipe-to-switch animation.
+  - **Swipe Down from Top:** Smooth animated transition to interactive Picture-in-Picture (PiP).
+  - **Double-Tap Left / Right:** Configurable seek backward/forward (default 10s) with animated tap ripples.
+  - **Swipe Up from Bottom:** Cleanly toggles playback OSD.
+- **Advanced VOD Player Controls:**
+  - Precision interactive timeline scrubbing with live preview tooltip, buffered range indicator, and head-leading gradient loader.
+  - Center Play/Pause button on OSD wake.
+  - VOD settings panel (3 dots) with audio track selector (original vs dubbed), subtitle track & sizing, aspect ratio toggles (Fit, Fill, Stretch, Zoom), and playback speed presets (0.5x to 2x).
+  - External video player fallback launcher.
 - **10-Foot Smart TV Navigation:**
   - Remote color button shortcuts (Yellow = Favorite, Red = Reorder, Green = Search, Blue = Mode).
   - Quick numeric channel zapping with on-screen buffer.
@@ -33,131 +53,134 @@ A modern, high-performance IPTV & VOD player designed for Smart TVs, mobile phon
   - Offline-bundled streaming libraries (`hls.min.js`, `mpegts.min.js`) — zero external CDN dependencies at runtime.
   - Custom DNS fallback resolver for emulators and private DNS networks.
   - Transparent video poster (no default grey placeholder during stream buffers).
-- **Favorites & Categories:** Region and category filtering with local storage favorites management.
-- **Back Button & Gesture Integration:** Native back key handlers to cleanly dismiss modals, settings, and fullscreen playback.
+- **Internationalization (i18n):** Multi-language UI support for English, Turkish, Dutch, and French (`en`, `tr`, `nl`, `fr`).
 
 ---
 
-## Platform Documentation & Handovers
+## Remote Control & Key Shortcuts Reference
 
-Each platform includes dedicated handover and technical architecture documentation:
-- 📱 **Android:** [`android/HANDOVER.md`](android/HANDOVER.md)
-- 📺 **Samsung Tizen TV:** [`tizen/HANDOVER.md`](tizen/HANDOVER.md)
-- 📺 **LG webOS TV:** [`webos/HANDOVER.md`](webos/HANDOVER.md)
-- 🛠️ **Fixes & Troubleshooting Guide:** [`FIX_IPTV.md`](FIX_IPTV.md) — Comprehensive technical breakdown of all resolved bugs, network timeouts, CORS handling, and build configurations.
+### 📺 Smart TV (Tizen / webOS / Android TV)
+
+| Key / Button | Action |
+|--------------|--------|
+| `Arrow Keys (Up/Down/Left/Right)` | Navigate UI elements, scroll channel/VOD grids |
+| `Enter / OK` | Play channel / VOD, select item, confirm action |
+| `Back / Return` | Dismiss modal, exit fullscreen player, return to previous view |
+| `Play / Pause / Stop` | Control stream playback |
+| `Channel Up / Down` | Instant next / previous channel |
+| `0 - 9 (Number keys)` | Direct channel number zapping overlay |
+| `Yellow Button` | Toggle favorite status on current channel |
+| `Red Button` | Toggle playlist channel reorder mode |
+| `Green Button` | Open search dialog |
+| `Blue Button` | Toggle aspect ratio / view mode |
+
+### 📱 Touch Gestures (Mobile / Tablet)
+
+| Gesture | Context | Action |
+|---------|---------|--------|
+| `Tap Video` | Fullscreen Player | Toggle OSD controls & playback status |
+| `Double-Tap Left (1/3rd)` | Fullscreen VOD | Rewind 10s (adjustable in Settings) |
+| `Double-Tap Right (1/3rd)` | Fullscreen VOD | Fast-forward 10s (adjustable in Settings) |
+| `Swipe Left / Right` | Fullscreen Live TV | Dynamic channel switcher with logo preview |
+| `Swipe Down from Top` | Fullscreen Player | Enter floating Picture-in-Picture (PiP) mode |
+| `Swipe Up from Bottom` | Fullscreen Live TV | Reveal OSD pill controls |
+| `Drag Floating PiP Down` | Picture-in-Picture | Close / dismiss PiP player |
+| `Tap Floating PiP` | Picture-in-Picture | Restore player to fullscreen |
 
 ---
 
 ## Installation & Setup
 
-Each platform can be installed from a prebuilt package or built from source. The source steps below are the reference; prebuilt packages come from GitHub Releases.
+Prebuilt versioned packages are stored in the [`builds/`](builds/) directory or can be built from source using the steps below.
 
-### Get the source (all platforms)
+### Clone the Repository
 ```bash
 git clone https://github.com/kceryrk/KC-IPTV-Player.git
 cd KC-IPTV-Player
 ```
-Optional: create a `credentials.local.js` for the platform you're building (see [Login & Local Credentials](#login--local-credentials)). It is ignored by Git.
 
-### 1. Android
+---
 
-**Prerequisites**
-- JDK 17 or newer (Android Studio's bundled JBR works).
-- Android SDK with platform 37 (`compileSdk = 37`). Install it from Android Studio's SDK Manager, or point `ANDROID_HOME` at your SDK.
-- A device with USB debugging enabled and `adb` on your `PATH`.
+### 1. Android (Phone, Tablet & Android TV)
 
-**Steps**
-1. Build the release APK. The Gradle wrapper downloads Gradle 9.8.2 for you:
-   ```bash
-   cd android
-   ./gradlew :app:assembleRelease      # Windows: gradlew.bat :app:assembleRelease
-   ```
-2. The APK is written to `android/app/build/outputs/apk/release/app-release.apk`.
-3. Install it on the device, replacing the existing app:
-   ```bash
-   adb install -r app/build/outputs/apk/release/app-release.apk
-   ```
+**Prerequisites:**
+- JDK 17+ (Android Studio bundled JBR works).
+- Android SDK with platform 37 (`compileSdk = 37`).
+- Android device with USB debugging enabled.
 
-**Signing (optional)**
-- Without `android/keystore.properties`, the release build is signed with the debug key. That is fine for sideloading on your own device.
-- For a stable release key, create `android/keystore.properties` with `storeFile`, `storePassword`, `keyAlias`, and `keyPassword`, and place the `.jks` file in `android/`. Both files are ignored by Git.
-- Android only updates an app when the signing key matches, so keep using the same key for every build.
+**Build and Install:**
+```bash
+cd android
+./gradlew assembleRelease       # Windows: gradlew.bat assembleRelease
+```
+The signed APK will be generated at:
+`android/app/build/outputs/apk/release/app-release.apk`
+
+Install directly via `adb`:
+```bash
+adb install -r app/build/outputs/apk/release/app-release.apk
+```
+
+> [!TIP]
+> Signed release builds are automatically copied to [`builds/KCIPTVPlayer-android-<version>.apk`](builds/) for release tracking.
+
+---
 
 ### 2. LG webOS TV
 
-**Prerequisites**
-- Node.js with npm.
-- The webOS TV CLI (`ares`):
+**Prerequisites:**
+- Node.js & npm.
+- webOS TV CLI:
   ```bash
   npm install -g @webos-tools/cli
   ```
-- Developer Mode enabled on the TV. Install the **Developer Mode** app from the LG Content Store, sign in, and turn on Dev Mode and Key Server. Note the TV's IP address.
+- **Developer Mode** enabled on the TV via the LG Developer Mode app.
 
-**One-time device setup**
-1. Register the TV as a device named `lg-tv`:
+**Device Setup & Install:**
+1. Add TV target:
    ```bash
    ares-setup-device --add lg-tv --info "host:<tv_ip>,port:9922,username:prisoner"
-   ```
-2. Fetch the device key. The passphrase is shown in the Developer Mode app on the TV:
-   ```bash
    ares-novacom --getkey -d lg-tv
    ```
-
-**Steps**
-1. From the repository root, package the `webos/` folder:
+2. Package and install:
    ```bash
    ares-package webos -o dist
-   ```
-   This creates `dist/com.iptv.webosapp_<version>_all.ipk`.
-2. Install it. This replaces the existing app and keeps its data, so you don't need to uninstall first:
-   ```bash
    ares-install --device lg-tv dist/com.iptv.webosapp_1.2.58_all.ipk
-   ```
-3. Launch it:
-   ```bash
    ares-launch --device lg-tv com.iptv.webosapp
    ```
+*(Or install the prebuilt `.ipk` from [`builds/KCIPTVPlayer-webos-1.2.58.ipk`](builds/KCIPTVPlayer-webos-1.2.58.ipk)).*
 
-To skip the build, use the `.ipk` from GitHub Releases with the same `ares-install` command.
+---
 
 ### 3. Samsung Tizen TV
 
-**Prerequisites**
-- [Tizen Studio](https://developer.tizen.org/development/tizen-studio/download) with the **TV Extensions** package installed from the Package Manager. The `tizen` and `sdb` CLIs are in `<tizen-studio>/tools/`.
-- A Samsung certificate profile created in Tizen Studio's Certificate Manager. For a TV, you need an author certificate and a distributor certificate that includes your TV's DUID.
-- Developer Mode on the TV: open `Apps`, enter `12345`, switch Developer Mode on, and enter your PC's IP address.
+**Prerequisites:**
+- [Tizen Studio](https://developer.tizen.org/development/tizen-studio/download) with TV Extensions installed.
+- Developer Mode enabled on the TV (`Apps` &rarr; `12345` &rarr; toggle on &rarr; PC IP).
 
-**Steps**
-1. Connect to the TV from your PC:
+**Connect and Install:**
+1. Connect via SDB:
    ```bash
    sdb connect <tv_ip>:26101
-   sdb devices
    ```
-2. From the repository root, package the `tizen/` folder as a `.wgt` file:
+2. Package and install:
    ```bash
    tizen package -t wgt -s <your_cert_profile> -o dist -- tizen/
-   ```
-3. Install the generated `.wgt` from `dist/` on the TV:
-   ```bash
    tizen install -n dist/<generated_file>.wgt -t <target_tv_id>
-   ```
-4. Launch the app:
-   ```bash
    tizen run -p kcipplayer.KCIPTVPlayer -t <target_tv_id>
    ```
-
-`<target_tv_id>` is the TV's name as listed in Tizen Studio's Device Manager.
+*(Or install the prebuilt `.wgt` from [`builds/KCIPTVPlayer-tizen-1.2.58.wgt`](builds/KCIPTVPlayer-tizen-1.2.58.wgt)).*
 
 ---
 
 ## Login & Local Credentials
 
 KC IPTV Player supports:
-1. **Xtream Codes API:** Server URL, Username, and Password (fetches Live, VOD, and Series categories via JSON API).
-2. **M3U Playlist URL:** Direct playlist link with optional EPG integration.
+1. **Xtream Codes API:** Server URL, Username, and Password (Live, VOD, and Series).
+2. **M3U Playlist URL:** Direct playlist URL with M3U_PLUS tag parsing.
 
 ### Development Autofill
-To avoid entering credentials during development, create a local file named `credentials.local.js` in the respective platform folder (`android/app/src/main/assets/credentials.local.js`, `webos/credentials.local.js`, or `tizen/credentials.local.js`):
+To test locally without entering credentials manually, create `credentials.local.js` in the respective platform assets folder (`android/app/src/main/assets/credentials.local.js`, `webos/credentials.local.js`, or `tizen/credentials.local.js`):
 ```javascript
 window.KC_DEFAULT_LOGIN = {
   type: "xtream",
@@ -167,19 +190,12 @@ window.KC_DEFAULT_LOGIN = {
 };
 ```
 > [!IMPORTANT]
-> `credentials.local.js`, `*.keystore`, and `keystore.properties` are listed in `.gitignore`. Never commit them or bundle them into public release packages.
-
----
-
-## Releases & Downloads
-
-Find packaged releases for all platforms on GitHub:
-- **GitHub Releases:** https://github.com/kceryrk/KC-IPTV-Player/releases
+> `credentials.local.js`, `*.keystore`, and `keystore.properties` are ignored by Git. Never commit credentials to source control.
 
 ---
 
 ## License & Notice
 
-This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See [LICENSE](LICENSE) for the full text.
+This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. See [LICENSE](LICENSE) for the full text.
 
-This software is provided without warranty. It does not include any IPTV content or subscriptions; you are responsible for the streams and accounts you use with it. All brand names, stream formats, and logos are property of their respective owners.
+*This software is provided without warranty. It does not include or host any IPTV content, playlists, or streams; users must provide their own sanctioned streaming sources. All brand names, logos, and trademarks belong to their respective owners.*
