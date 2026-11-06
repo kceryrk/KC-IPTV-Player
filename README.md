@@ -7,7 +7,7 @@ A modern, high-performance IPTV & VOD player designed for Smart TVs, mobile phon
 
 | Platform | Status | Current Version | Target Package | Handover & Architecture |
 |----------|--------|-----------------|----------------|------------------------|
-| **Android** | Released & Active | **`1.2.59`** | Signed `.apk` | [`android/HANDOVER.md`](android/HANDOVER.md) |
+| **Android** | Released & Active | **`1.2.60`** | Signed `.apk` | [`android/HANDOVER.md`](android/HANDOVER.md) |
 | **LG webOS TV** | Released | **`1.2.58`** | Packaged `.ipk` | [`webos/WebOSHANDOVER.md`](webos/WebOSHANDOVER.md) |
 | **Samsung Tizen TV** | Working (Tizen 6.0+) | **`1.2.58`** | Packaged `.wgt` | [`tizen/Tizen HANDOVER.md`](<tizen/Tizen HANDOVER.md>) |
 

@@ -874,6 +874,39 @@
     </div>
   </div>
 
+  <!-- TV D-PAD CONTEXT ACTION SELECTOR -->
+  <div id="tvDpadModal" class="tv-dpad-modal hidden" aria-hidden="true">
+    <div class="tv-dpad-backdrop" id="tvDpadBackdrop"></div>
+    <div class="tv-dpad-container" role="dialog" aria-modal="true" aria-label="Quick Actions">
+      <div class="tv-dpad-disc">
+        <button class="tv-dpad-sector sector-up" id="tvDpadBtn_up" data-direction="up" type="button" tabindex="-1">
+          <span class="tv-dpad-arrow">▲</span>
+          <span class="tv-dpad-icon" id="tvDpadIcon_up">⭐</span>
+          <span class="tv-dpad-label" id="tvDpadLabel_up">Favorite</span>
+        </button>
+        <button class="tv-dpad-sector sector-right is-blank" id="tvDpadBtn_right" data-direction="right" type="button" tabindex="-1">
+          <span class="tv-dpad-arrow">▶</span>
+          <span class="tv-dpad-icon" id="tvDpadIcon_right"></span>
+          <span class="tv-dpad-label" id="tvDpadLabel_right"></span>
+        </button>
+        <button class="tv-dpad-sector sector-down" id="tvDpadBtn_down" data-direction="down" type="button" tabindex="-1">
+          <span class="tv-dpad-arrow">▼</span>
+          <span class="tv-dpad-icon" id="tvDpadIcon_down">↕️</span>
+          <span class="tv-dpad-label" id="tvDpadLabel_down">Reorder</span>
+        </button>
+        <button class="tv-dpad-sector sector-left is-blank" id="tvDpadBtn_left" data-direction="left" type="button" tabindex="-1">
+          <span class="tv-dpad-arrow">◀</span>
+          <span class="tv-dpad-icon" id="tvDpadIcon_left"></span>
+          <span class="tv-dpad-label" id="tvDpadLabel_left"></span>
+        </button>
+        <div class="tv-dpad-center">
+          <div class="tv-dpad-center-title" id="tvDpadCenterTitle">Item</div>
+          <div class="tv-dpad-center-hint">OK / Back to close</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="tizen-platform.js"></script>
   <script src="hls.min.js"></script>
   <script src="mpegts.min.js"></script>

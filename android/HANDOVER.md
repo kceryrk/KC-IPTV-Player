@@ -2,7 +2,7 @@
 
 **Platform:** Android (Phone, Tablet & Android TV)  
 **Location:** [`android/`](file:///Users/kamil/Desktop/KC-IPTV-Player/android)  
-**Current Version:** `1.2.59` (versionCode `1259`)  
+**Current Version:** `1.2.60` (versionCode `1260`)  
 **Package:** `com.kciptv.player`  
 **Primary Shell:** Kotlin Native Activity (`MainActivity.kt`) hosting an optimized Chromium `WebView`
 
