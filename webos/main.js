@@ -509,6 +509,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (currentAppSection === "settings") {
         switchAppSection(previousAppSection || "iptv");
       }
+      if (favorites && favorites.length > 0) {
+        currentModus = "favorites";
+        filterChannels();
+        if (window.AeroRadial) {
+          window.AeroRadial.setMode(0); // 0: Favorites
+        }
+      }
       document.body.classList.add("radial-active");
       if (window.AeroRadial) window.AeroRadial.open();
     }
@@ -875,19 +882,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let clock24h = store.getItem("iptv_clock_24h") !== "0";
+  let clockSeconds = store.getItem("iptv_clock_seconds") === "1"; // Default OFF
 
   function updateClockFormatButton() {
     const button = document.getElementById("clockFormatButton");
     if (button) setIconLabel(button, "clock", `${clock24h ? "24" : "12"} h`);
+    const secBtn = document.getElementById("clockSecondsButton");
+    if (secBtn) setIconLabel(secBtn, "clock", clockSeconds ? "Saniye: Açık" : "Saniye: Kapalı");
   }
 
   const updateClocks = () => {
     const now = new Date();
-    const clockStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: !clock24h });
+    const timeOpt = { hour: "2-digit", minute: "2-digit", hour12: !clock24h };
+    if (clockSeconds) timeOpt.second = "2-digit";
+    const clockStr = now.toLocaleTimeString([], timeOpt);
     if (headerClock) headerClock.textContent = clockStr;
     if (osdClock) osdClock.textContent = clockStr;
     if (osdDate) osdDate.textContent = now.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
     if (vodOsdClock) vodOsdClock.textContent = clockStr;
+
+    // Update Radial Top Clock
+    const rTime = document.getElementById("radialClockTime");
+    const rDate = document.getElementById("radialClockDate");
+    if (rTime) rTime.textContent = clockStr;
+    if (rDate) rDate.textContent = now.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
   };
   updateClockFormatButton();
   updateClocks();
@@ -1306,6 +1324,16 @@ document.addEventListener("DOMContentLoaded", () => {
     clockFormatButton.addEventListener("click", () => {
       clock24h = !clock24h;
       store.setItem("iptv_clock_24h", clock24h ? "1" : "0");
+      updateClockFormatButton();
+      updateClocks();
+    });
+  }
+
+  const clockSecondsButton = document.getElementById("clockSecondsButton");
+  if (clockSecondsButton) {
+    clockSecondsButton.addEventListener("click", () => {
+      clockSeconds = !clockSeconds;
+      store.setItem("iptv_clock_seconds", clockSeconds ? "1" : "0");
       updateClockFormatButton();
       updateClocks();
     });
@@ -6951,6 +6979,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.kcOpenGuide = function() {
     openGuide();
+  };
+
+  window.kcFetchSeriesInfo = async function(seriesId) {
+    if (!xtreamAuth) return null;
+    try {
+      const url = `${xtreamAuth.server}/player_api.php?username=${xtreamAuth.username}&password=${xtreamAuth.password}&action=get_series_info&series_id=${encodeURIComponent(seriesId)}`;
+      const response = await requestText(url);
+      if (response.status !== 200 || !response.body.trim()) return null;
+      const info = JSON.parse(response.body);
+      const episodes = info.episodes || {};
+      const seasonKeys = Array.isArray(episodes) ? ["1"] : Object.keys(episodes).sort((a, b) => Number(a) - Number(b));
+      return {
+        info: info.info || {},
+        seasons: seasonKeys.map(seasonKey => {
+          const seasonEpisodes = Array.isArray(episodes) ? episodes : episodes[seasonKey];
+          return {
+            number: seasonKey,
+            name: `Sezon ${seasonKey}`,
+            episodes: (Array.isArray(seasonEpisodes) ? seasonEpisodes : []).map(ep => ({
+              id: ep.id || ep.stream_id,
+              title: ep.title || ep.name || `Bölüm ${ep.episode_num || ""}`,
+              episode_num: ep.episode_num || 1,
+              container_extension: ep.container_extension || "mp4",
+              info: ep.info || {}
+            }))
+          };
+        }).filter(s => s.episodes.length > 0)
+      };
+    } catch (e) {
+      console.error("kcFetchSeriesInfo error:", e);
+      return null;
+    }
+  };
+
+  window.kcPlaySeriesEpisode = function(episodeId, title, ext) {
+    if (window.AeroRadial) window.AeroRadial.close();
+    playSeriesEpisode(episodeId, title, ext);
   };
 
   window.kcShowToast = function(msg) {

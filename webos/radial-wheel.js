@@ -5,12 +5,17 @@
 (function(window) {
   "use strict";
 
-  // Radial geometry: balanced angleStep to prevent vertical overlap while keeping clean curve
+  // Radial geometry: tighter angleStep for rounder, closer appearance
   var ARC_SETTINGS = [
-    { radius: 640, angleStep: 8.5 }, // Tier 0: Modus
-    { radius: 720, angleStep: 8.0 }, // Tier 1: Regions
-    { radius: 820, angleStep: 7.5 }, // Tier 2: Categories
-    { radius: 940, angleStep: 7.0 }  // Tier 3: Channels / Content
+    { radius: 560, angleStep: 6.8 }, // Tier 0: Modus
+    { radius: 640, angleStep: 6.2 }, // Tier 1: Regions
+    { radius: 720, angleStep: 5.8 }, // Tier 2: Categories
+    { radius: 820, angleStep: 5.2 }  // Tier 3: Channels / Content
+  ];
+
+  var SERIES_ARC_SETTINGS = [
+    { radius: 640, angleStep: 6.5 }, // Seasons
+    { radius: 800, angleStep: 5.4 }  // Episodes
   ];
 
   var state = {
@@ -25,6 +30,14 @@
       regionIndex: 0,
       categoryIndex: 0,
       channelIndex: 0
+    },
+    seriesPicker: {
+      active: false,
+      series: null,
+      seasons: [],
+      seasonIndex: 0,
+      episodeIndex: 0,
+      activeCol: 0 // 0 = season, 1 = episode
     }
   };
 
@@ -326,29 +339,18 @@
           // Live TV / Favorites: Channel name only (+ big number for favorites)
           var favNumHtml = isFavMode ? '<div class="radial-fav-num">#' + (itemIndex + 1) + '</div>' : '';
 
-          if (isActiveFocused) {
-            // ACTIVE FOCUSED: Long card, title, and big channel icon on the RIGHT!
-            var logo = itemData.stream_icon 
-              ? '<img src="' + itemData.stream_icon + '" class="radial-ch-logo" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">' +
-                '<div class="radial-ch-logo-ph" style="display:none;">TV</div>'
-              : '<div class="radial-ch-logo-ph">TV</div>';
+          // FLOATING CHANNEL LOGO: Placed OUTSIDE card on the right, 2x bigger, NO TV label
+          var floatingLogoHtml = (isActiveFocused && itemData.stream_icon)
+            ? '<div class="radial-ch-floating-logo"><img src="' + itemData.stream_icon + '" class="radial-ch-floating-img" onerror="this.parentElement.style.display=\'none\';"></div>'
+            : '';
 
-            itemEl.innerHTML = 
-              '<div class="radial-card-box col-box-3"' + cardExtraStyle + '>' +
-                favNumHtml +
-                '<span class="radial-card-title">' + chName + '</span>' +
-                moveBadge +
-                logo +
-              '</div>';
-          } else {
-            // NON-FOCUSED: Channel name ONLY (plus big number on favorites)
-            itemEl.innerHTML = 
-              '<div class="radial-card-box col-box-3"' + cardExtraStyle + '>' +
-                favNumHtml +
-                '<span class="radial-card-title">' + chName + '</span>' +
-                moveBadge +
-              '</div>';
-          }
+          itemEl.innerHTML = 
+            '<div class="radial-card-box col-box-3"' + cardExtraStyle + '>' +
+              favNumHtml +
+              '<span class="radial-card-title">' + chName + '</span>' +
+              moveBadge +
+            '</div>' +
+            floatingLogoHtml;
         }
       }
 
@@ -359,26 +361,7 @@
           if (idxOff !== 0) {
             rotateRadialWheel(tIdx, idxOff);
           } else {
-            if (tIdx === 0 && MODES[state.selected.modeIndex].id === "settings") {
-              closeOverlay();
-              if (window.kcOpenSettings && typeof window.kcOpenSettings === "function") {
-                window.kcOpenSettings();
-              }
-            } else if (tIdx === 0 && MODES[state.selected.modeIndex].id === "stremio") {
-              closeOverlay();
-              if (window.kcOpenStremio && typeof window.kcOpenStremio === "function") {
-                window.kcOpenStremio();
-              }
-            } else if (tIdx === 3) {
-              if (state.isMoveMode) {
-                // Add channel to reorder stack
-                pickUpNextToMoveStack();
-              } else {
-                tuneInChannel();
-              }
-            } else {
-              stepRadialTier(1);
-            }
+            handleTierConfirm(tIdx);
           }
         });
       })(offset, tierIndex);
@@ -391,6 +374,25 @@
     }
 
     updateFocusPill();
+  }
+
+  function handleTierConfirm(tIdx) {
+    if (tIdx === 0) {
+      applyTierPreview(0);
+    } else if (tIdx === 3) {
+      if (state.isMoveMode) {
+        pickUpNextToMoveStack();
+      } else {
+        var curModus = window.kcGetModus ? window.kcGetModus() : "live";
+        if (curModus === "series") {
+          openSeriesPickerForFocused();
+        } else {
+          tuneInChannel();
+        }
+      }
+    } else {
+      stepRadialTier(1);
+    }
   }
 
   function renderAllTiers() {
@@ -413,6 +415,16 @@
   function updateFocusPill() {
     var pill = document.getElementById("radialFocusPill");
     if (!pill) return;
+    if (state.seriesPicker.active) {
+      var sColId = state.seriesPicker.activeCol === 0 ? "radialSeriesCol-0" : "radialSeriesCol-1";
+      var sCol = document.getElementById(sColId);
+      if (sCol && sCol.offsetParent !== null) {
+        var r = sCol.getBoundingClientRect();
+        pill.style.left = (r.left - 4) + "px";
+        pill.style.width = (r.width + 8) + "px";
+      }
+      return;
+    }
     var activeCol = document.getElementById("radialCol-" + state.activeTier);
     if (activeCol && activeCol.offsetParent !== null) {
       var rect = activeCol.getBoundingClientRect();
@@ -421,7 +433,7 @@
     }
   }
 
-  // 500ms Debounce Preview for Next Tiers
+  // 500ms Debounce Preview for Next Tiers (Tier 1 & Tier 2)
   function scheduleTierPreview(tierIndex) {
     if (previewTimer) clearTimeout(previewTimer);
     previewTimer = setTimeout(function() {
@@ -454,6 +466,14 @@
       state.selected.channelIndex = 0;
       updateColumnVisibility();
       renderAllTiers();
+      // Step to next column on OK
+      if (chosenMode === "favorites") {
+        state.activeTier = 3;
+      } else {
+        state.activeTier = 1;
+      }
+      renderAllTiers();
+      playStep();
     } else if (tierIndex === 1) {
       var regs = getRegionsList();
       var chosenReg = regs[state.selected.regionIndex % regs.length] || "ALL";
@@ -475,11 +495,208 @@
     }
   }
 
+  // SERIES PICKER IMPLEMENTATION (Seasons wheel + Episodes wheel)
+  function openSeriesPickerForFocused() {
+    var channels = getChannelsList();
+    if (!channels || !channels.length) return;
+    var total = channels.length;
+    var chIdx = ((state.selected.channelIndex % total) + total) % total;
+    var target = channels[chIdx];
+    if (!target) return;
+
+    var seriesId = target.series_id || target.stream_id || target.id;
+    if (!seriesId) {
+      tuneInChannel();
+      return;
+    }
+
+    if (window.kcShowToast) window.kcShowToast("Bölümler yükleniyor...");
+
+    if (window.kcFetchSeriesInfo && typeof window.kcFetchSeriesInfo === "function") {
+      window.kcFetchSeriesInfo(seriesId).then(function(data) {
+        if (!data || !data.seasons || !data.seasons.length) {
+          if (window.kcShowToast) window.kcShowToast("Bölüm bulunamadı");
+          return;
+        }
+        state.seriesPicker.active = true;
+        state.seriesPicker.series = target;
+        state.seriesPicker.seasons = data.seasons;
+        state.seriesPicker.seasonIndex = 0;
+        state.seriesPicker.episodeIndex = 0;
+        state.seriesPicker.activeCol = 0; // Start focused on Seasons
+
+        var mainCols = document.getElementById("radialColumnsWrapper");
+        var pickerCols = document.getElementById("radialSeriesPicker");
+        if (mainCols) mainCols.classList.add("hidden");
+        if (pickerCols) pickerCols.classList.remove("hidden");
+
+        renderSeriesPicker();
+        updateVodPosterBackdrop(target, true);
+        playStep();
+      }).catch(function(err) {
+        console.error("Failed to load series info:", err);
+        if (window.kcShowToast) window.kcShowToast("Dizi bilgisi alınamadı");
+      });
+    } else {
+      tuneInChannel();
+    }
+  }
+
+  function exitSeriesPicker() {
+    state.seriesPicker.active = false;
+    var mainCols = document.getElementById("radialColumnsWrapper");
+    var pickerCols = document.getElementById("radialSeriesPicker");
+    if (pickerCols) pickerCols.classList.add("hidden");
+    if (mainCols) mainCols.classList.remove("hidden");
+    renderAllTiers();
+    playStep();
+  }
+
+  function renderSeriesPicker() {
+    renderSeriesCol(0); // Seasons
+    renderSeriesCol(1); // Episodes
+
+    var col0 = document.getElementById("radialSeriesCol-0");
+    var col1 = document.getElementById("radialSeriesCol-1");
+    if (col0) col0.style.filter = state.seriesPicker.activeCol === 0 ? "brightness(1.15)" : "brightness(0.75)";
+    if (col1) col1.style.filter = state.seriesPicker.activeCol === 1 ? "brightness(1.15)" : "brightness(0.75)";
+
+    updateFocusPill();
+  }
+
+  function renderSeriesCol(colIdx) {
+    var track = document.getElementById("radialSeriesTrack-" + colIdx);
+    if (!track) return;
+    track.innerHTML = "";
+
+    var geom = SERIES_ARC_SETTINGS[colIdx];
+    var isSeasonCol = (colIdx === 0);
+    var isCurrentActive = (state.seriesPicker.activeCol === colIdx);
+
+    var seasons = state.seriesPicker.seasons || [];
+    if (!seasons.length) return;
+
+    var curSeason = seasons[state.seriesPicker.seasonIndex % seasons.length];
+    var episodes = (curSeason && curSeason.episodes) ? curSeason.episodes : [];
+
+    var list = isSeasonCol ? seasons : episodes;
+    var total = list.length;
+    if (total === 0) {
+      var emptyEl = document.createElement("div");
+      emptyEl.className = "radial-wheel-item is-focused";
+      emptyEl.innerHTML = '<div class="radial-card-box ' + (isSeasonCol ? 'col-box-season' : 'col-box-episode') + '"><span class="radial-card-title">Bölüm yok</span></div>';
+      track.appendChild(emptyEl);
+      return;
+    }
+
+    var activeIdx = isSeasonCol ? state.seriesPicker.seasonIndex : state.seriesPicker.episodeIndex;
+    var normalizedFocus = ((activeIdx % total) + total) % total;
+    var visibleRange = 3;
+
+    for (var offset = -visibleRange; offset <= visibleRange; offset++) {
+      var itemIndex = ((normalizedFocus + offset) % total + total) % total;
+      var itemData = list[itemIndex];
+      var isCenter = (offset === 0);
+      var isActiveFocused = (isCenter && isCurrentActive);
+      var isParentSelected = (isCenter && !isCurrentActive);
+
+      var angleDeg = offset * geom.angleStep;
+      var angleRad = (angleDeg * Math.PI) / 180;
+      var y = Math.sin(angleRad) * geom.radius;
+      var x = (Math.cos(angleRad) - 1) * (geom.radius * 0.35);
+
+      if (!isSeasonCol && isActiveFocused) {
+        x += 35;
+      }
+
+      var absOffset = Math.abs(offset);
+      var scale = isActiveFocused ? 1.05 : (isParentSelected ? 1.0 : Math.max(0.82, 1 - absOffset * 0.07));
+      var opacity = isActiveFocused ? 1.0 : (isParentSelected ? 0.92 : Math.max(0.35, 1 - absOffset * 0.20));
+
+      var itemEl = document.createElement("div");
+      var itemClass = "radial-wheel-item";
+      if (isActiveFocused) {
+        itemClass += " is-active-focused";
+      } else if (isParentSelected) {
+        itemClass += " is-parent-selected";
+      }
+      itemEl.className = itemClass;
+
+      var transformStr = "translate3d(" + x.toFixed(1) + "px, " + y.toFixed(1) + "px, 0px) rotate(" + (angleDeg * 0.45).toFixed(1) + "deg) scale(" + scale.toFixed(2) + ")";
+      itemEl.style.webkitTransform = transformStr;
+      itemEl.style.transform = transformStr;
+      itemEl.style.opacity = opacity;
+      itemEl.style.zIndex = isActiveFocused ? "50" : (isParentSelected ? "45" : String(40 - absOffset));
+
+      var titleText = "";
+      var boxClass = isSeasonCol ? "col-box-season" : "col-box-episode";
+      if (isSeasonCol) {
+        titleText = itemData.name || ("Sezon " + itemData.number);
+      } else {
+        titleText = itemData.title || ("Bölüm " + itemData.episode_num);
+      }
+
+      itemEl.innerHTML = 
+        '<div class="radial-card-box ' + boxClass + '">' +
+          '<span class="radial-card-title">' + titleText + '</span>' +
+        '</div>';
+
+      (function(idxOff, cI) {
+        itemEl.addEventListener("click", function(e) {
+          e.stopPropagation();
+          state.seriesPicker.activeCol = cI;
+          if (idxOff !== 0) {
+            rotateSeriesPicker(cI, idxOff);
+          } else {
+            if (cI === 0) {
+              state.seriesPicker.activeCol = 1;
+              renderSeriesPicker();
+              playStep();
+            } else {
+              playSelectedEpisode();
+            }
+          }
+        });
+      })(offset, colIdx);
+
+      track.appendChild(itemEl);
+    }
+  }
+
+  function rotateSeriesPicker(colIdx, direction) {
+    if (colIdx === 0) {
+      var sTotal = state.seriesPicker.seasons.length;
+      if (sTotal === 0) return;
+      state.seriesPicker.seasonIndex = ((state.seriesPicker.seasonIndex + direction) % sTotal + sTotal) % sTotal;
+      state.seriesPicker.episodeIndex = 0;
+      renderSeriesPicker();
+    } else {
+      var curSeason = state.seriesPicker.seasons[state.seriesPicker.seasonIndex];
+      var epTotal = (curSeason && curSeason.episodes) ? curSeason.episodes.length : 0;
+      if (epTotal === 0) return;
+      state.seriesPicker.episodeIndex = ((state.seriesPicker.episodeIndex + direction) % epTotal + epTotal) % epTotal;
+      renderSeriesCol(1);
+    }
+    playTick();
+  }
+
+  function playSelectedEpisode() {
+    var curSeason = state.seriesPicker.seasons[state.seriesPicker.seasonIndex];
+    if (!curSeason || !curSeason.episodes || !curSeason.episodes.length) return;
+    var epTotal = curSeason.episodes.length;
+    var epIdx = ((state.seriesPicker.episodeIndex % epTotal) + epTotal) % epTotal;
+    var ep = curSeason.episodes[epIdx];
+    if (ep && window.kcPlaySeriesEpisode) {
+      playChime();
+      closeOverlay();
+      window.kcPlaySeriesEpisode(ep.id, ep.title, ep.container_extension);
+    }
+  }
+
   // Pick up channel below into reorder stack
   function pickUpNextToMoveStack() {
     var channels = getChannelsList();
     if (!channels || !channels.length) return;
-    // Find next channel below current focus not already in stack
     var total = channels.length;
     var targetChannel = null;
     for (var step = 1; step < total; step++) {
@@ -506,9 +723,10 @@
     if (total === 0) return;
 
     if (tierIndex === 0) {
+      // User: "1st column only open on an ok button press instead of opening automatically"
       state.selected.modeIndex = ((state.selected.modeIndex + direction) % total + total) % total;
       renderRadialTier(0);
-      scheduleTierPreview(0);
+      // Notice: Do NOT call scheduleTierPreview(0). Only update visual focus on Tier 0!
     } else if (tierIndex === 1) {
       state.selected.regionIndex = ((state.selected.regionIndex + direction) % total + total) % total;
       renderRadialTier(1);
@@ -578,6 +796,14 @@
     menu.classList.add("hidden");
     var backdropEl = document.getElementById("radialVodPosterBackdrop");
     if (backdropEl) backdropEl.classList.add("hidden");
+
+    if (state.seriesPicker.active) {
+      state.seriesPicker.active = false;
+      var mainCols = document.getElementById("radialColumnsWrapper");
+      var pickerCols = document.getElementById("radialSeriesPicker");
+      if (pickerCols) pickerCols.classList.add("hidden");
+      if (mainCols) mainCols.classList.remove("hidden");
+    }
   }
 
   function toggleOverlay() {
@@ -610,6 +836,73 @@
     var isYellow = key === 405 || e.key === "F3" || e.key === "Yellow";
     var isRed = key === 403 || e.key === "F1" || e.key === "Red";
     var isGuideKey = key === 458 || e.key === "Guide";
+
+    // Handle Series Picker Mode if active
+    if (state.seriesPicker.active) {
+      if (isPageUp) {
+        e.preventDefault();
+        rotateSeriesPicker(state.seriesPicker.activeCol, -5);
+        return true;
+      }
+      if (isPageDown) {
+        e.preventDefault();
+        rotateSeriesPicker(state.seriesPicker.activeCol, 5);
+        return true;
+      }
+      if (isUp) {
+        e.preventDefault();
+        rotateSeriesPicker(state.seriesPicker.activeCol, -1);
+        return true;
+      }
+      if (isDown) {
+        e.preventDefault();
+        rotateSeriesPicker(state.seriesPicker.activeCol, 1);
+        return true;
+      }
+      if (isRight) {
+        e.preventDefault();
+        if (state.seriesPicker.activeCol === 0) {
+          state.seriesPicker.activeCol = 1;
+          renderSeriesPicker();
+          playStep();
+        }
+        return true;
+      }
+      if (isLeft) {
+        e.preventDefault();
+        if (state.seriesPicker.activeCol === 1) {
+          state.seriesPicker.activeCol = 0;
+          renderSeriesPicker();
+          playStep();
+        } else {
+          exitSeriesPicker();
+        }
+        return true;
+      }
+      if (isEnter) {
+        e.preventDefault();
+        if (state.seriesPicker.activeCol === 0) {
+          state.seriesPicker.activeCol = 1;
+          renderSeriesPicker();
+          playStep();
+        } else {
+          playSelectedEpisode();
+        }
+        return true;
+      }
+      if (isBack || e.key === "m" || e.key === "M") {
+        e.preventDefault();
+        if (state.seriesPicker.activeCol === 1) {
+          state.seriesPicker.activeCol = 0;
+          renderSeriesPicker();
+          playStep();
+        } else {
+          exitSeriesPicker();
+        }
+        return true;
+      }
+      return true;
+    }
 
     // Channel Up / Page Up: Jump 5 backwards/up with loop
     if (isPageUp) {
@@ -650,7 +943,6 @@
     if (isRight) {
       e.preventDefault();
       if (state.activeTier === 3) {
-        // User: "The epg opens when pressing right when on channels list, should be only when the wheel doesnt show"
         return true;
       } else {
         stepRadialTier(1);
@@ -661,31 +953,7 @@
     // Enter / OK:
     if (isEnter) {
       e.preventDefault();
-      if (state.activeTier === 0) {
-        var mId = MODES[state.selected.modeIndex].id;
-        if (mId === "settings") {
-          closeOverlay();
-          if (window.kcOpenSettings && typeof window.kcOpenSettings === "function") {
-            window.kcOpenSettings();
-          }
-        } else if (mId === "stremio") {
-          closeOverlay();
-          if (window.kcOpenStremio && typeof window.kcOpenStremio === "function") {
-            window.kcOpenStremio();
-          }
-        } else {
-          stepRadialTier(1);
-        }
-      } else if (state.activeTier === 3) {
-        if (state.isMoveMode) {
-          // Reorder mode: OK picks up channel below into stack, DOES NOT open channel!
-          pickUpNextToMoveStack();
-        } else {
-          tuneInChannel();
-        }
-      } else {
-        stepRadialTier(1);
-      }
+      handleTierConfirm(state.activeTier);
       return true;
     }
 
@@ -765,24 +1033,12 @@
     return true; // Capture all other keys while overlay is open
   }
 
-  // Update clock every second
-  function initClock() {
-    var clockEl = document.getElementById("radialClock");
-    if (!clockEl) return;
-    setInterval(function() {
-      var d = new Date();
-      clockEl.textContent = d.toTimeString().split(" ")[0];
-    }, 1000);
-  }
-
   // PUBLIC API
   window.AeroRadial = {
     init: function() {
-      initClock();
       document.body.classList.add("radial-active");
       var menu = document.getElementById("radialOverlayMenu");
       if (menu) {
-        // Start closed! (User: "Opening the app opens with the radial wheel open too (shouldnt)")
         menu.classList.add("hidden");
       }
       state.isOpen = false;
@@ -801,6 +1057,24 @@
           }
         })(c);
       }
+
+      // Add mousewheel support to series picker columns
+      var sCol0 = document.getElementById("radialSeriesCol-0");
+      if (sCol0) {
+        sCol0.addEventListener("wheel", function(e) {
+          e.preventDefault();
+          state.seriesPicker.activeCol = 0;
+          rotateSeriesPicker(0, e.deltaY > 0 ? 1 : -1);
+        }, { passive: false });
+      }
+      var sCol1 = document.getElementById("radialSeriesCol-1");
+      if (sCol1) {
+        sCol1.addEventListener("wheel", function(e) {
+          e.preventDefault();
+          state.seriesPicker.activeCol = 1;
+          rotateSeriesPicker(1, e.deltaY > 0 ? 1 : -1);
+        }, { passive: false });
+      }
     },
     open: openOverlay,
     close: closeOverlay,
@@ -808,12 +1082,25 @@
     isOpen: function() { return state.isOpen; },
     handleKey: handleKey,
     refresh: function() {
-      if (state.isOpen) renderAllTiers();
+      if (state.isOpen) {
+        if (state.seriesPicker.active) {
+          renderSeriesPicker();
+        } else {
+          renderAllTiers();
+        }
+      }
     },
     syncChannelIndex: function(idx) {
       if (idx !== undefined && idx >= 0) {
         state.selected.channelIndex = idx;
-        if (state.isOpen) renderRadialTier(3);
+        if (state.isOpen && !state.seriesPicker.active) renderRadialTier(3);
+      }
+    },
+    setMode: function(idx) {
+      if (idx !== undefined && idx >= 0 && idx < MODES.length) {
+        state.selected.modeIndex = idx;
+        applyTierPreview(0);
+        if (state.isOpen) renderAllTiers();
       }
     }
   };

@@ -218,7 +218,10 @@
           </section>
           <section class="customization-section">
             <h2 data-i18n="clockFormat">Clock format</h2>
-            <button id="clockFormatButton" class="settings-item focusable" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-clock"/></svg><span>12 h</span></button>
+            <div style="display:flex; flex-direction:column;">
+              <button id="clockFormatButton" class="settings-item focusable" type="button" tabindex="0" style="margin-bottom:8px;"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-clock"/></svg><span>12 h</span></button>
+              <button id="clockSecondsButton" class="settings-item focusable" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-clock"/></svg><span id="clockSecondsLabel">Seconds: Off</span></button>
+            </div>
           </section>
           </div>
           <div class="customization-pane hidden" data-pane="source">
@@ -728,51 +731,58 @@
     <!-- Radial Overlay Header -->
     <div class="radial-topbar">
       <div class="radial-brand">
-        <div class="radial-brand-icon">📺</div>
+        <img src="icon.png" class="radial-brand-img" alt="KC">
         <div class="radial-brand-text">
-          <h1 class="radial-title">KC IPTV <span class="radial-badge">AERO WHEEL</span></h1>
-          <p class="radial-sub">Dairesel Çark Navigasyonu</p>
+          <h1 class="radial-title">KC <span class="radial-iptv-gradient">IPTV</span> Player</h1>
         </div>
       </div>
-      <div class="radial-clock" id="radialClock">00:00:00</div>
+      <div class="radial-top-clock" id="radialTopClock">
+        <span class="radial-clock-time" id="radialClockTime">00:00</span>
+        <span class="radial-clock-date" id="radialClockDate"></span>
+      </div>
     </div>
 
     <!-- 4 RADIAL WHEEL COLUMNS -->
     <div class="radial-columns-wrapper" id="radialColumnsWrapper">
       <!-- Column 0: MODES -->
       <div id="radialCol-0" class="radial-arc-column col-w-0" data-tier="0">
-        <div class="radial-col-tag">[1] MOD</div>
         <div class="radial-arc-track" id="radialTrack-0"></div>
       </div>
 
       <!-- Column 1: REGIONS -->
       <div id="radialCol-1" class="radial-arc-column col-w-1" data-tier="1">
-        <div class="radial-col-tag">[2] BÖLGE</div>
         <div class="radial-arc-track" id="radialTrack-1"></div>
       </div>
 
       <!-- Column 2: CATEGORIES -->
       <div id="radialCol-2" class="radial-arc-column col-w-2" data-tier="2">
-        <div class="radial-col-tag">[3] KATEGORİ</div>
         <div class="radial-arc-track" id="radialTrack-2"></div>
       </div>
 
       <!-- Column 3: CHANNELS -->
       <div id="radialCol-3" class="radial-arc-column col-w-3" data-tier="3">
-        <div class="radial-col-tag">[4] KANALLAR</div>
         <div class="radial-arc-track" id="radialTrack-3"></div>
       </div>
     </div>
 
-    <!-- Active Wheel Column Indicator Marker -->
-    <div id="radialFocusPill" class="radial-focus-pill"></div>
+    <!-- Series Season & Episode Picker (Radial) -->
+    <div id="radialSeriesPicker" class="radial-columns-wrapper radial-series-picker hidden">
+      <div id="radialSeriesCol-0" class="radial-arc-column col-w-season" data-tier="season">
+        <div class="radial-arc-track" id="radialSeriesTrack-0"></div>
+      </div>
+      <div id="radialSeriesCol-1" class="radial-arc-column col-w-episode" data-tier="episode">
+        <div class="radial-arc-track" id="radialSeriesTrack-1"></div>
+      </div>
+    </div>
 
     <!-- Right VOD / Series Poster Preview Backdrop -->
     <div id="radialVodPosterBackdrop" class="radial-vod-backdrop hidden">
       <div class="radial-vod-poster-card">
         <img id="radialVodPosterImg" class="radial-vod-poster-full" src="" alt="">
-        <div id="radialVodPosterTitle" class="radial-vod-title"></div>
-        <div id="radialVodPosterMeta" class="radial-vod-meta"></div>
+        <div class="radial-vod-text-overlay">
+          <div id="radialVodPosterTitle" class="radial-vod-title"></div>
+          <div id="radialVodPosterMeta" class="radial-vod-meta"></div>
+        </div>
       </div>
     </div>
 
