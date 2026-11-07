@@ -138,6 +138,21 @@
     return GLOBE_SVG;
   }
 
+  // Filter country codes, recurring prefixes, bracket tags, etc.
+  function formatTitle(name) {
+    if (!name) return "";
+    if (window.kcCleanTitle && typeof window.kcCleanTitle === "function") {
+      return window.kcCleanTitle(name, ["HD", "FHD", "UHD", "4K"]);
+    }
+    return String(name)
+      .replace(/^\[[^\]]*\]\s*/, "")
+      .replace(/^\([A-Za-z0-9-]+\)\s*/, "")
+      .replace(/\([^)]*\)/g, "")
+      .replace(/^[A-Z0-9]{2,5}\s*[:|-]\s*/i, "")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+  }
+
   // DATA PROVIDERS (Linked directly to KC IPTV Player data)
   var MODES = [
     { id: "favorites", title: "Favoriler", iconKey: "favorites" },
@@ -191,6 +206,7 @@
   }
 
   function updateColumnVisibility() {
+    if (state.seriesPicker.active) return;
     var modeObj = MODES[state.selected.modeIndex] || MODES[0];
     var isFav = (modeObj.id === "favorites");
     var isSpecial = (modeObj.id === "settings" || modeObj.id === "stremio");
@@ -200,6 +216,11 @@
     if (col1) col1.style.display = (isFav || isSpecial) ? "none" : "";
     if (col2) col2.style.display = (isFav || isSpecial) ? "none" : "";
     if (col3) col3.style.display = isSpecial ? "none" : "";
+
+    var sc0 = document.getElementById("radialSeriesCol-0");
+    var sc1 = document.getElementById("radialSeriesCol-1");
+    if (sc0) { sc0.classList.add("hidden"); sc0.style.display = "none"; }
+    if (sc1) { sc1.classList.add("hidden"); sc1.style.display = "none"; }
   }
 
   // Update Right VOD Poster Backdrop
@@ -223,7 +244,7 @@
       imgEl.style.display = "none";
     }
 
-    if (titleEl) titleEl.textContent = itemData.name || itemData.title || "Film / Dizi";
+    if (titleEl) titleEl.textContent = formatTitle(itemData.name || itemData.title || "Film / Dizi");
     if (metaEl) {
       var ext = itemData.container_extension ? itemData.container_extension.toUpperCase() : "HD";
       var year = itemData.release_date || itemData.year || "";
@@ -278,8 +299,8 @@
       var x = (Math.cos(angleRad) - 1) * (geom.radius * 0.35);
 
       var absOffset = Math.abs(offset);
-      var scale = isActiveFocused ? 1.05 : (isParentSelected ? 1.02 : Math.max(0.72, 1 - absOffset * 0.045));
-      var opacity = isActiveFocused ? 1.0 : (isParentSelected ? 0.95 : Math.max(0.15, 1 - absOffset * 0.12));
+      var scale = (absOffset === 0) ? 1.0 : Math.max(0.78, 1 - absOffset * 0.038);
+      var opacity = isActiveFocused ? 1.0 : (isParentSelected ? 0.95 : Math.max(0.18, 1 - absOffset * 0.12));
 
       var itemEl = document.createElement("div");
       var itemClass = "radial-wheel-item";
@@ -312,14 +333,14 @@
             '<span class="radial-card-title">' + itemData + '</span>' +
           '</div>';
       } else if (tierIndex === 2) {
-        var catName = itemData.category_name || itemData.name || "Kategori";
+        var catName = formatTitle(itemData.category_name || itemData.name || "Kategori");
         itemEl.innerHTML = 
           '<div class="radial-card-box col-box-2">' +
             '<span class="r-icon">' + SVG_ICONS.folder + '</span>' +
             '<span class="radial-card-title">' + catName + '</span>' +
           '</div>';
       } else if (tierIndex === 3) {
-        var chName = itemData.name || itemData.title || "Kanal";
+        var chName = formatTitle(itemData.name || itemData.title || "Kanal");
         var isPickedUp = (state.isMoveMode && state.moveStack.indexOf(String(itemData.stream_id)) !== -1);
         var moveBadge = isPickedUp ? '<span class="radial-move-badge">TAŞINIYOR (' + (state.moveStack.indexOf(String(itemData.stream_id)) + 1) + '/' + state.moveStack.length + ')</span>' : '';
         var cardExtraStyle = isPickedUp ? ' style="border: 2px dashed #f87171 !important;"' : '';
@@ -520,10 +541,19 @@
         state.seriesPicker.episodeIndex = 0;
         state.seriesPicker.activeCol = 0; // Start focused on Seasons
 
-        var mainCols = document.getElementById("radialColumnsWrapper");
-        var pickerCols = document.getElementById("radialSeriesPicker");
-        if (mainCols) mainCols.classList.add("hidden");
-        if (pickerCols) pickerCols.classList.remove("hidden");
+        // Hide regular columns 1, 2, 3 so only Column 0 (Modes) stays visible
+        var c1 = document.getElementById("radialCol-1");
+        var c2 = document.getElementById("radialCol-2");
+        var c3 = document.getElementById("radialCol-3");
+        if (c1) c1.style.display = "none";
+        if (c2) c2.style.display = "none";
+        if (c3) c3.style.display = "none";
+
+        // Show series picker columns 0 & 1
+        var sc0 = document.getElementById("radialSeriesCol-0");
+        var sc1 = document.getElementById("radialSeriesCol-1");
+        if (sc0) { sc0.classList.remove("hidden"); sc0.style.display = ""; }
+        if (sc1) { sc1.classList.remove("hidden"); sc1.style.display = ""; }
 
         renderSeriesPicker();
         updateVodPosterBackdrop(target, true);
@@ -539,10 +569,12 @@
 
   function exitSeriesPicker() {
     state.seriesPicker.active = false;
-    var mainCols = document.getElementById("radialColumnsWrapper");
-    var pickerCols = document.getElementById("radialSeriesPicker");
-    if (pickerCols) pickerCols.classList.add("hidden");
-    if (mainCols) mainCols.classList.remove("hidden");
+    var sc0 = document.getElementById("radialSeriesCol-0");
+    var sc1 = document.getElementById("radialSeriesCol-1");
+    if (sc0) { sc0.classList.add("hidden"); sc0.style.display = "none"; }
+    if (sc1) { sc1.classList.add("hidden"); sc1.style.display = "none"; }
+
+    updateColumnVisibility();
     renderAllTiers();
     playStep();
   }
@@ -601,8 +633,8 @@
       var x = (Math.cos(angleRad) - 1) * (geom.radius * 0.35);
 
       var absOffset = Math.abs(offset);
-      var scale = isActiveFocused ? 1.05 : (isParentSelected ? 1.02 : Math.max(0.72, 1 - absOffset * 0.045));
-      var opacity = isActiveFocused ? 1.0 : (isParentSelected ? 0.95 : Math.max(0.15, 1 - absOffset * 0.12));
+      var scale = (absOffset === 0) ? 1.0 : Math.max(0.78, 1 - absOffset * 0.038);
+      var opacity = isActiveFocused ? 1.0 : (isParentSelected ? 0.95 : Math.max(0.18, 1 - absOffset * 0.12));
 
       var itemEl = document.createElement("div");
       var itemClass = "radial-wheel-item";
@@ -624,7 +656,7 @@
       if (isSeasonCol) {
         titleText = itemData.name || ("Sezon " + itemData.number);
       } else {
-        titleText = itemData.title || ("Bölüm " + itemData.episode_num);
+        titleText = formatTitle(itemData.title) || ("Bölüm " + itemData.episode_num);
       }
 
       itemEl.innerHTML = 
@@ -789,11 +821,7 @@
     if (backdropEl) backdropEl.classList.add("hidden");
 
     if (state.seriesPicker.active) {
-      state.seriesPicker.active = false;
-      var mainCols = document.getElementById("radialColumnsWrapper");
-      var pickerCols = document.getElementById("radialSeriesPicker");
-      if (pickerCols) pickerCols.classList.add("hidden");
-      if (mainCols) mainCols.classList.remove("hidden");
+      exitSeriesPicker();
     }
   }
 

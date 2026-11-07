@@ -854,10 +854,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!str) return "";
     const kept = keep || [];
     const tags = TITLE_TAGS.filter((tag) => kept.indexOf(tag) === -1);
-    let text = str.replace(/\([^)]*\)/g, "").replace(/^[A-Z0-9]{2,5}\s*:\s*/i, "");
+    let text = str
+      .replace(/^\[[^\]]*\]\s*/, "")
+      .replace(/^\([A-Za-z0-9-]+\)\s*/, "")
+      .replace(/\([^)]*\)/g, "")
+      .replace(/^[A-Z0-9]{2,5}\s*[:|-]\s*/i, "");
     if (tags.length) text = text.replace(new RegExp("\\b(" + tags.join("|") + ")\\b", "gi"), "");
     return text.replace(/\s{2,}/g, " ").trim();
   }
+  window.kcCleanTitle = cleanTitle;
 
   function extractRegionFromCategory(catName, isVod) {
     if (!catName) return "";
@@ -5749,6 +5754,11 @@ document.addEventListener("DOMContentLoaded", () => {
       // If focused on tabs:
       if (tabs.indexOf(curFocused) >= 0) {
         const tabIdx = tabs.indexOf(curFocused);
+        if (isUp) {
+          e.preventDefault();
+          if (vodSettingsCloseBtn) setElementFocus(vodSettingsCloseBtn);
+          return;
+        }
         if (isLeft || isRight) {
           e.preventDefault();
           const nextTabIdx = (tabIdx + (isRight ? 1 : -1) + tabs.length) % tabs.length;
@@ -5809,7 +5819,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (curFocused === vodSettingsCloseBtn) {
-        if (isDown) {
+        if (isDown || isLeft) {
           e.preventDefault();
           setElementFocus(curTab || tabs[0]);
           return;

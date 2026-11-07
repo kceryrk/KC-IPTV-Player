@@ -4470,12 +4470,9 @@ body.radial-active #videoPlayer {
   align-items: center !important;
 }
 
-.radial-series-picker {
-  position: absolute !important;
-  left: 230px !important;
-  top: 0 !important;
-  height: 100vh !important;
-  z-index: 25 !important;
+.radial-columns-wrapper.hidden,
+.radial-arc-column.hidden {
+  display: none !important;
 }
 
 .radial-arc-column {
@@ -4516,9 +4513,10 @@ body.radial-active #videoPlayer {
   position: absolute !important;
   left: 0 !important;
   top: 0 !important;
-  margin-top: -26px !important;
-  transform-origin: 0% 50% !important;
-  -webkit-transform-origin: 0% 50% !important;
+  height: 64px !important;
+  margin-top: -32px !important;
+  transform-origin: 0 32px !important;
+  -webkit-transform-origin: 0 32px !important;
   transition: -webkit-transform 0.20s ease-out, transform 0.20s ease-out, opacity 0.18s ease !important;
   cursor: pointer !important;
   will-change: transform, opacity !important;
@@ -4527,16 +4525,18 @@ body.radial-active #videoPlayer {
 }
 
 .radial-wheel-item.is-parent-selected {
-  margin-top: -30px !important;
+  height: 64px !important;
+  margin-top: -32px !important;
 }
 
 .radial-wheel-item.is-active-focused {
-  margin-top: -36px !important;
+  height: 64px !important;
+  margin-top: -32px !important;
 }
 
 /* Round pill cards with App Settings theme colors */
 .radial-card-box {
-  height: 52px !important;
+  height: 56px !important;
   padding: 0 18px !important;
   border-radius: 999px !important;
   display: flex !important;
@@ -4553,7 +4553,7 @@ body.radial-active #videoPlayer {
 
 /* Parent selected card */
 .radial-wheel-item.is-parent-selected .radial-card-box {
-  height: 60px !important;
+  height: 58px !important;
   padding: 0 20px !important;
   padding-left: 18px !important;
   border-radius: 999px !important;
@@ -4565,7 +4565,7 @@ body.radial-active #videoPlayer {
 
 /* Active cursor focus card (Follows app settings --highlight) */
 .radial-wheel-item.is-active-focused .radial-card-box {
-  height: 72px !important;
+  height: 62px !important;
   padding: 0 24px !important;
   padding-left: 18px !important;
   border-radius: 999px !important;
@@ -4581,23 +4581,23 @@ body.radial-active #videoPlayer {
 .radial-wheel-item.is-active-focused .col-box-2 { width: 340px !important; }
 .radial-wheel-item.is-active-focused .col-box-3 {
   width: 530px !important;
-  height: 72px !important;
+  height: 62px !important;
 }
 
 .radial-wheel-item.is-parent-selected .col-box-3 {
   width: 440px !important;
-  height: 60px !important;
+  height: 58px !important;
 }
 
 .radial-wheel-item.is-active-focused .col-box-season { width: 240px !important; }
 .radial-wheel-item.is-active-focused .col-box-episode {
   width: 530px !important;
-  height: 72px !important;
+  height: 62px !important;
 }
 
 .radial-wheel-item.is-parent-selected .col-box-episode {
   width: 440px !important;
-  height: 60px !important;
+  height: 58px !important;
 }
 
 .r-icon {
