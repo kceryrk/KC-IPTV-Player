@@ -4486,19 +4486,19 @@ body.radial-active #videoPlayer {
   transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-.radial-arc-column.col-w-0 { width: 170px !important; z-index: 40 !important; }
-.radial-arc-column.col-w-1 { width: 125px !important; z-index: 30 !important; }
-.radial-arc-column.col-w-2 { width: 230px !important; z-index: 20 !important; }
-.radial-arc-column.col-w-3 { width: 340px !important; z-index: 10 !important; }
-.radial-arc-column.col-w-season { width: 170px !important; z-index: 30 !important; }
-.radial-arc-column.col-w-episode { width: 360px !important; z-index: 20 !important; }
+.radial-arc-column.col-w-0 { width: 205px !important; z-index: 40 !important; }
+.radial-arc-column.col-w-1 { width: 145px !important; z-index: 30 !important; }
+.radial-arc-column.col-w-2 { width: 285px !important; z-index: 20 !important; }
+.radial-arc-column.col-w-3 { width: 425px !important; z-index: 10 !important; }
+.radial-arc-column.col-w-season { width: 205px !important; z-index: 30 !important; }
+.radial-arc-column.col-w-episode { width: 440px !important; z-index: 20 !important; }
 
-.col-box-0 { width: 165px !important; }
-.col-box-1 { width: 120px !important; }
-.col-box-2 { width: 225px !important; }
-.col-box-3 { width: 335px !important; }
-.col-box-season { width: 165px !important; }
-.col-box-episode { width: 350px !important; }
+.col-box-0 { width: 200px !important; }
+.col-box-1 { width: 140px !important; }
+.col-box-2 { width: 280px !important; }
+.col-box-3 { width: 420px !important; }
+.col-box-season { width: 200px !important; }
+.col-box-episode { width: 430px !important; }
 
 .radial-col-tag {
   display: none !important;
@@ -4517,8 +4517,8 @@ body.radial-active #videoPlayer {
   left: 0 !important;
   top: 0 !important;
   margin-top: -26px !important;
-  transform-origin: center center !important;
-  -webkit-transform-origin: center center !important;
+  transform-origin: 0% 50% !important;
+  -webkit-transform-origin: 0% 50% !important;
   transition: -webkit-transform 0.20s ease-out, transform 0.20s ease-out, opacity 0.18s ease !important;
   cursor: pointer !important;
   will-change: transform, opacity !important;
@@ -4526,9 +4526,17 @@ body.radial-active #videoPlayer {
   align-items: center !important;
 }
 
+.radial-wheel-item.is-parent-selected {
+  margin-top: -30px !important;
+}
+
+.radial-wheel-item.is-active-focused {
+  margin-top: -36px !important;
+}
+
 /* Round pill cards with App Settings theme colors */
 .radial-card-box {
-  height: 48px !important;
+  height: 52px !important;
   padding: 0 18px !important;
   border-radius: 999px !important;
   display: flex !important;
@@ -4545,8 +4553,9 @@ body.radial-active #videoPlayer {
 
 /* Parent selected card */
 .radial-wheel-item.is-parent-selected .radial-card-box {
-  height: 52px !important;
+  height: 60px !important;
   padding: 0 20px !important;
+  padding-left: 18px !important;
   border-radius: 999px !important;
   background: rgba(15, 23, 42, 0.92) !important;
   border: 1.5px solid rgba(var(--highlight-rgb, 56, 189, 248), 0.45) !important;
@@ -4556,24 +4565,39 @@ body.radial-active #videoPlayer {
 
 /* Active cursor focus card (Follows app settings --highlight) */
 .radial-wheel-item.is-active-focused .radial-card-box {
-  height: 58px !important;
-  padding: 0 22px !important;
+  height: 72px !important;
+  padding: 0 24px !important;
+  padding-left: 18px !important;
   border-radius: 999px !important;
   background: rgba(var(--highlight-rgb, 6, 182, 212), 0.38) !important;
   border: 2px solid var(--highlight, #22d3ee) !important;
-  box-shadow: 0 0 22px rgba(var(--highlight-rgb, 6, 182, 212), 0.65) !important;
+  box-shadow: 0 0 26px rgba(var(--highlight-rgb, 6, 182, 212), 0.70) !important;
   color: #ffffff !important;
 }
 
 /* Focused channel card */
+.radial-wheel-item.is-active-focused .col-box-0 { width: 240px !important; }
+.radial-wheel-item.is-active-focused .col-box-1 { width: 170px !important; }
+.radial-wheel-item.is-active-focused .col-box-2 { width: 340px !important; }
 .radial-wheel-item.is-active-focused .col-box-3 {
-  width: 440px !important;
-  height: 64px !important;
+  width: 530px !important;
+  height: 72px !important;
 }
 
 .radial-wheel-item.is-parent-selected .col-box-3 {
-  width: 360px !important;
-  height: 54px !important;
+  width: 440px !important;
+  height: 60px !important;
+}
+
+.radial-wheel-item.is-active-focused .col-box-season { width: 240px !important; }
+.radial-wheel-item.is-active-focused .col-box-episode {
+  width: 530px !important;
+  height: 72px !important;
+}
+
+.radial-wheel-item.is-parent-selected .col-box-episode {
+  width: 440px !important;
+  height: 60px !important;
 }
 
 .r-icon {
@@ -4581,35 +4605,41 @@ body.radial-active #videoPlayer {
   align-items: center !important;
   justify-content: center !important;
   flex-shrink: 0 !important;
-  margin-right: 10px !important;
+  margin-right: 12px !important;
 }
 
 .r-icon-svg {
-  width: 24px !important;
-  height: 24px !important;
+  width: 28px !important;
+  height: 28px !important;
   flex-shrink: 0 !important;
 }
 
 .radial-wheel-item.is-active-focused .r-icon-svg {
-  width: 28px !important;
-  height: 28px !important;
+  width: 36px !important;
+  height: 36px !important;
 }
 
 .r-flag-svg {
-  width: 28px !important;
-  height: 19px !important;
+  width: 34px !important;
+  height: 23px !important;
   border-radius: 4px !important;
   flex-shrink: 0 !important;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5) !important;
   object-fit: cover !important;
   display: inline-block !important;
-  margin-right: 8px !important;
+  margin-right: 12px !important;
+}
+
+.radial-wheel-item.is-active-focused .r-flag-svg {
+  width: 42px !important;
+  height: 28px !important;
+  margin-right: 14px !important;
 }
 
 .radial-card-title {
-  font-size: 1.05rem !important;
+  font-size: 1.25rem !important;
   font-weight: 700 !important;
-  color: #94a3b8 !important;
+  color: #cbd5e1 !important;
   letter-spacing: 0.3px !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -4619,46 +4649,53 @@ body.radial-active #videoPlayer {
 }
 
 .radial-wheel-item.is-parent-selected .radial-card-title {
-  color: #f1f5f9 !important;
-  font-weight: 700 !important;
-  font-size: 1.15rem !important;
+  color: #f8fafc !important;
+  font-weight: 800 !important;
+  font-size: 1.45rem !important;
 }
 
 .radial-wheel-item.is-active-focused .radial-card-title {
   color: #ffffff !important;
-  font-weight: 800 !important;
-  font-size: 1.35rem !important;
+  font-weight: 900 !important;
+  font-size: 1.85rem !important;
+  letter-spacing: 0.4px !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8) !important;
 }
 
 /* Favorites Big Number */
 .radial-fav-num {
-  font-size: 1.4rem !important;
-  font-weight: 900 !important;
+  font-size: 1.65rem !important;
+  font-weight: 800 !important;
   color: #fbbf24 !important;
-  min-width: 38px !important;
-  text-align: center !important;
-  margin-right: 10px !important;
+  min-width: 52px !important;
+  text-align: left !important;
+  margin-right: 12px !important;
   flex-shrink: 0 !important;
   font-family: 'Outfit', sans-serif !important;
 }
 
-.radial-wheel-item.is-active-focused .radial-fav-num {
-  font-size: 1.85rem !important;
-  min-width: 48px !important;
-  color: #fde047 !important;
-  text-shadow: 0 0 10px rgba(250, 204, 21, 0.6) !important;
+.radial-wheel-item.is-parent-selected .radial-fav-num {
+  font-size: 2.0rem !important;
+  font-weight: 900 !important;
+  min-width: 60px !important;
+  color: #fef08a !important;
 }
 
-/* FLOATING CHANNEL LOGO: OUTSIDE OF CARD & 2X BIGGER (116px), NO TV LABEL */
+.radial-wheel-item.is-active-focused .radial-fav-num {
+  font-size: 2.45rem !important;
+  font-weight: 900 !important;
+  min-width: 72px !important;
+  color: #fde047 !important;
+  text-shadow: 0 0 16px rgba(250, 204, 21, 0.80) !important;
+}
+
+/* FLOATING CHANNEL LOGO: DIRECTLY BESIDE CARD (18px margin), 2X BIGGER (116px), NO TV LABEL */
 .radial-ch-floating-logo {
-  position: absolute !important;
-  right: -136px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  -webkit-transform: translateY(-50%) !important;
+  margin-left: 18px !important;
+  flex-shrink: 0 !important;
   width: 116px !important;
   height: 116px !important;
-  border-radius: 22px !important;
+  border-radius: 24px !important;
   background: rgba(8, 14, 28, 0.94) !important;
   border: 2px solid var(--highlight, #22d3ee) !important;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85), 0 0 20px rgba(var(--highlight-rgb, 6, 182, 212), 0.45) !important;
@@ -4675,7 +4712,7 @@ body.radial-active #videoPlayer {
   width: 100% !important;
   height: 100% !important;
   object-fit: contain !important;
-  border-radius: 14px !important;
+  border-radius: 16px !important;
   display: block !important;
 }
 

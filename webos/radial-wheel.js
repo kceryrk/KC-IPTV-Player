@@ -255,8 +255,8 @@
     var activeIdx = getTierActiveIndex(tierIndex);
     var normalizedFocus = ((activeIdx % total) + total) % total;
 
-    // 7 visible slots [-3 to +3]
-    var visibleRange = 3;
+    // Fill entire column vertically [-7 to +7 = 15 visible items]
+    var visibleRange = 7;
     var curModus = window.kcGetModus ? window.kcGetModus() : "live";
     var isVodOrSeries = (curModus === "vod" || curModus === "series");
     var isFavMode = (MODES[state.selected.modeIndex].id === "favorites");
@@ -277,14 +277,9 @@
       var y = Math.sin(angleRad) * geom.radius;
       var x = (Math.cos(angleRad) - 1) * (geom.radius * 0.35);
 
-      // Active focused channel card is offset to the right by +40px into available room
-      if (tierIndex === 3 && isActiveFocused) {
-        x += 40;
-      }
-
       var absOffset = Math.abs(offset);
-      var scale = isActiveFocused ? 1.05 : (isParentSelected ? 1.0 : Math.max(0.82, 1 - absOffset * 0.07));
-      var opacity = isActiveFocused ? 1.0 : (isParentSelected ? 0.92 : Math.max(0.35, 1 - absOffset * 0.20));
+      var scale = isActiveFocused ? 1.05 : (isParentSelected ? 1.02 : Math.max(0.72, 1 - absOffset * 0.045));
+      var opacity = isActiveFocused ? 1.0 : (isParentSelected ? 0.95 : Math.max(0.15, 1 - absOffset * 0.12));
 
       var itemEl = document.createElement("div");
       var itemClass = "radial-wheel-item";
@@ -591,7 +586,7 @@
 
     var activeIdx = isSeasonCol ? state.seriesPicker.seasonIndex : state.seriesPicker.episodeIndex;
     var normalizedFocus = ((activeIdx % total) + total) % total;
-    var visibleRange = 3;
+    var visibleRange = 7;
 
     for (var offset = -visibleRange; offset <= visibleRange; offset++) {
       var itemIndex = ((normalizedFocus + offset) % total + total) % total;
@@ -605,13 +600,9 @@
       var y = Math.sin(angleRad) * geom.radius;
       var x = (Math.cos(angleRad) - 1) * (geom.radius * 0.35);
 
-      if (!isSeasonCol && isActiveFocused) {
-        x += 35;
-      }
-
       var absOffset = Math.abs(offset);
-      var scale = isActiveFocused ? 1.05 : (isParentSelected ? 1.0 : Math.max(0.82, 1 - absOffset * 0.07));
-      var opacity = isActiveFocused ? 1.0 : (isParentSelected ? 0.92 : Math.max(0.35, 1 - absOffset * 0.20));
+      var scale = isActiveFocused ? 1.05 : (isParentSelected ? 1.02 : Math.max(0.72, 1 - absOffset * 0.045));
+      var opacity = isActiveFocused ? 1.0 : (isParentSelected ? 0.95 : Math.max(0.15, 1 - absOffset * 0.12));
 
       var itemEl = document.createElement("div");
       var itemClass = "radial-wheel-item";
