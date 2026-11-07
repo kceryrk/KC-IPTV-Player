@@ -153,6 +153,24 @@
       .trim();
   }
 
+  // Dynamic font sizing for long series/episode titles so they never clip
+  function getTitleStyle(titleText, isFocused) {
+    if (!titleText) return "";
+    var len = titleText.length;
+    if (isFocused) {
+      if (len > 35) {
+        return ' style="font-size: 1.35rem !important;"';
+      } else if (len > 24) {
+        return ' style="font-size: 1.55rem !important;"';
+      }
+    } else {
+      if (len > 35) {
+        return ' style="font-size: 1.10rem !important;"';
+      }
+    }
+    return "";
+  }
+
   // DATA PROVIDERS (Linked directly to KC IPTV Player data)
   var MODES = [
     { id: "favorites", title: "Favoriler", iconKey: "favorites" },
@@ -344,12 +362,13 @@
         var isPickedUp = (state.isMoveMode && state.moveStack.indexOf(String(itemData.stream_id)) !== -1);
         var moveBadge = isPickedUp ? '<span class="radial-move-badge">TAŞINIYOR (' + (state.moveStack.indexOf(String(itemData.stream_id)) + 1) + '/' + state.moveStack.length + ')</span>' : '';
         var cardExtraStyle = isPickedUp ? ' style="border: 2px dashed #f87171 !important;"' : '';
+        var titleStyle = getTitleStyle(chName, isActiveFocused);
 
         if (isVodOrSeries) {
           // VOD / Series: Title ONLY in card, poster is displayed on the right!
           itemEl.innerHTML = 
             '<div class="radial-card-box col-box-3"' + cardExtraStyle + '>' +
-              '<span class="radial-card-title">' + chName + '</span>' +
+              '<span class="radial-card-title"' + titleStyle + '>' + chName + '</span>' +
             '</div>';
         } else {
           // Live TV / Favorites: Channel name only (+ big number for favorites)
@@ -363,7 +382,7 @@
           itemEl.innerHTML = 
             '<div class="radial-card-box col-box-3"' + cardExtraStyle + '>' +
               favNumHtml +
-              '<span class="radial-card-title">' + chName + '</span>' +
+              '<span class="radial-card-title"' + titleStyle + '>' + chName + '</span>' +
               moveBadge +
             '</div>' +
             floatingLogoHtml;
@@ -658,10 +677,11 @@
       } else {
         titleText = formatTitle(itemData.title) || ("Bölüm " + itemData.episode_num);
       }
+      var epTitleStyle = getTitleStyle(titleText, isActiveFocused);
 
       itemEl.innerHTML = 
         '<div class="radial-card-box ' + boxClass + '">' +
-          '<span class="radial-card-title">' + titleText + '</span>' +
+          '<span class="radial-card-title"' + epTitleStyle + '>' + titleText + '</span>' +
         '</div>';
 
       (function(idxOff, cI) {
