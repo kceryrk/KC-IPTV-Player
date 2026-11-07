@@ -968,6 +968,8 @@
           state.seriesPicker.activeCol = 1;
           renderSeriesPicker();
           playStep();
+        } else if (state.seriesPicker.activeCol === 1) {
+          closeOverlay();
         }
         return true;
       }
@@ -1046,6 +1048,9 @@
     if (isRight) {
       e.preventDefault();
       if (state.activeTier === 3) {
+        if (!state.isMoveMode) {
+          closeOverlay();
+        }
         return true;
       } else {
         stepRadialTier(1);
