@@ -1705,10 +1705,13 @@ body.speler-fit-screen .channel-panel {
 body.speler-fit-screen .tv-grid {
   display: block !important;
   position: fixed !important;
-  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  z-index: 999998 !important;
+  z-index: 10 !important;
   overflow: visible !important;
 }
 
@@ -1718,7 +1721,7 @@ body.speler-fit-screen #playerWrapper {
   left: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  z-index: 999999 !important;
+  z-index: 10 !important;
   display: flex !important;
 }
 
@@ -4274,5 +4277,535 @@ body.speler-fit-screen .app-progress {
   border-color: var(--highlight, #ffd700) !important;
   box-shadow: inset 0 0 0 2px var(--highlight, #ffd700), 0 0 16px rgba(255, 215, 0, 0.4) !important;
 }
+
+/* =========================================================================
+   AERO RADIAL WHEEL REPLACEMENT LAYOUT (Chromium 53 / webOS 4.5 Certified)
+   ========================================================================= */
+
+/* Replace old list columns when radial UI is active */
+body.radial-active .hint-bar,
+body.radial-active .app-header,
+body.radial-active #colModus,
+body.radial-active #colRegions,
+body.radial-active #colCategories,
+body.radial-active #colContent,
+body.radial-active .epg-preview-panel {
+  display: none !important;
+}
+
+body.radial-active .tv-grid {
+  display: block !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+body.radial-active #playerWrapper {
+  display: flex !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 10 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #000000 !important;
+}
+
+body.radial-active #videoPlayer {
+  width: 100vw !important;
+  height: 100vh !important;
+  object-fit: cover !important;
+}
+
+/* The Radial Wheel Overlay */
+.radial-overlay-menu {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 100000 !important;
+  display: flex !important;
+  overflow: hidden !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+  transition: opacity 0.3s ease, -webkit-transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.radial-overlay-menu.hidden {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Left Curved Backdrop Curtain */
+.radial-backdrop-curtain {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  width: 980px !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+  z-index: 1 !important;
+}
+
+.radial-gradient-fade {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: linear-gradient(90deg, rgba(2, 4, 10, 0.94) 0%, rgba(3, 7, 18, 0.88) 55%, rgba(3, 7, 18, 0.4) 80%, transparent 100%) !important;
+}
+
+.radial-guide-svg {
+  position: absolute !important;
+  left: -540px !important;
+  top: 50% !important;
+  transform: translate3d(0, -50%, 0) !important;
+  -webkit-transform: translate3d(0, -50%, 0) !important;
+  width: 1400px !important;
+  height: 1400px !important;
+  pointer-events: none !important;
+  opacity: 0.35 !important;
+}
+
+.radial-hud-laser {
+  display: none !important;
+}
+
+.radial-focal-line {
+  display: none !important;
+}
+
+/* Header bar */
+.radial-topbar {
+  position: absolute !important;
+  top: 32px !important;
+  left: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 24px !important;
+  z-index: 30 !important;
+}
+
+.radial-brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+
+.radial-brand-icon {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.4rem !important;
+  color: #fff !important;
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.45) !important;
+}
+
+.radial-title {
+  font-size: 1.35rem !important;
+  font-weight: 900 !important;
+  color: #ffffff !important;
+  letter-spacing: 0.5px !important;
+  margin: 0 !important;
+  line-height: 1.2 !important;
+}
+
+.radial-badge {
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  background: rgba(6, 182, 212, 0.22) !important;
+  border: 1px solid rgba(6, 182, 212, 0.4) !important;
+  color: #38bdf8 !important;
+  padding: 2px 7px !important;
+  border-radius: 6px !important;
+  letter-spacing: 0.5px !important;
+  vertical-align: middle !important;
+  margin-left: 6px !important;
+}
+
+.radial-sub {
+  font-size: 0.8rem !important;
+  color: #94a3b8 !important;
+  margin: 0 !important;
+  font-weight: 500 !important;
+}
+
+.radial-clock {
+  font-family: monospace, sans-serif !important;
+  font-size: 1.05rem !important;
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  background: rgba(8, 14, 28, 0.6) !important;
+  padding: 4px 14px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(56, 189, 248, 0.2) !important;
+}
+
+/* 4 Radial Columns Stage */
+.radial-columns-wrapper {
+  position: relative !important;
+  display: flex !important;
+  height: 100vh !important;
+  z-index: 20 !important;
+  padding-left: 48px !important;
+  gap: 20px !important;
+  align-items: center !important;
+}
+
+.radial-arc-column {
+  position: relative !important;
+  height: 100vh !important;
+  overflow: visible !important;
+  transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.radial-arc-column.col-w-0 { width: 170px !important; z-index: 40 !important; }
+.radial-arc-column.col-w-1 { width: 130px !important; z-index: 30 !important; }
+.radial-arc-column.col-w-2 { width: 230px !important; z-index: 20 !important; }
+.radial-arc-column.col-w-3 { width: 340px !important; z-index: 10 !important; }
+
+.radial-col-tag {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translate3d(0, -90px, 0) rotate(-90deg) !important;
+  -webkit-transform: translate3d(0, -90px, 0) rotate(-90deg) !important;
+  transform-origin: bottom left !important;
+  -webkit-transform-origin: bottom left !important;
+  font-family: monospace !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 2px !important;
+  color: rgba(56, 189, 248, 0.7) !important;
+  font-weight: 700 !important;
+  pointer-events: none !important;
+}
+
+.radial-arc-track {
+  position: absolute !important;
+  top: 50% !important;
+  transform-style: preserve-3d !important;
+  -webkit-transform-style: preserve-3d !important;
+  will-change: transform !important;
+}
+
+.radial-wheel-item {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  margin-top: -26px !important;
+  transform-origin: center center !important;
+  -webkit-transform-origin: center center !important;
+  transition: -webkit-transform 0.20s ease-out, transform 0.20s ease-out, opacity 0.18s ease !important;
+  cursor: pointer !important;
+  will-change: transform, opacity !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Card item appearances with column-fitted widths */
+.radial-card-box {
+  height: 48px !important;
+  padding: 0 14px !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  background: rgba(10, 16, 30, 0.82) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5) !important;
+  color: #94a3b8 !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  transition: all 0.18s ease-out !important;
+}
+
+.col-box-0 { width: 165px !important; }
+.col-box-1 { width: 125px !important; }
+.col-box-2 { width: 225px !important; }
+.col-box-3 { width: 335px !important; }
+
+/* Parent selected card (selected item on inactive column) */
+.radial-wheel-item.is-parent-selected .radial-card-box {
+  height: 52px !important;
+  padding: 0 16px !important;
+  border-radius: 13px !important;
+  background: rgba(15, 23, 42, 0.90) !important;
+  border: 1.5px solid rgba(56, 189, 248, 0.45) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6) !important;
+  color: #e2e8f0 !important;
+}
+
+/* Active cursor focus card (THE ONE item the user is currently focused on) */
+.radial-wheel-item.is-active-focused .radial-card-box {
+  height: 58px !important;
+  padding: 0 18px !important;
+  border-radius: 14px !important;
+  background: rgba(6, 182, 212, 0.38) !important;
+  border: 2px solid #22d3ee !important;
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.65) !important;
+  color: #ffffff !important;
+}
+
+/* Focused channel card is longer, bigger, and offset to the right */
+.radial-wheel-item.is-active-focused .col-box-3 {
+  width: 480px !important;
+  height: 66px !important;
+  padding: 0 20px !important;
+}
+
+.radial-wheel-item.is-parent-selected .col-box-3 {
+  width: 360px !important;
+  height: 54px !important;
+}
+
+.r-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.r-icon-svg {
+  width: 24px !important;
+  height: 24px !important;
+  flex-shrink: 0 !important;
+}
+
+.radial-wheel-item.is-active-focused .r-icon-svg {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.r-flag-svg {
+  width: 28px !important;
+  height: 19px !important;
+  border-radius: 3px !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5) !important;
+  object-fit: cover !important;
+  display: inline-block !important;
+  margin-right: 4px !important;
+}
+
+.radial-card-title {
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  color: #94a3b8 !important;
+  letter-spacing: 0.3px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  flex: 1 !important;
+}
+
+.radial-wheel-item.is-parent-selected .radial-card-title {
+  color: #f1f5f9 !important;
+  font-weight: 700 !important;
+  font-size: 1.15rem !important;
+}
+
+.radial-wheel-item.is-active-focused .radial-card-title {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.35rem !important;
+}
+
+/* Favorites Big Number */
+.radial-fav-num {
+  font-size: 1.4rem !important;
+  font-weight: 900 !important;
+  color: #fbbf24 !important;
+  min-width: 38px !important;
+  text-align: center !important;
+  margin-right: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.radial-wheel-item.is-active-focused .radial-fav-num {
+  font-size: 1.85rem !important;
+  min-width: 48px !important;
+  color: #fde047 !important;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.6) !important;
+}
+
+/* Channel Card specific - Big Logo on the RIGHT */
+.radial-ch-logo {
+  width: 52px !important;
+  height: 52px !important;
+  object-fit: contain !important;
+  border-radius: 8px !important;
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
+  background: rgba(0, 0, 0, 0.25) !important;
+  padding: 3px !important;
+}
+
+.radial-ch-logo-ph {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.15rem !important;
+  font-weight: 800 !important;
+  color: #94a3b8 !important;
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
+}
+
+/* Right VOD Poster Backdrop Preview */
+.radial-vod-backdrop {
+  position: absolute !important;
+  right: 60px !important;
+  top: 50% !important;
+  transform: translate3d(0, -50%, 0) !important;
+  -webkit-transform: translate3d(0, -50%, 0) !important;
+  width: 380px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: none !important;
+  z-index: 15 !important;
+}
+
+.radial-vod-backdrop.hidden {
+  display: none !important;
+}
+
+.radial-vod-poster-card {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  background: rgba(8, 14, 28, 0.92) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 18px !important;
+  padding: 16px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.88) !important;
+  max-width: 380px !important;
+}
+
+.radial-vod-poster-full {
+  width: 330px !important;
+  height: 470px !important;
+  object-fit: contain !important; /* Poster fits without crop */
+  border-radius: 12px !important;
+  display: block !important;
+  background: transparent !important;
+}
+
+.radial-vod-title {
+  margin-top: 14px !important;
+  font-size: 1.35rem !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  text-align: center !important;
+  max-width: 330px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.radial-vod-meta {
+  margin-top: 4px !important;
+  font-size: 0.95rem !important;
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+}
+
+.radial-pulse-dot {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background: #22d3ee !important;
+  box-shadow: 0 0 10px #22d3ee !important;
+  flex-shrink: 0 !important;
+}
+
+.radial-move-badge {
+  font-size: 0.7rem !important;
+  font-weight: 800 !important;
+  background: #dc2626 !important;
+  color: #fff !important;
+  padding: 3px 8px !important;
+  border-radius: 5px !important;
+  letter-spacing: 0.5px !important;
+  margin-left: 6px !important;
+}
+
+/* Active Wheel Column Focus Pill */
+.radial-focus-pill {
+  display: none !important;
+}
+
+/* Bottom Hint Bar */
+.radial-bottom-bar {
+  position: absolute !important;
+  bottom: 24px !important;
+  left: 48px !important;
+  z-index: 30 !important;
+}
+
+.radial-keys-hint {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  background: rgba(8, 14, 28, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 8px 20px !important;
+  border-radius: 999px !important;
+  font-size: 0.82rem !important;
+  color: #94a3b8 !important;
+}
+
+.r-key {
+  background: #1e293b !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  padding: 2px 7px !important;
+  border-radius: 5px !important;
+  font-weight: 700 !important;
+  color: #f1f5f9 !important;
+  font-size: 0.78rem !important;
+}
+
+.r-key-enter {
+  background: rgba(6, 182, 212, 0.3) !important;
+  border-color: rgba(6, 182, 212, 0.5) !important;
+  color: #38bdf8 !important;
+}
+
+.r-key-fav {
+  background: rgba(234, 179, 8, 0.25) !important;
+  border-color: rgba(234, 179, 8, 0.5) !important;
+  color: #fde047 !important;
+}
+
+.r-key-move {
+  background: rgba(239, 68, 68, 0.25) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
+  color: #fca5a5 !important;
+}
+
+.r-sep {
+  color: rgba(255, 255, 255, 0.18) !important;
+}
+
 
 

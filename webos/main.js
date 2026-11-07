@@ -509,6 +509,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (currentAppSection === "settings") {
         switchAppSection(previousAppSection || "iptv");
       }
+      document.body.classList.add("radial-active");
+      if (window.AeroRadial) window.AeroRadial.open();
     }
   }
 
@@ -2643,6 +2645,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (activeCard) centerInList(activeCard, true);
     loadVisiblePosters();
     applyPendingFocus();
+    if (window.AeroRadial) window.AeroRadial.refresh();
   }
 
   function switchModus(modus) {
@@ -3497,16 +3500,23 @@ document.addEventListener("DOMContentLoaded", () => {
     previousAppSection = section;
 
     if (section === "iptv") {
+      document.body.classList.add("radial-active");
       if (headerTabIptv) headerTabIptv.classList.add("active");
       if (headerTabStremio) headerTabStremio.classList.remove("active");
       if (headerTabSettings) headerTabSettings.classList.remove("active");
       if (tvGrid) tvGrid.classList.remove("hidden");
       if (stremioPage) stremioPage.classList.add("hidden");
       if (!skipFocus) {
-        const activeModus = document.querySelector("#modusList .nav-item.active") || document.querySelector("#modusList .nav-item");
-        if (activeModus) setElementFocus(activeModus);
+        if (window.AeroRadial) {
+          window.AeroRadial.open();
+        } else {
+          const activeModus = document.querySelector("#modusList .nav-item.active") || document.querySelector("#modusList .nav-item");
+          if (activeModus) setElementFocus(activeModus);
+        }
       }
     } else if (section === "stremio") {
+      document.body.classList.remove("radial-active");
+      if (window.AeroRadial) window.AeroRadial.close();
       stopLivePlayback();
       if (headerTabStremio) headerTabStremio.classList.add("active");
       if (headerTabIptv) headerTabIptv.classList.remove("active");
@@ -3581,6 +3591,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const first = activeSub.querySelector(".focusable");
       if (first) setElementFocus(first);
     }
+  }
+
+  const sideBackToIptv = document.getElementById("sideBackToIptv");
+  if (sideBackToIptv) {
+    sideBackToIptv.addEventListener("click", () => switchAppSection("iptv"));
   }
 
   if (sideTv) {
@@ -4308,6 +4323,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (activeIdx !== -1) currentStreamIndex = activeIdx;
     }
     currentPlayingStreamId = String(streamId);
+    window.kcCurrentStreamIndex = currentStreamIndex;
+    if (window.AeroRadial) window.AeroRadial.syncChannelIndex(currentStreamIndex);
 
     const activeLi = document.querySelector(`#channelList [data-stream-id="${streamId}"]`);
     if (activeLi) {
@@ -5296,7 +5313,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function isElementInSidebar(el) {
     if (!el) return false;
-    if (el.id === "sideTv" || el.id === "sideMovies" || el.id === "sideSeries") return true;
+    if (el.id === "sideBackToIptv" || el.id === "sideTv" || el.id === "sideMovies" || el.id === "sideSeries") return true;
     let curr = el;
     while (curr && curr !== document.body) {
       if (curr.id === "stremioSidebarDock" || (curr.classList && curr.classList.contains("stremio-sidebar-dock"))) return true;
@@ -5608,6 +5625,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const isRewind = key === 412 || e.key === "MediaRewind" || e.key === "Rewind";
 
     let focused = document.querySelector(".focused") || document.activeElement;
+
+    // If EPG Guide is open, let Guide handle keys
+    if (guideOpen) {
+      // Guide handler below processes navigation
+    } else if (window.AeroRadial && window.AeroRadial.isOpen()) {
+      if (window.AeroRadial.handleKey(e, key)) {
+        return;
+      }
+    }
+
+    // Toggle Radial Overlay with 'M' key
+    if (e.key === "m" || e.key === "M") {
+      e.preventDefault();
+      if (window.AeroRadial) window.AeroRadial.toggle();
+      return;
+    }
 
     // Stream Selector Modal D-Pad Navigation
     if (streamSelectorActive && streamSelectorModal && !streamSelectorModal.classList.contains("hidden")) {
@@ -6081,10 +6114,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (currentAppSection === "settings") {
           switchAppSection(previousAppSection || "iptv");
         } else if (currentAppSection === "stremio") {
-          const activeSub = currentStremioSubpage === "tv" ? stremioSubpageTv : (currentStremioSubpage === "series" ? stremioSubpageSeries : stremioSubpageMovies);
-          const targetCard = activeSub ? activeSub.querySelector(".stremio-card.focusable") : null;
-          if (targetCard) setElementFocus(targetCard);
-          else if (sideMovies) setElementFocus(sideMovies);
+          switchAppSection("iptv");
         } else {
           const firstMode = document.querySelector("#modusList .nav-item.active:not(.hidden)") || document.querySelector("#modusList .nav-item.focusable:not(.hidden)");
           if (firstMode) setElementFocus(firstMode);
@@ -6387,7 +6417,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // 4. Navigation in 3-Icon Left Sidebar Dock (Live TV, Movies, Series)
       if (inSideDock) {
-        const dockBtns = [sideTv, sideMovies, sideSeries].filter(Boolean);
+        const dockBtns = [document.getElementById("sideBackToIptv"), sideTv, sideMovies, sideSeries].filter(Boolean);
         const bIdx = dockBtns.indexOf(focused);
 
         if (isRight) {
@@ -6497,22 +6527,42 @@ document.addEventListener("DOMContentLoaded", () => {
           deactiveerFitScreen();
         }
       } else {
-        if (isUp || isPageUp) {
+        if (isPageUp || isUp) {
           e.preventDefault();
-          currentStreamIndex = (currentStreamIndex + 1) % currentActiveStreams.length;
-          const target = currentActiveStreams[currentStreamIndex];
-          playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.url);
-        } else if (isDown || isPageDown) {
+          if (currentActiveStreams && currentActiveStreams.length > 0) {
+            currentStreamIndex = (currentStreamIndex - 1 + currentActiveStreams.length) % currentActiveStreams.length;
+            const target = currentActiveStreams[currentStreamIndex];
+            playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.url);
+          }
+        } else if (isPageDown || isDown) {
           e.preventDefault();
-          currentStreamIndex = (currentStreamIndex - 1 + currentActiveStreams.length) % currentActiveStreams.length;
-          const target = currentActiveStreams[currentStreamIndex];
-          playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.url);
-        } else if (isRight) {
+          if (currentActiveStreams && currentActiveStreams.length > 0) {
+            currentStreamIndex = (currentStreamIndex + 1) % currentActiveStreams.length;
+            const target = currentActiveStreams[currentStreamIndex];
+            playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.url);
+          }
+        } else if (isRight || isGuideKey) {
           e.preventDefault();
           openGuide();
-        } else if (isLeft || isEnter || isBack) {
+        } else if (isYellow) {
           e.preventDefault();
-          deactiveerFitScreen();
+          if (currentActiveStreams && currentActiveStreams[currentStreamIndex]) {
+            toggleFavorite(currentActiveStreams[currentStreamIndex].stream_id);
+          }
+        } else if (isLeft || isEnter) {
+          e.preventDefault();
+          if (window.AeroRadial) {
+            window.AeroRadial.open();
+          } else {
+            showLiveOSD();
+          }
+        } else if (isBack) {
+          e.preventDefault();
+          if (window.AeroRadial && !window.AeroRadial.isOpen()) {
+            window.AeroRadial.open();
+          } else {
+            deactiveerFitScreen();
+          }
         }
       }
       return;
@@ -6710,6 +6760,181 @@ document.addEventListener("DOMContentLoaded", () => {
     if (seekTimer) clearTimeout(seekTimer);
     commitVodSeek();
   });
+
+  // ==================== AERO RADIAL WHEEL BRIDGES ====================
+  window.kcGetModes = function() {
+    return [
+      { id: "favorites", title: "Favoriler", icon: "⭐" },
+      { id: "live", title: "Canlı TV", icon: "📺" },
+      { id: "vod", title: "Filmler", icon: "🎬" },
+      { id: "series", title: "Diziler", icon: "🍿" }
+    ];
+  };
+
+  window.kcGetRegions = function() {
+    var isVod = (currentModus === "vod" || currentModus === "series");
+    var cats = currentModus === "series" ? (seriesCategories.length ? seriesCategories : vodCategories) : (isVod ? vodCategories : allCategories);
+    var regMap = {};
+    var regList = ["ALL"];
+    if (cats && cats.length) {
+      for (var i = 0; i < cats.length; i++) {
+        var r = extractRegionFromCategory(cats[i].category_name, isVod);
+        if (r && !regMap[r]) {
+          regMap[r] = true;
+          regList.push(r);
+        }
+      }
+    }
+    return regList;
+  };
+
+  window.kcGetCategories = function(reg) {
+    var isVod = (currentModus === "vod" || currentModus === "series");
+    var cats = currentModus === "series" ? (seriesCategories.length ? seriesCategories : vodCategories) : (isVod ? vodCategories : allCategories);
+    if (!cats || !cats.length) return [{ category_id: "all", category_name: "Tüm Kanallar" }];
+    var hidden = hiddenCategories[categoryKind()] || [];
+    var result = [];
+    for (var i = 0; i < cats.length; i++) {
+      var c = cats[i];
+      if (hidden.indexOf(String(c.category_id)) !== -1) continue;
+      if (reg && reg !== "ALL" && extractRegionFromCategory(c.category_name, isVod) !== reg) continue;
+      result.push(c);
+    }
+    return result.length ? result : [{ category_id: "all", category_name: "Tüm Kanallar" }];
+  };
+
+  window.kcGetModus = function() {
+    return currentModus;
+  };
+
+  window.kcGetChannels = function() {
+    if (currentModus === "favorites") {
+      var favStreams = [];
+      if (favorites && favorites.length) {
+        for (var f = 0; f < favorites.length; f++) {
+          var fId = String(favorites[f]);
+          for (var s = 0; s < allStreams.length; s++) {
+            if (String(allStreams[s].stream_id) === fId) {
+              favStreams.push(allStreams[s]);
+              break;
+            }
+          }
+        }
+      }
+      return favStreams;
+    }
+    if (currentModus === "vod") {
+      var vStreams = (typeof vodStreams !== "undefined" && vodStreams) ? vodStreams : [];
+      var filteredV = vStreams.filter(function(s) { return String(s.category_id) === String(currentCategoryId); });
+      if (!filteredV.length) filteredV = vStreams.slice(0, 60);
+      return filteredV;
+    }
+    if (currentModus === "series") {
+      var sStreams = (typeof seriesStreams !== "undefined" && seriesStreams) ? seriesStreams : [];
+      var filteredS = sStreams.filter(function(s) { return String(s.category_id) === String(currentCategoryId); });
+      if (!filteredS.length) filteredS = sStreams.slice(0, 60);
+      return filteredS;
+    }
+    if (currentActiveStreams && currentActiveStreams.length) {
+      return currentActiveStreams;
+    }
+    return allStreams || [];
+  };
+
+  window.kcPlayStream = function(id, name, icon, idx, url, ext) {
+    if (currentModus === "vod") {
+      playVodMovie(id, name, ext || "mp4");
+    } else if (currentModus === "series") {
+      playSeriesEpisode(id, name, ext || "mp4");
+    } else {
+      playStream(id, name, icon, idx, url);
+    }
+  };
+
+  window.kcOpenSettings = function() {
+    switchAppSection("settings");
+  };
+
+  window.kcSwitchModus = function(m) {
+    switchModus(m);
+    setupRegions();
+    if (currentModus !== "favorites") filterCategories();
+    var cats = window.kcGetCategories(currentLiveRegion);
+    if (cats && cats.length) {
+      currentCategoryId = cats[0].category_id;
+    }
+    filterChannels();
+    if (window.AeroRadial) window.AeroRadial.refresh();
+  };
+
+  window.kcSetRegion = function(r) {
+    var isVod = (currentModus === "vod" || currentModus === "series");
+    if (isVod) currentVodRegion = r;
+    else currentLiveRegion = r;
+    if (currentModus !== "favorites") filterCategories();
+    var cats = window.kcGetCategories(r);
+    if (cats && cats.length) {
+      currentCategoryId = cats[0].category_id;
+    }
+    filterChannels();
+    if (window.AeroRadial) window.AeroRadial.refresh();
+  };
+
+  window.kcSetCategory = function(catId) {
+    currentCategoryId = catId;
+    filterChannels();
+    if (window.AeroRadial) window.AeroRadial.refresh();
+  };
+
+  window.kcToggleFavorite = function(id) {
+    toggleFavorite(id);
+    if (window.AeroRadial) window.AeroRadial.refresh();
+  };
+
+  window.kcMoveFavorite = function(dir) {
+    if (!favorites || favorites.length < 2) return 0;
+    var total = favorites.length;
+    var fromIdx = ((currentStreamIndex % total) + total) % total;
+    var toIdx = ((fromIdx + dir) % total + total) % total;
+    var item = favorites.splice(fromIdx, 1)[0];
+    favorites.splice(toIdx, 0, item);
+    saveFavorites(favorites);
+    currentStreamIndex = toIdx;
+    filterChannels();
+    return toIdx;
+  };
+
+  window.kcCommitMoveStack = function(stackIds, targetIdx) {
+    if (!favorites || !favorites.length || !stackIds || !stackIds.length) return;
+    var remaining = favorites.filter(function(id) {
+      return stackIds.indexOf(String(id)) === -1;
+    });
+    var insertAt = Math.max(0, Math.min(remaining.length, targetIdx));
+    remaining.splice.apply(remaining, [insertAt, 0].concat(stackIds));
+    favorites.splice(0, favorites.length);
+    for (var i = 0; i < remaining.length; i++) {
+      favorites.push(remaining[i]);
+    }
+    saveFavorites(favorites);
+    filterChannels();
+    if (window.AeroRadial) window.AeroRadial.refresh();
+  };
+
+  window.kcOpenStremio = function() {
+    switchAppSection("stremio");
+  };
+
+  window.kcOpenGuide = function() {
+    openGuide();
+  };
+
+  window.kcShowToast = function(msg) {
+    showToast(msg);
+  };
+
+  if (window.AeroRadial) {
+    window.AeroRadial.init();
+  }
 
   initProfile();
   scheduleListRefresh();
