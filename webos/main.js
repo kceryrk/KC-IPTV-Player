@@ -3212,7 +3212,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let watchdogStallSeconds = 0;
 
   function scheduleLiveReconnect(reason) {
-    if (!lastLive || liveReconnectTimer) return;
+    if (!lastLive || liveReconnectTimer || isPlaybackHealthy) return;
     liveReconnectAttempts += 1;
     if (liveReconnectAttempts > 3) {
       console.warn("Max reconnect attempts reached; stopping retry loop. Reason:", reason);
@@ -3320,11 +3320,19 @@ document.addEventListener("DOMContentLoaded", () => {
       clearTimeout(currentStageTimer);
       currentStageTimer = null;
     }
+    if (liveReconnectTimer) {
+      clearTimeout(liveReconnectTimer);
+      liveReconnectTimer = null;
+    }
     hidePlayerLoading();
   });
   video.addEventListener("timeupdate", () => {
     if (video.currentTime > 0) {
       isPlaybackHealthy = true;
+      if (liveReconnectTimer) {
+        clearTimeout(liveReconnectTimer);
+        liveReconnectTimer = null;
+      }
       hidePlayerLoading();
     }
   });
@@ -4391,37 +4399,47 @@ document.addEventListener("DOMContentLoaded", () => {
     function tryStage(stage) {
       if (mySessionId !== playbackSessionId) return; // Discard stale session
       currentStage = stage;
+      let stageTransitioned = false;
+
       if (currentStageTimer) {
         clearTimeout(currentStageTimer);
         currentStageTimer = null;
       }
 
-      function nextStage() {
+      function nextStage(reason) {
         if (mySessionId !== playbackSessionId) return;
-        if (currentStage < 4) {
-          tryStage(currentStage + 1);
+        if (stageTransitioned) return; // Prevent double-triggering nextStage for the same stage
+        stageTransitioned = true;
+        if (currentStageTimer) {
+          clearTimeout(currentStageTimer);
+          currentStageTimer = null;
+        }
+        window.__handlePlaybackStageError = null;
+        if (isPlaybackHealthy) return; // Already healthy, do not advance
+
+        console.warn(`Stage ${stage} finished (${reason || "next"}), proceeding to next stage`);
+        if (stage < 4) {
+          tryStage(stage + 1);
         } else {
-          scheduleLiveReconnect("Playback engine fallback exhausted");
+          scheduleLiveReconnect(reason || "Playback engine fallback exhausted");
         }
       }
-
-      window.__handlePlaybackStageError = function(reason) {
-        console.warn(`Stage ${currentStage} error (${reason}), switching to next stage`);
-        nextStage();
-      };
 
       // Stage timeout: if no frames render within 3.8s, advance to next engine
       currentStageTimer = setTimeout(() => {
         if (mySessionId !== playbackSessionId) return;
         if (!isPlaybackHealthy) {
-          console.warn(`Stage ${currentStage} timed out without rendering frames, trying next stage`);
-          nextStage();
+          console.warn(`Stage ${stage} timed out without rendering frames, trying next stage`);
+          nextStage("timeout");
         }
       }, 3800);
 
       try {
         if (stage === 1) {
           // Stage 1: Native webOS HLS
+          window.__handlePlaybackStageError = function(reason) {
+            nextStage(`native hls error: ${reason}`);
+          };
           video.pause();
           video.removeAttribute("src");
           video.load();
@@ -4432,11 +4450,12 @@ document.addEventListener("DOMContentLoaded", () => {
           if (p && typeof p.catch === "function") {
             p.catch(err => {
               console.warn("Native HLS play rejected:", err);
-              nextStage();
+              nextStage("native hls rejected");
             });
           }
         } else if (stage === 2) {
           // Stage 2: Hls.js with local engine & worker disabled for webOS stability
+          window.__handlePlaybackStageError = null;
           if (window.Hls && Hls.isSupported() && hlsUrl) {
             video.pause();
             video.removeAttribute("src");
@@ -4461,20 +4480,23 @@ document.addEventListener("DOMContentLoaded", () => {
             hlsPlayer.on(Hls.Events.ERROR, (event, data) => {
               if (data && data.fatal) {
                 if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-                  try { hlsPlayer.startLoad(); } catch (e) { nextStage(); }
+                  try { hlsPlayer.startLoad(); } catch (e) { nextStage("hls network error"); }
                 } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-                  try { hlsPlayer.recoverMediaError(); } catch (e) { nextStage(); }
+                  try { hlsPlayer.recoverMediaError(); } catch (e) { nextStage("hls media error"); }
                 } else {
                   if (hlsPlayer) { try { hlsPlayer.destroy(); } catch (e) {} hlsPlayer = null; }
-                  nextStage();
+                  nextStage("hls fatal error");
                 }
               }
             });
           } else {
-            nextStage();
+            nextStage("hls.js not supported or no url");
           }
         } else if (stage === 3) {
           // Stage 3: Native MPEG-TS (.ts)
+          window.__handlePlaybackStageError = function(reason) {
+            nextStage(`native ts error: ${reason}`);
+          };
           if (hlsPlayer) { try { hlsPlayer.destroy(); } catch (e) {} hlsPlayer = null; }
           video.pause();
           video.removeAttribute("src");
@@ -4486,11 +4508,12 @@ document.addEventListener("DOMContentLoaded", () => {
           if (p && typeof p.catch === "function") {
             p.catch(err => {
               console.warn("Native TS play rejected:", err);
-              nextStage();
+              nextStage("native ts rejected");
             });
           }
         } else if (stage === 4) {
           // Stage 4: mpegts.js local MSE player
+          window.__handlePlaybackStageError = null;
           if (window.mpegts && mpegts.isSupported() && tsUrl) {
             video.pause();
             video.removeAttribute("src");
@@ -4505,21 +4528,23 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             mpegTsPlayer.on(mpegts.Events.ERROR, (type, detail) => {
               console.warn(`mpegts.js error: ${type} ${detail}`);
-              nextStage();
+              nextStage(`mpegts error: ${type}`);
             });
             mpegTsPlayer.attachMediaElement(video);
             mpegTsPlayer.load();
             Promise.resolve(mpegTsPlayer.play()).catch(e => {
               console.warn("mpegts play catch:", e);
-              nextStage();
+              if (!isPlaybackHealthy) {
+                nextStage("mpegts play rejected");
+              }
             });
           } else {
-            nextStage();
+            nextStage("mpegts not supported");
           }
         }
       } catch (err) {
         console.error(`Error initiating stage ${stage}:`, err);
-        nextStage();
+        nextStage("exception in stage " + stage);
       }
     }
 
