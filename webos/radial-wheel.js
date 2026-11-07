@@ -358,34 +358,80 @@
             '<span class="radial-card-title">' + catName + '</span>' +
           '</div>';
       } else if (tierIndex === 3) {
-        var chName = formatTitle(itemData.name || itemData.title || "Kanal");
-        var isPickedUp = (state.isMoveMode && state.moveStack.indexOf(String(itemData.stream_id)) !== -1);
-        var moveBadge = isPickedUp ? '<span class="radial-move-badge">TAŞINIYOR (' + (state.moveStack.indexOf(String(itemData.stream_id)) + 1) + '/' + state.moveStack.length + ')</span>' : '';
-        var cardExtraStyle = isPickedUp ? ' style="border: 2px dashed #f87171 !important;"' : '';
-        var titleStyle = getTitleStyle(chName, isActiveFocused);
+        if (state.isMoveMode && isFavMode) {
+          var stackIds = state.moveStack;
+          var allFavs = list;
+          var remaining = allFavs.filter(function(c) {
+            return stackIds.indexOf(String(c.stream_id)) === -1;
+          });
 
-        if (isVodOrSeries) {
-          // VOD / Series: Title ONLY in card, poster is displayed on the right!
-          itemEl.innerHTML = 
-            '<div class="radial-card-box col-box-3"' + cardExtraStyle + '>' +
-              '<span class="radial-card-title"' + titleStyle + '>' + chName + '</span>' +
-            '</div>';
+          if (isCenter) {
+            // THE CENTER HELD STACK
+            var stackTopId = stackIds[stackIds.length - 1];
+            var topCh = allFavs.find(function(c) { return String(c.stream_id) === String(stackTopId); }) || allFavs[0];
+            var topName = formatTitle(topCh ? (topCh.name || topCh.title) : "Kanal");
+            var layersHtml = "";
+            if (stackIds.length > 2) layersHtml += '<div class="radial-stack-layer-2"></div>';
+            if (stackIds.length > 1) layersHtml += '<div class="radial-stack-layer-1"></div>';
+
+            itemEl.innerHTML = 
+              '<div class="radial-card-box col-box-3 radial-move-stack-card">' +
+                layersHtml +
+                '<div class="radial-fav-num" style="color:#f87171 !important;">⇕ ' + (state.selected.channelIndex + 1) + '</div>' +
+                '<span class="radial-card-title"' + getTitleStyle(topName, true) + '>' + topName + '</span>' +
+                '<span class="radial-move-badge">TAŞINIYOR (' + stackIds.length + ' kanal)</span>' +
+              '</div>';
+          } else if (remaining.length > 0) {
+            var rIdx = 0;
+            if (offset > 0) {
+              rIdx = ((state.selected.channelIndex + (offset - 1)) % remaining.length + remaining.length) % remaining.length;
+            } else {
+              rIdx = ((state.selected.channelIndex + offset) % remaining.length + remaining.length) % remaining.length;
+            }
+            var remCh = remaining[rIdx];
+            var remName = formatTitle(remCh ? (remCh.name || remCh.title) : "Kanal");
+            var isPickTarget = (offset === 1);
+            if (isPickTarget) {
+              itemEl.className += " radial-pick-target";
+            }
+            var addBadge = isPickTarget ? '<span class="radial-add-badge">+ OK ile ekle</span>' : '';
+            var calcNum = (offset < 0) ? (rIdx + 1) : (rIdx + 1 + stackIds.length);
+
+            itemEl.innerHTML = 
+              '<div class="radial-card-box col-box-3">' +
+                '<div class="radial-fav-num">#' + calcNum + '</div>' +
+                '<span class="radial-card-title"' + getTitleStyle(remName, false) + '>' + remName + '</span>' +
+                addBadge +
+              '</div>';
+          } else {
+            itemEl.innerHTML = '';
+          }
         } else {
-          // Live TV / Favorites: Channel name only (+ big number for favorites)
-          var favNumHtml = isFavMode ? '<div class="radial-fav-num">#' + (itemIndex + 1) + '</div>' : '';
+          var chName = formatTitle(itemData.name || itemData.title || "Kanal");
+          var titleStyle = getTitleStyle(chName, isActiveFocused);
 
-          // FLOATING CHANNEL LOGO: Placed OUTSIDE card on the right, 2x bigger, NO TV label
-          var floatingLogoHtml = (isActiveFocused && itemData.stream_icon)
-            ? '<div class="radial-ch-floating-logo"><img src="' + itemData.stream_icon + '" class="radial-ch-floating-img" onerror="this.parentElement.style.display=\'none\';"></div>'
-            : '';
+          if (isVodOrSeries) {
+            // VOD / Series: Title ONLY in card, poster is displayed on the right!
+            itemEl.innerHTML = 
+              '<div class="radial-card-box col-box-3">' +
+                '<span class="radial-card-title"' + titleStyle + '>' + chName + '</span>' +
+              '</div>';
+          } else {
+            // Live TV / Favorites: Channel name only (+ big number for favorites)
+            var favNumHtml = isFavMode ? '<div class="radial-fav-num">#' + (itemIndex + 1) + '</div>' : '';
 
-          itemEl.innerHTML = 
-            '<div class="radial-card-box col-box-3"' + cardExtraStyle + '>' +
-              favNumHtml +
-              '<span class="radial-card-title"' + titleStyle + '>' + chName + '</span>' +
-              moveBadge +
-            '</div>' +
-            floatingLogoHtml;
+            // FLOATING CHANNEL LOGO: Placed OUTSIDE card on the right, 2x bigger, NO TV label
+            var floatingLogoHtml = (isActiveFocused && itemData.stream_icon)
+              ? '<div class="radial-ch-floating-logo"><img src="' + itemData.stream_icon + '" class="radial-ch-floating-img" onerror="this.parentElement.style.display=\'none\';"></div>'
+              : '';
+
+            itemEl.innerHTML = 
+              '<div class="radial-card-box col-box-3">' +
+                favNumHtml +
+                '<span class="radial-card-title"' + titleStyle + '>' + chName + '</span>' +
+              '</div>' +
+              floatingLogoHtml;
+          }
         }
       }
 
@@ -738,23 +784,19 @@
 
   // Pick up channel below into reorder stack
   function pickUpNextToMoveStack() {
-    var channels = getChannelsList();
-    if (!channels || !channels.length) return;
-    var total = channels.length;
-    var targetChannel = null;
-    for (var step = 1; step < total; step++) {
-      var idx = (state.selected.channelIndex + step) % total;
-      var ch = channels[idx];
-      if (ch && state.moveStack.indexOf(String(ch.stream_id)) === -1) {
-        targetChannel = ch;
-        break;
-      }
-    }
-    if (targetChannel) {
-      state.moveStack.push(String(targetChannel.stream_id));
+    var allFavs = getChannelsList();
+    if (!allFavs || !allFavs.length) return;
+    var remaining = allFavs.filter(function(ch) {
+      return state.moveStack.indexOf(String(ch.stream_id)) === -1;
+    });
+    if (!remaining.length) return;
+    var target = remaining[state.selected.channelIndex % remaining.length];
+    if (target) {
+      state.moveStack.push(String(target.stream_id));
       if (window.kcShowToast) {
         window.kcShowToast(state.moveStack.length + " kanal seçildi");
       }
+      playStep();
       renderRadialTier(3);
     }
   }
@@ -764,6 +806,19 @@
     var list = getTierData(tierIndex);
     var total = list.length;
     if (total === 0) return;
+
+    if (tierIndex === 3 && state.isMoveMode) {
+      var allFavs = getChannelsList();
+      var remaining = allFavs.filter(function(ch) {
+        return state.moveStack.indexOf(String(ch.stream_id)) === -1;
+      });
+      if (remaining.length > 0) {
+        state.selected.channelIndex = ((state.selected.channelIndex + direction) % remaining.length + remaining.length) % remaining.length;
+        renderRadialTier(3);
+        playTick();
+      }
+      return;
+    }
 
     if (tierIndex === 0) {
       // User: "1st column only open on an ok button press instead of opening automatically"
@@ -809,7 +864,16 @@
     var total = channels.length;
     var chIdx = ((state.selected.channelIndex % total) + total) % total;
     var target = channels[chIdx];
-    if (target && window.kcPlayStream && typeof window.kcPlayStream === "function") {
+    if (!target) return;
+
+    var curPlayingId = window.kcGetCurrentPlayingStreamId ? window.kcGetCurrentPlayingStreamId() : null;
+    if (curPlayingId && String(target.stream_id) === String(curPlayingId)) {
+      // User: "Pressing ok on an already playing channel should close the menu and go fullscreen"
+      closeOverlay();
+      return;
+    }
+
+    if (window.kcPlayStream && typeof window.kcPlayStream === "function") {
       playChime();
       var pUrl = target.cover || target.stream_icon || target.poster || "";
       window.kcPlayStream(target.stream_id, target.name || target.title, pUrl, chIdx, target.url, target.container_extension);

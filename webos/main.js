@@ -6904,6 +6904,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return allStreams || [];
   };
 
+  window.kcGetCurrentPlayingStreamId = function() {
+    return currentPlayingStreamId;
+  };
+
   window.kcPlayStream = function(id, name, icon, idx, url, ext) {
     if (currentModus === "vod") {
       playVodMovie(id, name, ext || "mp4");

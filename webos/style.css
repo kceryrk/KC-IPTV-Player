@@ -4732,6 +4732,79 @@ body.radial-active #videoPlayer {
   display: block !important;
 }
 
+/* REORDER STACK: Held in 1 center stack */
+.radial-wheel-item.is-active-focused .radial-card-box.radial-move-stack-card {
+  position: relative !important;
+  border: 2.5px solid #f87171 !important;
+  background: rgba(220, 38, 38, 0.45) !important;
+  box-shadow: 0 0 32px rgba(239, 68, 68, 0.8), 0 8px 24px rgba(0, 0, 0, 0.85) !important;
+}
+
+/* Stack layers drawn behind the center card */
+.radial-stack-layer-1 {
+  position: absolute !important;
+  left: 6px !important;
+  top: 6px !important;
+  right: -6px !important;
+  bottom: -6px !important;
+  border-radius: 999px !important;
+  border: 1.5px solid rgba(248, 113, 113, 0.6) !important;
+  background: rgba(15, 23, 42, 0.85) !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+}
+
+.radial-stack-layer-2 {
+  position: absolute !important;
+  left: 12px !important;
+  top: 12px !important;
+  right: -12px !important;
+  bottom: -12px !important;
+  border-radius: 999px !important;
+  border: 1.5px solid rgba(248, 113, 113, 0.35) !important;
+  background: rgba(15, 23, 42, 0.7) !important;
+  z-index: -2 !important;
+  pointer-events: none !important;
+}
+
+/* Pick preview target: channel about to be put into stack */
+.radial-wheel-item.radial-pick-target .radial-card-box {
+  border: 2px dashed #38bdf8 !important;
+  background: rgba(56, 189, 248, 0.28) !important;
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.65) !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.radial-add-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  font-size: 0.82rem !important;
+  font-weight: 800 !important;
+  color: #38bdf8 !important;
+  background: rgba(8, 14, 28, 0.92) !important;
+  border: 1px solid rgba(56, 189, 248, 0.6) !important;
+  padding: 3px 12px !important;
+  border-radius: 999px !important;
+  margin-left: 12px !important;
+  letter-spacing: 0.4px !important;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4) !important;
+}
+
+.radial-move-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  font-size: 0.80rem !important;
+  font-weight: 800 !important;
+  color: #fca5a5 !important;
+  background: rgba(153, 27, 27, 0.85) !important;
+  border: 1px solid #f87171 !important;
+  padding: 3px 12px !important;
+  border-radius: 999px !important;
+  margin-left: 12px !important;
+  letter-spacing: 0.4px !important;
+}
+
 /* Fullscreen VOD / Series Poster Backdrop on Right with Black Bottom Fade */
 .radial-vod-backdrop {
   position: absolute !important;
