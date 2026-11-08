@@ -161,6 +161,7 @@
     vod: '<svg class="r-icon-svg" viewBox="0 0 24 24" fill="#c084fc"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>',
     series: '<svg class="r-icon-svg" viewBox="0 0 24 24" fill="#fb923c"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>',
     stremio: '<svg class="r-icon-svg" viewBox="0 0 24 24" fill="#a78bfa"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>',
+    youtube: '<svg class="r-icon-svg" viewBox="0 0 24 24" fill="#ff0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>',
     settings: '<svg class="r-icon-svg" viewBox="0 0 24 24" fill="#94a3b8"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>',
     folder: '<svg class="r-icon-svg" viewBox="0 0 24 24" fill="#38bdf8"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>'
   };
@@ -215,14 +216,40 @@
   }
 
   // DATA PROVIDERS (Linked directly to KC IPTV Player data)
-  var MODES = [
-    { id: "favorites", title: "Favoriler", iconKey: "favorites" },
-    { id: "live", title: "Canlı TV", iconKey: "live" },
-    { id: "vod", title: "Filmler", iconKey: "vod" },
-    { id: "series", title: "Diziler", iconKey: "series" },
-    { id: "stremio", title: "Stremio", iconKey: "stremio" },
-    { id: "settings", title: "Ayarlar", iconKey: "settings" }
-  ];
+  function getModeTitle(modeId) {
+    if (window.kcGetI18n && typeof window.kcGetI18n === "function") {
+      if (modeId === "favorites") return window.kcGetI18n("favorites") || "Favoriler";
+      if (modeId === "live") return window.kcGetI18n("live") || "Canlı TV";
+      if (modeId === "vod") return window.kcGetI18n("vod") || "Filmler";
+      if (modeId === "series") return window.kcGetI18n("series") || "Diziler";
+      if (modeId === "stremio") return "Stremio";
+      if (modeId === "youtube") return "YouTube";
+      if (modeId === "settings") return window.kcGetI18n("settings") || "Ayarlar";
+    }
+    if (modeId === "favorites") return "Favoriler";
+    if (modeId === "live") return "Canlı TV";
+    if (modeId === "vod") return "Filmler";
+    if (modeId === "series") return "Diziler";
+    if (modeId === "stremio") return "Stremio";
+    if (modeId === "youtube") return "YouTube";
+    if (modeId === "settings") return "Ayarlar";
+    return modeId;
+  }
+
+  function getModesList() {
+    var modes = [
+      { id: "favorites", title: getModeTitle("favorites"), iconKey: "favorites" },
+      { id: "live", title: getModeTitle("live"), iconKey: "live" },
+      { id: "vod", title: getModeTitle("vod"), iconKey: "vod" },
+      { id: "series", title: getModeTitle("series"), iconKey: "series" },
+      { id: "stremio", title: "Stremio", iconKey: "stremio" }
+    ];
+    if (window.kcIsYouTubeInstalled && typeof window.kcIsYouTubeInstalled === "function" && window.kcIsYouTubeInstalled()) {
+      modes.push({ id: "youtube", title: "YouTube", iconKey: "youtube" });
+    }
+    modes.push({ id: "settings", title: getModeTitle("settings"), iconKey: "settings" });
+    return modes;
+  }
 
   function getRegionsList() {
     if (window.kcGetRegions && typeof window.kcGetRegions === "function") {
@@ -263,7 +290,7 @@
   }
 
   function getTierData(tierIndex) {
-    if (tierIndex === 0) return MODES;
+    if (tierIndex === 0) return getModesList();
     if (tierIndex === 1) return getRegionsList();
     if (tierIndex === 2) return getCategoriesList();
     if (tierIndex === 3) return getChannelsList();
@@ -280,9 +307,10 @@
 
   function updateColumnVisibility() {
     if (state.seriesPicker.active) return;
-    var modeObj = MODES[state.selected.modeIndex] || MODES[0];
+    var modes = getModesList();
+    var modeObj = modes[state.selected.modeIndex] || modes[0];
     var isFav = (modeObj.id === "favorites");
-    var isSpecial = (modeObj.id === "settings" || modeObj.id === "stremio");
+    var isSpecial = (modeObj.id === "settings" || modeObj.id === "stremio" || modeObj.id === "youtube");
     var col1 = document.getElementById("radialCol-1");
     var col2 = document.getElementById("radialCol-2");
     var col3 = document.getElementById("radialCol-3");
@@ -356,7 +384,8 @@
     var visibleRange = 7;
     var curModus = window.kcGetModus ? window.kcGetModus() : "live";
     var isVodOrSeries = (curModus === "vod" || curModus === "series");
-    var isFavMode = (MODES[state.selected.modeIndex].id === "favorites");
+    var curModes = getModesList();
+    var isFavMode = (curModes[state.selected.modeIndex] && curModes[state.selected.modeIndex].id === "favorites");
 
     var isCurrentActiveCol = (tierIndex === state.activeTier);
     var focusedItemData = null;
@@ -556,9 +585,10 @@
 
   function renderAllTiers() {
     updateColumnVisibility();
-    var modeObj = MODES[state.selected.modeIndex] || MODES[0];
+    var modes = getModesList();
+    var modeObj = modes[state.selected.modeIndex] || modes[0];
     var isFav = (modeObj.id === "favorites");
-    var isSpecial = (modeObj.id === "settings" || modeObj.id === "stremio");
+    var isSpecial = (modeObj.id === "settings" || modeObj.id === "stremio" || modeObj.id === "youtube");
     for (var i = 0; i < 4; i++) {
       if ((isFav && (i === 1 || i === 2)) || (isSpecial && i > 0)) continue;
       renderRadialTier(i);
@@ -602,7 +632,8 @@
 
   function applyTierPreview(tierIndex) {
     if (tierIndex === 0) {
-      var chosenMode = MODES[state.selected.modeIndex].id;
+      var modes = getModesList();
+      var chosenMode = modes[state.selected.modeIndex] ? modes[state.selected.modeIndex].id : "live";
       if (chosenMode === "settings") {
         closeOverlay();
         if (window.kcOpenSettings && typeof window.kcOpenSettings === "function") {
@@ -614,6 +645,13 @@
         closeOverlay();
         if (window.kcOpenStremio && typeof window.kcOpenStremio === "function") {
           window.kcOpenStremio();
+        }
+        return;
+      }
+      if (chosenMode === "youtube") {
+        closeOverlay();
+        if (window.kcOpenYouTube && typeof window.kcOpenYouTube === "function") {
+          window.kcOpenYouTube();
         }
         return;
       }
@@ -967,7 +1005,8 @@
       clearTimeout(previewTimer);
       previewTimer = null;
     }
-    var modeObj = MODES[state.selected.modeIndex] || MODES[0];
+    var modes = getModesList();
+    var modeObj = modes[state.selected.modeIndex] || modes[0];
     var isFav = (modeObj.id === "favorites");
 
     if (direction > 0) {
@@ -1232,7 +1271,8 @@
     // Red key: Toggle Reorder / Move Mode in Favorites
     if (isRed) {
       e.preventDefault();
-      if (MODES[state.selected.modeIndex].id === "favorites") {
+      var curModes = getModesList();
+      if (curModes[state.selected.modeIndex] && curModes[state.selected.modeIndex].id === "favorites") {
         var chs = getChannelsList();
         if (!chs || !chs.length) return true;
 
@@ -1355,11 +1395,19 @@
       }
     },
     setMode: function(idx) {
-      if (idx !== undefined && idx >= 0 && idx < MODES.length) {
+      var modes = getModesList();
+      if (idx !== undefined && idx >= 0 && idx < modes.length) {
         state.selected.modeIndex = idx;
         applyTierPreview(0);
         if (state.isOpen) renderAllTiers();
       }
+    },
+    refreshModes: function() {
+      var modes = getModesList();
+      if (state.selected.modeIndex >= modes.length) {
+        state.selected.modeIndex = 0;
+      }
+      if (state.isOpen) renderAllTiers();
     }
   };
 

@@ -138,10 +138,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const sideTv = document.getElementById("sideTv");
   const sideMovies = document.getElementById("sideMovies");
   const sideSeries = document.getElementById("sideSeries");
+  const sideYoutube = document.getElementById("sideYoutube");
   const stremioScrollContainer = document.getElementById("stremioScrollContainer");
   const stremioSubpageMovies = document.getElementById("stremioSubpageMovies");
   const stremioSubpageSeries = document.getElementById("stremioSubpageSeries");
   const stremioSubpageTv = document.getElementById("stremioSubpageTv");
+  const stremioSubpageYoutube = document.getElementById("stremioSubpageYoutube");
+  const stremioYtAccountBtn = document.getElementById("stremioYtAccountBtn");
+  const stremioYtGenreBar = document.getElementById("stremioYtGenreBar");
+  const stremioStripYtChannels = document.getElementById("stremioStripYtChannels");
+  const stremioStripYtVideos = document.getElementById("stremioStripYtVideos");
+  const stremioCountYtChannels = document.getElementById("stremioCountYtChannels");
+  const stremioCountYtVideos = document.getElementById("stremioCountYtVideos");
+  const youtubePlayerModal = document.getElementById("youtubePlayerModal");
+  const youtubePlayerTitle = document.getElementById("youtubePlayerTitle");
+  const youtubePlayerClose = document.getElementById("youtubePlayerClose");
+  const youtubeIframe = document.getElementById("youtubeIframe");
+  const youtubeAccountModal = document.getElementById("youtubeAccountModal");
+  const youtubeAccountModalClose = document.getElementById("youtubeAccountModalClose");
   const stremioRowLive = document.getElementById("stremioRowLive");
   const stremioGridLive = document.getElementById("stremioGridLive");
   const stremioCountLive = document.getElementById("stremioCountLive");
@@ -3692,6 +3706,7 @@ document.addEventListener("DOMContentLoaded", () => {
         removeBtn.addEventListener("click", function() {
           window.StremioEngine.removeAddon(addon.transportUrl);
           renderAddonsSection();
+          updateYouTubeVisibility();
           if (currentAppSection === "stremio") initStremioPage();
           showToast("Addon removed");
         });
@@ -3740,6 +3755,7 @@ document.addEventListener("DOMContentLoaded", () => {
           window.StremioEngine.removeAddon(item.transportUrl);
           showToast("Uninstalled " + item.name);
           renderAddonsSection();
+          updateYouTubeVisibility();
           if (currentAppSection === "stremio") initStremioPage();
         } else {
           actionBtn.textContent = "Installing...";
@@ -3753,6 +3769,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             showToast("Installed " + item.name);
             renderAddonsSection();
+            updateYouTubeVisibility();
             if (currentAppSection === "stremio") initStremioPage();
           });
         }
@@ -3846,6 +3863,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initStremioPage() {
     if (!stremioPage || !window.StremioEngine) return;
+    updateYouTubeVisibility();
     renderStremioNetflixRows();
   }
 
@@ -3877,18 +3895,22 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sideMovies) sideMovies.classList.toggle("active", subpage === "movies");
     if (sideSeries) sideSeries.classList.toggle("active", subpage === "series");
     if (sideTv) sideTv.classList.toggle("active", subpage === "tv");
+    if (sideYoutube) sideYoutube.classList.toggle("active", subpage === "youtube");
 
     if (stremioSubpageMovies) stremioSubpageMovies.classList.toggle("hidden", subpage !== "movies");
     if (stremioSubpageSeries) stremioSubpageSeries.classList.toggle("hidden", subpage !== "series");
     if (stremioSubpageTv) stremioSubpageTv.classList.toggle("hidden", subpage !== "tv");
+    if (stremioSubpageYoutube) stremioSubpageYoutube.classList.toggle("hidden", subpage !== "youtube");
 
     if (stremioScrollContainer) stremioScrollContainer.scrollTop = 0;
 
     if (subpage === "tv" && stremioGridLive && (stremioGridLive.children.length === 0 || stremioGridLive.querySelector(".stremio-skeleton-card"))) {
       loadStremioLiveChannels();
+    } else if (subpage === "youtube") {
+      initYouTubeHome();
     }
 
-    const activeSub = subpage === "tv" ? stremioSubpageTv : (subpage === "series" ? stremioSubpageSeries : stremioSubpageMovies);
+    const activeSub = subpage === "tv" ? stremioSubpageTv : (subpage === "series" ? stremioSubpageSeries : (subpage === "youtube" ? stremioSubpageYoutube : stremioSubpageMovies));
     if (activeSub) {
       const first = activeSub.querySelector(".focusable");
       if (first) setElementFocus(first);
@@ -3909,6 +3931,231 @@ document.addEventListener("DOMContentLoaded", () => {
   if (sideSeries) {
     sideSeries.addEventListener("click", () => switchStremioSubpage("series"));
   }
+  if (sideYoutube) {
+    sideYoutube.addEventListener("click", () => switchStremioSubpage("youtube"));
+  }
+
+  let currentYtGenre = "all";
+
+  const YT_GENRES = [
+    { id: "all", name: "Tümü (All)" },
+    { id: "Music", name: "Müzik (Music)" },
+    { id: "Gaming", name: "Oyun (Gaming)" },
+    { id: "News & Politics", name: "Haberler & Politika" },
+    { id: "Film & Entertainment", name: "Sinema & Eğlence" },
+    { id: "Sports", name: "Spor" },
+    { id: "Comedy", name: "Komedi" },
+    { id: "Animation", name: "Animasyon" },
+    { id: "Lifestyle", name: "Yaşam" },
+    { id: "Automotive", name: "Otomotiv" }
+  ];
+
+  function initYouTubeHome() {
+    renderYouTubeGenres();
+    loadYouTubeChannels(currentYtGenre);
+  }
+
+  function renderYouTubeGenres() {
+    if (!stremioYtGenreBar) return;
+    stremioYtGenreBar.innerHTML = "";
+    YT_GENRES.forEach((g) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "stremio-yt-genre-pill focusable" + (g.id === currentYtGenre ? " active" : "");
+      btn.textContent = g.name;
+      btn.tabIndex = 0;
+      btn.addEventListener("click", () => {
+        currentYtGenre = g.id;
+        renderYouTubeGenres();
+        loadYouTubeChannels(g.id);
+      });
+      stremioYtGenreBar.appendChild(btn);
+    });
+  }
+
+  function loadYouTubeChannels(genre) {
+    if (!stremioStripYtChannels || !window.stremioEngine) return;
+    stremioStripYtChannels.innerHTML = '<div class="stremio-skeleton-card stremio-yt-channel-card" style="display:flex;align-items:center;justify-content:center;color:#94a3b8;">Yükleniyor...</div>';
+    if (stremioCountYtChannels) stremioCountYtChannels.textContent = "";
+
+    window.stremioEngine.getYouTubeTopChannels(genre, (err, metas) => {
+      stremioStripYtChannels.innerHTML = "";
+      if (err || !metas || metas.length === 0) {
+        stremioStripYtChannels.innerHTML = '<div style="padding:24px; color:#94a3b8; font-size:1.2rem;">Bu kategoride YouTube kanalı bulunamadı.</div>';
+        return;
+      }
+      if (stremioCountYtChannels) stremioCountYtChannels.textContent = metas.length + " kanal";
+
+      metas.forEach((ch, idx) => {
+        const card = document.createElement("div");
+        card.className = "stremio-yt-channel-card focusable" + (idx === 0 ? " active" : "");
+        card.tabIndex = 0;
+        card.dataset.ytId = ch.id;
+
+        const img = document.createElement("img");
+        img.className = "stremio-yt-channel-avatar";
+        img.src = ch.poster || "icon.png";
+        img.alt = ch.name || "YouTube";
+        img.onerror = () => { img.src = "icon.png"; };
+
+        const name = document.createElement("div");
+        name.className = "stremio-yt-channel-name";
+        name.textContent = ch.name || "YouTube Channel";
+
+        const badge = document.createElement("div");
+        badge.className = "stremio-yt-channel-badge";
+        badge.textContent = ch.genre && ch.genre.length ? ch.genre.join(", ") : "Official Channel";
+
+        card.appendChild(img);
+        card.appendChild(name);
+        card.appendChild(badge);
+
+        card.addEventListener("click", () => {
+          stremioStripYtChannels.querySelectorAll(".stremio-yt-channel-card").forEach(c => c.classList.remove("active"));
+          card.classList.add("active");
+          loadYouTubeChannelVideos(ch.id, ch.name);
+        });
+
+        stremioStripYtChannels.appendChild(card);
+      });
+
+      if (metas[0]) {
+        loadYouTubeChannelVideos(metas[0].id, metas[0].name);
+      }
+    });
+  }
+
+  function loadYouTubeChannelVideos(ytId, chName) {
+    if (!stremioStripYtVideos || !window.stremioEngine) return;
+    stremioStripYtVideos.innerHTML = '<div class="stremio-skeleton-card stremio-yt-video-card" style="display:flex;align-items:center;justify-content:center;color:#94a3b8;">Videolar yükleniyor...</div>';
+    const titleEl = document.getElementById("stremioTitleYtVideos");
+    if (titleEl) titleEl.textContent = (chName ? chName + " - " : "") + "Videolar";
+    if (stremioCountYtVideos) stremioCountYtVideos.textContent = "";
+
+    window.stremioEngine.getYouTubeChannelMeta(ytId, (err, meta) => {
+      stremioStripYtVideos.innerHTML = "";
+      if (err || !meta || !meta.videos || meta.videos.length === 0) {
+        stremioStripYtVideos.innerHTML = '<div style="padding:24px; color:#94a3b8; font-size:1.2rem;">Bu kanala ait son video bulunamadı.</div>';
+        return;
+      }
+      if (stremioCountYtVideos) stremioCountYtVideos.textContent = meta.videos.length + " video";
+
+      meta.videos.forEach((v) => {
+        const card = document.createElement("div");
+        card.className = "stremio-yt-video-card focusable";
+        card.tabIndex = 0;
+        card.dataset.videoId = v.id;
+
+        const thumbWrap = document.createElement("div");
+        thumbWrap.className = "stremio-yt-thumb-wrapper";
+
+        const img = document.createElement("img");
+        img.className = "stremio-yt-thumb";
+        img.src = v.thumbnailHigh || v.thumbnail || v.thumbnailMax || "";
+        img.alt = v.title || "YouTube Video";
+
+        const playBadge = document.createElement("div");
+        playBadge.className = "stremio-yt-play-badge";
+        playBadge.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+
+        thumbWrap.appendChild(img);
+        thumbWrap.appendChild(playBadge);
+
+        const info = document.createElement("div");
+        info.className = "stremio-yt-video-info";
+
+        const vTitle = document.createElement("div");
+        vTitle.className = "stremio-yt-video-title";
+        vTitle.textContent = v.title || "Video";
+
+        const metaSpan = document.createElement("div");
+        metaSpan.className = "stremio-yt-video-meta";
+        const dateStr = v.released ? new Date(v.released).toLocaleDateString() : (v.publishedAt ? new Date(v.publishedAt).toLocaleDateString() : "");
+        metaSpan.textContent = dateStr ? "📅 " + dateStr : "YouTube Video";
+
+        info.appendChild(vTitle);
+        info.appendChild(metaSpan);
+
+        card.appendChild(thumbWrap);
+        card.appendChild(info);
+
+        card.addEventListener("click", () => {
+          playYouTubeVideo(v.id, v.title);
+        });
+
+        stremioStripYtVideos.appendChild(card);
+      });
+    });
+  }
+
+  function playYouTubeVideo(rawVideoId, title) {
+    if (!youtubePlayerModal || !youtubeIframe) return;
+    let cleanId = rawVideoId || "";
+    if (cleanId.indexOf(":") !== -1) {
+      const parts = cleanId.split(":");
+      cleanId = parts[parts.length - 1];
+    }
+    if (!cleanId) return;
+
+    if (youtubePlayerTitle) youtubePlayerTitle.textContent = title || "YouTube";
+    youtubeIframe.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(cleanId) + "?autoplay=1&enablejsapi=1&rel=0";
+    youtubePlayerModal.classList.remove("hidden");
+    if (youtubePlayerClose) setElementFocus(youtubePlayerClose);
+  }
+
+  function closeYouTubePlayer() {
+    if (!youtubePlayerModal) return;
+    youtubePlayerModal.classList.add("hidden");
+    if (youtubeIframe) youtubeIframe.src = "about:blank";
+    const activeCard = stremioStripYtVideos ? stremioStripYtVideos.querySelector(".stremio-yt-video-card.focusable") : null;
+    if (activeCard) setElementFocus(activeCard);
+    else if (sideYoutube) setElementFocus(sideYoutube);
+  }
+
+  if (youtubePlayerClose) {
+    youtubePlayerClose.addEventListener("click", closeYouTubePlayer);
+  }
+
+  function openYouTubeAccountModal() {
+    if (!youtubeAccountModal) return;
+    youtubeAccountModal.classList.remove("hidden");
+    if (youtubeAccountModalClose) setElementFocus(youtubeAccountModalClose);
+  }
+
+  function closeYouTubeAccountModal() {
+    if (!youtubeAccountModal) return;
+    youtubeAccountModal.classList.add("hidden");
+    if (stremioYtAccountBtn) setElementFocus(stremioYtAccountBtn);
+  }
+
+  if (stremioYtAccountBtn) {
+    stremioYtAccountBtn.addEventListener("click", openYouTubeAccountModal);
+  }
+  if (youtubeAccountModalClose) {
+    youtubeAccountModalClose.addEventListener("click", closeYouTubeAccountModal);
+  }
+
+  function updateYouTubeVisibility() {
+    const isYt = window.stremioEngine && window.stremioEngine.isYouTubeInstalled();
+    if (sideYoutube) {
+      sideYoutube.classList.toggle("hidden", !isYt);
+      if (!isYt && currentStremioSubpage === "youtube") {
+        switchStremioSubpage("movies");
+      }
+    }
+    if (window.AeroRadial && typeof window.AeroRadial.refreshModes === "function") {
+      window.AeroRadial.refreshModes();
+    }
+  }
+
+  window.kcIsYouTubeInstalled = function() {
+    return !!(window.stremioEngine && window.stremioEngine.isYouTubeInstalled());
+  };
+
+  window.kcOpenYouTube = function() {
+    switchAppSection("stremio");
+    switchStremioSubpage("youtube");
+  };
 
   function createStremioChannelCard(item, idx) {
     const div = document.createElement("div");
@@ -6529,14 +6776,32 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    if (youtubePlayerModal && !youtubePlayerModal.classList.contains("hidden")) {
+      if (isBack) {
+        e.preventDefault();
+        closeYouTubePlayer();
+        return;
+      }
+    }
+
+    if (youtubeAccountModal && !youtubeAccountModal.classList.contains("hidden")) {
+      if (isBack || isEnter) {
+        e.preventDefault();
+        closeYouTubeAccountModal();
+        return;
+      }
+    }
+
     if (currentAppSection === "stremio" && stremioPage && !stremioPage.classList.contains("hidden")) {
       const inSideDock = isElementInSidebar(focused);
       const inPillsGrid = Boolean(focused && (focused.classList.contains("category-pill-btn") || (focused.closest && focused.closest(".category-pills-grid"))));
       const inLiveCatBar = Boolean(focused && (focused.classList.contains("stremio-live-cat-pill") || (focused.closest && focused.closest(".stremio-live-cat-bar"))));
+      const inYtBar = Boolean(focused && (focused.classList.contains("stremio-yt-genre-pill") || (focused.closest && focused.closest("#stremioYtGenreBar"))));
+      const inYtAccount = Boolean(focused && (focused === stremioYtAccountBtn || (focused.closest && focused.closest("#stremioYtAccountBtn"))));
       const inTvGrid = Boolean(focused && (focused.closest ? focused.closest("#stremioGridLive") : (focused.parentElement && focused.parentElement.id === "stremioGridLive")));
 
       let inStrip = null;
-      if (!inPillsGrid && !inTvGrid && !inLiveCatBar && !inSideDock) {
+      if (!inPillsGrid && !inTvGrid && !inLiveCatBar && !inYtBar && !inYtAccount && !inSideDock) {
         let currStripEl = focused;
         while (currStripEl && currStripEl !== document.body) {
           if (currStripEl.classList && currStripEl.classList.contains("stremio-cards-strip")) {
@@ -6549,13 +6814,70 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (isBack) {
         e.preventDefault();
-        if (inStrip || inPillsGrid || inTvGrid || inLiveCatBar) {
-          const targetSide = currentStremioSubpage === "tv" ? sideTv : (currentStremioSubpage === "series" ? sideSeries : sideMovies);
+        if (inStrip || inPillsGrid || inTvGrid || inLiveCatBar || inYtBar || inYtAccount) {
+          const targetSide = currentStremioSubpage === "tv" ? sideTv : (currentStremioSubpage === "series" ? sideSeries : (currentStremioSubpage === "youtube" ? sideYoutube : sideMovies));
           if (targetSide) setElementFocus(targetSide);
         } else {
           switchAppSection("iptv");
         }
         return;
+      }
+
+      if (inYtAccount) {
+        if (isDown) {
+          e.preventDefault();
+          const activePill = stremioYtGenreBar ? (stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.active") || stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.focusable")) : null;
+          if (activePill) setElementFocus(activePill);
+          return;
+        }
+        if (isLeft) {
+          e.preventDefault();
+          if (sideYoutube) setElementFocus(sideYoutube);
+          return;
+        }
+        if (isUp) {
+          e.preventDefault();
+          if (headerTabStremio) setElementFocus(headerTabStremio);
+          return;
+        }
+        if (isEnter) {
+          e.preventDefault();
+          openYouTubeAccountModal();
+          return;
+        }
+      }
+
+      if (inYtBar) {
+        const pills = Array.from(stremioYtGenreBar.querySelectorAll(".stremio-yt-genre-pill.focusable"));
+        const pIdx = pills.indexOf(focused);
+        if (isLeft) {
+          e.preventDefault();
+          if (pIdx > 0) setElementFocus(pills[pIdx - 1]);
+          else if (sideYoutube) setElementFocus(sideYoutube);
+          return;
+        }
+        if (isRight) {
+          e.preventDefault();
+          if (pIdx < pills.length - 1) setElementFocus(pills[pIdx + 1]);
+          return;
+        }
+        if (isUp) {
+          e.preventDefault();
+          if (stremioYtAccountBtn) setElementFocus(stremioYtAccountBtn);
+          else if (headerTabStremio) setElementFocus(headerTabStremio);
+          return;
+        }
+        if (isDown) {
+          e.preventDefault();
+          const firstCh = stremioStripYtChannels ? stremioStripYtChannels.querySelector(".stremio-yt-channel-card.focusable") : null;
+          if (firstCh) setElementFocus(firstCh);
+          return;
+        }
+        if (isEnter) {
+          e.preventDefault();
+          focused.click();
+          return;
+        }
       }
 
       // 1. Navigation in Pill-shaped Categories Grid
@@ -6767,12 +7089,13 @@ document.addEventListener("DOMContentLoaded", () => {
       // 4. Navigation within Horizontal Cards Strips
       if (inStrip) {
         const strip = inStrip;
-        const cards = Array.from(strip.querySelectorAll(".stremio-card.focusable"));
+        const cards = Array.from(strip.querySelectorAll(".stremio-card.focusable, .stremio-yt-channel-card.focusable, .stremio-yt-video-card.focusable"));
         const idx = cards.indexOf(focused);
 
         const movieStrips = [stremioStripPopular, stremioStripNewlyAdded, stremioStripAction, stremioStripComedy, stremioStripSciFi].filter(Boolean);
         const seriesStrips = [stremioStripSeries, stremioStripAnimationSeries, stremioStripCrimeSeries, stremioStripComedySeries].filter(Boolean);
-        const currentStrips = currentStremioSubpage === "series" ? seriesStrips : movieStrips;
+        const youtubeStrips = [stremioStripYtChannels, stremioStripYtVideos].filter(Boolean);
+        const currentStrips = currentStremioSubpage === "series" ? seriesStrips : (currentStremioSubpage === "youtube" ? youtubeStrips : movieStrips);
         const sIdx = currentStrips.indexOf(strip);
 
         if (isLeft) {
@@ -6780,7 +7103,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (idx > 0) {
             setElementFocus(cards[idx - 1]);
           } else {
-            const targetSide = currentStremioSubpage === "series" ? sideSeries : sideMovies;
+            const targetSide = currentStremioSubpage === "series" ? sideSeries : (currentStremioSubpage === "youtube" ? sideYoutube : sideMovies);
             if (targetSide) setElementFocus(targetSide);
           }
           return;
@@ -6797,11 +7120,18 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isUp) {
           e.preventDefault();
           if (sIdx > 0) {
-            const prevCards = Array.from(currentStrips[sIdx - 1].querySelectorAll(".stremio-card.focusable"));
+            const prevCards = Array.from(currentStrips[sIdx - 1].querySelectorAll(".stremio-card.focusable, .stremio-yt-channel-card.focusable, .stremio-yt-video-card.focusable"));
             const target = prevCards[Math.min(idx, prevCards.length - 1)] || prevCards[0];
             if (target) setElementFocus(target);
           } else {
-            if (headerTabStremio) setElementFocus(headerTabStremio);
+            if (currentStremioSubpage === "youtube") {
+              const activePill = stremioYtGenreBar ? (stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.active") || stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.focusable")) : null;
+              if (activePill) setElementFocus(activePill);
+              else if (stremioYtAccountBtn) setElementFocus(stremioYtAccountBtn);
+              else if (headerTabStremio) setElementFocus(headerTabStremio);
+            } else {
+              if (headerTabStremio) setElementFocus(headerTabStremio);
+            }
           }
           return;
         }
@@ -6809,21 +7139,23 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isDown) {
           e.preventDefault();
           if (sIdx >= 0 && sIdx < currentStrips.length - 1) {
-            const nextCards = Array.from(currentStrips[sIdx + 1].querySelectorAll(".stremio-card.focusable"));
+            const nextCards = Array.from(currentStrips[sIdx + 1].querySelectorAll(".stremio-card.focusable, .stremio-yt-channel-card.focusable, .stremio-yt-video-card.focusable"));
             const target = nextCards[Math.min(idx, nextCards.length - 1)] || nextCards[0];
             if (target) setElementFocus(target);
           } else {
-            const targetGrid = currentStremioSubpage === "series" ? stremioSeriesPillsGrid : stremioMoviePillsGrid;
-            const firstPill = targetGrid ? targetGrid.querySelector(".category-pill-btn.focusable") : null;
-            if (firstPill) setElementFocus(firstPill);
+            if (currentStremioSubpage !== "youtube") {
+              const targetGrid = currentStremioSubpage === "series" ? stremioSeriesPillsGrid : stremioMoviePillsGrid;
+              const firstPill = targetGrid ? targetGrid.querySelector(".category-pill-btn.focusable") : null;
+              if (firstPill) setElementFocus(firstPill);
+            }
           }
           return;
         }
       }
 
-      // 4. Navigation in 3-Icon Left Sidebar Dock (Live TV, Movies, Series)
+      // 4. Navigation in 3-Icon Left Sidebar Dock (Live TV, Movies, Series, YouTube)
       if (inSideDock) {
-        const dockBtns = [document.getElementById("sideBackToIptv"), sideTv, sideMovies, sideSeries].filter(Boolean);
+        const dockBtns = [document.getElementById("sideBackToIptv"), sideTv, sideMovies, sideSeries, sideYoutube].filter(Boolean).filter(b => !b.classList.contains("hidden"));
         const bIdx = dockBtns.indexOf(focused);
 
         if (isRight) {
@@ -6833,10 +7165,12 @@ document.addEventListener("DOMContentLoaded", () => {
             targetCard = stremioGridLive ? stremioGridLive.querySelector(".stremio-card.focusable") : null;
           } else if (focused === sideSeries) {
             targetCard = stremioStripSeries ? stremioStripSeries.querySelector(".stremio-card.focusable") : null;
+          } else if (focused === sideYoutube) {
+            targetCard = (stremioStripYtChannels ? stremioStripYtChannels.querySelector(".stremio-yt-channel-card.focusable") : null) || (stremioYtGenreBar ? stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.focusable") : null);
           } else {
             targetCard = stremioStripPopular ? stremioStripPopular.querySelector(".stremio-card.focusable") : null;
           }
-          if (!targetCard) targetCard = document.querySelector("#stremioPage .stremio-card.focusable, #stremioPage .category-pill-btn.focusable");
+          if (!targetCard) targetCard = document.querySelector("#stremioPage .stremio-card.focusable, #stremioPage .category-pill-btn.focusable, #stremioPage .stremio-yt-channel-card.focusable, #stremioPage .stremio-yt-video-card.focusable");
           if (targetCard) setElementFocus(targetCard);
           return;
         }
@@ -7460,187 +7794,10 @@ document.addEventListener("DOMContentLoaded", () => {
     showToast(msg);
   };
 
-  // FIRST LAUNCH WELCOME SCREEN FOR TIZEN
-  const welcomeScreen = document.getElementById("welcomeScreen");
-  const welcomePrompt = document.getElementById("wcPrompt");
-  const welcomeFlickerLayer = document.getElementById("wcFlicker");
-  const welcomeTop = document.getElementById("wcTop");
-  const welcomeBottom = document.getElementById("wcBottom");
-  const welcomeLine = document.getElementById("wcLine");
-  const welcomeBlack = document.getElementById("wcBlack");
-  const appPageEl = document.getElementById("appPage");
-  const welcomeSeenKey = "iptv_welcome_seen";
-  const welcomeTexts = {
-    tr: { prompt: "Başlamak için OK'e bas", loading: "Yükleniyor..." },
-    en: { prompt: "Press OK to get started", loading: "Loading..." }
-  };
-  let welcomeActive = false;
-  let welcomeLeaving = false;
-  let welcomeTimers = [];
-
-  function welcomeLater(fn, ms) {
-    welcomeTimers.push(setTimeout(fn, ms));
-  }
-  function welcomeRandom(min, max) {
-    return min + Math.random() * (max - min);
-  }
-
-  function welcomeFlickerOnce() {
-    if (!welcomeActive) return;
-    const dim = Math.random() < 0.55;
-    welcomeScreen.style.setProperty("--wc-flick", dim ? welcomeRandom(0.45, 0.9).toFixed(2) : "1");
-    welcomeFlickerLayer.style.opacity = dim ? welcomeRandom(0, 0.12).toFixed(3) : "0";
-    welcomeLater(() => {
-      welcomeScreen.style.setProperty("--wc-flick", "1");
-      welcomeFlickerLayer.style.opacity = "0";
-      welcomeLater(welcomeFlickerLoop, welcomeRandom(40, 500));
-    }, welcomeRandom(40, 180));
-  }
-  function welcomeFlickerLoop() {
-    welcomeLater(welcomeFlickerOnce, welcomeRandom(400, 3500));
-  }
-
-  function welcomeFinish() {
-    welcomeTimers.forEach(clearTimeout);
-    welcomeTimers = [];
-    welcomeActive = false;
-    welcomeScreen.classList.add("wc-hidden");
-    applyAnimationsSetting();
-  }
-
-  function welcomeRevealSettings() {
-    welcomeBlack.classList.add("wc-show");
-    if (appPageEl) appPageEl.style.visibility = "";
-    toggleSettingsMenu(true);
-    showCustomizationTab("source");
-    const sourceTab = settingsPanel ? settingsPanel.querySelector(".customization-tab[data-tab='source']") : null;
-    if (sourceTab) setElementFocus(sourceTab);
-    welcomeScreen.classList.add("wc-slim");
-    welcomeScreen.classList.add("wc-fade");
-    welcomeLater(welcomeFinish, 750);
-  }
-
-  let welcomeAudio = null;
-  function welcomeGetAudio() {
-    if (welcomeAudio) return welcomeAudio;
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (!Ctx) return null;
-    try {
-      welcomeAudio = new Ctx();
-    } catch (error) {
-      welcomeAudio = null;
-    }
-    return welcomeAudio;
-  }
-  function welcomeTone(ctx, type, freq, start, dur, gain, freqEnd) {
-    const osc = ctx.createOscillator();
-    const amp = ctx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, start);
-    if (freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd, start + dur);
-    amp.gain.setValueAtTime(0.0001, start);
-    amp.gain.exponentialRampToValueAtTime(gain, start + 0.02);
-    amp.gain.exponentialRampToValueAtTime(0.0001, start + dur);
-    osc.connect(amp);
-    amp.connect(ctx.destination);
-    osc.start(start);
-    osc.stop(start + dur + 0.05);
-  }
-  function welcomePlayIntro() {
-    const ctx = welcomeGetAudio();
-    if (!ctx) return;
-    if (ctx.state === "suspended") ctx.resume().catch(() => {});
-    const t = ctx.currentTime + 0.05;
-    welcomePianoNote(ctx, 130.81, t, 5.0, 0.6);
-    welcomePianoNote(ctx, 98.0, t + 0.9, 6.0, 0.6);
-  }
-  function welcomePianoNote(ctx, freq, start, dur, gain) {
-    const partials = [
-      { mult: 1, level: 1.0, decay: 1.0 },
-      { mult: 2, level: 0.45, decay: 0.6 },
-      { mult: 3, level: 0.2, decay: 0.35 },
-      { mult: 4, level: 0.09, decay: 0.2 },
-      { mult: 5, level: 0.04, decay: 0.12 }
-    ];
-    const total = partials.reduce((sum, p) => sum + p.level, 0);
-    partials.forEach((p) => {
-      const osc = ctx.createOscillator();
-      const env = ctx.createGain();
-      const peak = (gain * p.level) / total;
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(freq * p.mult, start);
-      env.gain.setValueAtTime(0.0001, start);
-      env.gain.exponentialRampToValueAtTime(peak, start + 0.008);
-      env.gain.exponentialRampToValueAtTime(0.0001, start + dur * p.decay);
-      osc.connect(env);
-      env.connect(ctx.destination);
-      osc.start(start);
-      osc.stop(start + dur + 0.05);
-    });
-  }
-  function welcomePlayTvClose() {
-    const ctx = welcomeGetAudio();
-    if (!ctx) return;
-    if (ctx.state === "suspended") ctx.resume().catch(() => {});
-    const t = ctx.currentTime + 0.01;
-    welcomeTone(ctx, "sawtooth", 900, t, 0.28, 0.5, 40);
-    const len = Math.floor(ctx.sampleRate * 0.02);
-    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
-    const src = ctx.createBufferSource();
-    const clickGain = ctx.createGain();
-    clickGain.gain.value = 0.9;
-    src.buffer = buf;
-    src.connect(clickGain);
-    clickGain.connect(ctx.destination);
-    src.start(t);
-  }
-
-  function welcomeStart() {
-    if (welcomeLeaving) return;
-    welcomeLeaving = true;
-    store.setItem(welcomeSeenKey, "1");
-    const texts = welcomeTexts[currentLang] || welcomeTexts.en;
-    welcomePrompt.textContent = texts.loading;
-    welcomeTop.classList.add("wc-close");
-    welcomeBottom.classList.add("wc-close");
-    welcomeLater(() => welcomeLine.classList.add("wc-show"), 420);
-    welcomeLater(() => {
-      welcomeLine.classList.add("wc-collapse");
-      welcomePlayTvClose();
-    }, 620);
-    welcomeLater(welcomeRevealSettings, 900);
-  }
-
-  window.addEventListener("keydown", (e) => {
-    if (!welcomeActive) return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    const key = e.keyCode || e.which;
-    if (key === 13 || e.key === "Enter") welcomeStart();
-  }, true);
-
-  function maybeShowWelcome() {
-    document.documentElement.classList.remove("wc-pending");
-    if (!welcomeScreen || window.KC_DEFAULT_LOGIN || store.getItem(welcomeSeenKey)) return;
-    const texts = welcomeTexts[currentLang] || welcomeTexts.en;
-    welcomePrompt.textContent = texts.prompt;
-    welcomeActive = true;
-    if (appPageEl) appPageEl.style.visibility = "hidden";
-    document.body.classList.remove("no-animations");
-    welcomeScreen.classList.remove("wc-hidden");
-    welcomeFlickerLoop();
-    requestAnimationFrame(() => requestAnimationFrame(welcomePlayIntro));
-  }
-
   if (window.AeroRadial) {
     window.AeroRadial.init();
   }
 
   initProfile();
   scheduleListRefresh();
-  maybeShowWelcome();
 });
-
-

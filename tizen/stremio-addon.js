@@ -170,6 +170,52 @@
     return false;
   };
 
+  StremioEngine.prototype.isYouTubeInstalled = function() {
+    for (var i = 0; i < this.addons.length; i++) {
+      var a = this.addons[i];
+      if (a.transportUrl === "https://v3-channels.strem.io/manifest.json" || (a.manifest && a.manifest.id === "com.linvo.stremiochannels")) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  StremioEngine.prototype.getYouTubeTopChannels = function(genre, callback) {
+    var url = "https://v3-channels.strem.io/catalog/channel/top";
+    if (genre && genre !== "all") {
+      url += "/genre=" + encodeURIComponent(genre);
+    }
+    url += ".json";
+
+    xhrGet(url, 8000, function(err, data) {
+      if (err || !data || !data.metas) {
+        if (callback) callback(err || new Error("No channels found"), []);
+        return;
+      }
+      if (callback) callback(null, data.metas);
+    });
+  };
+
+  StremioEngine.prototype.getYouTubeChannelMeta = function(ytId, callback) {
+    if (!ytId) {
+      if (callback) callback(new Error("Missing ID"), null);
+      return;
+    }
+    var cleanId = ytId;
+    if (cleanId.indexOf("yt_id:") !== 0) {
+      cleanId = "yt_id:" + cleanId;
+    }
+    var url = "https://v3-channels.strem.io/meta/channel/" + encodeURIComponent(cleanId) + ".json";
+
+    xhrGet(url, 8000, function(err, data) {
+      if (err || !data || !data.meta) {
+        if (callback) callback(err || new Error("No channel details found"), null);
+        return;
+      }
+      if (callback) callback(null, data.meta);
+    });
+  };
+
   StremioEngine.prototype.installAddon = function(manifestUrl, callback) {
     var self = this;
     if (!manifestUrl || typeof manifestUrl !== "string") {

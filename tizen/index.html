@@ -4,10 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KC IPTV PLAYER</title>
-  <script src="tizen-platform.js"></script>
-  <script>
-    try { if (!localStorage.getItem("iptv_welcome_seen")) document.documentElement.classList.add("wc-pending"); } catch (e) {}
-  </script>
   <link rel="stylesheet" href="style.css">
   <script src="hls.min.js"></script>
   <script src="mpegts.min.js"></script>
@@ -37,31 +33,6 @@
     <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
     <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20zM12 10v4M12 17.5v.5"/></symbol>
   </svg>
-
-  <!-- EERSTE START WELKOM (verborgen als credentials.local.js aanwezig is) -->
-  <div id="welcomeScreen" class="wc-hidden" aria-hidden="true">
-    <svg width="0" height="0" style="position:absolute" aria-hidden="true"></svg>
-    <div class="wc-haze"></div>
-    <div class="wc-screen" id="wcScreen">
-      <svg class="wc-logo" viewBox="0 0 100 100" aria-hidden="true">
-        <g fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M38 24 L50 36 L62 24"/>
-          <rect x="16" y="36" width="68" height="48" rx="12"/>
-        </g>
-        <path d="M42 47 L62 60 L42 73 Z" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
-      </svg>
-      <h1 class="wc-app-name">KC <span class="wc-iptv">IPTV</span> Player</h1>
-      <p class="wc-prompt" id="wcPrompt"></p>
-    </div>
-    <div class="wc-crt wc-scan"></div>
-    <div class="wc-crt wc-roll"></div>
-    <div class="wc-crt wc-vignette"></div>
-    <div class="wc-crt wc-flicker" id="wcFlicker"></div>
-    <div class="wc-off wc-top" id="wcTop"></div>
-    <div class="wc-off wc-bottom" id="wcBottom"></div>
-    <div class="wc-line" id="wcLine"></div>
-    <div class="wc-black" id="wcBlack"></div>
-  </div>
 
   <!-- VISUELE NUMMER ZAP OVERLAY IN HET MIDDEN VAN HET SCHERM -->
   <div id="numZapOverlay" class="num-zap-overlay-center hidden">
@@ -539,6 +510,11 @@
           <svg viewBox="0 0 24 24"><path d="M6 12h4M8 10v4M15 11h.01M18 13h.01M18 6H6a4 4 0 0 0-4 4v4a4 4 0 0 0 4 4h12a4 4 0 0 0 4-4v-4a4 4 0 0 0-4-4z"/></svg>
           <span class="side-label">Diziler</span>
         </button>
+
+        <button type="button" class="side-icon-btn focusable hidden" id="sideYoutube" data-stremio-tab="youtube" title="YouTube" tabindex="0">
+          <svg viewBox="0 0 24 24" fill="#ff0000" stroke="none"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          <span class="side-label">YouTube</span>
+        </button>
       </aside>
 
       <!-- MAIN SCROLLABLE CONTAINER -->
@@ -678,6 +654,59 @@
             <!-- CATEGORY SELECTION BAR FOR LIVE TV -->
             <div class="stremio-live-cat-bar" id="stremioLiveCatBar"></div>
             <div class="stremio-channel-grid" id="stremioGridLive"></div>
+          </section>
+        </div>
+
+        <!-- SUBPAGE 4: YOUTUBE (Official Legal YouTube Addon) -->
+        <div id="stremioSubpageYoutube" class="stremio-subpage hidden">
+          <!-- YOUTUBE HERO BANNER & ACCOUNT STATUS -->
+          <section class="stremio-yt-hero-section">
+            <div class="stremio-yt-header-left">
+              <div class="stremio-yt-badge">
+                <svg viewBox="0 0 24 24" width="30" height="30" fill="#ff0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                <span class="stremio-yt-title">YouTube Home</span>
+                <span class="stremio-yt-verified">Official · Legal</span>
+              </div>
+              <p class="stremio-yt-desc">Resmi YouTube açık katalogları, trend kanallar ve video yayınları.</p>
+            </div>
+
+            <!-- ACCOUNT / LOGIN STATUS PILL -->
+            <button type="button" class="stremio-yt-account-card focusable" id="stremioYtAccountBtn" tabindex="0">
+              <div class="stremio-yt-avatar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="stremio-yt-account-info">
+                <span class="stremio-yt-account-label">Hesap / Oturum Durumu</span>
+                <span class="stremio-yt-account-status">Misafir / Güvenli Mod ℹ</span>
+              </div>
+            </button>
+          </section>
+
+          <!-- CATEGORY / GENRE FILTER BAR -->
+          <section class="stremio-row-section">
+            <div class="stremio-live-cat-bar" id="stremioYtGenreBar"></div>
+          </section>
+
+          <!-- SHELF 1: POPÜLER KANALLAR -->
+          <section class="stremio-row-section" id="stremioRowYtChannels">
+            <div class="stremio-row-header">
+              <h2 class="stremio-row-title" id="stremioTitleYtChannels">Popüler YouTube Kanalları</h2>
+              <div class="stremio-row-actions">
+                <span class="stremio-row-count" id="stremioCountYtChannels"></span>
+              </div>
+            </div>
+            <div class="stremio-cards-strip" id="stremioStripYtChannels"></div>
+          </section>
+
+          <!-- SHELF 2: KANAL VİDEOLARI -->
+          <section class="stremio-row-section" id="stremioRowYtVideos">
+            <div class="stremio-row-header">
+              <h2 class="stremio-row-title" id="stremioTitleYtVideos">Öne Çıkan Videolar</h2>
+              <div class="stremio-row-actions">
+                <span class="stremio-row-count" id="stremioCountYtVideos"></span>
+              </div>
+            </div>
+            <div class="stremio-cards-strip" id="stremioStripYtVideos"></div>
           </section>
         </div>
       </main>
@@ -846,6 +875,36 @@
         <span class="r-key r-key-move">KIRMIZI</span><span>Sırala</span>
         <span class="r-sep">|</span>
         <span class="r-key">BACK / M</span><span>Tam Ekran</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- YOUTUBE EMBED PLAYER OVERLAY (Full Screen with remote back key support) -->
+  <div id="youtubePlayerModal" class="youtube-player-overlay hidden">
+    <div class="youtube-player-header">
+      <span class="youtube-player-title" id="youtubePlayerTitle">YouTube</span>
+      <button type="button" class="youtube-player-close focusable" id="youtubePlayerClose" tabindex="0">✕ Kapat (Back)</button>
+    </div>
+    <div class="youtube-player-container">
+      <iframe id="youtubeIframe" class="youtube-iframe" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- YOUTUBE ACCOUNT / LEGAL INFO MODAL -->
+  <div id="youtubeAccountModal" class="youtube-account-overlay hidden">
+    <div class="youtube-account-box">
+      <div class="youtube-account-head">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="#ff0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        <h3 class="youtube-account-heading">YouTube Hesabı & Giriş Hakkında</h3>
+      </div>
+      <div class="youtube-account-body">
+        <div class="youtube-account-badge">✓ Misafir & Güvenli Mod Aktif (Guest Mode)</div>
+        <p class="youtube-account-text">Google ve YouTube Hizmet Şartları (ToS) gereğince, üçüncü parti Smart TV uygulamalarında kullanıcıların Google şifrelerini doğrudan istemek veya resmi Google onaylı OAuth altyapısı olmadan oturum açmak hem yasal değildir hem de hesap güvenliğini riske atmaktadır.</p>
+        <p class="youtube-account-text">KC IPTV Player, hesabınızın güvenliğini tehlikeye atmamak adına YouTube'u Stremio'nun resmi açık kanal katalogları ve güvenli gömülü oynatıcısı üzerinden sunar.</p>
+        <p class="youtube-account-tip">💡 <strong>İpucu:</strong> Beğendiğiniz kanalları veya videoları doğrudan uygulamanızın favorilerine ekleyebilirsiniz.</p>
+      </div>
+      <div class="youtube-account-actions">
+        <button type="button" class="youtube-account-btn focusable" id="youtubeAccountModalClose" tabindex="0">Anladım (Tamam)</button>
       </div>
     </div>
   </div>

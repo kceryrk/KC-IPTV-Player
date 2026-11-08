@@ -3946,7 +3946,8 @@ body.speler-fit-screen .app-progress {
   justify-content: center;
   align-items: flex-start;
   padding-left: 56px;
-  gap: 32px;
+  /* Older Smart TVs do not support flex gap; explicit margins are used below on .side-icon-btn */
+  gap: 0;
   pointer-events: none;
   opacity: 0;
   transform: translateX(-40px);
@@ -3957,6 +3958,14 @@ body.speler-fit-screen .app-progress {
     rgba(6, 8, 14, 0.62) 440px, 
     rgba(6, 8, 14, 0.2) 600px, 
     transparent 100%);
+}
+
+.stremio-sidebar-dock .side-icon-btn {
+  margin-bottom: 24px;
+}
+
+.stremio-sidebar-dock .side-icon-btn:last-child {
+  margin-bottom: 0;
 }
 
 .stremio-sidebar-dock.is-focused,
@@ -4135,6 +4144,15 @@ body.speler-fit-screen .app-progress {
 }
 .stremio-cards-strip::-webkit-scrollbar {
   display: none;
+}
+
+.stremio-cards-strip .stremio-card,
+.stremio-cards-strip .stremio-yt-channel-card,
+.stremio-cards-strip .stremio-yt-video-card {
+  margin-right: 22px;
+}
+.stremio-cards-strip > *:last-child {
+  margin-right: 0;
 }
 
 /* Stremio Subpages */
@@ -5210,164 +5228,483 @@ body.radial-active #videoPlayer {
   color: rgba(255, 255, 255, 0.18) !important;
 }
 
+/* ==========================================================================
+   YOUTUBE HOME & STREAMING STYLES (Official & Legal Addon Integration)
+   ========================================================================== */
 
-
-
-
-/* First launch: the main menu stays hidden until main.js shows the welcome or reveals the app */
-html.wc-pending #appPage {
-  visibility: hidden;
+.stremio-yt-hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.12), rgba(18, 22, 34, 0.85));
+  border: 1.5px solid rgba(255, 0, 0, 0.25);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+  margin-bottom: 8px;
+  flex-shrink: 0;
 }
 
-/* Welcome screen: first start only. Overlay sits above the app (z-index 9000). */
-#welcomeScreen {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 9000;
-  overflow: hidden;
-  color: #fff;
-  font-family: "Outfit", sans-serif;
-  transition: opacity 0.7s ease;
+.stremio-yt-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-#welcomeScreen.wc-hidden { display: none; }
-#welcomeScreen.wc-fade { opacity: 0; }
-#welcomeScreen .wc-haze {
-  position: absolute;
-  top: -10%;
-  right: -10%;
-  bottom: -10%;
-  left: -10%;
-  background: linear-gradient(120deg, #2a4a6a, #5a2a45, #2a5a6a, #4a2a6a);
-  animation: wcHazeDrift 24s ease-in-out infinite alternate;
-  will-change: transform;
+
+.stremio-yt-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-@keyframes wcHazeDrift {
-  from { transform: translateX(-5%); }
-  to { transform: translateX(5%); }
+
+.stremio-yt-title {
+  font-family: "Outfit", sans-serif !important;
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.5px;
 }
-#welcomeScreen .wc-crt {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 5;
+
+.stremio-yt-verified {
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.18);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ade80;
 }
-#welcomeScreen .wc-scan {
-  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.28) 0 2px, transparent 2px 4px);
+
+.stremio-yt-desc {
+  font-size: 1.15rem;
+  color: #94a3b8;
+  margin: 0;
 }
-#welcomeScreen .wc-roll {
-  left: 0;
-  right: 0;
-  height: 120px;
-  top: 0;
-  transform: translateY(-120px);
-  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.07), transparent);
-  animation: wcRoll 6s linear infinite;
-  will-change: transform;
+
+.stremio-yt-account-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 24px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.8px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-@keyframes wcRoll {
-  from { transform: translateY(-120px); }
-  to { transform: translateY(100vh); }
+
+.stremio-yt-account-card:hover,
+.stremio-yt-account-card.focused,
+.stremio-yt-account-card:focus {
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.8), rgba(220, 38, 38, 0.9)) !important;
+  border-color: var(--highlight, #ffd700) !important;
+  box-shadow: 0 0 24px rgba(255, 0, 0, 0.6), 0 0 16px rgba(255, 215, 0, 0.5) !important;
+  transform: scale(1.05);
 }
-#welcomeScreen .wc-vignette {
-  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+
+.stremio-yt-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-#welcomeScreen .wc-flicker {
-  background: #000;
-  opacity: 0;
+
+.stremio-yt-avatar svg {
+  width: 22px;
+  height: 22px;
+  stroke: #ffffff;
 }
-#welcomeScreen .wc-screen {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 6;
+
+.stremio-yt-account-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.stremio-yt-account-label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 600;
+}
+
+.stremio-yt-account-status {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* YouTube Genre Pills */
+.stremio-yt-genre-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  color: #cbd5e1;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.stremio-yt-genre-pill:last-child {
+  margin-right: 0;
+}
+
+.stremio-yt-genre-pill:hover,
+.stremio-yt-genre-pill.focused,
+.stremio-yt-genre-pill:focus {
+  background: #ff0000 !important;
+  border-color: var(--highlight, #ffd700) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.6) !important;
+  transform: scale(1.06);
+}
+
+.stremio-yt-genre-pill.active {
+  background: rgba(255, 0, 0, 0.25) !important;
+  border-color: #ff0000 !important;
+  color: #ffffff !important;
+}
+
+/* YouTube Channel Cards */
+.stremio-yt-channel-card {
+  flex: 0 0 250px !important;
+  width: 250px !important;
+  height: 320px !important;
+  min-width: 250px !important;
+  min-height: 320px !important;
+  flex-shrink: 0 !important;
+  border-radius: 18px;
+  background: rgba(18, 22, 34, 0.92);
+  border: 1.8px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 24px 16px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: center;
-  padding: 40px;
-  filter: brightness(var(--wc-flick, 1));
+  margin-right: 22px;
+  box-sizing: border-box;
 }
-#welcomeScreen .wc-logo {
-  width: 220px;
-  height: 220px;
-  margin: 0 0 24px;
-  filter: drop-shadow(0 0 24px rgba(255, 255, 255, 0.35));
+
+.stremio-yt-channel-card:hover,
+.stremio-yt-channel-card.focused,
+.stremio-yt-channel-card:focus {
+  border-color: var(--highlight, #ffd700) !important;
+  transform: translateY(-8px) scale(1.05) !important;
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.95), 0 0 26px rgba(255, 0, 0, 0.5) !important;
+  background: rgba(28, 34, 52, 0.98);
 }
-#welcomeScreen .wc-app-name {
-  margin: 0 0 56px;
-  font-size: 3rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: none;
-  color: #fff;
-  text-shadow: 0 0 20px rgba(63, 210, 255, 0.5), 0 3px 8px rgba(0, 0, 0, 0.5);
+
+.stremio-yt-channel-card.active {
+  border-color: #ff0000 !important;
+  background: rgba(255, 0, 0, 0.12) !important;
 }
-#welcomeScreen .wc-iptv {
-  background: linear-gradient(90deg, #3fd2ff, #ff4fd8, #ffd700);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+
+.stremio-yt-channel-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  object-fit: cover;
+  margin-bottom: 16px;
+  background: #111;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
 }
-#welcomeScreen .wc-prompt {
-  margin: 0;
-  font-size: 2.2rem;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  color: #9aa0b4;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+
+.stremio-yt-channel-name {
+  font-family: "Outfit", sans-serif !important;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
-/* Power-off transition: top and bottom bands close to the middle, a bright line collapses, then the screen fades to Settings */
-#welcomeScreen .wc-off {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 50%;
+
+.stremio-yt-channel-badge {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ff4d4d;
+  background: rgba(255, 0, 0, 0.12);
+  padding: 4px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90%;
+}
+
+/* YouTube Video Cards (16:9 Aspect Ratio) */
+.stremio-yt-video-card {
+  flex: 0 0 380px !important;
+  width: 380px !important;
+  height: 290px !important;
+  min-width: 380px !important;
+  min-height: 290px !important;
+  flex-shrink: 0 !important;
+  border-radius: 18px;
+  background: rgba(18, 22, 34, 0.92);
+  border: 1.8px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-right: 22px;
+  box-sizing: border-box;
+}
+
+.stremio-yt-video-card:hover,
+.stremio-yt-video-card.focused,
+.stremio-yt-video-card:focus {
+  border-color: var(--highlight, #ffd700) !important;
+  transform: translateY(-8px) scale(1.05) !important;
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.95), 0 0 26px rgba(255, 215, 0, 0.6) !important;
+  background: rgba(28, 34, 52, 0.98);
+}
+
+.stremio-yt-thumb-wrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
   background: #000;
-  z-index: 20;
-  transform: scaleY(0);
+  overflow: hidden;
 }
-#welcomeScreen .wc-off.wc-top { top: 0; transform-origin: top center; }
-#welcomeScreen .wc-off.wc-bottom { bottom: 0; transform-origin: bottom center; }
-#welcomeScreen .wc-off.wc-close { animation: wcCloseIn 0.45s cubic-bezier(0.6, 0, 0.9, 0.4) forwards; }
-@keyframes wcCloseIn { to { transform: scaleY(1); } }
-#welcomeScreen .wc-line {
+
+.stremio-yt-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.stremio-yt-video-card:hover .stremio-yt-thumb,
+.stremio-yt-video-card.focused .stremio-yt-thumb {
+  transform: scale(1.06);
+}
+
+.stremio-yt-play-badge {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 3px;
-  margin-top: -1.5px;
-  background: #fff;
-  z-index: 21;
-  transform: scaleX(0);
-  opacity: 0;
-  box-shadow: 0 0 18px 4px rgba(255, 255, 255, 0.7);
+  inset: 0;
+  margin: auto;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
 }
-#welcomeScreen .wc-line.wc-show { opacity: 1; transform: scaleX(1); }
-#welcomeScreen .wc-line.wc-collapse { animation: wcLineCollapse 0.3s ease-in forwards; }
-@keyframes wcLineCollapse {
-  0% { transform: scaleX(1); opacity: 1; }
-  100% { transform: scaleX(0.002); opacity: 0; }
+
+.stremio-yt-play-badge svg {
+  width: 24px;
+  height: 24px;
+  fill: #ffffff;
+  margin-left: 3px;
 }
-#welcomeScreen .wc-black {
+
+.stremio-yt-video-info {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stremio-yt-video-title {
+  font-family: "Outfit", sans-serif !important;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.stremio-yt-video-meta {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* YouTube Fullscreen Player Overlay */
+.youtube-player-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000000;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+}
+
+.youtube-player-header {
   position: absolute;
   top: 0;
-  right: 0;
-  bottom: 0;
   left: 0;
-  background: #000;
-  z-index: 19;
-  opacity: 0;
+  right: 0;
+  padding: 20px 32px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
 }
-#welcomeScreen .wc-black.wc-show { opacity: 1; }
-#welcomeScreen.wc-slim > :not(.wc-black) { display: none; }
+
+.youtube-player-title {
+  font-family: "Outfit", sans-serif !important;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.youtube-player-close {
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  font-family: "Outfit", sans-serif !important;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+}
+
+.youtube-player-close:hover,
+.youtube-player-close.focused,
+.youtube-player-close:focus {
+  background: #ff0000 !important;
+  border-color: var(--highlight, #ffd700) !important;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.8) !important;
+}
+
+.youtube-player-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.youtube-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* YouTube Account Info Dialog */
+.youtube-account-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 12, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.youtube-account-box {
+  width: 720px;
+  background: #111625;
+  border: 2px solid rgba(255, 255, 255, 0.16);
+  border-radius: 24px;
+  padding: 36px 40px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.95);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.youtube-account-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.youtube-account-heading {
+  font-family: "Outfit", sans-serif !important;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.youtube-account-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.16);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #4ade80;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.youtube-account-text {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin: 0 0 12px 0;
+}
+
+.youtube-account-tip {
+  font-size: 1.2rem;
+  color: #fde047;
+  background: rgba(250, 204, 21, 0.12);
+  border-left: 4px solid #facc15;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.youtube-account-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.youtube-account-btn {
+  padding: 14px 32px;
+  border-radius: 999px;
+  background: #ff0000;
+  border: 2px solid transparent;
+  color: #ffffff;
+  font-family: "Outfit", sans-serif !important;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+}
+
+.youtube-account-btn:hover,
+.youtube-account-btn.focused,
+.youtube-account-btn:focus {
+  background: #cc0000 !important;
+  border-color: var(--highlight, #ffd700) !important;
+  box-shadow: 0 0 24px rgba(255, 0, 0, 0.7) !important;
+  transform: scale(1.05);
+}
+
+
+
+
