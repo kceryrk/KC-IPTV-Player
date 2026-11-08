@@ -61,10 +61,6 @@
           <svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-film"/></svg>
           <span>Stremio</span>
         </button>
-        <button type="button" class="header-nav-tab focusable hidden" id="headerTabYouTube" data-nav-target="youtube" tabindex="0">
-          <svg viewBox="0 0 24 24" class="ui-icon" fill="#ff0000" style="width:20px;height:20px;"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-          <span>YouTube</span>
-        </button>
         <button type="button" class="header-nav-tab focusable" id="headerTabSettings" data-nav-target="settings" tabindex="0">
           <svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-gear"/></svg>
           <span data-i18n="settings">Settings</span>
@@ -666,18 +662,6 @@
       </div>
     </div>
 
-    <!-- STANDALONE YOUTUBE PAGE (OG YouTube TV Experience) -->
-    <div id="youtubePage" class="youtube-page hidden">
-      <div class="yt-header-bar">
-        <div class="yt-logo-badge">
-          <svg viewBox="0 0 24 24" width="32" height="32" fill="#ff0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-          <span class="yt-logo-text">YouTube</span>
-        </div>
-        <div class="yt-genre-pills-bar" id="youtubeGenreBar"></div>
-      </div>
-      <div class="yt-video-feed-grid" id="ytVideoFeedGrid"></div>
-    </div>
-
     <footer id="hintBar" class="hint-bar">
       <span class="hint hint-yellow hidden" data-hint="fav"><span data-i18n="hintFavorite">Favorite</span></span>
       <span class="hint hint-red hidden" data-hint="reorder"><span data-i18n="hintReorder">Reorder</span></span>
@@ -835,45 +819,6 @@
         <span class="r-key r-key-move">KIRMIZI</span><span>Sırala</span>
         <span class="r-sep">|</span>
         <span class="r-key">BACK / M</span><span>Tam Ekran</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- YOUTUBE EMBED PLAYER OVERLAY (Full Screen with remote back key support) -->
-  <div id="youtubePlayerModal" class="youtube-player-overlay hidden" tabindex="-1">
-    <div class="youtube-player-header">
-      <div class="youtube-player-title-wrap">
-        <svg viewBox="0 0 24 24" width="28" height="28" fill="#ff0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-        <span class="youtube-player-title" id="youtubePlayerTitle">YouTube</span>
-      </div>
-      <div class="youtube-player-actions">
-        <button type="button" class="youtube-player-btn focusable" id="youtubePlayerNativeAppBtn" tabindex="0">📺 TizenTube / YouTube Uygulamasında Aç</button>
-        <button type="button" class="youtube-player-close focusable" id="youtubePlayerClose" tabindex="0">✕ Kapat (Back)</button>
-      </div>
-    </div>
-    <div class="youtube-player-container">
-      <iframe id="youtubeIframe" class="youtube-iframe" frameborder="0"
-              sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
-              allow="autoplay; encrypted-media; fullscreen"
-              tabindex="-1"></iframe>
-    </div>
-  </div>
-
-  <!-- YOUTUBE ACCOUNT / LEGAL INFO MODAL -->
-  <div id="youtubeAccountModal" class="youtube-account-overlay hidden">
-    <div class="youtube-account-box">
-      <div class="youtube-account-head">
-        <svg viewBox="0 0 24 24" width="32" height="32" fill="#ff0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-        <h3 class="youtube-account-heading">YouTube Hesabı & Giriş Hakkında</h3>
-      </div>
-      <div class="youtube-account-body">
-        <div class="youtube-account-badge">✓ Misafir & Güvenli Mod Aktif (Guest Mode)</div>
-        <p class="youtube-account-text">Google ve YouTube Hizmet Şartları (ToS) gereğince, üçüncü parti Smart TV uygulamalarında kullanıcıların Google şifrelerini doğrudan istemek veya resmi Google onaylı OAuth altyapısı olmadan oturum açmak hem yasal değildir hem de hesap güvenliğini riske atmaktadır.</p>
-        <p class="youtube-account-text">KC IPTV Player, hesabınızın güvenliğini tehlikeye atmamak adına YouTube'u Stremio'nun resmi açık kanal katalogları ve güvenli gömülü oynatıcısı üzerinden sunar.</p>
-        <p class="youtube-account-tip">💡 <strong>İpucu:</strong> Beğendiğiniz kanalları veya videoları doğrudan uygulamanızın favorilerine ekleyebilirsiniz.</p>
-      </div>
-      <div class="youtube-account-actions">
-        <button type="button" class="youtube-account-btn focusable" id="youtubeAccountModalClose" tabindex="0">Anladım (Tamam)</button>
       </div>
     </div>
   </div>
