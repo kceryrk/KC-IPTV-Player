@@ -221,8 +221,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   Object.assign(appTranslations.nl, { showPassword: "Tonen", hidePassword: "Verbergen", accountDetails: "Account", accountStatus: "Status", accountExpires: "Vervalt", accountDaysLeft: "{days} dagen over", accountExpired: "Verlopen", accountUnlimited: "Onbeperkt", accountConnections: "Verbindingen", accountTrial: "Proef", accountCreated: "Aangemaakt", accountFormats: "Formaten", testingConnection: "Verbinding testen...", connectionOk: "Verbinding OK" });
   Object.assign(appTranslations.fr, { showPassword: "Afficher", hidePassword: "Masquer", accountDetails: "Compte", accountStatus: "Statut", accountExpires: "Expire le", accountDaysLeft: "{days} jours restants", accountExpired: "Expiré", accountUnlimited: "Illimité", accountConnections: "Connexions", accountTrial: "Essai", accountCreated: "Créé le", accountFormats: "Formats", testingConnection: "Test de la connexion...", connectionOk: "Connexion OK" });
-  Object.assign(appTranslations.en, { presetBackgrounds: "Presets" });
-  Object.assign(appTranslations.tr, { presetBackgrounds: "Hazır arka planlar" });
+  Object.assign(appTranslations.en, { presetBackgrounds: "Presets", installedAddonsTitle: "Installed Addons", installedAddonsHint: "Active addons providing metadata, catalogs, and media streams.", legalAddonsTitle: "Official & Legal Addons", legalAddonsHint: "1-click install verified legal catalogs and services.", customAddonTitle: "Install from URL", customAddonHint: "Paste a Stremio manifest.json URL to install any community addon." });
+  Object.assign(appTranslations.tr, { presetBackgrounds: "Hazır arka planlar", installedAddonsTitle: "Yüklü Eklentiler", installedAddonsHint: "Meta veri, katalog ve medya akışı sağlayan aktif eklentiler.", legalAddonsTitle: "Resmi ve Yasal Eklentiler", legalAddonsHint: "Doğrulanmış yasal katalogları ve servisleri tek tuşla yükleyin.", customAddonTitle: "Bağlantıdan Yükle", customAddonHint: "Topluluk eklentisi yüklemek için bir Stremio manifest.json bağlantısı yapıştırın." });
+  Object.assign(appTranslations.nl, { presetBackgrounds: "Voorinstellingen", installedAddonsTitle: "Geïnstalleerde Add-ons", installedAddonsHint: "Actieve add-ons voor metadata, catalogi en mediastromen.", legalAddonsTitle: "Officiële & Legale Add-ons", legalAddonsHint: "Installeer geverifieerde legale catalogi en diensten met 1 klik.", customAddonTitle: "Installeren via URL", customAddonHint: "Plak een Stremio manifest.json-URL om een add-on te installeren." });
+  Object.assign(appTranslations.fr, { presetBackgrounds: "Préréglages", installedAddonsTitle: "Extensions Installées", installedAddonsHint: "Extensions actives fournissant des métadonnées, catalogues et flux.", legalAddonsTitle: "Extensions Officielles et Légales", legalAddonsHint: "Installez des catalogues et services légaux vérifiés en 1 clic.", customAddonTitle: "Installer via URL", customAddonHint: "Collez une URL manifest.json Stremio pour installer une extension." });
   Object.assign(appTranslations.nl, { presetBackgrounds: "Voorinstellingen" });
   Object.assign(appTranslations.fr, { presetBackgrounds: "Préréglages" });
   Object.assign(appTranslations.en, { m3uGenerateXtream: "⚡ Generate from Xtream", clockFormat: "Clock format", animations: "Animations", colorTab: "Color", backgroundTab: "Background", clockTab: "Clock" });
@@ -835,8 +837,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showCustomizationTab(name) {
     if (!customizationPage) return;
-    if (name === "addons" && typeof renderInstalledAddons === "function") {
-      renderInstalledAddons();
+    if (name === "addons" && typeof renderAddonsSection === "function") {
+      renderAddonsSection();
     }
     customizationPage.querySelectorAll(".customization-tab").forEach(tab => {
       tab.classList.toggle("active", tab.dataset.tab === name);
@@ -3646,6 +3648,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let streamSelectorActive = false;
   let streamSelectorResolveContext = null;
 
+  const legalAddonsGrid = document.getElementById("legalAddonsGrid");
+
+  function renderAddonsSection() {
+    renderInstalledAddons();
+    renderLegalAddons();
+  }
+
   function renderInstalledAddons() {
     if (!addonListContainer || !window.StremioEngine) return;
     addonListContainer.innerHTML = "";
@@ -3669,7 +3678,12 @@ document.addEventListener("DOMContentLoaded", () => {
       info.appendChild(desc);
       card.appendChild(info);
 
-      if (!addon.isCore) {
+      if (addon.isCore) {
+        const coreBadge = document.createElement("span");
+        coreBadge.className = "legal-addon-badge";
+        coreBadge.textContent = "Included Core";
+        card.appendChild(coreBadge);
+      } else {
         const removeBtn = document.createElement("button");
         removeBtn.type = "button";
         removeBtn.className = "addon-remove-btn focusable";
@@ -3677,13 +3691,77 @@ document.addEventListener("DOMContentLoaded", () => {
         removeBtn.tabIndex = 0;
         removeBtn.addEventListener("click", function() {
           window.StremioEngine.removeAddon(addon.transportUrl);
-          renderInstalledAddons();
+          renderAddonsSection();
           if (currentAppSection === "stremio") initStremioPage();
           showToast("Addon removed");
         });
         card.appendChild(removeBtn);
       }
       addonListContainer.appendChild(card);
+    });
+  }
+
+  function renderLegalAddons() {
+    if (!legalAddonsGrid || !window.StremioEngine) return;
+    legalAddonsGrid.innerHTML = "";
+    const catalog = window.StremioEngine.getLegalCatalog ? window.StremioEngine.getLegalCatalog() : [];
+    catalog.forEach(function(item) {
+      const card = document.createElement("div");
+      card.className = "legal-addon-card";
+
+      const isInstalled = window.StremioEngine.isInstalled(item.transportUrl);
+
+      const header = document.createElement("div");
+      header.className = "legal-addon-header";
+
+      const title = document.createElement("div");
+      title.className = "legal-addon-name";
+      title.textContent = item.name;
+
+      const badge = document.createElement("span");
+      badge.className = "legal-addon-badge";
+      badge.textContent = item.badge || "Official · Legal";
+
+      header.appendChild(title);
+      header.appendChild(badge);
+
+      const desc = document.createElement("div");
+      desc.className = "legal-addon-desc";
+      desc.textContent = item.description;
+
+      const actionBtn = document.createElement("button");
+      actionBtn.type = "button";
+      actionBtn.className = "settings-item focusable " + (isInstalled ? "legal-addon-btn-remove" : "legal-addon-btn-install");
+      actionBtn.tabIndex = 0;
+      actionBtn.textContent = isInstalled ? "✕ Uninstall" : "+ Install";
+
+      actionBtn.addEventListener("click", function() {
+        if (isInstalled) {
+          window.StremioEngine.removeAddon(item.transportUrl);
+          showToast("Uninstalled " + item.name);
+          renderAddonsSection();
+          if (currentAppSection === "stremio") initStremioPage();
+        } else {
+          actionBtn.textContent = "Installing...";
+          actionBtn.disabled = true;
+          window.StremioEngine.installAddon(item.transportUrl, function(err, addon) {
+            actionBtn.disabled = false;
+            if (err) {
+              showToast("Failed to install: " + err.message);
+              renderAddonsSection();
+              return;
+            }
+            showToast("Installed " + item.name);
+            renderAddonsSection();
+            if (currentAppSection === "stremio") initStremioPage();
+          });
+        }
+      });
+
+      card.appendChild(header);
+      card.appendChild(desc);
+      card.appendChild(actionBtn);
+      legalAddonsGrid.appendChild(card);
     });
   }
 
@@ -3699,7 +3777,7 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
         addonManifestInput.value = "";
-        renderInstalledAddons();
+        renderAddonsSection();
         if (currentAppSection === "stremio") initStremioPage();
         showToast("Installed " + (addon.manifest.name || "Addon"));
       });

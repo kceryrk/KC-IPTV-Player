@@ -2,7 +2,7 @@
 <widget xmlns="http://www.w3.org/ns/widgets"
         xmlns:tizen="http://tizen.org/ns/widgets"
         id="http://kceryrk.github.io/kc-iptv-player/tizen"
-        version="1.2.102"
+        version="1.2.103"
         viewmodes="maximized">
   <tizen:application id="kcipplayer.KCIPTVPlayer" package="kcipplayer" required_version="6.0" />
   <content src="index.html" />

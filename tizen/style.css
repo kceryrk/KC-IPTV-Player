@@ -2394,13 +2394,25 @@ body.speler-fit-screen .epg-preview-panel {
   display: none !important;
 }
 
-/* Big icons */
+/* Big icons with correct SVG rendering */
 .customization-tab .ui-icon,
 #settingsDone .ui-icon {
-  width: 44px !important;
-  height: 44px !important;
+  width: 40px !important;
+  height: 40px !important;
   margin: 0 !important;
   flex-shrink: 0 !important;
+  display: block !important;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Filled icons and filled paths retain their fills */
+.customization-tab .ui-icon.fill-icon,
+.customization-tab .ui-icon [fill="currentColor"],
+.customization-tab .ui-icon polygon {
   fill: currentColor !important;
   stroke: none !important;
 }
@@ -3366,6 +3378,97 @@ body.speler-fit-screen .app-progress {
 .addon-remove-btn.focused {
   background: #dc2626;
   color: #fff;
+}
+
+/* Legal Addons Section */
+.legal-addons-grid {
+  display: flex;
+  flex-direction: column;
+  margin-top: 14px;
+}
+
+.legal-addons-grid > * + * {
+  margin-top: 14px;
+}
+
+.legal-addon-card {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 20px 24px;
+  transition: all 0.2s ease;
+}
+
+.legal-addon-card:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(var(--accent-rgb, 229, 9, 20), 0.5);
+}
+
+.legal-addon-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.legal-addon-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.legal-addon-badge {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.45);
+}
+
+.legal-addon-desc {
+  font-size: 1.4rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.legal-addon-btn-install {
+  align-self: flex-start;
+  min-height: 52px !important;
+  padding: 10px 28px !important;
+  font-size: 1.5rem !important;
+  background: rgba(var(--accent-rgb, 229, 9, 20), 0.25) !important;
+  border: 1.5px solid var(--accent, #e50914) !important;
+  color: #ffffff !important;
+  border-radius: 999px !important;
+  cursor: pointer;
+}
+
+.legal-addon-btn-remove {
+  align-self: flex-start;
+  min-height: 52px !important;
+  padding: 10px 28px !important;
+  font-size: 1.5rem !important;
+  background: rgba(239, 68, 68, 0.16) !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.45) !important;
+  color: #fca5a5 !important;
+  border-radius: 999px !important;
+  cursor: pointer;
+}
+
+.legal-addon-btn-install.focused,
+.legal-addon-btn-install:focus,
+.legal-addon-btn-remove.focused,
+.legal-addon-btn-remove:focus {
+  border-color: var(--highlight, #ffd700) !important;
+  box-shadow: 0 0 16px rgba(var(--highlight-rgb, 255, 215, 0), 0.5) !important;
+  transform: scale(1.04);
 }
 
 .stream-selector-modal {

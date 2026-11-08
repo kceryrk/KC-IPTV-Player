@@ -28,6 +28,49 @@
     }
   ];
 
+  var LEGAL_ADDONS_CATALOG = [
+    {
+      id: "com.linvo.stremiochannels",
+      name: "YouTube",
+      badge: "Official · Legal",
+      description: "Browse and watch official YouTube channels, trending videos, and creators directly.",
+      transportUrl: "https://v3-channels.strem.io/manifest.json",
+      types: ["channel"]
+    },
+    {
+      id: "org.stremio.opensubtitlesv3",
+      name: "OpenSubtitles v3",
+      badge: "Official · Legal",
+      description: "Official multi-language subtitle provider for movies and series from OpenSubtitles.org.",
+      transportUrl: "https://opensubtitles-v3.strem.io/manifest.json",
+      types: ["movie", "series"]
+    },
+    {
+      id: "org.stremio.watchhub",
+      name: "WatchHub",
+      badge: "Official · Legal",
+      description: "Aggregator guide to watch movies & series on legal services (Netflix, HBO, Prime, Disney+, etc.).",
+      transportUrl: "https://watchhub.strem.io/manifest.json",
+      types: ["movie", "series"]
+    },
+    {
+      id: "org.stremio.pubdomainmovies",
+      name: "Public Domain Movies",
+      badge: "Official · Legal",
+      description: "Over 500+ historical, copyright-free public domain classic movies.",
+      transportUrl: "https://caching.stremio.net/publicdomainmovies.now.sh/manifest.json",
+      types: ["movie"]
+    },
+    {
+      id: "community.anime.kitsu",
+      name: "Anime Kitsu",
+      badge: "Community · Legal",
+      description: "Kitsu.io anime database with trending charts, top airing rankings, and metadata.",
+      transportUrl: "https://anime-kitsu.strem.fun/manifest.json",
+      types: ["anime", "series", "movie"]
+    }
+  ];
+
   function xhrGet(url, timeoutMs, callback) {
     var xhr = new XMLHttpRequest();
     var completed = false;
@@ -111,6 +154,20 @@
 
   StremioEngine.prototype.getAddons = function() {
     return this.addons;
+  };
+
+  StremioEngine.prototype.getLegalCatalog = function() {
+    return LEGAL_ADDONS_CATALOG;
+  };
+
+  StremioEngine.prototype.isInstalled = function(transportUrl) {
+    if (!transportUrl) return false;
+    for (var i = 0; i < this.addons.length; i++) {
+      if (this.addons[i].transportUrl === transportUrl) {
+        return true;
+      }
+    }
+    return false;
   };
 
   StremioEngine.prototype.installAddon = function(manifestUrl, callback) {
