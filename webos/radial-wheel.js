@@ -18,6 +18,13 @@
     { radius: 800, angleStep: 5.4 }  // Episodes
   ];
 
+  var lastStateByMode = {
+    favorites: { channelIndex: 0 },
+    live: { regionIndex: 0, categoryIndex: 0, channelIndex: 0 },
+    vod: { regionIndex: 0, categoryIndex: 0, channelIndex: 0 },
+    series: { regionIndex: 0, categoryIndex: 0, channelIndex: 0 }
+  };
+
   var state = {
     enabled: true,
     isOpen: false, // Default CLOSED on startup
@@ -129,11 +136,13 @@
   var FLAG_ALIASES = { UK: "gb", EN: "gb", EL: "gr" };
   var GLOBE_SVG = '<svg class="r-flag-svg" viewBox="0 0 24 24" fill="#38bdf8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>';
 
-  function getFlagHtml(code) {
+  function getFlagHtml(code, offset) {
     if (!code || code === "ALL") return GLOBE_SVG;
     var iso = (FLAG_ALIASES[code] || code).toLowerCase();
     if (iso.length === 2) {
-      return '<img src="flags/' + iso + '.svg" class="r-flag-svg" alt="" onerror="this.outerHTML=\'' + GLOBE_SVG.replace(/"/g, '&quot;') + '\';">';
+      if (offset === undefined || Math.abs(offset) <= 3) {
+        return '<img src="flags/' + iso + '.svg" class="r-flag-svg" alt="" onerror="this.outerHTML=\'' + GLOBE_SVG.replace(/"/g, '&quot;') + '\';">';
+      }
     }
     return GLOBE_SVG;
   }
@@ -344,7 +353,7 @@
             '<span class="radial-card-title">' + itemData.title + '</span>' +
           '</div>';
       } else if (tierIndex === 1) {
-        var flagHtml = getFlagHtml(itemData);
+        var flagHtml = getFlagHtml(itemData, offset);
         itemEl.innerHTML = 
           '<div class="radial-card-box col-box-1">' +
             flagHtml +
@@ -539,12 +548,23 @@
         }
         return;
       }
+      var curMod = window.kcGetModus ? window.kcGetModus() : "live";
+      if (lastStateByMode[curMod]) {
+        lastStateByMode[curMod].regionIndex = state.selected.regionIndex;
+        lastStateByMode[curMod].categoryIndex = state.selected.categoryIndex;
+        lastStateByMode[curMod].channelIndex = state.selected.channelIndex;
+      }
+
       if (window.kcSwitchModus && typeof window.kcSwitchModus === "function") {
         window.kcSwitchModus(chosenMode);
       }
-      state.selected.regionIndex = 0;
-      state.selected.categoryIndex = 0;
-      state.selected.channelIndex = 0;
+
+      if (lastStateByMode[chosenMode]) {
+        state.selected.regionIndex = lastStateByMode[chosenMode].regionIndex || 0;
+        state.selected.categoryIndex = lastStateByMode[chosenMode].categoryIndex || 0;
+        state.selected.channelIndex = lastStateByMode[chosenMode].channelIndex || 0;
+      }
+
       updateColumnVisibility();
       renderAllTiers();
       // Step to next column on OK
@@ -833,14 +853,20 @@
       updateColumnVisibility();
     } else if (tierIndex === 1) {
       state.selected.regionIndex = ((state.selected.regionIndex + direction) % total + total) % total;
+      var curMod1 = window.kcGetModus ? window.kcGetModus() : "live";
+      if (lastStateByMode[curMod1]) lastStateByMode[curMod1].regionIndex = state.selected.regionIndex;
       renderRadialTier(1);
       scheduleTierPreview(1);
     } else if (tierIndex === 2) {
       state.selected.categoryIndex = ((state.selected.categoryIndex + direction) % total + total) % total;
+      var curMod2 = window.kcGetModus ? window.kcGetModus() : "live";
+      if (lastStateByMode[curMod2]) lastStateByMode[curMod2].categoryIndex = state.selected.categoryIndex;
       renderRadialTier(2);
       scheduleTierPreview(2);
     } else if (tierIndex === 3) {
       state.selected.channelIndex = ((state.selected.channelIndex + direction) % total + total) % total;
+      var curMod3 = window.kcGetModus ? window.kcGetModus() : "live";
+      if (lastStateByMode[curMod3]) lastStateByMode[curMod3].channelIndex = state.selected.channelIndex;
       renderRadialTier(3);
     }
 

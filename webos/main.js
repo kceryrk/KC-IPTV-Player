@@ -1952,6 +1952,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (flagObserver) flagObserver.disconnect();
+    if (document.body.classList.contains("radial-active")) {
+      if (!keepCategories) filterCategories();
+      return;
+    }
     regionList.innerHTML = `<li class="nav-item focusable${currentActiveRegion === "ALL" ? " active" : ""}" data-region="ALL" tabindex="0"><span class="region-label">${t("allRegions")}</span></li>`;
 
     visible.forEach(reg => {
@@ -2247,6 +2251,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function filterCategories() {
     if (!categoryList) return;
+    if (document.body.classList.contains("radial-active")) return;
     categoryList.innerHTML = "";
 
     const isVod = (currentModus === "vod" || currentModus === "series");
@@ -6949,10 +6954,25 @@ document.addEventListener("DOMContentLoaded", () => {
   window.kcSwitchModus = function(m) {
     switchModus(m);
     setupRegions();
-    if (currentModus !== "favorites") filterCategories();
-    var cats = window.kcGetCategories(currentLiveRegion);
-    if (cats && cats.length) {
-      currentCategoryId = cats[0].category_id;
+    if (m === "live") {
+      var savedReg = store.getItem("iptv_last_live_region");
+      if (savedReg) currentLiveRegion = savedReg;
+      var cats = window.kcGetCategories(currentLiveRegion);
+      var savedCat = store.getItem("iptv_last_live_cat");
+      if (savedCat) {
+        var foundSaved = cats.find(function(c) { return String(c.category_id) === String(savedCat); });
+        if (foundSaved) currentCategoryId = savedCat;
+      }
+      if (cats && cats.length) {
+        var foundCurrent = cats.find(function(c) { return String(c.category_id) === String(currentCategoryId); });
+        if (!foundCurrent) currentCategoryId = cats[0].category_id;
+      }
+    } else {
+      if (currentModus !== "favorites") filterCategories();
+      var cats = window.kcGetCategories(currentLiveRegion);
+      if (cats && cats.length) {
+        currentCategoryId = cats[0].category_id;
+      }
     }
     filterChannels();
     if (window.AeroRadial) window.AeroRadial.refresh();
@@ -6961,10 +6981,17 @@ document.addEventListener("DOMContentLoaded", () => {
   window.kcSetRegion = function(r) {
     var isVod = (currentModus === "vod" || currentModus === "series");
     if (isVod) currentVodRegion = r;
-    else currentLiveRegion = r;
+    else {
+      currentLiveRegion = r;
+      try { store.setItem("iptv_last_live_region", r); } catch (e) {}
+    }
     if (currentModus !== "favorites") filterCategories();
     var cats = window.kcGetCategories(r);
-    if (cats && cats.length) {
+    var savedCat = isVod ? null : store.getItem("iptv_last_live_cat");
+    var foundSaved = savedCat ? cats.find(function(c) { return String(c.category_id) === String(savedCat); }) : null;
+    if (foundSaved) {
+      currentCategoryId = savedCat;
+    } else if (cats && cats.length) {
       currentCategoryId = cats[0].category_id;
     }
     filterChannels();
@@ -6973,6 +7000,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.kcSetCategory = function(catId) {
     currentCategoryId = catId;
+    if (currentModus === "live") {
+      try { store.setItem("iptv_last_live_cat", String(catId)); } catch (e) {}
+    }
     filterChannels();
     if (window.AeroRadial) window.AeroRadial.refresh();
   };
