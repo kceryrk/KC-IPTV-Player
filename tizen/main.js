@@ -4097,18 +4097,36 @@ document.addEventListener("DOMContentLoaded", () => {
   function openInNativeYouTubeApp(videoId) {
     const vId = videoId || lastCurrentYtVideoId || "";
     if (!vId) return;
-    if (window.kcShowToast) window.kcShowToast("YouTube başlatılıyor...");
+    if (window.kcShowToast) window.kcShowToast("TizenTube / YouTube başlatılıyor...");
     closeYouTubePlayer();
-    // 1. Samsung Tizen: Launch official YouTube TV App
+
+    // 1. Samsung Tizen: Launch TizenTube or official YouTube TV App
     if (window.tizen && window.tizen.application) {
       const ytUrl = "https://www.youtube.com/watch?v=" + encodeURIComponent(vId);
-      const appIds = ["111299001912", "9Ur5IzDKqV.TizenYouTube", "org.tizen.youtube", "9uQaAVugRx.YouTube"];
+      const appIds = [
+        "xvvl3S1TT1.TizenTubeStandalone", // TizenTube Standalone (highest priority for user)
+        "com.samsung.tv.cobalt-yt",       // Cobalt YouTube on 2021+ Tizen models
+        "111299001912",                   // Official Samsung Smart TV YouTube
+        "9Ur5IzDKqV.TizenYouTube",        // Legacy Tizen YouTube
+        "org.tizen.youtube",
+        "9uQaAVugRx.YouTube"
+      ];
       let tried = 0;
 
       function tryNext() {
         if (tried >= appIds.length) {
           try {
-            const appControl = new window.tizen.ApplicationControl("http://tizen.org/appcontrol/operation/view", ytUrl);
+            const appControl = new window.tizen.ApplicationControl(
+              "http://tizen.org/appcontrol/operation/view",
+              ytUrl,
+              null,
+              null,
+              [
+                new window.tizen.ApplicationControlData("url", [ytUrl]),
+                new window.tizen.ApplicationControlData("v", [vId]),
+                new window.tizen.ApplicationControlData("videoId", [vId])
+              ]
+            );
             window.tizen.application.launchAppControl(appControl, null, function() {}, function() {});
           } catch (e) {}
           return;
@@ -4116,14 +4134,38 @@ document.addEventListener("DOMContentLoaded", () => {
         const currentId = appIds[tried++];
         try {
           if (typeof window.tizen.ApplicationControl === "function" && typeof window.tizen.application.launchAppControl === "function") {
-            const appControl = new window.tizen.ApplicationControl("http://tizen.org/appcontrol/operation/view", ytUrl);
+            const appControl = new window.tizen.ApplicationControl(
+              "http://tizen.org/appcontrol/operation/view",
+              ytUrl,
+              null,
+              null,
+              [
+                new window.tizen.ApplicationControlData("url", [ytUrl]),
+                new window.tizen.ApplicationControlData("v", [vId]),
+                new window.tizen.ApplicationControlData("videoId", [vId])
+              ]
+            );
             window.tizen.application.launchAppControl(appControl, currentId, function() {
-              console.log("Launched YouTube app:", currentId);
+              console.log("Launched YouTube/TizenTube app:", currentId);
+            }, function(err) {
+              console.warn("launchAppControl failed for " + currentId + ":", err, "Trying direct launch...");
+              try {
+                window.tizen.application.launch(currentId, function() {
+                  console.log("Launched " + currentId + " directly");
+                }, function(err2) {
+                  console.warn("Direct launch failed for " + currentId + ":", err2);
+                  tryNext();
+                });
+              } catch (e2) {
+                tryNext();
+              }
+            });
+          } else {
+            window.tizen.application.launch(currentId, function() {
+              console.log("Launched " + currentId + " directly (no appcontrol)");
             }, function() {
               tryNext();
             });
-          } else {
-            window.tizen.application.launch(currentId, function() {}, function() { tryNext(); });
           }
         } catch (e) {
           tryNext();
@@ -4132,20 +4174,30 @@ document.addEventListener("DOMContentLoaded", () => {
       tryNext();
       return;
     }
+
     // 2. LG webOS: Launch official YouTube app
     if (window.webOS && typeof window.webOS.service === "object") {
       try {
         window.webOS.service.request("luna://com.webos.applicationManager", {
           method: "launch",
-          parameters: { id: "youtube.leanback.v4", params: { contentTarget: "https://www.youtube.com/watch?v=" + encodeURIComponent(vId) } }
+          parameters: {
+            id: "youtube.leanback.v4",
+            params: {
+              contentTarget: "https://www.youtube.com/watch?v=" + encodeURIComponent(vId)
+            }
+          }
         });
         return;
       } catch (e) {}
     }
+
+    // 3. Fallback for browser / PC test: open in new tab
+    try {
+      window.open("https://www.youtube.com/watch?v=" + encodeURIComponent(vId), "_blank");
+    } catch (e) {}
   }
 
   function playYouTubeVideo(rawVideoId, title, fromCard) {
-    if (!youtubePlayerModal || !youtubeIframe) return;
     lastFocusedYtCard = fromCard || (document.activeElement && document.activeElement.classList.contains("yt-video-card") ? document.activeElement : null);
     let cleanId = rawVideoId || "";
     cleanId = cleanId.replace(/^yt_id:/, '').replace(/^youtube:/, '').trim();
@@ -4156,10 +4208,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!cleanId) return;
 
     lastCurrentYtVideoId = cleanId;
-    lastOpenedPlayerAt = Date.now();
 
+    // IMPORTANT: On Smart TVs (Samsung Tizen and LG webOS), NEVER load YouTube in an iframe!
+    // Smart TV Web Runtimes (Blink / WebKit running on file:// origin) will crash or hang for 22s and get killed
+    // by the OS watchdog. Instead, launch TizenTube / native YouTube TV directly!
+    const isSmartTV = Boolean((window.tizen && window.tizen.application) || (window.webOS && window.webOS.service));
+    if (isSmartTV) {
+      openInNativeYouTubeApp(cleanId);
+      return;
+    }
+
+    if (!youtubePlayerModal || !youtubeIframe) {
+      try {
+        window.open("https://www.youtube.com/watch?v=" + encodeURIComponent(cleanId), "_blank");
+      } catch (e) {}
+      return;
+    }
+
+    lastOpenedPlayerAt = Date.now();
     if (youtubePlayerTitle) youtubePlayerTitle.textContent = title || "YouTube";
-    // Standard embed with nocookie domain, playsinline, rel=0, no top navigation
     youtubeIframe.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(cleanId) + "?autoplay=1&controls=1&playsinline=1&rel=0&modestbranding=1";
     youtubePlayerModal.classList.remove("hidden");
     setTimeout(() => {
