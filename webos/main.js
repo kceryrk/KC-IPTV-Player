@@ -894,6 +894,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     // Clean leading brackets, pipes, bullets like "| TR |", "[TR]", "(TR)", "*TR*"
     clean = clean.replace(/^[|\[\(*•#\s]+/, "");
+    // If it starts with VOD, SERIES, MOVIE, FILM, CINEMA, strip it to access the country code:
+    clean = clean.replace(/^(VOD|SERIES|SERIE|MOVIES|MOVIE|FILMLER|FILM|CINEMA)[\s:|\-_]+/i, "");
+    clean = clean.replace(/^[|\[\(*•#\s]+/, "");
+
     let prefix = clean.split(/[\s:|\-]+/)[0].replace(/[^a-zA-Z]/g, "").toUpperCase();
     if (prefix.length >= 2 && prefix.length <= 5) {
       // Remove V and S prefixes before country codes (e.g. VTR -> TR, STR -> TR, VEN -> EN, SEN -> EN, VDE -> DE, SDE -> DE)
@@ -1246,7 +1250,14 @@ document.addEventListener("DOMContentLoaded", () => {
       Object.keys(loadedCategories).forEach((key) => { delete loadedCategories[key]; });
       setLoginState("logged-in");
       if (background) {
-        if (currentModus === "vod" || currentModus === "series") setupRegions();
+        if (currentModus === "vod" || currentModus === "series") {
+          setupRegions();
+          var reg = (currentModus === "vod" ? currentVodRegion : currentLiveRegion) || "ALL";
+          var cList = window.kcGetCategories(reg);
+          if (cList && cList.length) currentCategoryId = cList[0].category_id;
+          filterChannels();
+          if (window.AeroRadial) window.AeroRadial.refresh();
+        }
       } else {
         // The playlist download is separate from login, so a download failure does not fail the login.
         hideLoginProgress();
@@ -2616,7 +2627,10 @@ document.addEventListener("DOMContentLoaded", () => {
           loadedCategories[requestKey] = true;
           showToast(t("playlistUnavailable"));
         }
-        if (isCurrentRequest()) filterChannels();
+        if (isCurrentRequest()) {
+          filterChannels();
+          if (window.AeroRadial) window.AeroRadial.refresh();
+        }
       });
       return;
     }
@@ -6675,16 +6689,38 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (isRight) {
           e.preventDefault();
           queueVodSeek(1);
+          return;
         } else if (isLeft) {
           e.preventDefault();
           queueVodSeek(-1);
+          return;
         } else if (isEnter) {
           e.preventDefault();
           togglePlayPauseVod();
+          return;
+        } else if (isDown) {
+          e.preventDefault();
+          if (window.AeroRadial && !window.AeroRadial.isOpen()) {
+            window.AeroRadial.open();
+          } else {
+            showVodOSD();
+          }
+          return;
         } else if (isBack) {
           e.preventDefault();
-          video.pause();
+          destroyStreamPlayers();
+          try {
+            video.pause();
+            video.removeAttribute("src");
+            video.load();
+          } catch (e) {}
+          playerWrapper.classList.add("hidden");
+          playerWrapper.classList.remove("vod-playback");
           deactiveerFitScreen();
+          if (window.AeroRadial) {
+            window.AeroRadial.open();
+          }
+          return;
         }
       } else {
         if (isPageUp || isUp) {
@@ -7040,7 +7076,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } else {
       if (currentModus !== "favorites") filterCategories();
-      var cats = window.kcGetCategories(currentLiveRegion);
+      var activeReg = (m === "vod" || m === "series") ? (currentVodRegion || "ALL") : currentLiveRegion;
+      var cats = window.kcGetCategories(activeReg);
       if (cats && cats.length) {
         currentCategoryId = cats[0].category_id;
       }

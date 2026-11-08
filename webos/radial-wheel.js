@@ -1052,8 +1052,21 @@
     if (state.seriesPicker.active) {
       exitSeriesPicker();
     }
-    if (window.kcActivateFitScreen && typeof window.kcActivateFitScreen === "function") {
-      window.kcActivateFitScreen();
+
+    var curMod = window.kcGetModus ? window.kcGetModus() : "live";
+    var isVodOrSeries = (curMod === "vod" || curMod === "series");
+    var vid = document.getElementById("videoPlayer");
+    var hasActiveVideo = vid && !vid.paused && vid.currentTime > 0;
+
+    if (!isVodOrSeries || hasActiveVideo) {
+      if (window.kcActivateFitScreen && typeof window.kcActivateFitScreen === "function") {
+        window.kcActivateFitScreen();
+      }
+    } else {
+      document.body.classList.remove("radial-active");
+      if (window.kcDeactivateFitScreen && typeof window.kcDeactivateFitScreen === "function") {
+        window.kcDeactivateFitScreen();
+      }
     }
   }
 
