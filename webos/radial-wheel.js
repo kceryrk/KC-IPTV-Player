@@ -89,45 +89,52 @@
     }
   }
 
+  var tickBuffer = null;
   function playTick() {
-    tickCounter++;
-    // Throttle audio ticks to every 3 items during rapid scroll to prevent audio context thread starvation
-    if (fastModeActive && (tickCounter % 3 !== 0)) return;
+    if (fastModeActive) return;
     try {
       var ctx = getAudioCtx();
       if (!ctx) return;
       if (ctx.state === "suspended") {
         try { ctx.resume(); } catch (e) {}
       }
-      var osc = ctx.createOscillator();
-      var gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(420, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(160, ctx.currentTime + 0.035);
-      gain.gain.setValueAtTime(0.06, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.035);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.04);
+      if (!tickBuffer) {
+        var rate = ctx.sampleRate || 44100;
+        var len = Math.floor(rate * 0.02);
+        tickBuffer = ctx.createBuffer(1, len, rate);
+        var chData = tickBuffer.getChannelData(0);
+        for (var i = 0; i < len; i++) {
+          chData[i] = Math.sin(2 * Math.PI * 440 * (i / rate)) * Math.exp(-i / (rate * 0.004)) * 0.08;
+        }
+      }
+      var src = ctx.createBufferSource();
+      src.buffer = tickBuffer;
+      src.connect(ctx.destination);
+      src.start();
     } catch (e) {}
   }
 
+  var stepBuffer = null;
   function playStep() {
     try {
       var ctx = getAudioCtx();
       if (!ctx) return;
-      var osc = ctx.createOscillator();
-      var gain = ctx.createGain();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(320, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(580, ctx.currentTime + 0.08);
-      gain.gain.setValueAtTime(0.1, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.09);
+      if (ctx.state === "suspended") {
+        try { ctx.resume(); } catch (e) {}
+      }
+      if (!stepBuffer) {
+        var rate = ctx.sampleRate || 44100;
+        var len = Math.floor(rate * 0.04);
+        stepBuffer = ctx.createBuffer(1, len, rate);
+        var sData = stepBuffer.getChannelData(0);
+        for (var j = 0; j < len; j++) {
+          sData[j] = Math.sin(2 * Math.PI * 520 * (j / rate)) * Math.exp(-j / (rate * 0.01)) * 0.12;
+        }
+      }
+      var src = ctx.createBufferSource();
+      src.buffer = stepBuffer;
+      src.connect(ctx.destination);
+      src.start();
     } catch (e) {}
   }
 
@@ -236,6 +243,35 @@
     return modeId;
   }
 
+  function isRegionHiddenActive() {
+    if (window.kcIsRegionHidden && typeof window.kcIsRegionHidden === "function") {
+      return window.kcIsRegionHidden();
+    }
+    if (document.body && document.body.classList.contains("no-region-column")) {
+      return true;
+    }
+    try {
+      if (localStorage.getItem("iptv_hide_regions") === "true") return true;
+    } catch (e) {}
+    return false;
+  }
+
+  function isYouTubeInstalled() {
+    if (window.stremioEngine && typeof window.stremioEngine.isYouTubeInstalled === "function") {
+      return window.stremioEngine.isYouTubeInstalled();
+    }
+    if (window.kcIsYouTubeInstalled && typeof window.kcIsYouTubeInstalled === "function") {
+      return window.kcIsYouTubeInstalled();
+    }
+    try {
+      var raw = localStorage.getItem("stremio_addons");
+      if (raw && (raw.indexOf("v3-channels.strem.io") !== -1 || raw.indexOf("com.linvo.stremiochannels") !== -1 || raw.toLowerCase().indexOf("youtube") !== -1)) {
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+
   function getModesList() {
     var modes = [
       { id: "favorites", title: getModeTitle("favorites"), iconKey: "favorites" },
@@ -244,7 +280,7 @@
       { id: "series", title: getModeTitle("series"), iconKey: "series" },
       { id: "stremio", title: "Stremio", iconKey: "stremio" }
     ];
-    if (window.kcIsYouTubeInstalled && typeof window.kcIsYouTubeInstalled === "function" && window.kcIsYouTubeInstalled()) {
+    if (isYouTubeInstalled()) {
       modes.push({ id: "youtube", title: "YouTube", iconKey: "youtube" });
     }
     modes.push({ id: "settings", title: getModeTitle("settings"), iconKey: "settings" });
@@ -273,8 +309,11 @@
 
   function getCategoriesList() {
     if (window.kcGetCategories && typeof window.kcGetCategories === "function") {
-      var regs = getRegionsList();
-      var activeReg = regs[state.selected.regionIndex % regs.length] || "ALL";
+      var activeReg = "ALL";
+      if (!isRegionHiddenActive()) {
+        var regs = getRegionsList();
+        activeReg = regs[state.selected.regionIndex % regs.length] || "ALL";
+      }
       var cats = window.kcGetCategories(activeReg);
       if (cats && cats.length) return cats;
     }
@@ -311,10 +350,12 @@
     var modeObj = modes[state.selected.modeIndex] || modes[0];
     var isFav = (modeObj.id === "favorites");
     var isSpecial = (modeObj.id === "settings" || modeObj.id === "stremio" || modeObj.id === "youtube");
+    var isRegHidden = isRegionHiddenActive();
+
     var col1 = document.getElementById("radialCol-1");
     var col2 = document.getElementById("radialCol-2");
     var col3 = document.getElementById("radialCol-3");
-    if (col1) col1.style.display = (isFav || isSpecial) ? "none" : "";
+    if (col1) col1.style.display = (isFav || isSpecial || isRegHidden) ? "none" : "";
     if (col2) col2.style.display = (isFav || isSpecial) ? "none" : "";
     if (col3) col3.style.display = isSpecial ? "none" : "";
 
@@ -380,8 +421,8 @@
     var activeIdx = getTierActiveIndex(tierIndex);
     var normalizedFocus = ((activeIdx % total) + total) % total;
 
-    // Fill entire column vertically [-7 to +7 = 15 visible items]
-    var visibleRange = 7;
+    // Fill column vertically [-5 to +5 = 11 visible items for optimal TV 60FPS performance]
+    var visibleRange = 5;
     var curModus = window.kcGetModus ? window.kcGetModus() : "live";
     var isVodOrSeries = (curModus === "vod" || curModus === "series");
     var curModes = getModesList();
@@ -589,8 +630,14 @@
     var modeObj = modes[state.selected.modeIndex] || modes[0];
     var isFav = (modeObj.id === "favorites");
     var isSpecial = (modeObj.id === "settings" || modeObj.id === "stremio" || modeObj.id === "youtube");
+    var isRegHidden = isRegionHiddenActive();
+
+    if (isRegHidden && state.activeTier === 1) {
+      state.activeTier = 2;
+    }
+
     for (var i = 0; i < 4; i++) {
-      if ((isFav && (i === 1 || i === 2)) || (isSpecial && i > 0)) continue;
+      if ((isFav && (i === 1 || i === 2)) || (isRegHidden && i === 1) || (isSpecial && i > 0)) continue;
       renderRadialTier(i);
       var col = document.getElementById("radialCol-" + i);
       if (col) {
@@ -614,8 +661,11 @@
       }
       return;
     }
+    if (isRegionHiddenActive() && state.activeTier === 1) {
+      state.activeTier = 2;
+    }
     var activeCol = document.getElementById("radialCol-" + state.activeTier);
-    if (activeCol && activeCol.offsetParent !== null) {
+    if (activeCol && activeCol.offsetParent !== null && activeCol.style.display !== "none") {
       var rect = activeCol.getBoundingClientRect();
       pill.style.left = (rect.left - 4) + "px";
       pill.style.width = (rect.width + 8) + "px";
@@ -678,7 +728,8 @@
       if (chosenMode === "favorites") {
         state.activeTier = 3;
       } else {
-        state.activeTier = 1;
+        var isRegHidden = isRegionHiddenActive();
+        state.activeTier = isRegHidden ? 2 : 1;
       }
       renderAllTiers();
       playStep();
@@ -1008,6 +1059,7 @@
     var modes = getModesList();
     var modeObj = modes[state.selected.modeIndex] || modes[0];
     var isFav = (modeObj.id === "favorites");
+    var isRegHidden = isRegionHiddenActive();
 
     if (direction > 0) {
       if (state.activeTier === 0) {
@@ -1032,6 +1084,14 @@
     if (isFav) {
       if (direction > 0) nextTier = 3;
       else nextTier = 0;
+    } else if (isRegHidden) {
+      if (direction > 0) {
+        if (state.activeTier === 0) nextTier = 2;
+        else if (state.activeTier === 2) nextTier = 3;
+      } else {
+        if (state.activeTier === 3) nextTier = 2;
+        else if (state.activeTier === 2) nextTier = 0;
+      }
     } else {
       nextTier = Math.max(0, Math.min(3, state.activeTier + direction));
     }
@@ -1076,8 +1136,18 @@
     if (window.kcCurrentStreamIndex !== undefined && window.kcCurrentStreamIndex >= 0) {
       state.selected.channelIndex = window.kcCurrentStreamIndex;
     }
-    state.activeTier = 3;
+    if (isRegionHiddenActive() && state.activeTier === 1) {
+      state.activeTier = 2;
+    }
     renderAllTiers();
+
+    // Blur any active DOM elements and remove .focused classes to prevent ghost navigation
+    if (document.activeElement && document.activeElement.blur) {
+      try { document.activeElement.blur(); } catch (e) {}
+    }
+    document.querySelectorAll(".focused").forEach(function(el) {
+      el.classList.remove("focused");
+    });
   }
 
   function closeOverlay() {

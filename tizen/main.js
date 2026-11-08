@@ -1528,8 +1528,15 @@ document.addEventListener("DOMContentLoaded", () => {
       store.setItem("iptv_hide_regions", String(hideRegionColumn));
       document.body.classList.toggle("no-region-column", hideRegionColumn);
       if (currentModus !== "favorites") setupRegions();
+      if (window.AeroRadial && typeof window.AeroRadial.refresh === "function") {
+        window.AeroRadial.refresh();
+      }
     });
   }
+
+  window.kcIsRegionHidden = function() {
+    return !!(hideRegionColumn || (document.body && document.body.classList.contains("no-region-column")));
+  };
 
   if (customizationPage) {
     customizationPage.addEventListener("click", e => {
@@ -3824,6 +3831,11 @@ document.addEventListener("DOMContentLoaded", () => {
     previousAppSection = section;
 
     if (section === "iptv") {
+      document.querySelectorAll(".focused").forEach(el => el.classList.remove("focused"));
+      if (document.activeElement && document.activeElement.blur) {
+        try { document.activeElement.blur(); } catch (e) {}
+      }
+      deactiveerFitScreen();
       document.body.classList.add("radial-active");
       if (headerTabIptv) headerTabIptv.classList.add("active");
       if (headerTabStremio) headerTabStremio.classList.remove("active");
@@ -6253,6 +6265,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (window.AeroRadial.handleKey(e, key)) {
         return;
       }
+      const navKeys = [13, 27, 37, 38, 39, 40, 33, 34, 461, 10009];
+      if (navKeys.indexOf(key) !== -1 || isUp || isDown || isLeft || isRight || isEnter || isBack) {
+        e.preventDefault();
+        return;
+      }
     }
 
     // Toggle Radial Overlay with 'M' key
@@ -7798,6 +7815,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.AeroRadial.init();
   }
 
+  updateYouTubeVisibility();
   initProfile();
   scheduleListRefresh();
 });

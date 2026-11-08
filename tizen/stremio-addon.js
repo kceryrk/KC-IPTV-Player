@@ -171,9 +171,22 @@
   };
 
   StremioEngine.prototype.isYouTubeInstalled = function() {
+    if (!this.addons || !this.addons.length) {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (raw && (raw.indexOf("v3-channels.strem.io") !== -1 || raw.indexOf("com.linvo.stremiochannels") !== -1 || raw.toLowerCase().indexOf("youtube") !== -1)) {
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
     for (var i = 0; i < this.addons.length; i++) {
       var a = this.addons[i];
-      if (a.transportUrl === "https://v3-channels.strem.io/manifest.json" || (a.manifest && a.manifest.id === "com.linvo.stremiochannels")) {
+      if (!a) continue;
+      var url = (a.transportUrl || "").toLowerCase();
+      var id = (a.manifest && a.manifest.id ? a.manifest.id : (a.id || "")).toLowerCase();
+      var name = (a.manifest && a.manifest.name ? a.manifest.name : (a.name || "")).toLowerCase();
+      if (url.indexOf("v3-channels.strem.io") !== -1 || id === "com.linvo.stremiochannels" || name === "youtube" || url.indexOf("youtube") !== -1) {
         return true;
       }
     }
