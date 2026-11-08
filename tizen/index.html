@@ -657,57 +657,19 @@
           </section>
         </div>
 
-        <!-- SUBPAGE 4: YOUTUBE (Official Legal YouTube Addon) -->
-        <div id="stremioSubpageYoutube" class="stremio-subpage hidden">
-          <!-- YOUTUBE HERO BANNER & ACCOUNT STATUS -->
-          <section class="stremio-yt-hero-section">
-            <div class="stremio-yt-header-left">
-              <div class="stremio-yt-badge">
-                <svg viewBox="0 0 24 24" width="30" height="30" fill="#ff0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                <span class="stremio-yt-title">YouTube Home</span>
-                <span class="stremio-yt-verified">Official · Legal</span>
-              </div>
-              <p class="stremio-yt-desc">Resmi YouTube açık katalogları, trend kanallar ve video yayınları.</p>
+        <!-- SUBPAGE 4: YOUTUBE (OG YouTube TV Experience) -->
+        <div id="stremioSubpageYoutube" class="stremio-subpage yt-home-page hidden">
+          <!-- TOP FILTER PILLS BAR (OG YouTube TV style) -->
+          <div class="yt-header-bar">
+            <div class="yt-logo-badge">
+              <svg viewBox="0 0 24 24" width="30" height="30" fill="#ff0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              <span class="yt-logo-text">YouTube</span>
             </div>
+            <div class="yt-genre-pills-bar" id="stremioYtGenreBar"></div>
+          </div>
 
-            <!-- ACCOUNT / LOGIN STATUS PILL -->
-            <button type="button" class="stremio-yt-account-card focusable" id="stremioYtAccountBtn" tabindex="0">
-              <div class="stremio-yt-avatar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </div>
-              <div class="stremio-yt-account-info">
-                <span class="stremio-yt-account-label">Hesap / Oturum Durumu</span>
-                <span class="stremio-yt-account-status">Misafir / Güvenli Mod ℹ</span>
-              </div>
-            </button>
-          </section>
-
-          <!-- CATEGORY / GENRE FILTER BAR -->
-          <section class="stremio-row-section">
-            <div class="stremio-live-cat-bar" id="stremioYtGenreBar"></div>
-          </section>
-
-          <!-- SHELF 1: POPÜLER KANALLAR -->
-          <section class="stremio-row-section" id="stremioRowYtChannels">
-            <div class="stremio-row-header">
-              <h2 class="stremio-row-title" id="stremioTitleYtChannels">Popüler YouTube Kanalları</h2>
-              <div class="stremio-row-actions">
-                <span class="stremio-row-count" id="stremioCountYtChannels"></span>
-              </div>
-            </div>
-            <div class="stremio-cards-strip" id="stremioStripYtChannels"></div>
-          </section>
-
-          <!-- SHELF 2: KANAL VİDEOLARI -->
-          <section class="stremio-row-section" id="stremioRowYtVideos">
-            <div class="stremio-row-header">
-              <h2 class="stremio-row-title" id="stremioTitleYtVideos">Öne Çıkan Videolar</h2>
-              <div class="stremio-row-actions">
-                <span class="stremio-row-count" id="stremioCountYtVideos"></span>
-              </div>
-            </div>
-            <div class="stremio-cards-strip" id="stremioStripYtVideos"></div>
-          </section>
+          <!-- MAIN 16:9 VIDEO FEED GRID -->
+          <div class="yt-video-feed-grid" id="ytVideoFeedGrid"></div>
         </div>
       </main>
 

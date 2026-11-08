@@ -3955,21 +3955,39 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentYtGenre = "all";
 
   const YT_GENRES = [
-    { id: "all", name: "Tümü (All)" },
-    { id: "Music", name: "Müzik (Music)" },
-    { id: "Gaming", name: "Oyun (Gaming)" },
-    { id: "News & Politics", name: "Haberler & Politika" },
+    { id: "all", name: "Tümü" },
+    { id: "Gaming", name: "Oyun" },
+    { id: "Music", name: "Müzik" },
     { id: "Film & Entertainment", name: "Sinema & Eğlence" },
+    { id: "News & Politics", name: "Haberler" },
     { id: "Sports", name: "Spor" },
     { id: "Comedy", name: "Komedi" },
     { id: "Animation", name: "Animasyon" },
-    { id: "Lifestyle", name: "Yaşam" },
     { id: "Automotive", name: "Otomotiv" }
   ];
 
+  function formatRelativeTime(dateStr) {
+    if (!dateStr) return "YouTube";
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return "YouTube";
+      const now = new Date();
+      const diffMs = now - d;
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      if (diffDays <= 0) return "Bugün";
+      if (diffDays === 1) return "Dün";
+      if (diffDays < 7) return diffDays + " gün önce";
+      if (diffDays < 30) return Math.floor(diffDays / 7) + " hafta önce";
+      if (diffDays < 365) return Math.floor(diffDays / 30) + " ay önce";
+      return Math.floor(diffDays / 365) + " yıl önce";
+    } catch (e) {
+      return "YouTube";
+    }
+  }
+
   function initYouTubeHome() {
     renderYouTubeGenres();
-    loadYouTubeChannels(currentYtGenre);
+    loadYouTubeFeed(currentYtGenre);
   }
 
   function renderYouTubeGenres() {
@@ -3978,131 +3996,77 @@ document.addEventListener("DOMContentLoaded", () => {
     YT_GENRES.forEach((g) => {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "stremio-yt-genre-pill focusable" + (g.id === currentYtGenre ? " active" : "");
+      btn.className = "yt-genre-pill focusable" + (g.id === currentYtGenre ? " active" : "");
       btn.textContent = g.name;
       btn.tabIndex = 0;
+      btn.dataset.genreId = g.id;
       btn.addEventListener("click", () => {
+        if (currentYtGenre === g.id) return;
         currentYtGenre = g.id;
-        renderYouTubeGenres();
-        loadYouTubeChannels(g.id);
+        stremioYtGenreBar.querySelectorAll(".yt-genre-pill").forEach(p => {
+          p.classList.toggle("active", p.dataset.genreId === currentYtGenre);
+        });
+        loadYouTubeFeed(g.id);
       });
       stremioYtGenreBar.appendChild(btn);
     });
   }
 
-  function loadYouTubeChannels(genre) {
-    if (!stremioStripYtChannels || !window.stremioEngine) return;
-    stremioStripYtChannels.innerHTML = '<div class="stremio-skeleton-card stremio-yt-channel-card" style="display:flex;align-items:center;justify-content:center;color:#94a3b8;">Yükleniyor...</div>';
-    if (stremioCountYtChannels) stremioCountYtChannels.textContent = "";
+  function loadYouTubeFeed(genre) {
+    const grid = document.getElementById("ytVideoFeedGrid");
+    if (!grid) return;
+    grid.innerHTML = '<div style="grid-column:1 / -1; padding:48px; text-align:center; color:#94a3b8; font-size:1.3rem;">Videolar yükleniyor...</div>';
 
-    window.stremioEngine.getYouTubeTopChannels(genre, (err, metas) => {
-      stremioStripYtChannels.innerHTML = "";
-      if (err || !metas || metas.length === 0) {
-        stremioStripYtChannels.innerHTML = '<div style="padding:24px; color:#94a3b8; font-size:1.2rem;">Bu kategoride YouTube kanalı bulunamadı.</div>';
+    const eng = window.stremioEngine || window.StremioEngine;
+    if (!eng || typeof eng.getYouTubeFeed !== "function") return;
+
+    eng.getYouTubeFeed(genre, (err, videos) => {
+      grid.innerHTML = "";
+      if (!videos || videos.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1 / -1; padding:48px; text-align:center; color:#94a3b8; font-size:1.3rem;">Bu kategoride video bulunamadı.</div>';
         return;
       }
-      if (stremioCountYtChannels) stremioCountYtChannels.textContent = metas.length + " kanal";
 
-      metas.forEach((ch, idx) => {
-        const card = document.createElement("div");
-        card.className = "stremio-yt-channel-card focusable" + (idx === 0 ? " active" : "");
-        card.tabIndex = 0;
-        card.dataset.ytId = ch.id;
-
-        const img = document.createElement("img");
-        img.className = "stremio-yt-channel-avatar";
-        img.src = ch.poster || "icon.png";
-        img.alt = ch.name || "YouTube";
-        img.onerror = () => { img.src = "icon.png"; };
-
-        const name = document.createElement("div");
-        name.className = "stremio-yt-channel-name";
-        name.textContent = ch.name || "YouTube Channel";
-
-        const badge = document.createElement("div");
-        badge.className = "stremio-yt-channel-badge";
-        badge.textContent = ch.genre && ch.genre.length ? ch.genre.join(", ") : "Official Channel";
-
-        card.appendChild(img);
-        card.appendChild(name);
-        card.appendChild(badge);
-
-        card.addEventListener("click", () => {
-          stremioStripYtChannels.querySelectorAll(".stremio-yt-channel-card").forEach(c => c.classList.remove("active"));
-          card.classList.add("active");
-          loadYouTubeChannelVideos(ch.id, ch.name);
-        });
-
-        stremioStripYtChannels.appendChild(card);
+      videos.forEach((v, idx) => {
+        const card = createYouTubeVideoCard(v, idx);
+        grid.appendChild(card);
       });
-
-      if (metas[0]) {
-        loadYouTubeChannelVideos(metas[0].id, metas[0].name);
-      }
     });
   }
 
-  function loadYouTubeChannelVideos(ytId, chName) {
-    if (!stremioStripYtVideos || !window.stremioEngine) return;
-    stremioStripYtVideos.innerHTML = '<div class="stremio-skeleton-card stremio-yt-video-card" style="display:flex;align-items:center;justify-content:center;color:#94a3b8;">Videolar yükleniyor...</div>';
-    const titleEl = document.getElementById("stremioTitleYtVideos");
-    if (titleEl) titleEl.textContent = (chName ? chName + " - " : "") + "Videolar";
-    if (stremioCountYtVideos) stremioCountYtVideos.textContent = "";
+  function createYouTubeVideoCard(v, idx) {
+    const card = document.createElement("div");
+    card.className = "yt-video-card focusable";
+    card.tabIndex = 0;
+    card.dataset.videoId = v.videoId;
+    card.dataset.title = v.title;
+    card.dataset.index = idx;
 
-    window.stremioEngine.getYouTubeChannelMeta(ytId, (err, meta) => {
-      stremioStripYtVideos.innerHTML = "";
-      if (err || !meta || !meta.videos || meta.videos.length === 0) {
-        stremioStripYtVideos.innerHTML = '<div style="padding:24px; color:#94a3b8; font-size:1.2rem;">Bu kanala ait son video bulunamadı.</div>';
-        return;
-      }
-      if (stremioCountYtVideos) stremioCountYtVideos.textContent = meta.videos.length + " video";
+    const relTime = v.publishedAt ? formatRelativeTime(v.publishedAt) : "YouTube";
 
-      meta.videos.forEach((v) => {
-        const card = document.createElement("div");
-        card.className = "stremio-yt-video-card focusable";
-        card.tabIndex = 0;
-        card.dataset.videoId = v.id;
+    card.innerHTML = `
+      <div class="yt-thumb-container">
+        <img class="yt-thumb-img" src="${escapeAttr(v.thumbnail)}" alt="${escapeAttr(v.title)}" onerror="this.src='icon.png';">
+        <div class="yt-duration-badge">HD</div>
+      </div>
+      <div class="yt-card-info">
+        <img class="yt-card-avatar" src="${escapeAttr(v.channelAvatar || 'icon.png')}" onerror="this.src='icon.png';" alt="${escapeAttr(v.channelName)}">
+        <div class="yt-card-meta-wrap">
+          <div class="yt-card-title">${escapeAttr(v.title)}</div>
+          <div class="yt-card-channel-name">
+            <span>${escapeAttr(v.channelName)}</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="#aaa" style="vertical-align:middle;margin-left:4px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          </div>
+          <div class="yt-card-subtext">${escapeAttr(relTime)}</div>
+        </div>
+      </div>
+    `;
 
-        const thumbWrap = document.createElement("div");
-        thumbWrap.className = "stremio-yt-thumb-wrapper";
-
-        const img = document.createElement("img");
-        img.className = "stremio-yt-thumb";
-        img.src = v.thumbnailHigh || v.thumbnail || v.thumbnailMax || "";
-        img.alt = v.title || "YouTube Video";
-
-        const playBadge = document.createElement("div");
-        playBadge.className = "stremio-yt-play-badge";
-        playBadge.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
-
-        thumbWrap.appendChild(img);
-        thumbWrap.appendChild(playBadge);
-
-        const info = document.createElement("div");
-        info.className = "stremio-yt-video-info";
-
-        const vTitle = document.createElement("div");
-        vTitle.className = "stremio-yt-video-title";
-        vTitle.textContent = v.title || "Video";
-
-        const metaSpan = document.createElement("div");
-        metaSpan.className = "stremio-yt-video-meta";
-        const dateStr = v.released ? new Date(v.released).toLocaleDateString() : (v.publishedAt ? new Date(v.publishedAt).toLocaleDateString() : "");
-        metaSpan.textContent = dateStr ? "📅 " + dateStr : "YouTube Video";
-
-        info.appendChild(vTitle);
-        info.appendChild(metaSpan);
-
-        card.appendChild(thumbWrap);
-        card.appendChild(info);
-
-        card.addEventListener("click", () => {
-          playYouTubeVideo(v.id, v.title);
-        });
-
-        stremioStripYtVideos.appendChild(card);
-      });
+    card.addEventListener("click", () => {
+      playYouTubeVideo(v.videoId, v.title);
     });
+
+    return card;
   }
 
   function playYouTubeVideo(rawVideoId, title) {
@@ -5998,7 +5962,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (typeof scrollModalItemIntoView === "function") scrollModalItemIntoView(element);
     }
 
-    if (element && (element.classList.contains("stremio-card") || element.classList.contains("stremio-live-cat-pill") || element.classList.contains("category-pill-btn"))) {
+    if (element && (element.classList.contains("stremio-card") || element.classList.contains("yt-video-card") || element.classList.contains("stremio-live-cat-pill") || element.classList.contains("category-pill-btn"))) {
       element.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
       if (element.dataset.backdrop && stremioHeroBackdrop) {
         stremioHeroBackdrop.style.backgroundImage = `url('${element.dataset.backdrop}')`;
@@ -6832,12 +6796,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const inSideDock = isElementInSidebar(focused);
       const inPillsGrid = Boolean(focused && (focused.classList.contains("category-pill-btn") || (focused.closest && focused.closest(".category-pills-grid"))));
       const inLiveCatBar = Boolean(focused && (focused.classList.contains("stremio-live-cat-pill") || (focused.closest && focused.closest(".stremio-live-cat-bar"))));
-      const inYtBar = Boolean(focused && (focused.classList.contains("stremio-yt-genre-pill") || (focused.closest && focused.closest("#stremioYtGenreBar"))));
-      const inYtAccount = Boolean(focused && (focused === stremioYtAccountBtn || (focused.closest && focused.closest("#stremioYtAccountBtn"))));
+      const inYtBar = Boolean(focused && (focused.classList.contains("yt-genre-pill") || focused.classList.contains("stremio-yt-genre-pill") || (focused.closest && focused.closest("#stremioYtGenreBar"))));
+      const inYtVideoGrid = Boolean(focused && (focused.classList.contains("yt-video-card") || (focused.closest && focused.closest("#ytVideoFeedGrid"))));
       const inTvGrid = Boolean(focused && (focused.closest ? focused.closest("#stremioGridLive") : (focused.parentElement && focused.parentElement.id === "stremioGridLive")));
 
       let inStrip = null;
-      if (!inPillsGrid && !inTvGrid && !inLiveCatBar && !inYtBar && !inYtAccount && !inSideDock) {
+      if (!inPillsGrid && !inTvGrid && !inLiveCatBar && !inYtBar && !inYtVideoGrid && !inSideDock) {
         let currStripEl = focused;
         while (currStripEl && currStripEl !== document.body) {
           if (currStripEl.classList && currStripEl.classList.contains("stremio-cards-strip")) {
@@ -6850,7 +6814,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (isBack) {
         e.preventDefault();
-        if (inStrip || inPillsGrid || inTvGrid || inLiveCatBar || inYtBar || inYtAccount) {
+        if (inStrip || inPillsGrid || inTvGrid || inLiveCatBar || inYtBar || inYtVideoGrid) {
           const targetSide = currentStremioSubpage === "tv" ? sideTv : (currentStremioSubpage === "series" ? sideSeries : (currentStremioSubpage === "youtube" ? sideYoutube : sideMovies));
           if (targetSide) setElementFocus(targetSide);
         } else {
@@ -6859,32 +6823,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      if (inYtAccount) {
-        if (isDown) {
-          e.preventDefault();
-          const activePill = stremioYtGenreBar ? (stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.active") || stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.focusable")) : null;
-          if (activePill) setElementFocus(activePill);
-          return;
-        }
-        if (isLeft || isRight) {
-          e.preventDefault();
-          if (sideYoutube) setElementFocus(sideYoutube);
-          return;
-        }
-        if (isUp) {
-          e.preventDefault();
-          if (headerTabStremio) setElementFocus(headerTabStremio);
-          return;
-        }
-        if (isEnter) {
-          e.preventDefault();
-          openYouTubeAccountModal();
-          return;
-        }
-      }
-
       if (inYtBar) {
-        const pills = Array.from(stremioYtGenreBar.querySelectorAll(".stremio-yt-genre-pill.focusable"));
+        const pills = Array.from(stremioYtGenreBar.querySelectorAll(".yt-genre-pill.focusable, .stremio-yt-genre-pill.focusable"));
         const pIdx = pills.indexOf(focused);
         if (isLeft) {
           e.preventDefault();
@@ -6899,16 +6839,77 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (isUp) {
           e.preventDefault();
-          if (stremioYtAccountBtn) setElementFocus(stremioYtAccountBtn);
-          else if (headerTabStremio) setElementFocus(headerTabStremio);
+          if (headerTabStremio) setElementFocus(headerTabStremio);
           return;
         }
         if (isDown) {
           e.preventDefault();
-          const firstCh = (stremioStripYtChannels ? stremioStripYtChannels.querySelector(".stremio-yt-channel-card.focusable") : null) || (stremioStripYtVideos ? stremioStripYtVideos.querySelector(".stremio-yt-video-card.focusable") : null);
-          if (firstCh) setElementFocus(firstCh);
+          const firstCard = document.querySelector("#ytVideoFeedGrid .yt-video-card.focusable");
+          if (firstCard) setElementFocus(firstCard);
           return;
         }
+        if (isEnter) {
+          e.preventDefault();
+          focused.click();
+          return;
+        }
+      }
+
+      if (inYtVideoGrid) {
+        const grid = (focused.closest && focused.closest("#ytVideoFeedGrid")) || document.getElementById("ytVideoFeedGrid");
+        const cards = Array.from(grid.querySelectorAll(".yt-video-card.focusable"));
+        const idx = cards.indexOf(focused);
+
+        function getYtCols() {
+          if (!cards || cards.length < 2) return 1;
+          const firstTop = cards[0].offsetTop;
+          for (let i = 1; i < cards.length; i++) {
+            if (cards[i].offsetTop > firstTop + 20) return i;
+          }
+          return cards.length;
+        }
+        const cols = getYtCols();
+
+        if (isLeft) {
+          e.preventDefault();
+          if (idx % cols === 0 || idx === 0) {
+            if (sideYoutube) setElementFocus(sideYoutube);
+          } else if (idx > 0) {
+            setElementFocus(cards[idx - 1]);
+          }
+          return;
+        }
+
+        if (isRight) {
+          e.preventDefault();
+          if ((idx + 1) % cols !== 0 && idx < cards.length - 1) {
+            setElementFocus(cards[idx + 1]);
+          }
+          return;
+        }
+
+        if (isUp) {
+          e.preventDefault();
+          if (idx >= cols) {
+            setElementFocus(cards[idx - cols]);
+          } else {
+            const activePill = stremioYtGenreBar ? (stremioYtGenreBar.querySelector(".yt-genre-pill.active") || stremioYtGenreBar.querySelector(".yt-genre-pill.focusable")) : null;
+            if (activePill) setElementFocus(activePill);
+            else if (sideYoutube) setElementFocus(sideYoutube);
+          }
+          return;
+        }
+
+        if (isDown) {
+          e.preventDefault();
+          if (idx + cols < cards.length) {
+            setElementFocus(cards[idx + cols]);
+          } else if (idx < cards.length - 1) {
+            setElementFocus(cards[cards.length - 1]);
+          }
+          return;
+        }
+
         if (isEnter) {
           e.preventDefault();
           focused.click();
@@ -7202,11 +7203,11 @@ document.addEventListener("DOMContentLoaded", () => {
           } else if (focused === sideSeries) {
             targetCard = stremioStripSeries ? stremioStripSeries.querySelector(".stremio-card.focusable") : null;
           } else if (focused === sideYoutube) {
-            targetCard = (stremioYtGenreBar ? (stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.active") || stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.focusable")) : null) || (stremioStripYtChannels ? stremioStripYtChannels.querySelector(".stremio-yt-channel-card.focusable") : null);
+            targetCard = (stremioYtGenreBar ? (stremioYtGenreBar.querySelector(".yt-genre-pill.active") || stremioYtGenreBar.querySelector(".yt-genre-pill.focusable")) : null) || document.querySelector("#ytVideoFeedGrid .yt-video-card.focusable");
           } else {
             targetCard = stremioStripPopular ? stremioStripPopular.querySelector(".stremio-card.focusable") : null;
           }
-          if (!targetCard) targetCard = document.querySelector("#stremioPage .stremio-card.focusable, #stremioPage .category-pill-btn.focusable, #stremioPage .stremio-yt-channel-card.focusable, #stremioPage .stremio-yt-video-card.focusable");
+          if (!targetCard) targetCard = document.querySelector("#stremioPage .stremio-card.focusable, #stremioPage .category-pill-btn.focusable, #stremioPage .yt-video-card.focusable");
           if (targetCard) setElementFocus(targetCard);
           return;
         }
