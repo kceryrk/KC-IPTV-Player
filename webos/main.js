@@ -4092,32 +4092,45 @@ document.addEventListener("DOMContentLoaded", () => {
     return card;
   }
 
+  let lastOpenedPlayerAt = 0;
+
   function openInNativeYouTubeApp(videoId) {
     const vId = videoId || lastCurrentYtVideoId || "";
     if (!vId) return;
+    if (window.kcShowToast) window.kcShowToast("YouTube başlatılıyor...");
     closeYouTubePlayer();
     // 1. Samsung Tizen: Launch official YouTube TV App
     if (window.tizen && window.tizen.application) {
-      try {
-        if (typeof window.tizen.ApplicationControl === "function" && typeof window.tizen.application.launchAppControl === "function") {
-          const appControl = new window.tizen.ApplicationControl(
-            "http://tizen.org/appcontrol/operation/view",
-            "https://www.youtube.com/watch?v=" + encodeURIComponent(vId)
-          );
-          window.tizen.application.launchAppControl(appControl, "111299001912", function() {
-            console.log("Launched official YouTube TV app");
-          }, function(err) {
-            console.warn("Fallback launch:", err);
-            try { window.tizen.application.launch("111299001912"); } catch (e2) {}
-          });
-          return;
-        } else if (typeof window.tizen.application.launch === "function") {
-          window.tizen.application.launch("111299001912");
+      const ytUrl = "https://www.youtube.com/watch?v=" + encodeURIComponent(vId);
+      const appIds = ["111299001912", "9Ur5IzDKqV.TizenYouTube", "org.tizen.youtube", "9uQaAVugRx.YouTube"];
+      let tried = 0;
+
+      function tryNext() {
+        if (tried >= appIds.length) {
+          try {
+            const appControl = new window.tizen.ApplicationControl("http://tizen.org/appcontrol/operation/view", ytUrl);
+            window.tizen.application.launchAppControl(appControl, null, function() {}, function() {});
+          } catch (e) {}
           return;
         }
-      } catch (e) {
-        try { window.tizen.application.launch("111299001912"); return; } catch (e3) {}
+        const currentId = appIds[tried++];
+        try {
+          if (typeof window.tizen.ApplicationControl === "function" && typeof window.tizen.application.launchAppControl === "function") {
+            const appControl = new window.tizen.ApplicationControl("http://tizen.org/appcontrol/operation/view", ytUrl);
+            window.tizen.application.launchAppControl(appControl, currentId, function() {
+              console.log("Launched YouTube app:", currentId);
+            }, function() {
+              tryNext();
+            });
+          } else {
+            window.tizen.application.launch(currentId, function() {}, function() { tryNext(); });
+          }
+        } catch (e) {
+          tryNext();
+        }
       }
+      tryNext();
+      return;
     }
     // 2. LG webOS: Launch official YouTube app
     if (window.webOS && typeof window.webOS.service === "object") {
@@ -4143,15 +4156,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!cleanId) return;
 
     lastCurrentYtVideoId = cleanId;
+    lastOpenedPlayerAt = Date.now();
 
     if (youtubePlayerTitle) youtubePlayerTitle.textContent = title || "YouTube";
     // Standard embed with nocookie domain, playsinline, rel=0, no top navigation
     youtubeIframe.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(cleanId) + "?autoplay=1&controls=1&playsinline=1&rel=0&modestbranding=1";
     youtubePlayerModal.classList.remove("hidden");
-    if (youtubePlayerClose) {
-      setElementFocus(youtubePlayerClose);
-      try { youtubePlayerClose.focus(); } catch (e) {}
-    }
+    setTimeout(() => {
+      if (youtubePlayerClose) {
+        setElementFocus(youtubePlayerClose);
+        try { youtubePlayerClose.focus(); } catch (e) {}
+      }
+    }, 60);
   }
 
   function closeYouTubePlayer() {
@@ -4197,13 +4213,30 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (k === 13 || e.key === "Enter") {
-        if (document.activeElement === youtubePlayerNativeAppBtn) {
+        if (Date.now() - lastOpenedPlayerAt < 800) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          return;
+        }
+
+        const active = document.activeElement;
+        if (active === youtubePlayerNativeAppBtn) {
           e.preventDefault();
           e.stopPropagation();
           e.stopImmediatePropagation();
           openInNativeYouTubeApp(lastCurrentYtVideoId);
           return;
         }
+
+        if (active === youtubePlayerClose) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          closeYouTubePlayer();
+          return;
+        }
+
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();

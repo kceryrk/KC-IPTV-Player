@@ -2,7 +2,7 @@
 <widget xmlns="http://www.w3.org/ns/widgets"
         xmlns:tizen="http://tizen.org/ns/widgets"
         id="http://kceryrk.github.io/kc-iptv-player/tizen"
-        version="1.2.110"
+        version="1.2.111"
         viewmodes="maximized">
   <tizen:application id="kcipplayer.KCIPTVPlayer" package="kcipplayer" required_version="6.0" />
   <content src="index.html" />
@@ -12,6 +12,7 @@
   <tizen:profile name="tv-samsung" />
   <tizen:privilege name="http://tizen.org/privilege/internet" />
   <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice" />
+  <tizen:privilege name="http://tizen.org/privilege/application.launch" />
   <access origin="*" subdomains="true" />
   <tizen:setting screen-orientation="landscape"
                  context-menu="disable"
