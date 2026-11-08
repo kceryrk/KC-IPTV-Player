@@ -1029,6 +1029,7 @@
   }
 
   function openOverlay() {
+    if (!state.enabled) return;
     var menu = document.getElementById("radialOverlayMenu");
     if (!menu) return;
     state.isOpen = true;
@@ -1059,12 +1060,14 @@
   }
 
   function toggleOverlay() {
+    if (!state.enabled) return;
     if (state.isOpen) closeOverlay();
     else openOverlay();
   }
 
   // KEYBOARD & D-PAD HANDLER (Returns true if key was handled)
   function handleKey(e, key) {
+    if (!state.enabled) return false;
     var gOverlay = document.getElementById("guideOverlay");
     if (gOverlay && !gOverlay.classList.contains("hidden")) {
       return false;
@@ -1293,7 +1296,15 @@
   // PUBLIC API
   window.AeroRadial = {
     init: function() {
-      document.body.classList.add("radial-active");
+      var navTheme = "radial";
+      try { navTheme = localStorage.getItem("iptv_nav_theme") || "radial"; } catch (e) {}
+      if (navTheme === "classic") {
+        state.enabled = false;
+        document.body.classList.remove("radial-active");
+      } else {
+        state.enabled = true;
+        document.body.classList.add("radial-active");
+      }
       var menu = document.getElementById("radialOverlayMenu");
       if (menu) {
         menu.classList.add("hidden");
@@ -1333,10 +1344,19 @@
         }, { passive: false });
       }
     },
+    setEnabled: function(val) {
+      state.enabled = !!val;
+      if (!state.enabled) {
+        closeOverlay();
+        document.body.classList.remove("radial-active");
+      } else {
+        document.body.classList.add("radial-active");
+      }
+    },
     open: openOverlay,
     close: closeOverlay,
     toggle: toggleOverlay,
-    isOpen: function() { return state.isOpen; },
+    isOpen: function() { return state.enabled && state.isOpen; },
     handleKey: handleKey,
     refresh: function() {
       if (state.isOpen) {
