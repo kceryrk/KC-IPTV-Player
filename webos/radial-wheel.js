@@ -561,8 +561,12 @@
       if (window.kcSetRegion && typeof window.kcSetRegion === "function") {
         window.kcSetRegion(chosenReg);
       }
-      state.selected.categoryIndex = 0;
-      state.selected.channelIndex = 0;
+      if (state.activeTier < 2) {
+        state.selected.categoryIndex = 0;
+      }
+      if (state.activeTier < 3) {
+        state.selected.channelIndex = 0;
+      }
       renderRadialTier(2);
       renderRadialTier(3);
     } else if (tierIndex === 2) {
@@ -571,7 +575,9 @@
       if (window.kcSetCategory && typeof window.kcSetCategory === "function" && chosenCat) {
         window.kcSetCategory(chosenCat.category_id);
       }
-      state.selected.channelIndex = 0;
+      if (state.activeTier < 3) {
+        state.selected.channelIndex = 0;
+      }
       renderRadialTier(3);
     }
   }
@@ -824,7 +830,7 @@
       // User: "1st column only open on an ok button press instead of opening automatically"
       state.selected.modeIndex = ((state.selected.modeIndex + direction) % total + total) % total;
       renderRadialTier(0);
-      // Notice: Do NOT call scheduleTierPreview(0). Only update visual focus on Tier 0!
+      updateColumnVisibility();
     } else if (tierIndex === 1) {
       state.selected.regionIndex = ((state.selected.regionIndex + direction) % total + total) % total;
       renderRadialTier(1);
@@ -842,8 +848,32 @@
   }
 
   function stepRadialTier(direction) {
+    if (previewTimer) {
+      clearTimeout(previewTimer);
+      previewTimer = null;
+    }
     var modeObj = MODES[state.selected.modeIndex] || MODES[0];
     var isFav = (modeObj.id === "favorites");
+
+    if (direction > 0) {
+      if (state.activeTier === 0) {
+        applyTierPreview(0);
+        return;
+      } else if (state.activeTier === 1) {
+        applyTierPreview(1);
+        state.activeTier = 2;
+        renderAllTiers();
+        playStep();
+        return;
+      } else if (state.activeTier === 2) {
+        applyTierPreview(2);
+        state.activeTier = 3;
+        renderAllTiers();
+        playStep();
+        return;
+      }
+    }
+
     var nextTier = state.activeTier;
     if (isFav) {
       if (direction > 0) nextTier = 3;
@@ -906,6 +936,9 @@
 
     if (state.seriesPicker.active) {
       exitSeriesPicker();
+    }
+    if (window.kcActivateFitScreen && typeof window.kcActivateFitScreen === "function") {
+      window.kcActivateFitScreen();
     }
   }
 

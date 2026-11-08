@@ -2642,9 +2642,22 @@ document.addEventListener("DOMContentLoaded", () => {
     channelList.className = "channel-grid";
     contentTitle.textContent = t("channels");
 
-    currentActiveStreams = currentModus === "favorites" 
-      ? favorites.map(id => allStreams.find(s => s.stream_id.toString() === id.toString())).filter(Boolean)
-      : allStreams.filter(s => s.category_id === currentCategoryId);
+    if (currentModus === "favorites") {
+      currentActiveStreams = favorites.map(id => allStreams.find(s => s.stream_id.toString() === id.toString())).filter(Boolean);
+    } else if (currentCategoryId === "ALL_CHANNELS" || currentCategoryId === "all" || !currentCategoryId) {
+      if (currentLiveRegion === "ALL" || !currentLiveRegion) {
+        currentActiveStreams = allStreams.slice();
+      } else {
+        currentActiveStreams = allStreams.filter(s => {
+          return extractRegionFromCategory(s.category_name || "", false) === currentLiveRegion;
+        });
+        if (!currentActiveStreams.length) {
+          currentActiveStreams = allStreams.slice();
+        }
+      }
+    } else {
+      currentActiveStreams = allStreams.filter(s => String(s.category_id) === String(currentCategoryId));
+    }
 
     currentActiveStreams.forEach((s, idx) => {
       const isFav = favorites.includes(s.stream_id.toString());
@@ -6544,12 +6557,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // FULLSCREEN SPELER HANDLING
-    if (isFitScreen) {
+    const isRadialOpen = window.AeroRadial && window.AeroRadial.isOpen();
+    if (isFitScreen || !isRadialOpen) {
       if (currentAppSection === "stremio") {
         if (isUp || isPageUp) {
           e.preventDefault();
           if (stremioAllLiveChannels && stremioAllLiveChannels.length > 0) {
-            currentStreamIndex = (currentStreamIndex - 1 + stremioAllLiveChannels.length) % stremioAllLiveChannels.length;
+            currentStreamIndex = (currentStreamIndex + 1) % stremioAllLiveChannels.length;
             const target = stremioAllLiveChannels[currentStreamIndex];
             playStremioLiveChannel(target.id || target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.directUrl || target.url);
           }
@@ -6557,7 +6571,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (isDown || isPageDown) {
           e.preventDefault();
           if (stremioAllLiveChannels && stremioAllLiveChannels.length > 0) {
-            currentStreamIndex = (currentStreamIndex + 1) % stremioAllLiveChannels.length;
+            currentStreamIndex = (currentStreamIndex - 1 + stremioAllLiveChannels.length) % stremioAllLiveChannels.length;
             const target = stremioAllLiveChannels[currentStreamIndex];
             playStremioLiveChannel(target.id || target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.directUrl || target.url);
           }
@@ -6593,14 +6607,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isPageUp || isUp) {
           e.preventDefault();
           if (currentActiveStreams && currentActiveStreams.length > 0) {
-            currentStreamIndex = (currentStreamIndex - 1 + currentActiveStreams.length) % currentActiveStreams.length;
+            currentStreamIndex = (currentStreamIndex + 1) % currentActiveStreams.length;
             const target = currentActiveStreams[currentStreamIndex];
             playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.url);
           }
         } else if (isPageDown || isDown) {
           e.preventDefault();
           if (currentActiveStreams && currentActiveStreams.length > 0) {
-            currentStreamIndex = (currentStreamIndex + 1) % currentActiveStreams.length;
+            currentStreamIndex = (currentStreamIndex - 1 + currentActiveStreams.length) % currentActiveStreams.length;
             const target = currentActiveStreams[currentStreamIndex];
             playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.url);
           }
@@ -6854,16 +6868,22 @@ document.addEventListener("DOMContentLoaded", () => {
   window.kcGetCategories = function(reg) {
     var isVod = (currentModus === "vod" || currentModus === "series");
     var cats = currentModus === "series" ? (seriesCategories.length ? seriesCategories : vodCategories) : (isVod ? vodCategories : allCategories);
-    if (!cats || !cats.length) return [{ category_id: "all", category_name: "Tüm Kanallar" }];
+    if (!cats || !cats.length) return [{ category_id: "ALL_CHANNELS", category_name: "Tüm Kanallar" }];
     var hidden = hiddenCategories[categoryKind()] || [];
     var result = [];
+    if (!isVod && currentModus === "live") {
+      result.push({
+        category_id: "ALL_CHANNELS",
+        category_name: "Tüm Kanallar (" + (reg === "ALL" ? "Hepsi" : reg) + ")"
+      });
+    }
     for (var i = 0; i < cats.length; i++) {
       var c = cats[i];
       if (hidden.indexOf(String(c.category_id)) !== -1) continue;
       if (reg && reg !== "ALL" && extractRegionFromCategory(c.category_name, isVod) !== reg) continue;
       result.push(c);
     }
-    return result.length ? result : [{ category_id: "all", category_name: "Tüm Kanallar" }];
+    return result.length ? result : [{ category_id: "ALL_CHANNELS", category_name: "Tüm Kanallar" }];
   };
 
   window.kcGetModus = function() {
@@ -6920,6 +6940,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.kcOpenSettings = function() {
     switchAppSection("settings");
+  };
+
+  window.kcActivateFitScreen = function() {
+    activeerFitScreen();
+  };
+
+  window.kcDeactivateFitScreen = function() {
+    deactiveerFitScreen();
   };
 
   window.kcSwitchModus = function(m) {
