@@ -5059,11 +5059,6 @@ body.radial-active #videoPlayer {
   color: rgba(255, 255, 255, 0.18) !important;
 }
 
-/* When NOT in radial active mode (Classic Theme), guarantee the radial overlay is hidden */
-body:not(.radial-active) .radial-overlay-menu {
-  display: none !important;
-}
-
 
 
 

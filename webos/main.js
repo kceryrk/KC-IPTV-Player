@@ -218,10 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.assign(appTranslations.fr, { m3uProfiles: "Playlists enregistrées", m3uProfileNew: "+ Nouvelle playlist", m3uProfileName: "Nom de la playlist", generateM3uPrompt: "Générer la playlist M3U à partir de votre connexion Xtream ?" });
   Object.assign(appTranslations.en, { showPassword: "Show", hidePassword: "Hide", accountDetails: "Account", accountStatus: "Status", accountExpires: "Expires", accountDaysLeft: "{days} days left", accountExpired: "Expired", accountUnlimited: "Unlimited", accountConnections: "Connections", accountTrial: "Trial", accountCreated: "Created", accountFormats: "Formats", testingConnection: "Testing connection...", connectionOk: "Connection OK" });
   Object.assign(appTranslations.tr, { showPassword: "Göster", hidePassword: "Gizle", accountDetails: "Hesap", accountStatus: "Durum", accountExpires: "Bitiş", accountDaysLeft: "{days} gün kaldı", accountExpired: "Süresi doldu", accountUnlimited: "Sınırsız", accountConnections: "Bağlantılar", accountTrial: "Deneme", accountCreated: "Oluşturulma", accountFormats: "Formatlar", testingConnection: "Bağlantı test ediliyor...", connectionOk: "Bağlantı tamam" });
-  Object.assign(appTranslations.en, { themeStyle: "Navigation Theme", navThemeLabel: "Interface Theme", themeRadial: "Aero Radial (Modern 3D)", themeClassic: "Classic List (4 Columns)" });
-  Object.assign(appTranslations.tr, { themeStyle: "Navigasyon Teması", navThemeLabel: "Arayüz Görünümü", themeRadial: "Aero Radial (Modern 3D)", themeClassic: "Klasik Liste (4 Sütun)" });
-  Object.assign(appTranslations.nl, { themeStyle: "Navigatiethema", navThemeLabel: "Interface Thema", themeRadial: "Aero Radial (Modern 3D)", themeClassic: "Klassieke Lijst (4 Kolommen)" });
-  Object.assign(appTranslations.fr, { themeStyle: "Thème de Navigation", navThemeLabel: "Style de l'Interface", themeRadial: "Aero Radial (3D Moderne)", themeClassic: "Liste Classique (4 Colonnes)" });
+
   Object.assign(appTranslations.nl, { showPassword: "Tonen", hidePassword: "Verbergen", accountDetails: "Account", accountStatus: "Status", accountExpires: "Vervalt", accountDaysLeft: "{days} dagen over", accountExpired: "Verlopen", accountUnlimited: "Onbeperkt", accountConnections: "Verbindingen", accountTrial: "Proef", accountCreated: "Aangemaakt", accountFormats: "Formaten", testingConnection: "Verbinding testen...", connectionOk: "Verbinding OK" });
   Object.assign(appTranslations.fr, { showPassword: "Afficher", hidePassword: "Masquer", accountDetails: "Compte", accountStatus: "Statut", accountExpires: "Expire le", accountDaysLeft: "{days} jours restants", accountExpired: "Expiré", accountUnlimited: "Illimité", accountConnections: "Connexions", accountTrial: "Essai", accountCreated: "Créé le", accountFormats: "Formats", testingConnection: "Test de la connexion...", connectionOk: "Connexion OK" });
   Object.assign(appTranslations.en, { presetBackgrounds: "Presets" });
@@ -537,23 +534,15 @@ document.addEventListener("DOMContentLoaded", () => {
       if (currentAppSection === "settings") {
         switchAppSection(previousAppSection || "iptv");
       }
-      var navTheme = store.getItem("iptv_nav_theme") || "radial";
-      if (navTheme === "radial") {
-        if (favorites && favorites.length > 0) {
-          currentModus = "favorites";
-          filterChannels();
-          if (window.AeroRadial) {
-            window.AeroRadial.setMode(0); // 0: Favorites
-          }
+      if (favorites && favorites.length > 0) {
+        currentModus = "favorites";
+        filterChannels();
+        if (window.AeroRadial) {
+          window.AeroRadial.setMode(0); // 0: Favorites
         }
-        document.body.classList.add("radial-active");
-        if (window.AeroRadial) window.AeroRadial.open();
-      } else {
-        document.body.classList.remove("radial-active");
-        if (window.AeroRadial) window.AeroRadial.close();
-        const activeModus = document.querySelector("#modusList .nav-item.active") || document.querySelector("#modusList .nav-item");
-        if (activeModus) setElementFocus(activeModus);
       }
+      document.body.classList.add("radial-active");
+      if (window.AeroRadial) window.AeroRadial.open();
     }
   }
 
@@ -650,6 +639,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let themeConfig = loadThemeConfig();
+  try { store.removeItem("iptv_nav_theme"); } catch (e) {}
 
   const TRAIL_STEPS = 10;
 
@@ -708,44 +698,7 @@ document.addEventListener("DOMContentLoaded", () => {
     store.setItem("iptv_theme", JSON.stringify(themeConfig));
   }
 
-  let currentNavTheme = store.getItem("iptv_nav_theme") || "radial";
 
-  function applyNavTheme(theme, showNotice = false) {
-    currentNavTheme = theme === "classic" ? "classic" : "radial";
-    try { store.setItem("iptv_nav_theme", currentNavTheme); } catch (e) {}
-
-    const valEl = document.getElementById("themeNavModeValue");
-    if (valEl) {
-      valEl.textContent = currentNavTheme === "radial" 
-        ? (t("themeRadial") || "Aero Radial (Modern 3D)")
-        : (t("themeClassic") || "Klasik Liste (4 Sütun)");
-    }
-
-    if (currentNavTheme === "radial") {
-      document.body.classList.add("radial-active");
-      if (window.AeroRadial) {
-        window.AeroRadial.setEnabled(true);
-      }
-    } else {
-      document.body.classList.remove("radial-active");
-      if (window.AeroRadial) {
-        window.AeroRadial.setEnabled(false);
-      }
-      setupRegions();
-      filterCategories();
-      filterChannels();
-      setColumnFocus(0);
-    }
-
-    if (showNotice) {
-      showToast((t("themeStyle") || "Navigasyon Teması") + ": " + (currentNavTheme === "radial" ? (t("themeRadial") || "Aero Radial") : (t("themeClassic") || "Klasik Liste")));
-    }
-  }
-
-  function toggleNavTheme() {
-    const next = currentNavTheme === "radial" ? "classic" : "radial";
-    applyNavTheme(next, true);
-  }
 
   function updateThemeColor(role, color) {
     if ((role !== "accent" && role !== "highlight") || !/^#[0-9a-f]{6}$/i.test(color || "")) return;
@@ -1589,13 +1542,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   if (settingsBack) settingsBack.addEventListener("click", () => showCustomizationPage(false));
 
-  const themeNavModeButton = document.getElementById("themeNavModeButton");
-  if (themeNavModeButton) {
-    themeNavModeButton.addEventListener("click", () => toggleNavTheme());
-  }
-
   applyThemeConfig();
-  applyNavTheme(currentNavTheme, false);
   applyAppLanguage(currentLang);
 
   if (loginForm) {
@@ -3747,24 +3694,14 @@ document.addEventListener("DOMContentLoaded", () => {
     previousAppSection = section;
 
     if (section === "iptv") {
-      var navTheme = store.getItem("iptv_nav_theme") || "radial";
-      if (navTheme === "radial") {
-        document.body.classList.add("radial-active");
-      } else {
-        document.body.classList.remove("radial-active");
-      }
+      document.body.classList.add("radial-active");
       if (headerTabIptv) headerTabIptv.classList.add("active");
       if (headerTabStremio) headerTabStremio.classList.remove("active");
       if (headerTabSettings) headerTabSettings.classList.remove("active");
       if (tvGrid) tvGrid.classList.remove("hidden");
       if (stremioPage) stremioPage.classList.add("hidden");
-      if (!skipFocus) {
-        if (navTheme === "radial" && window.AeroRadial) {
-          window.AeroRadial.open();
-        } else {
-          const activeModus = document.querySelector("#modusList .nav-item.active") || document.querySelector("#modusList .nav-item");
-          if (activeModus) setElementFocus(activeModus);
-        }
+      if (!skipFocus && window.AeroRadial) {
+        window.AeroRadial.open();
       }
     } else if (section === "stremio") {
       document.body.classList.remove("radial-active");
@@ -5904,14 +5841,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Toggle Radial Overlay with 'M' key (only if in radial theme)
+    // Toggle Radial Overlay with 'M' key
     if (e.key === "m" || e.key === "M") {
-      var navTheme = store.getItem("iptv_nav_theme") || "radial";
-      if (navTheme === "radial") {
-        e.preventDefault();
-        if (window.AeroRadial) window.AeroRadial.toggle();
-        return;
-      }
+      e.preventDefault();
+      if (window.AeroRadial) window.AeroRadial.toggle();
+      return;
     }
 
     // Stream Selector Modal D-Pad Navigation
@@ -6804,8 +6738,7 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         } else if (isDown) {
           e.preventDefault();
-          var navTheme = store.getItem("iptv_nav_theme") || "radial";
-          if (navTheme === "radial" && window.AeroRadial && !window.AeroRadial.isOpen()) {
+          if (window.AeroRadial && !window.AeroRadial.isOpen()) {
             window.AeroRadial.open();
           } else {
             showVodOSD();
@@ -6822,8 +6755,7 @@ document.addEventListener("DOMContentLoaded", () => {
           playerWrapper.classList.add("hidden");
           playerWrapper.classList.remove("vod-playback");
           deactiveerFitScreen();
-          var navTheme = store.getItem("iptv_nav_theme") || "radial";
-          if (navTheme === "radial" && window.AeroRadial) {
+          if (window.AeroRadial) {
             window.AeroRadial.open();
           }
           return;
@@ -6853,16 +6785,14 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         } else if (isLeft || isEnter) {
           e.preventDefault();
-          var navTheme = store.getItem("iptv_nav_theme") || "radial";
-          if (navTheme === "radial" && window.AeroRadial) {
+          if (window.AeroRadial) {
             window.AeroRadial.open();
           } else {
             showLiveOSD();
           }
         } else if (isBack) {
           e.preventDefault();
-          var navTheme = store.getItem("iptv_nav_theme") || "radial";
-          if (navTheme === "radial" && window.AeroRadial && !window.AeroRadial.isOpen()) {
+          if (window.AeroRadial && !window.AeroRadial.isOpen()) {
             window.AeroRadial.open();
           } else {
             deactiveerFitScreen();
@@ -7327,7 +7257,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (window.AeroRadial) {
     window.AeroRadial.init();
   }
-  applyNavTheme(currentNavTheme, false);
 
   initProfile();
   scheduleListRefresh();
