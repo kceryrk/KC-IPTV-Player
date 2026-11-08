@@ -62,21 +62,54 @@
     return audioCtx;
   }
 
+  // Fast-mode detection: activates 0ms snap during D-pad hold (<140ms interval)
+  var lastRotateTime = 0;
+  var fastModeActive = false;
+  var fastModeTimer = null;
+  var tickCounter = 0;
+
+  function markFastMode() {
+    var now = Date.now();
+    var interval = now - lastRotateTime;
+    lastRotateTime = now;
+    if (interval < 140) {
+      if (!fastModeActive) {
+        fastModeActive = true;
+        var wrapper = document.getElementById("radialColumnsWrapper");
+        if (wrapper) wrapper.classList.add("radial-fast-mode");
+      }
+      if (fastModeTimer) clearTimeout(fastModeTimer);
+      fastModeTimer = setTimeout(function() {
+        fastModeActive = false;
+        var wrapper = document.getElementById("radialColumnsWrapper");
+        if (wrapper) wrapper.classList.remove("radial-fast-mode");
+        // Restore center channel floating logo if in channel tier
+        if (state.activeTier === 3) renderRadialTier(3);
+      }, 160);
+    }
+  }
+
   function playTick() {
+    tickCounter++;
+    // Throttle audio ticks to every 3 items during rapid scroll to prevent audio context thread starvation
+    if (fastModeActive && (tickCounter % 3 !== 0)) return;
     try {
       var ctx = getAudioCtx();
       if (!ctx) return;
+      if (ctx.state === "suspended") {
+        try { ctx.resume(); } catch (e) {}
+      }
       var osc = ctx.createOscillator();
       var gain = ctx.createGain();
       osc.type = "sine";
       osc.frequency.setValueAtTime(420, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(160, ctx.currentTime + 0.04);
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+      osc.frequency.exponentialRampToValueAtTime(160, ctx.currentTime + 0.035);
+      gain.gain.setValueAtTime(0.06, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.035);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.05);
+      osc.stop(ctx.currentTime + 0.04);
     } catch (e) {}
   }
 
@@ -138,6 +171,7 @@
 
   function getFlagHtml(code, offset) {
     if (!code || code === "ALL") return GLOBE_SVG;
+    if (/^[VS]([A-Z]{2,3})$/.test(code)) code = RegExp.$1;
     var iso = (FLAG_ALIASES[code] || code).toLowerCase();
     if (iso.length === 2) {
       if (offset === undefined || Math.abs(offset) <= 3) {
@@ -193,7 +227,19 @@
   function getRegionsList() {
     if (window.kcGetRegions && typeof window.kcGetRegions === "function") {
       var r = window.kcGetRegions();
-      if (r && r.length) return r;
+      if (r && r.length) {
+        var cleanRegs = [];
+        var seen = {};
+        for (var i = 0; i < r.length; i++) {
+          var code = r[i];
+          if (/^[VS]([A-Z]{2,3})$/.test(code)) code = RegExp.$1;
+          if (!seen[code]) {
+            seen[code] = true;
+            cleanRegs.push(code);
+          }
+        }
+        return cleanRegs;
+      }
     }
     return ["ALL"];
   }
@@ -250,7 +296,8 @@
     if (sc1) { sc1.classList.add("hidden"); sc1.style.display = "none"; }
   }
 
-  // Update Right VOD Poster Backdrop
+  // Update Right VOD Poster Backdrop (with debounced image load)
+  var vodPosterTimer = null;
   function updateVodPosterBackdrop(itemData, isVodOrSeries) {
     var backdropEl = document.getElementById("radialVodPosterBackdrop");
     var imgEl = document.getElementById("radialVodPosterImg");
@@ -263,34 +310,36 @@
       return;
     }
 
-    var posterUrl = itemData.cover || itemData.stream_icon || itemData.poster || "";
-    if (posterUrl) {
-      imgEl.src = posterUrl;
-      imgEl.style.display = "block";
-    } else {
-      imgEl.style.display = "none";
-    }
-
     if (titleEl) titleEl.textContent = formatTitle(itemData.name || itemData.title || "Film / Dizi");
     if (metaEl) {
       var ext = itemData.container_extension ? itemData.container_extension.toUpperCase() : "HD";
       var year = itemData.release_date || itemData.year || "";
       metaEl.textContent = year ? (year + " • " + ext) : (ext + " • 1080p");
     }
-
     backdropEl.classList.remove("hidden");
+
+    if (vodPosterTimer) clearTimeout(vodPosterTimer);
+    vodPosterTimer = setTimeout(function() {
+      var posterUrl = itemData.cover || itemData.stream_icon || itemData.poster || "";
+      if (posterUrl) {
+        imgEl.src = posterUrl;
+        imgEl.style.display = "block";
+      } else {
+        imgEl.style.display = "none";
+      }
+    }, fastModeActive ? 150 : 20);
   }
 
-  // RENDER RADIAL TIER (Infinite Window, Modulo Wrapping, ZERO Gaps)
+  // RENDER RADIAL TIER (Virtual DOM Node Recycling, ZERO GC Stutters, ZERO Gaps)
   function renderRadialTier(tierIndex) {
     var track = document.getElementById("radialTrack-" + tierIndex);
     if (!track) return;
-    track.innerHTML = "";
     var geom = ARC_SETTINGS[tierIndex];
 
     var list = getTierData(tierIndex);
     var total = list.length;
     if (total === 0) {
+      track.innerHTML = "";
       var emptyEl = document.createElement("div");
       emptyEl.className = "radial-wheel-item is-focused";
       emptyEl.style.webkitTransform = emptyEl.style.transform = "translate3d(0, 0, 0)";
@@ -312,6 +361,36 @@
     var isCurrentActiveCol = (tierIndex === state.activeTier);
     var focusedItemData = null;
 
+    // Delegated click handler on the track (created once per track)
+    if (!track._delegatedClick) {
+      track._delegatedClick = true;
+      (function(tIdx) {
+        track.addEventListener("click", function(e) {
+          e.stopPropagation();
+          var it = e.target.closest(".radial-wheel-item");
+          if (!it) return;
+          var off = parseInt(it.dataset.offset, 10);
+          if (isNaN(off)) return;
+          state.activeTier = tIdx;
+          if (off !== 0) {
+            rotateRadialWheel(tIdx, off);
+          } else {
+            handleTierConfirm(tIdx);
+          }
+        });
+      })(tierIndex);
+    }
+
+    // Maintain virtual DOM pool of exactly 15 reusable child elements
+    var numItems = visibleRange * 2 + 1; // 15
+    while (track.children.length > numItems) {
+      track.removeChild(track.lastChild);
+    }
+    while (track.children.length < numItems) {
+      var newEl = document.createElement("div");
+      track.appendChild(newEl);
+    }
+
     for (var offset = -visibleRange; offset <= visibleRange; offset++) {
       var itemIndex = ((normalizedFocus + offset) % total + total) % total;
       var itemData = list[itemIndex];
@@ -329,7 +408,10 @@
       var scale = (absOffset === 0) ? 1.0 : Math.max(0.78, 1 - absOffset * 0.038);
       var opacity = isActiveFocused ? 1.0 : (isParentSelected ? 0.95 : Math.max(0.18, 1 - absOffset * 0.12));
 
-      var itemEl = document.createElement("div");
+      var slotIdx = offset + visibleRange;
+      var itemEl = track.children[slotIdx];
+      itemEl.dataset.offset = offset;
+
       var itemClass = "radial-wheel-item";
       if (isActiveFocused) {
         itemClass += " is-active-focused";
@@ -430,7 +512,8 @@
             var favNumHtml = isFavMode ? '<div class="radial-fav-num">#' + (itemIndex + 1) + '</div>' : '';
 
             // FLOATING CHANNEL LOGO: Placed OUTSIDE card on the right, 2x bigger, NO TV label
-            var floatingLogoHtml = (isActiveFocused && itemData.stream_icon)
+            // (Skip <img> when fastModeActive to keep wheel spinning at 60 FPS without network decoder stalls)
+            var floatingLogoHtml = (isActiveFocused && itemData.stream_icon && !fastModeActive)
               ? '<div class="radial-ch-floating-logo"><img src="' + itemData.stream_icon + '" class="radial-ch-floating-img" onerror="this.parentElement.style.display=\'none\';"></div>'
               : '';
 
@@ -443,20 +526,6 @@
           }
         }
       }
-
-      (function(idxOff, tIdx) {
-        itemEl.addEventListener("click", function(e) {
-          e.stopPropagation();
-          state.activeTier = tIdx;
-          if (idxOff !== 0) {
-            rotateRadialWheel(tIdx, idxOff);
-          } else {
-            handleTierConfirm(tIdx);
-          }
-        });
-      })(offset, tierIndex);
-
-      track.appendChild(itemEl);
     }
 
     if (tierIndex === 3) {
@@ -685,7 +754,6 @@
   function renderSeriesCol(colIdx) {
     var track = document.getElementById("radialSeriesTrack-" + colIdx);
     if (!track) return;
-    track.innerHTML = "";
 
     var geom = SERIES_ARC_SETTINGS[colIdx];
     var isSeasonCol = (colIdx === 0);
@@ -700,6 +768,7 @@
     var list = isSeasonCol ? seasons : episodes;
     var total = list.length;
     if (total === 0) {
+      track.innerHTML = "";
       var emptyEl = document.createElement("div");
       emptyEl.className = "radial-wheel-item is-focused";
       emptyEl.innerHTML = '<div class="radial-card-box ' + (isSeasonCol ? 'col-box-season' : 'col-box-episode') + '"><span class="radial-card-title">Bölüm yok</span></div>';
@@ -710,6 +779,42 @@
     var activeIdx = isSeasonCol ? state.seriesPicker.seasonIndex : state.seriesPicker.episodeIndex;
     var normalizedFocus = ((activeIdx % total) + total) % total;
     var visibleRange = 7;
+
+    // Delegated click handler on the series track (created once)
+    if (!track._delegatedClick) {
+      track._delegatedClick = true;
+      (function(cI) {
+        track.addEventListener("click", function(e) {
+          e.stopPropagation();
+          var it = e.target.closest(".radial-wheel-item");
+          if (!it) return;
+          var off = parseInt(it.dataset.offset, 10);
+          if (isNaN(off)) return;
+          state.seriesPicker.activeCol = cI;
+          if (off !== 0) {
+            rotateSeriesPicker(cI, off);
+          } else {
+            if (cI === 0) {
+              state.seriesPicker.activeCol = 1;
+              renderSeriesPicker();
+              playStep();
+            } else {
+              playSelectedEpisode();
+            }
+          }
+        });
+      })(colIdx);
+    }
+
+    // Maintain virtual DOM pool of exactly 15 reusable child elements
+    var numItems = visibleRange * 2 + 1; // 15
+    while (track.children.length > numItems) {
+      track.removeChild(track.lastChild);
+    }
+    while (track.children.length < numItems) {
+      var newEl = document.createElement("div");
+      track.appendChild(newEl);
+    }
 
     for (var offset = -visibleRange; offset <= visibleRange; offset++) {
       var itemIndex = ((normalizedFocus + offset) % total + total) % total;
@@ -727,7 +832,10 @@
       var scale = (absOffset === 0) ? 1.0 : Math.max(0.78, 1 - absOffset * 0.038);
       var opacity = isActiveFocused ? 1.0 : (isParentSelected ? 0.95 : Math.max(0.18, 1 - absOffset * 0.12));
 
-      var itemEl = document.createElement("div");
+      var slotIdx = offset + visibleRange;
+      var itemEl = track.children[slotIdx];
+      itemEl.dataset.offset = offset;
+
       var itemClass = "radial-wheel-item";
       if (isActiveFocused) {
         itemClass += " is-active-focused";
@@ -755,26 +863,6 @@
         '<div class="radial-card-box ' + boxClass + '">' +
           '<span class="radial-card-title"' + epTitleStyle + '>' + titleText + '</span>' +
         '</div>';
-
-      (function(idxOff, cI) {
-        itemEl.addEventListener("click", function(e) {
-          e.stopPropagation();
-          state.seriesPicker.activeCol = cI;
-          if (idxOff !== 0) {
-            rotateSeriesPicker(cI, idxOff);
-          } else {
-            if (cI === 0) {
-              state.seriesPicker.activeCol = 1;
-              renderSeriesPicker();
-              playStep();
-            } else {
-              playSelectedEpisode();
-            }
-          }
-        });
-      })(offset, colIdx);
-
-      track.appendChild(itemEl);
     }
   }
 
@@ -829,6 +917,7 @@
 
   // ROTATION WITH CIRCULAR LOOPING (NO GAPS!)
   function rotateRadialWheel(tierIndex, direction) {
+    markFastMode();
     var list = getTierData(tierIndex);
     var total = list.length;
     if (total === 0) return;

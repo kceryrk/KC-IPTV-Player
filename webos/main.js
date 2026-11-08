@@ -344,6 +344,22 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentVodMovieId = null;
   let allCategories = [];
   let favoritesNs = "";
+  let streamByIdMap = {};
+  let streamsByCatMap = {};
+
+  function rebuildStreamIndexes() {
+    streamByIdMap = {};
+    streamsByCatMap = {};
+    if (!allStreams || !allStreams.length) return;
+    for (let i = 0; i < allStreams.length; i++) {
+      const s = allStreams[i];
+      const sId = String(s.stream_id);
+      streamByIdMap[sId] = s;
+      const cId = String(s.category_id || "all");
+      if (!streamsByCatMap[cId]) streamsByCatMap[cId] = [];
+      streamsByCatMap[cId].push(s);
+    }
+  }
 
   function readFavorites(key) {
     try {
@@ -871,14 +887,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const match = clean.match(/\(VI([A-Z0-9-]+)[|)]/i);
       if (match && match[1]) {
         let r = match[1].replace("-", "").toUpperCase();
-        if (/^[VS][A-Z]{2,4}$/.test(r)) r = r.substring(1);
+        if (/^[VS]([A-Z]{2,3})$/.test(r)) r = RegExp.$1;
+        else if (/^[VS][A-Z]{2,4}$/.test(r)) r = r.substring(1);
         return r;
       }
     }
-    let prefix = clean.split(" ")[0].replace(/[^a-zA-Z]/g, "").toUpperCase();
+    // Clean leading brackets, pipes, bullets like "| TR |", "[TR]", "(TR)", "*TR*"
+    clean = clean.replace(/^[|\[\(*•#\s]+/, "");
+    let prefix = clean.split(/[\s:|\-]+/)[0].replace(/[^a-zA-Z]/g, "").toUpperCase();
     if (prefix.length >= 2 && prefix.length <= 5) {
-      // Remove V and S prefixes before country codes (e.g. VTR -> TR, STR -> TR, VEN -> EN, SEN -> EN)
-      if (/^[VS][A-Z]{2,4}$/.test(prefix)) {
+      // Remove V and S prefixes before country codes (e.g. VTR -> TR, STR -> TR, VEN -> EN, SEN -> EN, VDE -> DE, SDE -> DE)
+      if (/^[VS]([A-Z]{2,3})$/.test(prefix)) {
+        prefix = RegExp.$1;
+      } else if (/^[VS][A-Z]{2,4}$/.test(prefix)) {
         prefix = prefix.substring(1);
       }
       return prefix;
@@ -1088,6 +1109,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (cachedChannels) {
         // Start from the saved playlist without downloading. The playlist only refreshes on the refresh timer.
         allStreams = cachedChannels.streams;
+        rebuildStreamIndexes();
         allCategories = cachedChannels.categories || [];
         currentLiveRegion = "ALL";
         setLoginState("logged-in");
@@ -1148,6 +1170,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cached = loadChannelCache(sourceUrl);
     if (cached) {
       allStreams = cached.streams;
+      rebuildStreamIndexes();
       allCategories = cached.categories || [];
     } else {
       try {
@@ -1157,6 +1180,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // The download may have finished while waiting; its categories are then already in place.
         if (!Array.isArray(list) || !list.length || loadChannelCache(sourceUrl)) return;
         allStreams = [];
+        rebuildStreamIndexes();
         allCategories = list.map((cat) => ({ category_id: String(cat.category_id), category_name: cat.category_name }));
       } catch (error) {
         return;
@@ -1720,6 +1744,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (playlist.streams.length === 0) throw new Error(t("playlistInvalid"));
 
         allStreams = playlist.streams;
+        rebuildStreamIndexes();
         allCategories = playlist.categories;
         saveChannelCache(server, playlist.streams, playlist.categories);
         setFavoritesProvider("m3u");
@@ -2648,9 +2673,15 @@ document.addEventListener("DOMContentLoaded", () => {
     contentTitle.textContent = t("channels");
 
     if (currentModus === "favorites") {
-      currentActiveStreams = favorites.map(id => allStreams.find(s => s.stream_id.toString() === id.toString())).filter(Boolean);
+      currentActiveStreams = [];
+      if (favorites && favorites.length) {
+        for (let f = 0; f < favorites.length; f++) {
+          const item = streamByIdMap[String(favorites[f])];
+          if (item) currentActiveStreams.push(item);
+        }
+      }
     } else {
-      currentActiveStreams = allStreams.filter(s => String(s.category_id) === String(currentCategoryId));
+      currentActiveStreams = streamsByCatMap[String(currentCategoryId)] || [];
       if (!currentActiveStreams.length && allStreams.length) {
         currentActiveStreams = allStreams.filter(s => {
           if (currentLiveRegion === "ALL" || !currentLiveRegion) return true;
@@ -3014,25 +3045,54 @@ document.addEventListener("DOMContentLoaded", () => {
       };
   }
 
-  async function fetchEPGData(streamId) {
-    resetEpgTexts();
-    if (!epgVisible) return;
-    const epgs = await getEpgListings(streamId);
-    // Ignore a late reply for a channel the user already left.
-    if (!epgs || String(currentPlayingStreamId) !== String(streamId)) return;
-    const info = nowNextFrom(epgs);
-    document.getElementById("epgCurrTitle").textContent = info.current.title;
-    document.getElementById("epgCurrTime").textContent = info.current.time;
+  let epgDebounceTimer = null;
+
+  function applyEpgInfoToUI(info) {
+    if (!info || !info.current) return;
+    const currTitleEl = document.getElementById("epgCurrTitle");
+    const currTimeEl = document.getElementById("epgCurrTime");
+    if (currTitleEl) currTitleEl.textContent = info.current.title;
+    if (currTimeEl) currTimeEl.textContent = info.current.time;
     if (osdEpgCurrTitle) osdEpgCurrTitle.textContent = info.current.title;
     if (osdEpgCurrDesc) osdEpgCurrDesc.textContent = info.current.description || "";
     if (osdEpgCurrTime) osdEpgCurrTime.textContent = info.current.time;
 
     if (info.next) {
-      document.getElementById("epgNextTitle").textContent = info.next.title;
-      document.getElementById("epgNextTime").textContent = info.next.time;
+      const nextTitleEl = document.getElementById("epgNextTitle");
+      const nextTimeEl = document.getElementById("epgNextTime");
+      if (nextTitleEl) nextTitleEl.textContent = info.next.title;
+      if (nextTimeEl) nextTimeEl.textContent = info.next.time;
       if (osdEpgNextTitle) osdEpgNextTitle.textContent = info.next.title;
       if (osdEpgNextTime) osdEpgNextTime.textContent = info.next.time;
     }
+  }
+
+  async function fetchEPGData(streamId) {
+    resetEpgTexts();
+    if (!epgVisible) return;
+    if (epgDebounceTimer) {
+      clearTimeout(epgDebounceTimer);
+      epgDebounceTimer = null;
+    }
+
+    // Instant paint if already in memory cache (zero network delay)
+    const epgId = epgStreamIdFor(streamId);
+    const cached = epgId ? epgCache[epgId] : null;
+    if (cached && Date.now() - cached.at < 300000 && cached.epgs) {
+      if (String(currentPlayingStreamId) !== String(streamId)) return;
+      const info = nowNextFrom(cached.epgs);
+      applyEpgInfoToUI(info);
+      return;
+    }
+
+    // 350ms Debounce: During rapid zapping, don't compete with video buffer network requests
+    epgDebounceTimer = setTimeout(async () => {
+      if (String(currentPlayingStreamId) !== String(streamId)) return;
+      const epgs = await getEpgListings(streamId);
+      if (!epgs || String(currentPlayingStreamId) !== String(streamId)) return;
+      const info = nowNextFrom(epgs);
+      applyEpgInfoToUI(info);
+    }, 350);
   }
 
   // GUIDE OVERLAY (opened with the Guide key while fullscreen)
@@ -3265,16 +3325,21 @@ document.addEventListener("DOMContentLoaded", () => {
   let watchdogStallSeconds = 0;
 
   function scheduleLiveReconnect(reason) {
-    if (!lastLive || liveReconnectTimer || isPlaybackHealthy) return;
+    if (!lastLive || liveReconnectTimer) return;
+    isPlaybackHealthy = false;
     liveReconnectAttempts += 1;
-    if (liveReconnectAttempts > 3) {
-      console.warn("Max reconnect attempts reached; stopping retry loop. Reason:", reason);
-      hidePlayerLoading();
-      reportPlaybackError(reason || "Stream connection failed");
-      return;
+    // Progressive backoff: 400ms on first retry, 1200ms on 2nd, 2500ms on 3rd, 5000ms onwards
+    let delay = 400;
+    if (liveReconnectAttempts === 2) delay = 1200;
+    else if (liveReconnectAttempts === 3) delay = 2500;
+    else if (liveReconnectAttempts > 3) delay = 5000;
+
+    if (liveReconnectAttempts > 5) {
+      // Don't kill the player permanently on IPTV hiccups!
+      // Keep a slow background retry pulse (every 7s) so stream automatically reloads when server recovers
+      console.warn("Extended reconnect active (attempt #" + liveReconnectAttempts + "). Retrying in 7s. Reason:", reason);
+      delay = 7000;
     }
-    // Fast reconnect: 400ms on first retry, 1200ms on subsequent
-    const delay = liveReconnectAttempts === 1 ? 400 : 1200;
     showPlayerLoading();
     liveReconnectTimer = setTimeout(() => {
       liveReconnectTimer = null;
@@ -3286,31 +3351,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Fast Stall & Freeze Watchdog: checks every 1 second
   setInterval(() => {
-    if (!lastLive || liveReconnectTimer || video.paused || liveReconnectAttempts > 3) {
+    if (!lastLive || liveReconnectTimer) {
       watchdogStallSeconds = 0;
       return;
+    }
+    // If browser auto-paused due to network buffer dry-up, attempt soft kick
+    if (video.paused && !video.ended && currentAppSection !== "stremio") {
+      try {
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === "function") playPromise.catch(() => {});
+      } catch (e) {}
     }
     // If video is supposed to be playing live
     if (video.currentTime === watchdogTime && video.readyState >= 2) {
       watchdogStallSeconds += 1;
-      // At 3 seconds stall: try soft jump to live edge if buffer exists
-      if (watchdogStallSeconds === 3) {
+      // At 2 seconds stall: try soft jump to live edge if buffer exists
+      if (watchdogStallSeconds === 2) {
         try {
           if (video.buffered && video.buffered.length > 0) {
             const bufEnd = video.buffered.end(video.buffered.length - 1);
-            if (bufEnd > video.currentTime + 0.4) {
-              video.currentTime = bufEnd - 0.2;
+            if (bufEnd > video.currentTime + 0.3) {
+              video.currentTime = bufEnd - 0.1;
             }
           }
           if (hlsPlayer && typeof hlsPlayer.startLoad === "function") {
             hlsPlayer.startLoad();
           }
         } catch (e) {}
-      } else if (watchdogStallSeconds >= 5) {
-        // Freeze exceeded 5 seconds: trigger instant reconnect!
-        console.warn("Live stream frozen for 5s, triggering fast reconnect");
+      } else if (watchdogStallSeconds >= 4) {
+        // Freeze exceeded 4 seconds: trigger instant reconnect & reload!
+        console.warn("Live stream frozen for 4s, triggering auto-reload. Current time:", video.currentTime);
         watchdogStallSeconds = 0;
-        scheduleLiveReconnect("Stream stalled");
+        isPlaybackHealthy = false;
+        scheduleLiveReconnect("Stream stalled / frozen");
       }
     } else {
       watchdogTime = video.currentTime;
@@ -3394,16 +3467,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // Fast stall detection via native HTML5 events
   let stallTimeout = null;
   function handleStreamStall() {
-    if (!lastLive || liveReconnectTimer || video.paused) return;
+    if (!lastLive || liveReconnectTimer) return;
     if (stallTimeout) clearTimeout(stallTimeout);
     stallTimeout = setTimeout(() => {
       stallTimeout = null;
-      if (!lastLive || liveReconnectTimer || video.paused) return;
+      if (!lastLive || liveReconnectTimer) return;
       if (video.readyState < 3) {
         console.warn("Stream waiting/stalled event timed out, reconnecting...");
+        isPlaybackHealthy = false;
         scheduleLiveReconnect("Buffer underrun");
       }
-    }, 3500);
+    }, 3000);
   }
   video.addEventListener("waiting", handleStreamStall);
   video.addEventListener("stalled", handleStreamStall);
@@ -3413,6 +3487,7 @@ document.addEventListener("DOMContentLoaded", () => {
       hidePlayerLoading();
       return;
     }
+    isPlaybackHealthy = false;
     console.warn("Video element error encountered:", mediaErrorReason(video.error));
     if (typeof window.__handlePlaybackStageError === "function") {
       window.__handlePlaybackStageError(mediaErrorReason(video.error));
@@ -3422,6 +3497,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   video.addEventListener("ended", () => {
     if (lastLive) {
+      isPlaybackHealthy = false;
       console.warn("Live stream ended event; reconnecting to live edge");
       scheduleLiveReconnect("Live stream ended");
     }
@@ -6896,13 +6972,8 @@ document.addEventListener("DOMContentLoaded", () => {
       var favStreams = [];
       if (favorites && favorites.length) {
         for (var f = 0; f < favorites.length; f++) {
-          var fId = String(favorites[f]);
-          for (var s = 0; s < allStreams.length; s++) {
-            if (String(allStreams[s].stream_id) === fId) {
-              favStreams.push(allStreams[s]);
-              break;
-            }
-          }
+          var item = streamByIdMap[String(favorites[f])];
+          if (item) favStreams.push(item);
         }
       }
       return favStreams;

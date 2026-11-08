@@ -4525,11 +4525,18 @@ body.radial-active #videoPlayer {
   margin-top: -32px !important;
   transform-origin: 0 32px !important;
   -webkit-transform-origin: 0 32px !important;
-  transition: -webkit-transform 0.20s ease-out, transform 0.20s ease-out, opacity 0.18s ease !important;
+  transition: -webkit-transform 0.15s cubic-bezier(0.2, 0.9, 0.4, 1), transform 0.15s cubic-bezier(0.2, 0.9, 0.4, 1), opacity 0.15s ease !important;
   cursor: pointer !important;
   will-change: transform, opacity !important;
   display: flex !important;
   align-items: center !important;
+}
+
+/* Fast-mode: 0ms snap during rapid D-pad hold to prevent animation queue buildup */
+.radial-fast-mode .radial-wheel-item,
+.radial-fast-mode .radial-card-box {
+  transition: none !important;
+  -webkit-transition: none !important;
 }
 
 .radial-wheel-item.is-parent-selected {
@@ -4555,7 +4562,7 @@ body.radial-active #videoPlayer {
   color: #94a3b8 !important;
   white-space: nowrap !important;
   box-sizing: border-box !important;
-  transition: all 0.18s ease-out !important;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease !important;
   font-family: 'Outfit', sans-serif !important;
 }
 
