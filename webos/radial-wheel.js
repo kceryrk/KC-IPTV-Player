@@ -1163,8 +1163,12 @@
       exitSeriesPicker();
     }
 
-    if (window.kcActivateFitScreen && typeof window.kcActivateFitScreen === "function") {
-      window.kcActivateFitScreen();
+    var modes = getModesList();
+    var chosenMode = modes[state.selected.modeIndex] ? modes[state.selected.modeIndex].id : "live";
+    if (chosenMode !== "stremio" && chosenMode !== "youtube" && chosenMode !== "settings") {
+      if (window.kcActivateFitScreen && typeof window.kcActivateFitScreen === "function") {
+        window.kcActivateFitScreen();
+      }
     }
   }
 

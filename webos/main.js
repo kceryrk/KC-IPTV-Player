@@ -3846,6 +3846,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.AeroRadial.open();
       }
     } else if (section === "stremio") {
+      deactiveerFitScreen();
       document.body.classList.add("radial-active");
       if (window.AeroRadial) window.AeroRadial.close();
       stopLivePlayback();
@@ -3922,10 +3923,14 @@ document.addEventListener("DOMContentLoaded", () => {
       initYouTubeHome();
     }
 
-    const activeSub = subpage === "tv" ? stremioSubpageTv : (subpage === "series" ? stremioSubpageSeries : (subpage === "youtube" ? stremioSubpageYoutube : stremioSubpageMovies));
-    if (activeSub) {
-      const first = activeSub.querySelector(".focusable");
-      if (first) setElementFocus(first);
+    if (subpage === "youtube") {
+      if (sideYoutube) setElementFocus(sideYoutube);
+    } else {
+      const activeSub = subpage === "tv" ? stremioSubpageTv : (subpage === "series" ? stremioSubpageSeries : stremioSubpageMovies);
+      if (activeSub) {
+        const first = activeSub.querySelector(".focusable");
+        if (first) setElementFocus(first);
+      }
     }
   }
 
@@ -4175,8 +4180,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.kcOpenYouTube = function() {
-    switchAppSection("stremio");
+    deactiveerFitScreen();
+    switchAppSection("stremio", true);
     switchStremioSubpage("youtube");
+    if (sideYoutube) {
+      setElementFocus(sideYoutube);
+    }
   };
 
   function createStremioChannelCard(item, idx) {
@@ -5940,7 +5949,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function isElementInSidebar(el) {
     if (!el) return false;
-    if (el.id === "sideBackToIptv" || el.id === "sideTv" || el.id === "sideMovies" || el.id === "sideSeries") return true;
+    if (el.id === "sideBackToIptv" || el.id === "sideTv" || el.id === "sideMovies" || el.id === "sideSeries" || el.id === "sideYoutube") return true;
     let curr = el;
     while (curr && curr !== document.body) {
       if (curr.id === "stremioSidebarDock" || (curr.classList && curr.classList.contains("stremio-sidebar-dock"))) return true;
@@ -6857,7 +6866,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (activePill) setElementFocus(activePill);
           return;
         }
-        if (isLeft) {
+        if (isLeft || isRight) {
           e.preventDefault();
           if (sideYoutube) setElementFocus(sideYoutube);
           return;
@@ -6896,7 +6905,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (isDown) {
           e.preventDefault();
-          const firstCh = stremioStripYtChannels ? stremioStripYtChannels.querySelector(".stremio-yt-channel-card.focusable") : null;
+          const firstCh = (stremioStripYtChannels ? stremioStripYtChannels.querySelector(".stremio-yt-channel-card.focusable") : null) || (stremioStripYtVideos ? stremioStripYtVideos.querySelector(".stremio-yt-video-card.focusable") : null);
           if (firstCh) setElementFocus(firstCh);
           return;
         }
@@ -7193,7 +7202,7 @@ document.addEventListener("DOMContentLoaded", () => {
           } else if (focused === sideSeries) {
             targetCard = stremioStripSeries ? stremioStripSeries.querySelector(".stremio-card.focusable") : null;
           } else if (focused === sideYoutube) {
-            targetCard = (stremioStripYtChannels ? stremioStripYtChannels.querySelector(".stremio-yt-channel-card.focusable") : null) || (stremioYtGenreBar ? stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.focusable") : null);
+            targetCard = (stremioYtGenreBar ? (stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.active") || stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.focusable")) : null) || (stremioStripYtChannels ? stremioStripYtChannels.querySelector(".stremio-yt-channel-card.focusable") : null);
           } else {
             targetCard = stremioStripPopular ? stremioStripPopular.querySelector(".stremio-card.focusable") : null;
           }
