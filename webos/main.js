@@ -336,7 +336,15 @@ document.addEventListener("DOMContentLoaded", () => {
   let allStreams = [];
   let vodStreams = [];
   let vodCategories = [];
+  try {
+    const rawVod = store.getItem("iptv_vod_categories_cache");
+    if (rawVod) vodCategories = JSON.parse(rawVod);
+  } catch (e) {}
   let seriesCategories = [];
+  try {
+    const rawSeries = store.getItem("iptv_series_categories_cache");
+    if (rawSeries) seriesCategories = JSON.parse(rawSeries);
+  } catch (e) {}
   let xtreamCategoriesLoading = false;
   let seriesStreams = [];
   let selectedSeries = null;
@@ -883,24 +891,42 @@ document.addEventListener("DOMContentLoaded", () => {
   function extractRegionFromCategory(catName, isVod) {
     if (!catName) return "";
     let clean = catName.trim();
-    if (isVod) {
-      const match = clean.match(/\(VI([A-Z0-9-]+)[|)]/i);
-      if (match && match[1]) {
-        let r = match[1].replace("-", "").toUpperCase();
-        if (/^[VS]([A-Z]{2,3})$/.test(r)) r = RegExp.$1;
-        else if (/^[VS][A-Z]{2,4}$/.test(r)) r = r.substring(1);
-        return r;
-      }
+
+    // 1. Check bracketed prefix like (V|PL), (V|TR), (S|TR), (V:TR), (V-TR), (VI-TR), [V|TR]
+    const bracketMatch = clean.match(/^[(\[][VS]?[|:_\-\/]([A-Z0-9-]+)[)\]|]/i);
+    if (bracketMatch && bracketMatch[1]) {
+      let r = bracketMatch[1].replace("-", "").toUpperCase();
+      if (/^[VS]([A-Z]{2,3})$/.test(r)) r = RegExp.$1;
+      else if (/^[VS][A-Z]{2,4}$/.test(r)) r = r.substring(1);
+      return r;
     }
-    // Clean leading brackets, pipes, bullets like "| TR |", "[TR]", "(TR)", "*TR*"
+
+    // 2. Check (VI-TR|...) or similar legacy patterns
+    const viMatch = clean.match(/\(VI-?([A-Z0-9]+)[|)]/i);
+    if (viMatch && viMatch[1]) {
+      let r = viMatch[1].toUpperCase();
+      if (/^[VS]([A-Z]{2,3})$/.test(r)) r = RegExp.$1;
+      return r;
+    }
+
+    // 3. Clean leading symbols
     clean = clean.replace(/^[|\[\(*•#\s]+/, "");
-    // If it starts with VOD, SERIES, MOVIE, FILM, CINEMA, strip it to access the country code:
-    clean = clean.replace(/^(VOD|SERIES|SERIE|MOVIES|MOVIE|FILMLER|FILM|CINEMA)[\s:|\-_]+/i, "");
+    // Strip section prefix words: VOD, SERIES, MOVIES, etc.
+    clean = clean.replace(/^(VOD|SERIES|SERIE|MOVIES|MOVIE|FILMLER|FILM|CINEMA)[\s:|\-_/]+/i, "");
     clean = clean.replace(/^[|\[\(*•#\s]+/, "");
 
-    let prefix = clean.split(/[\s:|\-]+/)[0].replace(/[^a-zA-Z]/g, "").toUpperCase();
+    // 4. Handle "V|TR" or "S|TR" without brackets
+    const pipePrefixMatch = clean.match(/^[VS][|:_\-\/]([A-Z0-9-]+)/i);
+    if (pipePrefixMatch && pipePrefixMatch[1]) {
+      let r = pipePrefixMatch[1].replace("-", "").toUpperCase();
+      if (/^[VS]([A-Z]{2,3})$/.test(r)) r = RegExp.$1;
+      else if (/^[VS][A-Z]{2,4}$/.test(r)) r = r.substring(1);
+      return r;
+    }
+
+    // 5. Standard country code prefix: "TR | ...", "TR: ...", "VTR | ...", "STR | ..."
+    let prefix = clean.split(/[\s:|\-/]+/)[0].replace(/[^a-zA-Z]/g, "").toUpperCase();
     if (prefix.length >= 2 && prefix.length <= 5) {
-      // Remove V and S prefixes before country codes (e.g. VTR -> TR, STR -> TR, VEN -> EN, SEN -> EN, VDE -> DE, SDE -> DE)
       if (/^[VS]([A-Z]{2,3})$/.test(prefix)) {
         prefix = RegExp.$1;
       } else if (/^[VS][A-Z]{2,4}$/.test(prefix)) {
@@ -1245,6 +1271,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       vodCategories = vodCats;
       seriesCategories = seriesCats;
+      try {
+        store.setItem("iptv_vod_categories_cache", JSON.stringify(vodCats));
+        store.setItem("iptv_series_categories_cache", JSON.stringify(seriesCats));
+      } catch (e) {}
       vodStreams = [];
       seriesStreams = [];
       Object.keys(loadedCategories).forEach((key) => { delete loadedCategories[key]; });
@@ -1829,6 +1859,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (document.body.classList.contains("radial-active")) {
+      return;
+    }
+
     // Collapse the skipped columns before the layout returns, so the modes list does not flash open.
     if (currentModus === "live" || currentModus === "favorites") setColumnFocus(3);
     if (currentModus === "live" || currentModus === "favorites") {
@@ -1957,7 +1991,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     let currentActiveRegion = isVod ? currentVodRegion : currentLiveRegion;
-    if (currentActiveRegion !== "ALL" && (hideRegionColumn || !regions.has(currentActiveRegion))) {
+    if (currentActiveRegion !== "ALL" && (hideRegionColumn || (regions.size > 0 && !regions.has(currentActiveRegion)))) {
       currentActiveRegion = "ALL";
       if (isVod) currentVodRegion = currentActiveRegion;
       else currentLiveRegion = currentActiveRegion;
@@ -7074,10 +7108,24 @@ document.addEventListener("DOMContentLoaded", () => {
         var foundCurrent = cats.find(function(c) { return String(c.category_id) === String(currentCategoryId); });
         if (!foundCurrent) currentCategoryId = cats[0].category_id;
       }
+    } else if (m === "vod" || m === "series") {
+      var savedVodReg = store.getItem("iptv_last_vod_region");
+      if (savedVodReg) currentVodRegion = savedVodReg;
+      if (currentModus !== "favorites") filterCategories();
+      var activeReg = currentVodRegion || "ALL";
+      var cats = window.kcGetCategories(activeReg);
+      var savedVodCat = store.getItem("iptv_last_vod_cat");
+      if (savedVodCat) {
+        var foundSavedVod = cats.find(function(c) { return String(c.category_id) === String(savedVodCat); });
+        if (foundSavedVod) currentCategoryId = savedVodCat;
+      }
+      if (cats && cats.length) {
+        var foundCurrentVod = cats.find(function(c) { return String(c.category_id) === String(currentCategoryId); });
+        if (!foundCurrentVod) currentCategoryId = cats[0].category_id;
+      }
     } else {
       if (currentModus !== "favorites") filterCategories();
-      var activeReg = (m === "vod" || m === "series") ? (currentVodRegion || "ALL") : currentLiveRegion;
-      var cats = window.kcGetCategories(activeReg);
+      var cats = window.kcGetCategories("ALL");
       if (cats && cats.length) {
         currentCategoryId = cats[0].category_id;
       }
@@ -7088,14 +7136,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.kcSetRegion = function(r) {
     var isVod = (currentModus === "vod" || currentModus === "series");
-    if (isVod) currentVodRegion = r;
-    else {
+    if (isVod) {
+      currentVodRegion = r;
+      try { store.setItem("iptv_last_vod_region", r); } catch (e) {}
+    } else {
       currentLiveRegion = r;
       try { store.setItem("iptv_last_live_region", r); } catch (e) {}
     }
     if (currentModus !== "favorites") filterCategories();
     var cats = window.kcGetCategories(r);
-    var savedCat = isVod ? null : store.getItem("iptv_last_live_cat");
+    var savedCat = isVod ? store.getItem("iptv_last_vod_cat") : store.getItem("iptv_last_live_cat");
     var foundSaved = savedCat ? cats.find(function(c) { return String(c.category_id) === String(savedCat); }) : null;
     if (foundSaved) {
       currentCategoryId = savedCat;
@@ -7108,9 +7158,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.kcSetCategory = function(catId) {
     currentCategoryId = catId;
-    if (currentModus === "live") {
-      try { store.setItem("iptv_last_live_cat", String(catId)); } catch (e) {}
-    }
+    var isVod = (currentModus === "vod" || currentModus === "series");
+    try {
+      if (isVod) store.setItem("iptv_last_vod_cat", String(catId));
+      else store.setItem("iptv_last_live_cat", String(catId));
+    } catch (e) {}
     filterChannels();
     if (window.AeroRadial) window.AeroRadial.refresh();
   };
