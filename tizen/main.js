@@ -157,7 +157,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const youtubePlayerModal = document.getElementById("youtubePlayerModal");
   const youtubePlayerTitle = document.getElementById("youtubePlayerTitle");
   const youtubePlayerClose = document.getElementById("youtubePlayerClose");
+  const youtubePlayerNativeAppBtn = document.getElementById("youtubePlayerNativeAppBtn");
   const youtubeIframe = document.getElementById("youtubeIframe");
+  let lastCurrentYtVideoId = "";
   const youtubeAccountModal = document.getElementById("youtubeAccountModal");
   const youtubeAccountModalClose = document.getElementById("youtubeAccountModalClose");
   const stremioRowLive = document.getElementById("stremioRowLive");
@@ -4090,6 +4092,45 @@ document.addEventListener("DOMContentLoaded", () => {
     return card;
   }
 
+  function openInNativeYouTubeApp(videoId) {
+    const vId = videoId || lastCurrentYtVideoId || "";
+    if (!vId) return;
+    closeYouTubePlayer();
+    // 1. Samsung Tizen: Launch official YouTube TV App
+    if (window.tizen && window.tizen.application) {
+      try {
+        if (typeof window.tizen.ApplicationControl === "function" && typeof window.tizen.application.launchAppControl === "function") {
+          const appControl = new window.tizen.ApplicationControl(
+            "http://tizen.org/appcontrol/operation/view",
+            "https://www.youtube.com/watch?v=" + encodeURIComponent(vId)
+          );
+          window.tizen.application.launchAppControl(appControl, "111299001912", function() {
+            console.log("Launched official YouTube TV app");
+          }, function(err) {
+            console.warn("Fallback launch:", err);
+            try { window.tizen.application.launch("111299001912"); } catch (e2) {}
+          });
+          return;
+        } else if (typeof window.tizen.application.launch === "function") {
+          window.tizen.application.launch("111299001912");
+          return;
+        }
+      } catch (e) {
+        try { window.tizen.application.launch("111299001912"); return; } catch (e3) {}
+      }
+    }
+    // 2. LG webOS: Launch official YouTube app
+    if (window.webOS && typeof window.webOS.service === "object") {
+      try {
+        window.webOS.service.request("luna://com.webos.applicationManager", {
+          method: "launch",
+          parameters: { id: "youtube.leanback.v4", params: { contentTarget: "https://www.youtube.com/watch?v=" + encodeURIComponent(vId) } }
+        });
+        return;
+      } catch (e) {}
+    }
+  }
+
   function playYouTubeVideo(rawVideoId, title, fromCard) {
     if (!youtubePlayerModal || !youtubeIframe) return;
     lastFocusedYtCard = fromCard || (document.activeElement && document.activeElement.classList.contains("yt-video-card") ? document.activeElement : null);
@@ -4101,16 +4142,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (!cleanId) return;
 
+    lastCurrentYtVideoId = cleanId;
+
     if (youtubePlayerTitle) youtubePlayerTitle.textContent = title || "YouTube";
-    youtubeIframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(cleanId) + "?autoplay=1&controls=1&enablejsapi=1&playsinline=1&rel=0";
+    // Standard embed with nocookie domain, playsinline, rel=0, no top navigation
+    youtubeIframe.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(cleanId) + "?autoplay=1&controls=1&playsinline=1&rel=0&modestbranding=1";
     youtubePlayerModal.classList.remove("hidden");
-    if (youtubePlayerClose) setElementFocus(youtubePlayerClose);
+    if (youtubePlayerClose) {
+      setElementFocus(youtubePlayerClose);
+      try { youtubePlayerClose.focus(); } catch (e) {}
+    }
   }
 
   function closeYouTubePlayer() {
     if (!youtubePlayerModal) return;
     youtubePlayerModal.classList.add("hidden");
-    if (youtubeIframe) youtubeIframe.src = "about:blank";
+    if (youtubeIframe) {
+      youtubeIframe.src = "about:blank";
+      youtubeIframe.removeAttribute("src");
+    }
     if (lastFocusedYtCard && document.body.contains(lastFocusedYtCard)) {
       setElementFocus(lastFocusedYtCard);
     } else {
@@ -4128,6 +4178,58 @@ document.addEventListener("DOMContentLoaded", () => {
   if (youtubePlayerClose) {
     youtubePlayerClose.addEventListener("click", closeYouTubePlayer);
   }
+  if (youtubePlayerNativeAppBtn) {
+    youtubePlayerNativeAppBtn.addEventListener("click", () => openInNativeYouTubeApp(lastCurrentYtVideoId));
+  }
+
+  // Global capture phase listener for YouTube player overlay to guarantee Back key never closes app
+  window.addEventListener("keydown", function(e) {
+    const k = e.keyCode || e.which;
+    const isBackKey = k === 10009 || k === 461 || k === 27 || e.key === "Back" || e.key === "Escape";
+
+    if (youtubePlayerModal && !youtubePlayerModal.classList.contains("hidden")) {
+      if (isBackKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        closeYouTubePlayer();
+        return;
+      }
+
+      if (k === 13 || e.key === "Enter") {
+        if (document.activeElement === youtubePlayerNativeAppBtn) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          openInNativeYouTubeApp(lastCurrentYtVideoId);
+          return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        closeYouTubePlayer();
+        return;
+      }
+
+      if (k === 37 || e.key === "ArrowLeft") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (youtubePlayerNativeAppBtn) setElementFocus(youtubePlayerNativeAppBtn);
+        return;
+      }
+
+      if (k === 39 || e.key === "ArrowRight") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (youtubePlayerClose) setElementFocus(youtubePlayerClose);
+        return;
+      }
+
+      // Trap all other keys while overlay is open so focus never leaks
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, true);
 
   function openYouTubeAccountModal() {
     if (!youtubeAccountModal) return;

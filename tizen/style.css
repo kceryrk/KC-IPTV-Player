@@ -5497,6 +5497,45 @@ body.radial-active #videoPlayer {
   z-index: 10;
 }
 
+.youtube-player-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.youtube-player-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.youtube-player-btn {
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  font-family: "Outfit", sans-serif !important;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.youtube-player-btn:hover,
+.youtube-player-btn.focused,
+.youtube-player-btn:focus {
+  background: #2563eb !important;
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.8) !important;
+  transform: scale(1.04);
+}
+
 .youtube-player-title {
   font-family: "Outfit", sans-serif !important;
   font-size: 1.6rem;
