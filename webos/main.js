@@ -2644,22 +2644,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (currentModus === "favorites") {
       currentActiveStreams = favorites.map(id => allStreams.find(s => s.stream_id.toString() === id.toString())).filter(Boolean);
-    } else if (currentCategoryId === "ALL_CHANNELS" || currentCategoryId === "all" || !currentCategoryId) {
-      if (currentLiveRegion === "ALL" || !currentLiveRegion) {
-        currentActiveStreams = allStreams.slice();
-      } else {
-        currentActiveStreams = allStreams.filter(s => {
-          return extractRegionFromCategory(s.category_name || "", false) === currentLiveRegion;
-        });
-        if (!currentActiveStreams.length) {
-          currentActiveStreams = allStreams.slice();
-        }
-      }
     } else {
       currentActiveStreams = allStreams.filter(s => String(s.category_id) === String(currentCategoryId));
+      if (!currentActiveStreams.length && allStreams.length) {
+        currentActiveStreams = allStreams.filter(s => {
+          if (currentLiveRegion === "ALL" || !currentLiveRegion) return true;
+          return extractRegionFromCategory(s.category_name || "", false) === currentLiveRegion;
+        });
+      }
     }
 
-    currentActiveStreams.forEach((s, idx) => {
+    channelList.innerHTML = "";
+    if (document.body.classList.contains("radial-active")) {
+      if (window.AeroRadial) window.AeroRadial.refresh();
+      return;
+    }
+
+    const domBatch = currentActiveStreams.slice(0, 50);
+    domBatch.forEach((s, idx) => {
       const isFav = favorites.includes(s.stream_id.toString());
       const numStr = (idx + 1).toString();
 
@@ -6868,22 +6870,16 @@ document.addEventListener("DOMContentLoaded", () => {
   window.kcGetCategories = function(reg) {
     var isVod = (currentModus === "vod" || currentModus === "series");
     var cats = currentModus === "series" ? (seriesCategories.length ? seriesCategories : vodCategories) : (isVod ? vodCategories : allCategories);
-    if (!cats || !cats.length) return [{ category_id: "ALL_CHANNELS", category_name: "Tüm Kanallar" }];
+    if (!cats || !cats.length) return [{ category_id: "all", category_name: "Tüm Kanallar" }];
     var hidden = hiddenCategories[categoryKind()] || [];
     var result = [];
-    if (!isVod && currentModus === "live") {
-      result.push({
-        category_id: "ALL_CHANNELS",
-        category_name: "Tüm Kanallar (" + (reg === "ALL" ? "Hepsi" : reg) + ")"
-      });
-    }
     for (var i = 0; i < cats.length; i++) {
       var c = cats[i];
       if (hidden.indexOf(String(c.category_id)) !== -1) continue;
       if (reg && reg !== "ALL" && extractRegionFromCategory(c.category_name, isVod) !== reg) continue;
       result.push(c);
     }
-    return result.length ? result : [{ category_id: "ALL_CHANNELS", category_name: "Tüm Kanallar" }];
+    return result.length ? result : [{ category_id: "all", category_name: "Tüm Kanallar" }];
   };
 
   window.kcGetModus = function() {
