@@ -35,7 +35,18 @@
       badge: "Official · Legal",
       description: "Browse and watch official YouTube channels, trending videos, and creators directly.",
       transportUrl: "https://v3-channels.strem.io/manifest.json",
-      types: ["channel"]
+      types: ["channel"],
+      manifest: {
+        id: "com.linvo.stremiochannels",
+        name: "YouTube",
+        version: "1.0.0",
+        description: "Browse and watch official YouTube channels, trending videos, and creators directly.",
+        resources: ["catalog", "meta"],
+        types: ["channel"],
+        catalogs: [
+          { type: "channel", id: "youtube", name: "YouTube" }
+        ]
+      }
     },
     {
       id: "org.stremio.opensubtitlesv3",
@@ -146,7 +157,9 @@
 
   StremioEngine.prototype.saveAddons = function() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.addons));
+      var str = JSON.stringify(this.addons);
+      localStorage.setItem(STORAGE_KEY, str);
+      localStorage.setItem("stremio_addons", str);
     } catch (e) {
       console.warn("Failed to save stremio addons", e);
     }
@@ -173,7 +186,7 @@
   StremioEngine.prototype.isYouTubeInstalled = function() {
     if (!this.addons || !this.addons.length) {
       try {
-        var raw = localStorage.getItem(STORAGE_KEY);
+        var raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("stremio_addons");
         if (raw && (raw.indexOf("v3-channels.strem.io") !== -1 || raw.indexOf("com.linvo.stremiochannels") !== -1 || raw.toLowerCase().indexOf("youtube") !== -1)) {
           return true;
         }
@@ -251,10 +264,23 @@
       }
     }
 
-    xhrGet(manifestUrl, 20000, function(err, manifest) {
+    // Check known catalog fallback
+    var fallbackManifest = null;
+    for (var k = 0; k < LEGAL_ADDONS_CATALOG.length; k++) {
+      if (LEGAL_ADDONS_CATALOG[k].transportUrl === manifestUrl && LEGAL_ADDONS_CATALOG[k].manifest) {
+        fallbackManifest = LEGAL_ADDONS_CATALOG[k].manifest;
+        break;
+      }
+    }
+
+    xhrGet(manifestUrl, 10000, function(err, manifest) {
       if (err || !manifest || !manifest.id || !manifest.name) {
-        if (callback) callback(err || new Error("Invalid Stremio manifest"));
-        return;
+        if (fallbackManifest) {
+          manifest = fallbackManifest;
+        } else {
+          if (callback) callback(err || new Error("Invalid Stremio manifest"));
+          return;
+        }
       }
       var addon = {
         transportUrl: manifestUrl,
@@ -532,5 +558,7 @@
     }
   };
 
-  window.StremioEngine = new StremioEngine();
+  var engineInstance = new StremioEngine();
+  window.StremioEngine = engineInstance;
+  window.stremioEngine = engineInstance;
 })(window);

@@ -257,14 +257,15 @@
   }
 
   function isYouTubeInstalled() {
-    if (window.stremioEngine && typeof window.stremioEngine.isYouTubeInstalled === "function") {
-      return window.stremioEngine.isYouTubeInstalled();
+    var eng = window.stremioEngine || window.StremioEngine;
+    if (eng && typeof eng.isYouTubeInstalled === "function") {
+      return eng.isYouTubeInstalled();
     }
     if (window.kcIsYouTubeInstalled && typeof window.kcIsYouTubeInstalled === "function") {
       return window.kcIsYouTubeInstalled();
     }
     try {
-      var raw = localStorage.getItem("stremio_addons");
+      var raw = localStorage.getItem("iptv_stremio_addons") || localStorage.getItem("stremio_addons");
       if (raw && (raw.indexOf("v3-channels.strem.io") !== -1 || raw.indexOf("com.linvo.stremiochannels") !== -1 || raw.toLowerCase().indexOf("youtube") !== -1)) {
         return true;
       }

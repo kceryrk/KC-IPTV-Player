@@ -4147,8 +4147,22 @@ document.addEventListener("DOMContentLoaded", () => {
     youtubeAccountModalClose.addEventListener("click", closeYouTubeAccountModal);
   }
 
+  window.kcIsYouTubeInstalled = function() {
+    const eng = window.stremioEngine || window.StremioEngine;
+    if (eng && typeof eng.isYouTubeInstalled === "function") {
+      return eng.isYouTubeInstalled();
+    }
+    try {
+      const raw = localStorage.getItem("iptv_stremio_addons") || localStorage.getItem("stremio_addons");
+      if (raw && (raw.indexOf("v3-channels.strem.io") !== -1 || raw.indexOf("com.linvo.stremiochannels") !== -1 || raw.toLowerCase().indexOf("youtube") !== -1)) {
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  };
+
   function updateYouTubeVisibility() {
-    const isYt = window.stremioEngine && window.stremioEngine.isYouTubeInstalled();
+    const isYt = window.kcIsYouTubeInstalled();
     if (sideYoutube) {
       sideYoutube.classList.toggle("hidden", !isYt);
       if (!isYt && currentStremioSubpage === "youtube") {
@@ -4159,10 +4173,6 @@ document.addEventListener("DOMContentLoaded", () => {
       window.AeroRadial.refreshModes();
     }
   }
-
-  window.kcIsYouTubeInstalled = function() {
-    return !!(window.stremioEngine && window.stremioEngine.isYouTubeInstalled());
-  };
 
   window.kcOpenYouTube = function() {
     switchAppSection("stremio");
