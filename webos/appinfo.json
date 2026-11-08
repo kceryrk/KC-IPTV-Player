@@ -1,11 +1,12 @@
 {
   "id": "com.iptv.webosapp",
-  "version": "1.2.98",
+  "version": "1.2.99",
   "type": "web",
   "main": "index.html",
   "title": "KC IPTV PLAYER",
   "icon": "icon.png",
   "largeIcon": "largeicon.png",
+  "iconColor": "#0284c7",
   "fullscreen": true,
   "uiRevision": 2,
   "requiredACG": [],

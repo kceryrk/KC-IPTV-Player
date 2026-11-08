@@ -822,6 +822,8 @@ document.addEventListener("DOMContentLoaded", () => {
     customizationPage.querySelectorAll(".customization-pane").forEach(pane => {
       pane.classList.toggle("hidden", pane.dataset.pane !== name);
     });
+    const custContent = customizationPage.querySelector(".customization-content");
+    if (custContent) custContent.scrollTop = 0;
   }
 
   function showCustomizationPage(show, tab = "general") {
@@ -5575,6 +5577,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Settings panel auto-scrolling
+    const custContent = element && element.closest(".customization-content");
+    if (custContent) {
+      const targetCard = element.closest(".customization-section, .settings-row, .settings-toggle, .settings-item, .hue-panel") || element;
+      const cRect = custContent.getBoundingClientRect();
+      const tRect = targetCard.getBoundingClientRect();
+      const topPad = 60;
+      const botPad = 60;
+      if (tRect.top < cRect.top + topPad) {
+        custContent.scrollTop = Math.max(0, custContent.scrollTop + (tRect.top - (cRect.top + topPad)));
+      } else if (tRect.bottom > cRect.bottom - botPad) {
+        custContent.scrollTop += (tRect.bottom - (cRect.bottom - botPad));
+      }
+    }
+
     // Top Bar auto-overlap visibility (hidden unless focused/active)
     const appHeader = document.querySelector(".app-header");
     if (appHeader) {
@@ -6112,13 +6129,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         const idx = paneItems.findIndex((item) => unitOf(item) === unitOf(focused));
         const next = paneItems[Math.min(Math.max(idx + step, 0), paneItems.length - 1)];
-        if (next) setElementFocus(next);
+        if (next) {
+          setElementFocus(next);
+          const contentEl = settingsPanel.querySelector(".customization-content");
+          if (contentEl) {
+            const target = next.closest(".customization-section, .settings-row, .settings-toggle, .settings-item, .hue-panel") || next;
+            const cRect = contentEl.getBoundingClientRect();
+            const tRect = target.getBoundingClientRect();
+            const topPad = 60;
+            const botPad = 60;
+            if (tRect.top < cRect.top + topPad) {
+              contentEl.scrollTop = Math.max(0, contentEl.scrollTop + (tRect.top - (cRect.top + topPad)));
+            } else if (tRect.bottom > cRect.bottom - botPad) {
+              contentEl.scrollTop += (tRect.bottom - (cRect.bottom - botPad));
+            }
+          }
+        }
         return;
       }
       if (isLeft || isRight) {
         const step = isRight ? 1 : -1;
+        const isRangeInput = focused && focused.tagName === "INPUT" && focused.type === "range";
+        if (isRangeInput) {
+          return;
+        }
         const isTextInput = focused && focused.tagName === "INPUT" && focused.type !== "checkbox";
-        if (isTextInput && focused.type === "range") return;
         if (!isTextInput) {
           const group = focused && focused.closest(GROUP_SELECTOR);
           if (group) {
@@ -6141,6 +6176,9 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
         }
+        // Left/Right inside settings MUST NEVER escape to the rest of the app or open the Aero Radial wheel
+        e.preventDefault();
+        return;
       }
       if (isEnter && focused) {
         e.preventDefault();
@@ -6148,6 +6186,8 @@ document.addEventListener("DOMContentLoaded", () => {
         else focused.click();
         return;
       }
+      // Swallow any other key so settings panel isolates all navigation events
+      return;
     }
 
     const isVodMode = currentModus === "vod" || currentModus === "series";
