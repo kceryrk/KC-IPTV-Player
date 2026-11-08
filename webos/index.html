@@ -80,11 +80,10 @@
           <nav class="customization-nav">
             <div class="customization-nav-list">
               <button class="settings-item focusable customization-tab" data-tab="source" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-shuffle"/></svg><span data-i18n="profileTab">Source</span></button>
+              <button class="settings-item focusable customization-tab" data-tab="addons" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-sliders"/></svg><span data-i18n="addonsTab">Addons</span></button>
               <button class="settings-item focusable customization-tab active" data-tab="general" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-globe"/></svg><span data-i18n="generalTab">General</span></button>
               <button class="settings-item focusable customization-tab" data-tab="playback" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-play"/></svg><span data-i18n="playbackTab">Playback</span></button>
               <button class="settings-item focusable customization-tab" data-tab="customization" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-palette"/></svg><span data-i18n="customization">Customization</span></button>
-              <button class="settings-item focusable customization-tab" data-tab="addons" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-sliders"/></svg><span data-i18n="addonsTab">Addons</span></button>
-              <button class="settings-item focusable customization-tab" data-tab="menu" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-sliders"/></svg><span data-i18n="menuTab">Menu</span></button>
               <button id="settingsDone" class="settings-item focusable" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-check"/></svg><span data-i18n="done">Done</span></button>
             </div>
           </nav>
@@ -100,6 +99,19 @@
               <h2 data-i18n="refreshInterval">Refresh lists</h2>
               <div class="settings-row">
                 <button class="settings-item focusable" data-setting="refreshCycle" data-value="cycle" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-refresh"/></svg><span>Off</span></button>
+              </div>
+            </section>
+            <section class="customization-section">
+              <label class="settings-toggle" for="hideRegionsToggle">
+                <span><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-map"/></svg><span data-i18n="hideRegions">Hide region column</span></span>
+                <span class="ios-switch"><input id="hideRegionsToggle" class="focusable" type="checkbox" tabindex="0"><span class="ios-track" aria-hidden="true"><span class="ios-knob"></span></span></span>
+              </label>
+            </section>
+            <section class="customization-section">
+              <h2 data-i18n="clockFormat">Clock format</h2>
+              <div style="display:flex; flex-direction:column;">
+                <button id="clockFormatButton" class="settings-item focusable" type="button" tabindex="0" style="margin-bottom:8px;"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-clock"/></svg><span>12 h</span></button>
+                <button id="clockSecondsButton" class="settings-item focusable" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-clock"/></svg><span id="clockSecondsLabel">Seconds: Off</span></button>
               </div>
             </section>
             <section class="customization-section">
@@ -127,14 +139,6 @@
               <button class="settings-item focusable" data-setting="epgOffset" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-clock"/></svg><span data-i18n="epgOffset">EPG time offset</span>: <span id="epgOffsetValue">0 h</span></button>
             </section>
           </div>
-          <div class="customization-pane hidden" data-pane="menu">
-            <section class="customization-section">
-              <label class="settings-toggle" for="hideRegionsToggle">
-                <span><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-map"/></svg><span data-i18n="hideRegions">Hide region column</span></span>
-                <span class="ios-switch"><input id="hideRegionsToggle" class="focusable" type="checkbox" tabindex="0"><span class="ios-track" aria-hidden="true"><span class="ios-knob"></span></span></span>
-              </label>
-            </section>
-          </div>
           <div class="customization-pane hidden" data-pane="customization">
           <section class="customization-section">
             <label class="settings-toggle" for="animationsToggle">
@@ -143,8 +147,8 @@
             </label>
           </section>
           <section class="customization-section">
-            <h2 data-i18n="accentColor">Accent color</h2>
-            <div class="color-swatch-group" role="group" data-i18n-aria="accentColor" aria-label="Accent color">
+            <h2 data-i18n="accentColor">Primary color</h2>
+            <div class="color-swatch-group" role="group" data-i18n-aria="accentColor" aria-label="Primary color">
               <button class="color-swatch focusable" data-color-role="accent" data-color="#e50914" data-i18n-aria="colorRed" data-i18n-title="colorRed" aria-label="Red" title="Red" tabindex="0"></button>
               <button class="color-swatch focusable" data-color-role="accent" data-color="#00a8e8" data-i18n-aria="colorBlue" data-i18n-title="colorBlue" aria-label="Blue" title="Blue" tabindex="0"></button>
               <button class="color-swatch focusable" data-color-role="accent" data-color="#26a269" data-i18n-aria="colorGreen" data-i18n-title="colorGreen" aria-label="Green" title="Green" tabindex="0"></button>
@@ -168,8 +172,8 @@
             </div>
           </section>
           <section class="customization-section">
-            <h2 data-i18n="highlightColor">Highlight color</h2>
-            <div class="color-swatch-group" role="group" data-i18n-aria="highlightColor" aria-label="Highlight color">
+            <h2 data-i18n="highlightColor">Secondary color</h2>
+            <div class="color-swatch-group" role="group" data-i18n-aria="highlightColor" aria-label="Secondary color">
               <button class="color-swatch focusable" data-color-role="highlight" data-color="#ffd700" data-i18n-aria="colorGold" data-i18n-title="colorGold" aria-label="Gold" title="Gold" tabindex="0"></button>
               <button class="color-swatch focusable" data-color-role="highlight" data-color="#00d6c9" data-i18n-aria="colorTurquoise" data-i18n-title="colorTurquoise" aria-label="Turquoise" title="Turquoise" tabindex="0"></button>
               <button class="color-swatch focusable" data-color-role="highlight" data-color="#91d32a" data-i18n-aria="colorLime" data-i18n-title="colorLime" aria-label="Lime" title="Lime" tabindex="0"></button>
@@ -200,6 +204,13 @@
             </div>
           </section>
           <section class="customization-section">
+            <h2 data-i18n="bgTintLabel">Background tint</h2>
+            <div class="hue-row">
+              <input type="range" id="bgTintRange" class="hue-range focusable" min="10" max="95" step="5" value="60" data-i18n-aria="bgTintLabel" aria-label="Background tint" tabindex="0">
+              <span id="bgTintValue" class="focus-width-value">60%</span>
+            </div>
+          </section>
+          <section class="customization-section">
             <h2 data-i18n="presetBackgrounds">Presets</h2>
             <div class="background-presets" role="group">
               <button class="background-preset focusable" data-preset="backgrounds/aurora.svg" style="background-image:url('backgrounds/aurora.svg')" aria-label="Aurora" type="button" tabindex="0"></button>
@@ -214,13 +225,6 @@
               <input id="backgroundImageInput" class="focusable" type="url" data-i18n-placeholder="backgroundPlaceholder" placeholder="https://example.com/image.jpg" tabindex="0">
               <button id="applyBackgroundButton" class="settings-item focusable" data-i18n="apply" type="button" tabindex="0">Apply</button>
               <button id="clearBackgroundButton" class="settings-item focusable" data-i18n="removeBackground" type="button" tabindex="0">Remove image</button>
-            </div>
-          </section>
-          <section class="customization-section">
-            <h2 data-i18n="clockFormat">Clock format</h2>
-            <div style="display:flex; flex-direction:column;">
-              <button id="clockFormatButton" class="settings-item focusable" type="button" tabindex="0" style="margin-bottom:8px;"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-clock"/></svg><span>12 h</span></button>
-              <button id="clockSecondsButton" class="settings-item focusable" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-clock"/></svg><span id="clockSecondsLabel">Seconds: Off</span></button>
             </div>
           </section>
           </div>

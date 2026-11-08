@@ -187,19 +187,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const appTranslations = {
     en: {
       addonsTab: "Addons",
-      generalTab: "General", playbackTab: "Playback", profileTab: "Source", progressCategories: "Loading categories", progressPlaylist: "Downloading playlist", progressParsing: "Reading channels", streamFailed: "Channel error: {reason}", streamTimedOut: "Channel did not start within 20 s: {reason}", streamNoData: "no data received", settings: "Settings", language: "Language", autoplayNext: "Play next episode automatically", customization: "Customization", switchProfile: "Change source", resetApp: "Reset app", close: "Close menu", back: "Back", accentColor: "Accent color", highlightColor: "Highlight color", backgroundImage: "Background image URL", apply: "Apply", removeBackground: "Remove image", done: "Done", previous: "Previous", next: "Next", playPause: "Pause / play", serverUrl: "Server URL", username: "Username", password: "Password", login: "Sign in", connecting: "Connecting to IPTV server...", loginFailed: "Login failed.", modes: "MODES", modeFavorites: "Favorites", modeLive: "Live TV", modeMovies: "Movies", modeSeries: "Series", region: "COUNTRY", categories: "CATEGORIES", allRegions: "ALL", channels: "CHANNELS", movies: "MOVIES", series: "SERIES", liveNow: "Live TV", noNextProgram: "No upcoming program", vodHint: "Up: controls | Play/Pause: toggle | Left/Right: seek", backToSeries: "← Back to series", noEpisodes: "No episodes found", loadingEpisodes: "Loading episodes...", unableLoad: "Unable to load episodes", favoritesRemoved: "Removed from favorites", favoritesAdded: "Added to favorites", moveOnlyFavorites: "Move mode is only available in Favorites", moveStarted: "Move mode started", positionSaved: "Position saved", channelNotFound: "Channel #{number} not found", autoplay: "Autoplay next episode", colors: "Colors", backgroundApplied: "Background updated", backgroundRemoved: "Background removed", invalidBackground: "Enter a valid HTTP or HTTPS image URL", previousEpisode: "Previous episode", nextEpisode: "Next episode", profileChanged: "Profile changed", appReset: "App reset", zapped: "Playing channel #{number}: {title}", colorRed: "Red", colorBlue: "Blue", colorGreen: "Green", colorRose: "Rose", colorOrange: "Orange", colorGold: "Gold", colorTurquoise: "Turquoise", colorLime: "Lime", colorSky: "Sky blue"
+      generalTab: "General", playbackTab: "Playback", profileTab: "Source", progressCategories: "Loading categories", progressPlaylist: "Downloading playlist", progressParsing: "Reading channels", streamFailed: "Channel error: {reason}", streamTimedOut: "Channel did not start within 20 s: {reason}", streamNoData: "no data received", settings: "Settings", language: "Language", autoplayNext: "Play next episode automatically", customization: "Customization", switchProfile: "Change source", resetApp: "Reset app", close: "Close menu", back: "Back", accentColor: "Primary color", highlightColor: "Secondary color", bgTintLabel: "Background tint", backgroundImage: "Background image URL", apply: "Apply", removeBackground: "Remove image", done: "Done", previous: "Previous", next: "Next", playPause: "Pause / play", serverUrl: "Server URL", username: "Username", password: "Password", login: "Sign in", connecting: "Connecting to IPTV server...", loginFailed: "Login failed.", modes: "MODES", modeFavorites: "Favorites", modeLive: "Live TV", modeMovies: "Movies", modeSeries: "Series", region: "COUNTRY", categories: "CATEGORIES", allRegions: "ALL", channels: "CHANNELS", movies: "MOVIES", series: "SERIES", liveNow: "Live TV", noNextProgram: "No upcoming program", vodHint: "Up: controls | Play/Pause: toggle | Left/Right: seek", backToSeries: "← Back to series", noEpisodes: "No episodes found", loadingEpisodes: "Loading episodes...", unableLoad: "Unable to load episodes", favoritesRemoved: "Removed from favorites", favoritesAdded: "Added to favorites", moveOnlyFavorites: "Move mode is only available in Favorites", moveStarted: "Move mode started", positionSaved: "Position saved", channelNotFound: "Channel #{number} not found", autoplay: "Autoplay next episode", colors: "Colors", backgroundApplied: "Background updated", backgroundRemoved: "Background removed", invalidBackground: "Enter a valid HTTP or HTTPS image URL", previousEpisode: "Previous episode", nextEpisode: "Next episode", profileChanged: "Profile changed", appReset: "App reset", zapped: "Playing channel #{number}: {title}", colorRed: "Red", colorBlue: "Blue", colorGreen: "Green", colorRose: "Rose", colorOrange: "Orange", colorGold: "Gold", colorTurquoise: "Turquoise", colorLime: "Lime", colorSky: "Sky blue"
     },
     tr: {
       addonsTab: "Eklentiler",
-      generalTab: "Genel", playbackTab: "Oynatma", profileTab: "Kaynak", progressCategories: "Kategoriler yükleniyor", progressPlaylist: "Playlist indiriliyor", progressParsing: "Kanallar okunuyor", streamFailed: "Kanal hatası: {reason}", streamTimedOut: "Kanal 20 sn içinde açılmadı: {reason}", streamNoData: "veri alınamadı", settings: "Ayarlar", language: "Dil", autoplayNext: "Sonraki bölümü otomatik oynat", customization: "Özelleştirme", switchProfile: "Kaynağı değiştir", resetApp: "Uygulamayı sıfırla", close: "Menüyü kapat", back: "Geri", accentColor: "Vurgu rengi", highlightColor: "Öne çıkan renk", backgroundImage: "Arka plan görseli URL'si", apply: "Uygula", removeBackground: "Görseli kaldır", done: "Tamam", previous: "Önceki", next: "Sonraki", playPause: "Duraklat / oynat", serverUrl: "Sunucu URL'si", username: "Kullanıcı adı", password: "Şifre", login: "Giriş yap", connecting: "IPTV sunucusuna bağlanılıyor...", loginFailed: "Giriş başarısız.", modes: "MODLAR", modeFavorites: "Favoriler", modeLive: "Canlı TV", modeMovies: "Filmler", modeSeries: "Diziler", region: "ÜLKE", categories: "KATEGORİLER", allRegions: "TÜMÜ", channels: "KANALLAR", movies: "FİLMLER", series: "DİZİLER", liveNow: "Canlı yayın", noNextProgram: "Sonraki program yok", vodHint: "Yukarı: kontroller | Oynat/Duraklat: değiştir | Sol/Sağ: sar", backToSeries: "← Dizi listesine dön", noEpisodes: "Bölüm bulunamadı", loadingEpisodes: "Bölümler yükleniyor...", unableLoad: "Bölümler yüklenemedi", favoritesRemoved: "Favorilerden çıkarıldı", favoritesAdded: "Favorilere eklendi", moveOnlyFavorites: "Taşıma modu yalnızca Favorilerde kullanılabilir", moveStarted: "Taşıma başladı", positionSaved: "Sıralama kaydedildi", channelNotFound: "#{number} numaralı kanal bulunamadı", autoplay: "Sonraki bölümü otomatik oynat", colors: "Renkler", backgroundApplied: "Arka plan güncellendi", backgroundRemoved: "Arka plan kaldırıldı", invalidBackground: "Geçerli bir HTTP veya HTTPS görsel URL'si girin", previousEpisode: "Önceki bölüm", nextEpisode: "Sonraki bölüm", profileChanged: "Profil değiştirildi", appReset: "Uygulama sıfırlandı", zapped: "Kanal #{number} açılıyor: {title}", colorRed: "Kırmızı", colorBlue: "Mavi", colorGreen: "Yeşil", colorRose: "Pembe", colorOrange: "Turuncu", colorGold: "Altın", colorTurquoise: "Turkuaz", colorLime: "Fıstık yeşili", colorSky: "Gök mavisi"
+      generalTab: "Genel", playbackTab: "Oynatma", profileTab: "Kaynak", progressCategories: "Kategoriler yükleniyor", progressPlaylist: "Playlist indiriliyor", progressParsing: "Kanallar okunuyor", streamFailed: "Kanal hatası: {reason}", streamTimedOut: "Kanal 20 sn içinde açılmadı: {reason}", streamNoData: "veri alınamadı", settings: "Ayarlar", language: "Dil", autoplayNext: "Sonraki bölümü otomatik oynat", customization: "Özelleştirme", switchProfile: "Kaynağı değiştir", resetApp: "Uygulamayı sıfırla", close: "Menüyü kapat", back: "Geri", accentColor: "Birincil renk", highlightColor: "İkincil renk", bgTintLabel: "Arka plan karartması", backgroundImage: "Arka plan görseli URL'si", apply: "Uygula", removeBackground: "Görseli kaldır", done: "Tamam", previous: "Önceki", next: "Sonraki", playPause: "Duraklat / oynat", serverUrl: "Sunucu URL'si", username: "Kullanıcı adı", password: "Şifre", login: "Giriş yap", connecting: "IPTV sunucusuna bağlanılıyor...", loginFailed: "Giriş başarısız.", modes: "MODLAR", modeFavorites: "Favoriler", modeLive: "Canlı TV", modeMovies: "Filmler", modeSeries: "Diziler", region: "ÜLKE", categories: "KATEGORİLER", allRegions: "TÜMÜ", channels: "KANALLAR", movies: "FİLMLER", series: "DİZİLER", liveNow: "Canlı yayın", noNextProgram: "Sonraki program yok", vodHint: "Yukarı: kontroller | Oynat/Duraklat: değiştir | Sol/Sağ: sar", backToSeries: "← Dizi listesine dön", noEpisodes: "Bölüm bulunamadı", loadingEpisodes: "Bölümler yükleniyor...", unableLoad: "Bölümler yüklenemedi", favoritesRemoved: "Favorilerden çıkarıldı", favoritesAdded: "Favorilere eklendi", moveOnlyFavorites: "Taşıma modu yalnızca Favorilerde kullanılabilir", moveStarted: "Taşıma başladı", positionSaved: "Sıralama kaydedildi", channelNotFound: "#{number} numaralı kanal bulunamadı", autoplay: "Sonraki bölümü otomatik oynat", colors: "Renkler", backgroundApplied: "Arka plan güncellendi", backgroundRemoved: "Arka plan kaldırıldı", invalidBackground: "Geçerli bir HTTP veya HTTPS görsel URL'si girin", previousEpisode: "Önceki bölüm", nextEpisode: "Sonraki bölüm", profileChanged: "Profil değiştirildi", appReset: "Uygulama sıfırlandı", zapped: "Kanal #{number} açılıyor: {title}", colorRed: "Kırmızı", colorBlue: "Mavi", colorGreen: "Yeşil", colorRose: "Pembe", colorOrange: "Turuncu", colorGold: "Altın", colorTurquoise: "Turkuaz", colorLime: "Fıstık yeşili", colorSky: "Gök mavisi"
     },
     nl: {
       addonsTab: "Add-ons",
-      generalTab: "Algemeen", playbackTab: "Afspelen", profileTab: "Bron", settings: "Instellingen", language: "Taal", autoplayNext: "Volgende aflevering automatisch afspelen", customization: "Aanpassen", switchProfile: "Bron wijzigen", resetApp: "App resetten", close: "Menu sluiten", back: "Terug", accentColor: "Accentkleur", highlightColor: "Markeringskleur", backgroundImage: "URL van achtergrondafbeelding", apply: "Toepassen", removeBackground: "Afbeelding verwijderen", done: "Gereed", previous: "Vorige", next: "Volgende", playPause: "Pauzeren / afspelen", serverUrl: "Server-URL", username: "Gebruikersnaam", password: "Wachtwoord", login: "Inloggen", connecting: "Verbinden met IPTV-server...", loginFailed: "Inloggen mislukt.", modes: "MODI", modeFavorites: "Favorieten", modeLive: "Live-tv", modeMovies: "Films", modeSeries: "Series", region: "LAND", categories: "CATEGORIEËN", allRegions: "ALLES", channels: "KANALEN", movies: "FILMS", series: "SERIES", liveNow: "Live-uitzending", noNextProgram: "Geen volgend programma", vodHint: "Omhoog: bediening | Afspelen/Pauze: wisselen | Links/Rechts: zoeken", backToSeries: "← Terug naar series", noEpisodes: "Geen afleveringen gevonden", loadingEpisodes: "Afleveringen laden...", unableLoad: "Afleveringen laden mislukt", favoritesRemoved: "Verwijderd uit favorieten", favoritesAdded: "Toegevoegd aan favorieten", moveOnlyFavorites: "Verplaatsen kan alleen in Favorieten", moveStarted: "Verplaatsen gestart", positionSaved: "Positie opgeslagen", channelNotFound: "Kanaal #{number} niet gevonden", autoplay: "Volgende aflevering automatisch afspelen", colors: "Kleuren", backgroundApplied: "Achtergrond bijgewerkt", backgroundRemoved: "Achtergrond verwijderd", invalidBackground: "Voer een geldige HTTP- of HTTPS-afbeeldings-URL in", previousEpisode: "Vorige aflevering", nextEpisode: "Volgende aflevering", profileChanged: "Profiel gewijzigd", appReset: "App gereset", zapped: "Kanaal #{number} wordt afgespeeld: {title}", colorRed: "Rood", colorBlue: "Blauw", colorGreen: "Groen", colorRose: "Roze", colorOrange: "Oranje", colorGold: "Goud", colorTurquoise: "Turquoise", colorLime: "Limoen", colorSky: "Hemelsblauw"
+      generalTab: "Algemeen", playbackTab: "Afspelen", profileTab: "Bron", settings: "Instellingen", language: "Taal", autoplayNext: "Volgende aflevering automatisch afspelen", customization: "Aanpassen", switchProfile: "Bron wijzigen", resetApp: "App resetten", close: "Menu sluiten", back: "Terug", accentColor: "Primaire kleur", highlightColor: "Secundaire kleur", bgTintLabel: "Achtergrondtint", backgroundImage: "URL van achtergrondafbeelding", apply: "Toepassen", removeBackground: "Afbeelding verwijderen", done: "Gereed", previous: "Vorige", next: "Volgende", playPause: "Pauzeren / afspelen", serverUrl: "Server-URL", username: "Gebruikersnaam", password: "Wachtwoord", login: "Inloggen", connecting: "Verbinden met IPTV-server...", loginFailed: "Inloggen mislukt.", modes: "MODI", modeFavorites: "Favorieten", modeLive: "Live-tv", modeMovies: "Films", modeSeries: "Series", region: "LAND", categories: "CATEGORIEËN", allRegions: "ALLES", channels: "KANALEN", movies: "FILMS", series: "SERIES", liveNow: "Live-uitzending", noNextProgram: "Geen volgend programma", vodHint: "Omhoog: bediening | Afspelen/Pauze: wisselen | Links/Rechts: zoeken", backToSeries: "← Terug naar series", noEpisodes: "Geen afleveringen gevonden", loadingEpisodes: "Afleveringen laden...", unableLoad: "Afleveringen laden mislukt", favoritesRemoved: "Verwijderd uit favorieten", favoritesAdded: "Toegevoegd aan favorieten", moveOnlyFavorites: "Verplaatsen kan alleen in Favorieten", moveStarted: "Verplaatsen gestart", positionSaved: "Positie opgeslagen", channelNotFound: "Kanaal #{number} niet gevonden", autoplay: "Volgende aflevering automatisch afspelen", colors: "Kleuren", backgroundApplied: "Achtergrond bijgewerkt", backgroundRemoved: "Achtergrond verwijderd", invalidBackground: "Voer een geldige HTTP- of HTTPS-afbeeldings-URL in", previousEpisode: "Vorige aflevering", nextEpisode: "Volgende aflevering", profileChanged: "Profiel gewijzigd", appReset: "App gereset", zapped: "Kanaal #{number} wordt afgespeeld: {title}", colorRed: "Rood", colorBlue: "Blauw", colorGreen: "Groen", colorRose: "Roze", colorOrange: "Oranje", colorGold: "Goud", colorTurquoise: "Turquoise", colorLime: "Limoen", colorSky: "Hemelsblauw"
     },
     fr: {
       addonsTab: "Extensions",
-      generalTab: "Général", playbackTab: "Lecture", profileTab: "Source", settings: "Paramètres", language: "Langue", autoplayNext: "Lire automatiquement l’épisode suivant", customization: "Personnalisation", switchProfile: "Changer de source", resetApp: "Réinitialiser l’application", close: "Fermer le menu", back: "Retour", accentColor: "Couleur d’accentuation", highlightColor: "Couleur de surbrillance", backgroundImage: "URL de l’image d’arrière-plan", apply: "Appliquer", removeBackground: "Supprimer l’image", done: "Terminé", previous: "Précédent", next: "Suivant", playPause: "Pause / lecture", serverUrl: "URL du serveur", username: "Nom d’utilisateur", password: "Mot de passe", login: "Connexion", connecting: "Connexion au serveur IPTV...", loginFailed: "Échec de la connexion.", modes: "MODES", modeFavorites: "Favoris", modeLive: "TV en direct", modeMovies: "Films", modeSeries: "Séries", region: "PAYS", categories: "CATÉGORIES", allRegions: "TOUT", channels: "CHAÎNES", movies: "FILMS", series: "SÉRIES", liveNow: "En direct", noNextProgram: "Aucun programme suivant", vodHint: "Haut : commandes | Lecture/Pause : basculer | Gauche/Droite : avancer", backToSeries: "← Retour aux séries", noEpisodes: "Aucun épisode trouvé", loadingEpisodes: "Chargement des épisodes...", unableLoad: "Impossible de charger les épisodes", favoritesRemoved: "Retiré des favoris", favoritesAdded: "Ajouté aux favoris", moveOnlyFavorites: "Le déplacement est réservé aux Favoris", moveStarted: "Déplacement commencé", positionSaved: "Position enregistrée", channelNotFound: "Chaîne #{number} introuvable", autoplay: "Lire automatiquement l’épisode suivant", colors: "Couleurs", backgroundApplied: "Arrière-plan mis à jour", backgroundRemoved: "Arrière-plan supprimé", invalidBackground: "Saisissez une URL d’image HTTP ou HTTPS valide", previousEpisode: "Épisode précédent", nextEpisode: "Épisode suivant", profileChanged: "Profil modifié", appReset: "Application réinitialisée", zapped: "Lecture de la chaîne #{number} : {title}", colorRed: "Rouge", colorBlue: "Bleu", colorGreen: "Vert", colorRose: "Rose", colorOrange: "Orange", colorGold: "Or", colorTurquoise: "Turquoise", colorLime: "Citron vert", colorSky: "Bleu ciel"
+      generalTab: "Général", playbackTab: "Lecture", profileTab: "Source", settings: "Paramètres", language: "Langue", autoplayNext: "Lire automatiquement l’épisode suivant", customization: "Personnalisation", switchProfile: "Changer de source", resetApp: "Réinitialiser l’application", close: "Fermer le menu", back: "Retour", accentColor: "Couleur primaire", highlightColor: "Couleur secondaire", bgTintLabel: "Teinte d'arrière-plan", backgroundImage: "URL de l’image d’arrière-plan", apply: "Appliquer", removeBackground: "Supprimer l’image", done: "Terminé", previous: "Précédent", next: "Suivant", playPause: "Pause / lecture", serverUrl: "URL du serveur", username: "Nom d’utilisateur", password: "Mot de passe", login: "Connexion", connecting: "Connexion au serveur IPTV...", loginFailed: "Échec de la connexion.", modes: "MODES", modeFavorites: "Favoris", modeLive: "TV en direct", modeMovies: "Films", modeSeries: "Séries", region: "PAYS", categories: "CATÉGORIES", allRegions: "TOUT", channels: "CHAÎNES", movies: "FILMS", series: "SÉRIES", liveNow: "En direct", noNextProgram: "Aucun programme suivant", vodHint: "Haut : commandes | Lecture/Pause : basculer | Gauche/Droite : avancer", backToSeries: "← Retour aux séries", noEpisodes: "Aucun épisode trouvé", loadingEpisodes: "Chargement des épisodes...", unableLoad: "Impossible de charger les épisodes", favoritesRemoved: "Retiré des favoris", favoritesAdded: "Ajouté aux favoris", moveOnlyFavorites: "Le déplacement est réservé aux Favoris", moveStarted: "Déplacement commencé", positionSaved: "Position enregistrée", channelNotFound: "Chaîne #{number} introuvable", autoplay: "Lire automatiquement l’épisode suivant", colors: "Couleurs", backgroundApplied: "Arrière-plan mis à jour", backgroundRemoved: "Arrière-plan supprimé", invalidBackground: "Saisissez une URL d’image HTTP ou HTTPS valide", previousEpisode: "Épisode précédent", nextEpisode: "Épisode suivant", profileChanged: "Profil modifié", appReset: "Application réinitialisée", zapped: "Lecture de la chaîne #{number} : {title}", colorRed: "Rouge", colorBlue: "Bleu", colorGreen: "Vert", colorRose: "Rose", colorOrange: "Orange", colorGold: "Or", colorTurquoise: "Turquoise", colorLime: "Citron vert", colorSky: "Bleu ciel"
     }
   };
 
@@ -528,8 +528,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (headerTabSettings) headerTabSettings.classList.toggle("active", shouldOpen);
     if (shouldOpen) {
       showCustomizationTab("general");
-      const firstItem = settingsPanel.querySelector(".customization-tab.active");
-      if (firstItem) setElementFocus(firstItem);
+      const firstItem = settingsPanel.querySelector(".customization-tab.active") || settingsPanel.querySelector(".customization-tab");
+      if (firstItem) {
+        setElementFocus(firstItem);
+        setTimeout(() => centerCustomizationNav(firstItem), 30);
+      }
     } else {
       if (currentAppSection === "settings") {
         switchAppSection(previousAppSection || "iptv");
@@ -627,14 +630,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const backgroundImage = saved.backgroundImage === undefined
         ? DEFAULT_BACKGROUND
         : normalizeBackgroundSource(saved.backgroundImage);
+      const bgTint = typeof saved.bgTint === "number" ? Math.min(Math.max(saved.bgTint, 10), 95) : 55;
       return {
         accent: /^#[0-9a-f]{6}$/i.test(saved.accent || "") ? saved.accent : "#e50914",
         highlight: /^#[0-9a-f]{6}$/i.test(saved.highlight || "") ? saved.highlight : "#ffd700",
         focusWidth: clampFocusWidth(saved.focusWidth),
+        bgTint,
         backgroundImage
       };
     } catch (error) {
-      return { accent: "#e50914", highlight: "#ffd700", focusWidth: 5, backgroundImage: DEFAULT_BACKGROUND };
+      return { accent: "#e50914", highlight: "#ffd700", focusWidth: 5, bgTint: 55, backgroundImage: DEFAULT_BACKGROUND };
     }
   }
 
@@ -653,6 +658,13 @@ document.addEventListener("DOMContentLoaded", () => {
     root.style.setProperty("--focus-width", `${themeConfig.focusWidth}px`);
     if (focusWidthRange) focusWidthRange.value = String(themeConfig.focusWidth);
     if (focusWidthValue) focusWidthValue.textContent = `${themeConfig.focusWidth}px`;
+    const bgTintRange = document.getElementById("bgTintRange");
+    const bgTintValue = document.getElementById("bgTintValue");
+    const tintVal = typeof themeConfig.bgTint === "number" ? themeConfig.bgTint : 55;
+    if (bgTintRange) bgTintRange.value = String(tintVal);
+    if (bgTintValue) bgTintValue.textContent = `${tintVal}%`;
+    const tintAlpha = tintVal / 100;
+    root.style.setProperty("--settings-tint-alpha", String(tintAlpha));
     const mixColor = (from, to, amount) => {
       const start = toRgb(from).split(", ").map(Number);
       const end = toRgb(to).split(", ").map(Number);
@@ -693,9 +705,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const bgUrl = themeConfig.backgroundImage || DEFAULT_BACKGROUND;
     root.style.setProperty("--settings-bg", `url("${bgUrl}")`);
     const setPage = document.getElementById("settingsPage");
-    if (setPage) setPage.style.setProperty("--settings-bg", `url("${bgUrl}")`);
+    if (setPage) {
+      setPage.style.backgroundImage = `linear-gradient(135deg, rgba(6, 8, 14, ${tintAlpha}) 0%, rgba(9, 12, 20, ${Math.min(tintAlpha + 0.15, 0.98)}) 100%), url("${bgUrl}")`;
+      setPage.style.backgroundSize = "cover";
+      setPage.style.backgroundPosition = "center";
+      setPage.style.backgroundColor = "transparent";
+    }
 
     store.setItem("iptv_theme", JSON.stringify(themeConfig));
+  }
+
+  function updateBgTint(value) {
+    themeConfig.bgTint = Math.min(Math.max(Number(value) || 55, 10), 95);
+    applyThemeConfig();
   }
 
 
@@ -807,7 +829,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const list = nav && nav.querySelector(".customization-nav-list");
     if (!item || !list) return;
     nav.scrollTop = 0;
-    const offset = nav.clientHeight / 2 - (item.offsetTop + item.offsetHeight / 2);
+    const offset = Math.round((nav.clientHeight / 2) - (item.offsetTop + item.offsetHeight / 2));
     list.style.transform = `translateY(${offset}px)`;
   }
 
@@ -831,7 +853,11 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleSettingsMenu(show);
     if (show) {
       showCustomizationTab(tab);
-      setElementFocus(customizationPage.querySelector(`.customization-tab[data-tab="${tab}"]`));
+      const targetTab = customizationPage.querySelector(`.customization-tab[data-tab="${tab}"]`);
+      if (targetTab) {
+        setElementFocus(targetTab);
+        setTimeout(() => centerCustomizationNav(targetTab), 30);
+      }
     }
   }
 
@@ -1345,6 +1371,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const btn = e.target.closest(".settings-item");
       if (!btn) return;
       const setting = btn.dataset.setting;
+      if (!setting) return;
       const value = btn.dataset.value || null;
       handleSettingsAction(setting, value);
     });
@@ -1505,6 +1532,10 @@ document.addEventListener("DOMContentLoaded", () => {
         updateFocusWidth(e.target.value);
         return;
       }
+      if (e.target.id === "bgTintRange") {
+        updateBgTint(e.target.value);
+        return;
+      }
       const slider = e.target.closest(".hue-range");
       if (!slider) return;
       applyHuePanel(slider.dataset.hueRole);
@@ -1527,7 +1558,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const settingsBack = document.getElementById("settingsBack");
   if (applyBackgroundButton) applyBackgroundButton.addEventListener("click", () => updateBackgroundImage(backgroundImageInput.value));
   if (clearBackgroundButton) clearBackgroundButton.addEventListener("click", () => updateBackgroundImage(""));
-  // Done slides the panel out, then closes it like Back. Focusing Done (Down from the last settings item) starts the same close.
+  // Done slides the panel out, then closes it like Back.
   let settingsCloseTimer = null;
   const closeSettingsAnimated = () => {
     if (!settingsPanel || settingsPanel.classList.contains("hidden") || settingsPanel.classList.contains("closing")) return;
@@ -1539,7 +1570,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 260);
   };
   if (settingsDone) {
-    settingsDone.addEventListener("focus", closeSettingsAnimated);
     settingsDone.addEventListener("click", closeSettingsAnimated);
   }
   if (settingsBack) settingsBack.addEventListener("click", () => showCustomizationPage(false));
@@ -6182,6 +6212,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (isEnter && focused) {
         e.preventDefault();
+        if (focused.classList.contains("customization-tab")) {
+          showCustomizationTab(focused.dataset.tab);
+          if (paneItems.length > 0) {
+            setElementFocus(paneItems[0]);
+          }
+          return;
+        }
         if (focused === backgroundImageInput) updateBackgroundImage(backgroundImageInput.value);
         else focused.click();
         return;
