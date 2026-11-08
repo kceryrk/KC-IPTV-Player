@@ -130,9 +130,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const headerNavSelector = document.getElementById("headerNavSelector");
   const headerTabIptv = document.getElementById("headerTabIptv");
   const headerTabStremio = document.getElementById("headerTabStremio");
+  const headerTabYouTube = document.getElementById("headerTabYouTube");
   const headerTabSettings = document.getElementById("headerTabSettings");
   const tvGrid = document.querySelector(".tv-grid");
   const stremioPage = document.getElementById("stremioPage");
+  const youtubePage = document.getElementById("youtubePage");
+  const youtubeGenreBar = document.getElementById("youtubeGenreBar");
+  let lastFocusedYtCard = null;
   const stremioHeroBackdrop = document.getElementById("stremioHeroBackdrop");
   const stremioSidebarDock = document.getElementById("stremioSidebarDock");
   const sideTv = document.getElementById("sideTv");
@@ -3809,7 +3813,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================================================================
-  // APP SECTIONS (IPTV - STREMIO - SETTINGS)
+  // APP SECTIONS (IPTV - STREMIO - YOUTUBE - SETTINGS)
   // =========================================================================
   function switchAppSection(section, skipFocus = false) {
     if (!section) section = "iptv";
@@ -3819,6 +3823,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (headerTabSettings) headerTabSettings.classList.add("active");
       if (headerTabIptv) headerTabIptv.classList.remove("active");
       if (headerTabStremio) headerTabStremio.classList.remove("active");
+      if (headerTabYouTube) headerTabYouTube.classList.remove("active");
       toggleSettingsMenu(true);
       return;
     }
@@ -3839,9 +3844,11 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.classList.add("radial-active");
       if (headerTabIptv) headerTabIptv.classList.add("active");
       if (headerTabStremio) headerTabStremio.classList.remove("active");
+      if (headerTabYouTube) headerTabYouTube.classList.remove("active");
       if (headerTabSettings) headerTabSettings.classList.remove("active");
       if (tvGrid) tvGrid.classList.remove("hidden");
       if (stremioPage) stremioPage.classList.add("hidden");
+      if (youtubePage) youtubePage.classList.add("hidden");
       if (!skipFocus && window.AeroRadial) {
         window.AeroRadial.open();
       }
@@ -3852,14 +3859,35 @@ document.addEventListener("DOMContentLoaded", () => {
       stopLivePlayback();
       if (headerTabStremio) headerTabStremio.classList.add("active");
       if (headerTabIptv) headerTabIptv.classList.remove("active");
+      if (headerTabYouTube) headerTabYouTube.classList.remove("active");
       if (headerTabSettings) headerTabSettings.classList.remove("active");
       if (tvGrid) tvGrid.classList.add("hidden");
+      if (youtubePage) youtubePage.classList.add("hidden");
       if (stremioPage) stremioPage.classList.remove("hidden");
       initStremioPage();
       if (!skipFocus) {
         const firstCard = stremioStripPopular ? stremioStripPopular.querySelector(".stremio-card.focusable") : null;
         if (firstCard) setElementFocus(firstCard);
         else if (sideMovies) setElementFocus(sideMovies);
+      }
+    } else if (section === "youtube") {
+      deactiveerFitScreen();
+      document.body.classList.add("radial-active");
+      if (window.AeroRadial) window.AeroRadial.close();
+      stopLivePlayback();
+      if (headerTabYouTube) headerTabYouTube.classList.add("active");
+      if (headerTabIptv) headerTabIptv.classList.remove("active");
+      if (headerTabStremio) headerTabStremio.classList.remove("active");
+      if (headerTabSettings) headerTabSettings.classList.remove("active");
+      if (tvGrid) tvGrid.classList.add("hidden");
+      if (stremioPage) stremioPage.classList.add("hidden");
+      if (youtubePage) youtubePage.classList.remove("hidden");
+      initYouTubeHome();
+      if (!skipFocus) {
+        const bar = youtubeGenreBar || stremioYtGenreBar;
+        const activePill = bar ? (bar.querySelector(".yt-genre-pill.active") || bar.querySelector(".yt-genre-pill.focusable")) : null;
+        if (activePill) setElementFocus(activePill);
+        else if (headerTabYouTube) setElementFocus(headerTabYouTube);
       }
     }
   }
@@ -3869,6 +3897,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   if (headerTabStremio) {
     headerTabStremio.addEventListener("click", () => switchAppSection("stremio"));
+  }
+  if (headerTabYouTube) {
+    headerTabYouTube.addEventListener("click", () => switchAppSection("youtube"));
   }
   if (headerTabSettings) {
     headerTabSettings.addEventListener("click", () => switchAppSection("settings"));
@@ -3908,29 +3939,21 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sideMovies) sideMovies.classList.toggle("active", subpage === "movies");
     if (sideSeries) sideSeries.classList.toggle("active", subpage === "series");
     if (sideTv) sideTv.classList.toggle("active", subpage === "tv");
-    if (sideYoutube) sideYoutube.classList.toggle("active", subpage === "youtube");
 
     if (stremioSubpageMovies) stremioSubpageMovies.classList.toggle("hidden", subpage !== "movies");
     if (stremioSubpageSeries) stremioSubpageSeries.classList.toggle("hidden", subpage !== "series");
     if (stremioSubpageTv) stremioSubpageTv.classList.toggle("hidden", subpage !== "tv");
-    if (stremioSubpageYoutube) stremioSubpageYoutube.classList.toggle("hidden", subpage !== "youtube");
 
     if (stremioScrollContainer) stremioScrollContainer.scrollTop = 0;
 
     if (subpage === "tv" && stremioGridLive && (stremioGridLive.children.length === 0 || stremioGridLive.querySelector(".stremio-skeleton-card"))) {
       loadStremioLiveChannels();
-    } else if (subpage === "youtube") {
-      initYouTubeHome();
     }
 
-    if (subpage === "youtube") {
-      if (sideYoutube) setElementFocus(sideYoutube);
-    } else {
-      const activeSub = subpage === "tv" ? stremioSubpageTv : (subpage === "series" ? stremioSubpageSeries : stremioSubpageMovies);
-      if (activeSub) {
-        const first = activeSub.querySelector(".focusable");
-        if (first) setElementFocus(first);
-      }
+    const activeSub = subpage === "tv" ? stremioSubpageTv : (subpage === "series" ? stremioSubpageSeries : stremioSubpageMovies);
+    if (activeSub) {
+      const first = activeSub.querySelector(".focusable");
+      if (first) setElementFocus(first);
     }
   }
 
@@ -3947,9 +3970,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   if (sideSeries) {
     sideSeries.addEventListener("click", () => switchStremioSubpage("series"));
-  }
-  if (sideYoutube) {
-    sideYoutube.addEventListener("click", () => switchStremioSubpage("youtube"));
   }
 
   let currentYtGenre = "all";
@@ -3991,8 +4011,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderYouTubeGenres() {
-    if (!stremioYtGenreBar) return;
-    stremioYtGenreBar.innerHTML = "";
+    const bar = youtubeGenreBar || stremioYtGenreBar;
+    if (!bar) return;
+    bar.innerHTML = "";
     YT_GENRES.forEach((g) => {
       const btn = document.createElement("button");
       btn.type = "button";
@@ -4003,12 +4024,12 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.addEventListener("click", () => {
         if (currentYtGenre === g.id) return;
         currentYtGenre = g.id;
-        stremioYtGenreBar.querySelectorAll(".yt-genre-pill").forEach(p => {
+        bar.querySelectorAll(".yt-genre-pill").forEach(p => {
           p.classList.toggle("active", p.dataset.genreId === currentYtGenre);
         });
         loadYouTubeFeed(g.id);
       });
-      stremioYtGenreBar.appendChild(btn);
+      bar.appendChild(btn);
     });
   }
 
@@ -4063,15 +4084,17 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     card.addEventListener("click", () => {
-      playYouTubeVideo(v.videoId, v.title);
+      playYouTubeVideo(v.videoId, v.title, card);
     });
 
     return card;
   }
 
-  function playYouTubeVideo(rawVideoId, title) {
+  function playYouTubeVideo(rawVideoId, title, fromCard) {
     if (!youtubePlayerModal || !youtubeIframe) return;
+    lastFocusedYtCard = fromCard || (document.activeElement && document.activeElement.classList.contains("yt-video-card") ? document.activeElement : null);
     let cleanId = rawVideoId || "";
+    cleanId = cleanId.replace(/^yt_id:/, '').replace(/^youtube:/, '').trim();
     if (cleanId.indexOf(":") !== -1) {
       const parts = cleanId.split(":");
       cleanId = parts[parts.length - 1];
@@ -4079,7 +4102,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!cleanId) return;
 
     if (youtubePlayerTitle) youtubePlayerTitle.textContent = title || "YouTube";
-    youtubeIframe.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(cleanId) + "?autoplay=1&enablejsapi=1&rel=0";
+    youtubeIframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(cleanId) + "?autoplay=1&controls=1&enablejsapi=1&playsinline=1&rel=0";
     youtubePlayerModal.classList.remove("hidden");
     if (youtubePlayerClose) setElementFocus(youtubePlayerClose);
   }
@@ -4088,9 +4111,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!youtubePlayerModal) return;
     youtubePlayerModal.classList.add("hidden");
     if (youtubeIframe) youtubeIframe.src = "about:blank";
-    const activeCard = stremioStripYtVideos ? stremioStripYtVideos.querySelector(".stremio-yt-video-card.focusable") : null;
-    if (activeCard) setElementFocus(activeCard);
-    else if (sideYoutube) setElementFocus(sideYoutube);
+    if (lastFocusedYtCard && document.body.contains(lastFocusedYtCard)) {
+      setElementFocus(lastFocusedYtCard);
+    } else {
+      const firstCard = document.querySelector("#ytVideoFeedGrid .yt-video-card.focusable");
+      if (firstCard) setElementFocus(firstCard);
+      else {
+        const bar = youtubeGenreBar || stremioYtGenreBar;
+        const activePill = bar ? (bar.querySelector(".yt-genre-pill.active") || bar.querySelector(".yt-genre-pill.focusable")) : null;
+        if (activePill) setElementFocus(activePill);
+        else if (headerTabYouTube) setElementFocus(headerTabYouTube);
+      }
+    }
   }
 
   if (youtubePlayerClose) {
@@ -4132,11 +4164,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateYouTubeVisibility() {
     const isYt = window.kcIsYouTubeInstalled();
+    if (headerTabYouTube) {
+      headerTabYouTube.classList.toggle("hidden", !isYt);
+    }
     if (sideYoutube) {
       sideYoutube.classList.toggle("hidden", !isYt);
-      if (!isYt && currentStremioSubpage === "youtube") {
-        switchStremioSubpage("movies");
-      }
+    }
+    if (!isYt && currentAppSection === "youtube") {
+      switchAppSection("iptv");
     }
     if (window.AeroRadial && typeof window.AeroRadial.refreshModes === "function") {
       window.AeroRadial.refreshModes();
@@ -4145,11 +4180,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.kcOpenYouTube = function() {
     deactiveerFitScreen();
-    switchAppSection("stremio", true);
-    switchStremioSubpage("youtube");
-    if (sideYoutube) {
-      setElementFocus(sideYoutube);
-    }
+    switchAppSection("youtube");
   };
 
   function createStremioChannelCard(item, idx) {
@@ -6731,7 +6762,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (focused && focused.classList.contains("header-nav-tab")) {
-      const tabs = [headerTabIptv, headerTabStremio, headerTabSettings].filter(Boolean);
+      const tabs = [headerTabIptv, headerTabStremio, headerTabYouTube, headerTabSettings].filter(t => t && !t.classList.contains("hidden"));
       const tIdx = tabs.indexOf(focused);
       if (isLeft && tIdx > 0) {
         e.preventDefault();
@@ -6752,6 +6783,14 @@ document.addEventListener("DOMContentLoaded", () => {
           if (targetCard) setElementFocus(targetCard);
           else if (sideTv) setElementFocus(sideTv);
           else if (sideMovies) setElementFocus(sideMovies);
+        } else if (focused === headerTabYouTube) {
+          const bar = youtubeGenreBar || stremioYtGenreBar;
+          const activePill = bar ? (bar.querySelector(".yt-genre-pill.active") || bar.querySelector(".yt-genre-pill.focusable")) : null;
+          if (activePill) setElementFocus(activePill);
+          else {
+            const firstCard = document.querySelector("#ytVideoFeedGrid .yt-video-card.focusable");
+            if (firstCard) setElementFocus(firstCard);
+          }
         } else if (focused === headerTabSettings) {
           const firstTab = document.querySelector(".customization-tab.active") || document.querySelector(".customization-tab.focusable");
           if (firstTab) setElementFocus(firstTab);
@@ -6767,7 +6806,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         if (currentAppSection === "settings") {
           switchAppSection(previousAppSection || "iptv");
-        } else if (currentAppSection === "stremio") {
+        } else if (currentAppSection === "stremio" || currentAppSection === "youtube") {
           switchAppSection("iptv");
         } else {
           if (window.AeroRadial) window.AeroRadial.open();
@@ -6777,11 +6816,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (youtubePlayerModal && !youtubePlayerModal.classList.contains("hidden")) {
-      if (isBack) {
+      if (isBack || isEnter) {
         e.preventDefault();
         closeYouTubePlayer();
         return;
       }
+      return;
     }
 
     if (youtubeAccountModal && !youtubeAccountModal.classList.contains("hidden")) {
@@ -6790,33 +6830,21 @@ document.addEventListener("DOMContentLoaded", () => {
         closeYouTubeAccountModal();
         return;
       }
+      return;
     }
 
-    if (currentAppSection === "stremio" && stremioPage && !stremioPage.classList.contains("hidden")) {
-      const inSideDock = isElementInSidebar(focused);
-      const inPillsGrid = Boolean(focused && (focused.classList.contains("category-pill-btn") || (focused.closest && focused.closest(".category-pills-grid"))));
-      const inLiveCatBar = Boolean(focused && (focused.classList.contains("stremio-live-cat-pill") || (focused.closest && focused.closest(".stremio-live-cat-bar"))));
-      const inYtBar = Boolean(focused && (focused.classList.contains("yt-genre-pill") || focused.classList.contains("stremio-yt-genre-pill") || (focused.closest && focused.closest("#stremioYtGenreBar"))));
-      const inYtVideoGrid = Boolean(focused && (focused.classList.contains("yt-video-card") || (focused.closest && focused.closest("#ytVideoFeedGrid"))));
-      const inTvGrid = Boolean(focused && (focused.closest ? focused.closest("#stremioGridLive") : (focused.parentElement && focused.parentElement.id === "stremioGridLive")));
-
-      let inStrip = null;
-      if (!inPillsGrid && !inTvGrid && !inLiveCatBar && !inYtBar && !inYtVideoGrid && !inSideDock) {
-        let currStripEl = focused;
-        while (currStripEl && currStripEl !== document.body) {
-          if (currStripEl.classList && currStripEl.classList.contains("stremio-cards-strip")) {
-            inStrip = currStripEl;
-            break;
-          }
-          currStripEl = currStripEl.parentElement;
-        }
-      }
+    if (currentAppSection === "youtube" && youtubePage && !youtubePage.classList.contains("hidden")) {
+      const bar = youtubeGenreBar || stremioYtGenreBar;
+      const inYtBar = Boolean(focused && (focused.classList.contains("yt-genre-pill") || (bar && bar.contains(focused))));
+      const cardTarget = focused ? (focused.classList.contains("yt-video-card") ? focused : (focused.closest ? focused.closest(".yt-video-card") : null)) : null;
+      const inYtVideoGrid = Boolean(cardTarget || (focused && (focused.id === "ytVideoFeedGrid" || (focused.closest && focused.closest("#ytVideoFeedGrid")))));
 
       if (isBack) {
         e.preventDefault();
-        if (inStrip || inPillsGrid || inTvGrid || inLiveCatBar || inYtBar || inYtVideoGrid) {
-          const targetSide = currentStremioSubpage === "tv" ? sideTv : (currentStremioSubpage === "series" ? sideSeries : (currentStremioSubpage === "youtube" ? sideYoutube : sideMovies));
-          if (targetSide) setElementFocus(targetSide);
+        if (inYtVideoGrid) {
+          const activePill = bar ? (bar.querySelector(".yt-genre-pill.active") || bar.querySelector(".yt-genre-pill.focusable")) : null;
+          if (activePill) setElementFocus(activePill);
+          else switchAppSection("iptv");
         } else {
           switchAppSection("iptv");
         }
@@ -6824,12 +6852,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (inYtBar) {
-        const pills = Array.from(stremioYtGenreBar.querySelectorAll(".yt-genre-pill.focusable, .stremio-yt-genre-pill.focusable"));
+        const pills = bar ? Array.from(bar.querySelectorAll(".yt-genre-pill.focusable")) : [];
         const pIdx = pills.indexOf(focused);
         if (isLeft) {
           e.preventDefault();
           if (pIdx > 0) setElementFocus(pills[pIdx - 1]);
-          else if (sideYoutube) setElementFocus(sideYoutube);
           return;
         }
         if (isRight) {
@@ -6839,7 +6866,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (isUp) {
           e.preventDefault();
-          if (headerTabStremio) setElementFocus(headerTabStremio);
+          if (headerTabYouTube) setElementFocus(headerTabYouTube);
           return;
         }
         if (isDown) {
@@ -6855,10 +6882,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      if (inYtVideoGrid) {
-        const grid = (focused.closest && focused.closest("#ytVideoFeedGrid")) || document.getElementById("ytVideoFeedGrid");
-        const cards = Array.from(grid.querySelectorAll(".yt-video-card.focusable"));
-        const idx = cards.indexOf(focused);
+      if (inYtVideoGrid && cardTarget) {
+        const grid = document.getElementById("ytVideoFeedGrid");
+        const cards = grid ? Array.from(grid.querySelectorAll(".yt-video-card.focusable")) : [];
+        const idx = cards.indexOf(cardTarget);
 
         function getYtCols() {
           if (!cards || cards.length < 2) return 1;
@@ -6872,9 +6899,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (isLeft) {
           e.preventDefault();
-          if (idx % cols === 0 || idx === 0) {
-            if (sideYoutube) setElementFocus(sideYoutube);
-          } else if (idx > 0) {
+          if (idx > 0) {
             setElementFocus(cards[idx - 1]);
           }
           return;
@@ -6882,7 +6907,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (isRight) {
           e.preventDefault();
-          if ((idx + 1) % cols !== 0 && idx < cards.length - 1) {
+          if (idx < cards.length - 1) {
             setElementFocus(cards[idx + 1]);
           }
           return;
@@ -6893,9 +6918,9 @@ document.addEventListener("DOMContentLoaded", () => {
           if (idx >= cols) {
             setElementFocus(cards[idx - cols]);
           } else {
-            const activePill = stremioYtGenreBar ? (stremioYtGenreBar.querySelector(".yt-genre-pill.active") || stremioYtGenreBar.querySelector(".yt-genre-pill.focusable")) : null;
+            const activePill = bar ? (bar.querySelector(".yt-genre-pill.active") || bar.querySelector(".yt-genre-pill.focusable")) : null;
             if (activePill) setElementFocus(activePill);
-            else if (sideYoutube) setElementFocus(sideYoutube);
+            else if (headerTabYouTube) setElementFocus(headerTabYouTube);
           }
           return;
         }
@@ -6912,9 +6937,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (isEnter) {
           e.preventDefault();
-          focused.click();
+          if (cardTarget.dataset && cardTarget.dataset.videoId) {
+            playYouTubeVideo(cardTarget.dataset.videoId, cardTarget.dataset.title, cardTarget);
+          } else {
+            cardTarget.click();
+          }
           return;
         }
+      }
+    }
+
+    if (currentAppSection === "stremio" && stremioPage && !stremioPage.classList.contains("hidden")) {
+      const inSideDock = isElementInSidebar(focused);
+      const inPillsGrid = Boolean(focused && (focused.classList.contains("category-pill-btn") || (focused.closest && focused.closest(".category-pills-grid"))));
+      const inLiveCatBar = Boolean(focused && (focused.classList.contains("stremio-live-cat-pill") || (focused.closest && focused.closest(".stremio-live-cat-bar"))));
+      const inTvGrid = Boolean(focused && (focused.closest ? focused.closest("#stremioGridLive") : (focused.parentElement && focused.parentElement.id === "stremioGridLive")));
+
+      let inStrip = null;
+      if (!inPillsGrid && !inTvGrid && !inLiveCatBar && !inSideDock) {
+        let currStripEl = focused;
+        while (currStripEl && currStripEl !== document.body) {
+          if (currStripEl.classList && currStripEl.classList.contains("stremio-cards-strip")) {
+            inStrip = currStripEl;
+            break;
+          }
+          currStripEl = currStripEl.parentElement;
+        }
+      }
+
+      if (isBack) {
+        e.preventDefault();
+        if (inStrip || inPillsGrid || inTvGrid || inLiveCatBar) {
+          const targetSide = currentStremioSubpage === "tv" ? sideTv : (currentStremioSubpage === "series" ? sideSeries : sideMovies);
+          if (targetSide) setElementFocus(targetSide);
+        } else {
+          switchAppSection("iptv");
+        }
+        return;
       }
 
       // 1. Navigation in Pill-shaped Categories Grid
@@ -7126,13 +7185,12 @@ document.addEventListener("DOMContentLoaded", () => {
       // 4. Navigation within Horizontal Cards Strips
       if (inStrip) {
         const strip = inStrip;
-        const cards = Array.from(strip.querySelectorAll(".stremio-card.focusable, .stremio-yt-channel-card.focusable, .stremio-yt-video-card.focusable"));
+        const cards = Array.from(strip.querySelectorAll(".stremio-card.focusable"));
         const idx = cards.indexOf(focused);
 
         const movieStrips = [stremioStripPopular, stremioStripNewlyAdded, stremioStripAction, stremioStripComedy, stremioStripSciFi].filter(Boolean);
         const seriesStrips = [stremioStripSeries, stremioStripAnimationSeries, stremioStripCrimeSeries, stremioStripComedySeries].filter(Boolean);
-        const youtubeStrips = [stremioStripYtChannels, stremioStripYtVideos].filter(Boolean);
-        const currentStrips = currentStremioSubpage === "series" ? seriesStrips : (currentStremioSubpage === "youtube" ? youtubeStrips : movieStrips);
+        const currentStrips = currentStremioSubpage === "series" ? seriesStrips : movieStrips;
         const sIdx = currentStrips.indexOf(strip);
 
         if (isLeft) {
@@ -7140,7 +7198,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (idx > 0) {
             setElementFocus(cards[idx - 1]);
           } else {
-            const targetSide = currentStremioSubpage === "series" ? sideSeries : (currentStremioSubpage === "youtube" ? sideYoutube : sideMovies);
+            const targetSide = currentStremioSubpage === "series" ? sideSeries : sideMovies;
             if (targetSide) setElementFocus(targetSide);
           }
           return;
@@ -7157,18 +7215,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isUp) {
           e.preventDefault();
           if (sIdx > 0) {
-            const prevCards = Array.from(currentStrips[sIdx - 1].querySelectorAll(".stremio-card.focusable, .stremio-yt-channel-card.focusable, .stremio-yt-video-card.focusable"));
+            const prevCards = Array.from(currentStrips[sIdx - 1].querySelectorAll(".stremio-card.focusable"));
             const target = prevCards[Math.min(idx, prevCards.length - 1)] || prevCards[0];
             if (target) setElementFocus(target);
           } else {
-            if (currentStremioSubpage === "youtube") {
-              const activePill = stremioYtGenreBar ? (stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.active") || stremioYtGenreBar.querySelector(".stremio-yt-genre-pill.focusable")) : null;
-              if (activePill) setElementFocus(activePill);
-              else if (stremioYtAccountBtn) setElementFocus(stremioYtAccountBtn);
-              else if (headerTabStremio) setElementFocus(headerTabStremio);
-            } else {
-              if (headerTabStremio) setElementFocus(headerTabStremio);
-            }
+            if (headerTabStremio) setElementFocus(headerTabStremio);
           }
           return;
         }
@@ -7176,23 +7227,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isDown) {
           e.preventDefault();
           if (sIdx >= 0 && sIdx < currentStrips.length - 1) {
-            const nextCards = Array.from(currentStrips[sIdx + 1].querySelectorAll(".stremio-card.focusable, .stremio-yt-channel-card.focusable, .stremio-yt-video-card.focusable"));
+            const nextCards = Array.from(currentStrips[sIdx + 1].querySelectorAll(".stremio-card.focusable"));
             const target = nextCards[Math.min(idx, nextCards.length - 1)] || nextCards[0];
             if (target) setElementFocus(target);
           } else {
-            if (currentStremioSubpage !== "youtube") {
-              const targetGrid = currentStremioSubpage === "series" ? stremioSeriesPillsGrid : stremioMoviePillsGrid;
-              const firstPill = targetGrid ? targetGrid.querySelector(".category-pill-btn.focusable") : null;
-              if (firstPill) setElementFocus(firstPill);
-            }
+            const targetGrid = currentStremioSubpage === "series" ? stremioSeriesPillsGrid : stremioMoviePillsGrid;
+            const firstPill = targetGrid ? targetGrid.querySelector(".category-pill-btn.focusable") : null;
+            if (firstPill) setElementFocus(firstPill);
           }
           return;
         }
       }
 
-      // 4. Navigation in 3-Icon Left Sidebar Dock (Live TV, Movies, Series, YouTube)
+      // 4. Navigation in 3-Icon Left Sidebar Dock (Live TV, Movies, Series)
       if (inSideDock) {
-        const dockBtns = [document.getElementById("sideBackToIptv"), sideTv, sideMovies, sideSeries, sideYoutube].filter(Boolean).filter(b => !b.classList.contains("hidden"));
+        const dockBtns = [document.getElementById("sideBackToIptv"), sideTv, sideMovies, sideSeries].filter(Boolean).filter(b => !b.classList.contains("hidden"));
         const bIdx = dockBtns.indexOf(focused);
 
         if (isRight) {
@@ -7202,12 +7251,10 @@ document.addEventListener("DOMContentLoaded", () => {
             targetCard = stremioGridLive ? stremioGridLive.querySelector(".stremio-card.focusable") : null;
           } else if (focused === sideSeries) {
             targetCard = stremioStripSeries ? stremioStripSeries.querySelector(".stremio-card.focusable") : null;
-          } else if (focused === sideYoutube) {
-            targetCard = (stremioYtGenreBar ? (stremioYtGenreBar.querySelector(".yt-genre-pill.active") || stremioYtGenreBar.querySelector(".yt-genre-pill.focusable")) : null) || document.querySelector("#ytVideoFeedGrid .yt-video-card.focusable");
           } else {
             targetCard = stremioStripPopular ? stremioStripPopular.querySelector(".stremio-card.focusable") : null;
           }
-          if (!targetCard) targetCard = document.querySelector("#stremioPage .stremio-card.focusable, #stremioPage .category-pill-btn.focusable, #stremioPage .yt-video-card.focusable");
+          if (!targetCard) targetCard = document.querySelector("#stremioPage .stremio-card.focusable, #stremioPage .category-pill-btn.focusable");
           if (targetCard) setElementFocus(targetCard);
           return;
         }

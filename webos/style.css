@@ -434,6 +434,13 @@ body.kc-has-bg .col-content-wrapper {
   box-shadow: 0 0 12px rgba(255, 215, 0, 0.4), inset 0 0 8px rgba(255, 215, 0, 0.15);
 }
 
+.header-nav-tab[data-nav-target="youtube"].active {
+  border: 1.8px solid #ff0000;
+  background: rgba(255, 0, 0, 0.15);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(255, 0, 0, 0.45), inset 0 0 8px rgba(255, 0, 0, 0.2);
+}
+
 .header-nav-tab.focused {
   background: rgba(255, 255, 255, 0.24) !important;
   color: #ffffff !important;
@@ -5232,7 +5239,26 @@ body.radial-active #videoPlayer {
    YOUTUBE HOME & STREAMING STYLES (Official & Legal Addon Integration)
    ========================================================================== */
 
-/* YouTube TV Home Page Container (OG YouTube Layout) */
+/* YouTube TV Standalone Page Container (OG YouTube Layout) */
+.youtube-page {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #0f0f0f !important;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  padding: 84px 48px 60px 48px;
+  box-sizing: border-box;
+}
+
+.youtube-page.hidden {
+  display: none !important;
+}
+
 .yt-home-page {
   padding: 0 40px 60px 40px !important;
   display: flex;

@@ -61,6 +61,10 @@
           <svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-film"/></svg>
           <span>Stremio</span>
         </button>
+        <button type="button" class="header-nav-tab focusable hidden" id="headerTabYouTube" data-nav-target="youtube" tabindex="0">
+          <svg viewBox="0 0 24 24" class="ui-icon" fill="#ff0000" style="width:20px;height:20px;"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          <span>YouTube</span>
+        </button>
         <button type="button" class="header-nav-tab focusable" id="headerTabSettings" data-nav-target="settings" tabindex="0">
           <svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-gear"/></svg>
           <span data-i18n="settings">Settings</span>
@@ -511,10 +515,6 @@
           <span class="side-label">Diziler</span>
         </button>
 
-        <button type="button" class="side-icon-btn focusable hidden" id="sideYoutube" data-stremio-tab="youtube" title="YouTube" tabindex="0">
-          <svg viewBox="0 0 24 24" fill="#ff0000" stroke="none"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-          <span class="side-label">YouTube</span>
-        </button>
       </aside>
 
       <!-- MAIN SCROLLABLE CONTAINER -->
@@ -657,20 +657,6 @@
           </section>
         </div>
 
-        <!-- SUBPAGE 4: YOUTUBE (OG YouTube TV Experience) -->
-        <div id="stremioSubpageYoutube" class="stremio-subpage yt-home-page hidden">
-          <!-- TOP FILTER PILLS BAR (OG YouTube TV style) -->
-          <div class="yt-header-bar">
-            <div class="yt-logo-badge">
-              <svg viewBox="0 0 24 24" width="30" height="30" fill="#ff0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-              <span class="yt-logo-text">YouTube</span>
-            </div>
-            <div class="yt-genre-pills-bar" id="stremioYtGenreBar"></div>
-          </div>
-
-          <!-- MAIN 16:9 VIDEO FEED GRID -->
-          <div class="yt-video-feed-grid" id="ytVideoFeedGrid"></div>
-        </div>
       </main>
 
       <div id="stremioEmpty" class="stremio-empty hidden">
@@ -678,6 +664,18 @@
         <div class="stremio-empty-text">No items found in this catalog.</div>
         <button type="button" class="stremio-empty-btn focusable" id="stremioGoAddonsBtn" tabindex="0">Open Addons Settings</button>
       </div>
+    </div>
+
+    <!-- STANDALONE YOUTUBE PAGE (OG YouTube TV Experience) -->
+    <div id="youtubePage" class="youtube-page hidden">
+      <div class="yt-header-bar">
+        <div class="yt-logo-badge">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="#ff0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          <span class="yt-logo-text">YouTube</span>
+        </div>
+        <div class="yt-genre-pills-bar" id="youtubeGenreBar"></div>
+      </div>
+      <div class="yt-video-feed-grid" id="ytVideoFeedGrid"></div>
     </div>
 
     <footer id="hintBar" class="hint-bar">
