@@ -4421,18 +4421,18 @@ body.speler-fit-screen .app-progress {
    AERO RADIAL WHEEL REPLACEMENT LAYOUT (Chromium 53 / webOS 4.5 Certified)
    ========================================================================= */
 
-/* Replace old list columns when radial UI is active */
-body.radial-active .hint-bar,
-body.radial-active .app-header,
-body.radial-active #colModus,
-body.radial-active #colRegions,
-body.radial-active #colCategories,
-body.radial-active #colContent,
-body.radial-active .epg-preview-panel {
+/* Legacy 4-column menu permanently disabled across entire app */
+.hint-bar,
+.app-header,
+#colModus,
+#colRegions,
+#colCategories,
+#colContent,
+.epg-preview-panel {
   display: none !important;
 }
 
-body.radial-active .tv-grid {
+.tv-grid {
   display: block !important;
   width: 100vw !important;
   height: 100vh !important;

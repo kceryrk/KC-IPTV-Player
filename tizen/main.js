@@ -901,7 +901,7 @@ document.addEventListener("DOMContentLoaded", () => {
       case "close":
       default:
         toggleSettingsMenu(false);
-        setElementFocus(document.querySelector("#modusList [data-modus='favorites']"));
+        if (window.AeroRadial) window.AeroRadial.open();
         return;
     }
     toggleSettingsMenu(false);
@@ -1210,10 +1210,14 @@ document.addEventListener("DOMContentLoaded", () => {
             activeerFitScreen();
             const first = currentActiveStreams[0];
             playStream(first.stream_id, first.name, first.stream_icon, 0, first.url);
+          } else if (!resumed) {
+            deactiveerFitScreen();
+            if (window.AeroRadial) window.AeroRadial.open();
           }
         } else {
-          // Auto resume is disabled: do NOT play in background, show channels menu
+          // Auto resume is disabled: do NOT play in background, open radial menu
           deactiveerFitScreen();
+          if (window.AeroRadial) window.AeroRadial.open();
         }
       } else {
         login(currentAuth.playlistUrl, "", "", true, "m3u", false);
@@ -1356,10 +1360,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function showAppPage() {
     if (appPage) appPage.classList.remove("hidden");
     toggleLoginPanel(false);
-    const fav = document.querySelector("#modusList [data-modus='favorites']:not(.hidden)");
-    const live = document.querySelector("#modusList [data-modus='live']:not(.hidden)");
-    const first = fav || live || document.querySelector("#modusList .nav-item.focusable:not(.hidden)");
-    if (first) setElementFocus(first);
+    document.body.classList.add("radial-active");
   }
 
   if (settingsButton && settingsPanel) {
@@ -1901,6 +1902,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (document.body.classList.contains("radial-active")) {
+      if (window.AeroRadial && !window.AeroRadial.isOpen()) {
+        window.AeroRadial.open();
+      }
       return;
     }
 
@@ -2300,8 +2304,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!searchPanel) return;
     searchPanel.classList.add("hidden");
     searchInput.blur();
-    const card = channelList.querySelector(".channel-card.active") || channelList.querySelector(".channel-card");
-    setElementFocus(card || document.querySelector("#modusList [data-modus='favorites']"));
+    if (window.AeroRadial) window.AeroRadial.open();
   }
 
   function renderSearchResults() {
@@ -3736,7 +3739,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.AeroRadial.open();
       }
     } else if (section === "stremio") {
-      document.body.classList.remove("radial-active");
+      document.body.classList.add("radial-active");
       if (window.AeroRadial) window.AeroRadial.close();
       stopLivePlayback();
       if (headerTabStremio) headerTabStremio.classList.add("active");
@@ -6418,8 +6421,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isDown) {
         e.preventDefault();
         if (focused === headerTabIptv) {
-          const firstMode = document.querySelector("#modusList .nav-item.active:not(.hidden)") || document.querySelector("#modusList .nav-item.focusable:not(.hidden)");
-          if (firstMode) setElementFocus(firstMode);
+          if (window.AeroRadial) window.AeroRadial.open();
         } else if (focused === headerTabStremio) {
           const targetCard = (stremioStripLive && stremioStripLive.offsetParent !== null ? stremioStripLive.querySelector(".stremio-card.focusable") : null) || (stremioStripPopular ? stremioStripPopular.querySelector(".stremio-card.focusable") : null);
           if (targetCard) setElementFocus(targetCard);
@@ -6443,8 +6445,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (currentAppSection === "stremio") {
           switchAppSection("iptv");
         } else {
-          const firstMode = document.querySelector("#modusList .nav-item.active:not(.hidden)") || document.querySelector("#modusList .nav-item.focusable:not(.hidden)");
-          if (firstMode) setElementFocus(firstMode);
+          if (window.AeroRadial) window.AeroRadial.open();
         }
         return;
       }
@@ -6790,8 +6791,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (isDown && focused === settingsButton) {
       e.preventDefault();
-      const firstMode = document.querySelector("#modusList .nav-item.focusable:not(.hidden)");
-      if (firstMode) setElementFocus(firstMode);
+      if (window.AeroRadial) window.AeroRadial.open();
       return;
     }
 
@@ -6957,7 +6957,17 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       const column = focused && focused.closest ? focused.closest(".col-nav") : null;
       if (!column) {
-        setElementFocus(document.querySelector("#modusList [data-modus='favorites']"));
+        if (window.AeroRadial && !window.AeroRadial.isOpen()) {
+          window.AeroRadial.open();
+        } else if (window.webOS && typeof webOS.platformBack === "function") {
+          webOS.platformBack();
+        } else if (window.webOSSystem && typeof webOSSystem.platformBack === "function") {
+          webOSSystem.platformBack();
+        } else if (window.tizen && window.tizen.application && typeof window.tizen.application.getCurrentApplication === "function") {
+          window.tizen.application.getCurrentApplication().exit();
+        } else {
+          window.close();
+        }
       } else if (column.id !== "colModus") {
         navigateColumn(focused, "left");
       } else if (window.webOS && typeof webOS.platformBack === "function") {
@@ -7554,3 +7564,4 @@ document.addEventListener("DOMContentLoaded", () => {
   scheduleListRefresh();
   maybeShowWelcome();
 });
+
