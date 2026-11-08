@@ -1,3 +1,24 @@
+// Polyfill missing DOM methods on older Smart TV browsers (webOS 3/4)
+if (typeof Element !== "undefined") {
+  if (!Element.prototype.append) {
+    Element.prototype.append = function() {
+      for (var i = 0; i < arguments.length; i++) {
+        var item = arguments[i];
+        if (typeof item === "string") {
+          this.appendChild(document.createTextNode(item));
+        } else if (item && item.nodeType) {
+          this.appendChild(item);
+        }
+      }
+    };
+  }
+  if (!Element.prototype.remove) {
+    Element.prototype.remove = function() {
+      if (this.parentNode) this.parentNode.removeChild(this);
+    };
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // Disk storage can throw on TVs; memory keeps the session working when it does.
   const store = (() => {
@@ -27,6 +48,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
   })();
+
+  // Probeer webOS fullscreen API direct bij opstarten
+  if (window.webOS && window.webOS.fullScreen) {
+    try { window.webOS.fullScreen(true); } catch(e) {}
+  }
 
   const loginPage = document.getElementById("loginPage");
   const appPage = document.getElementById("appPage");
@@ -100,6 +126,59 @@ document.addEventListener("DOMContentLoaded", () => {
   const vodPlayPauseIcon = document.getElementById("vodPlayPauseIcon");
   const vodSeekPreview = document.getElementById("vodSeekPreview");
 
+  // Top Bar Center Navigation & Stremio Page Elements
+  const headerNavSelector = document.getElementById("headerNavSelector");
+  const headerTabIptv = document.getElementById("headerTabIptv");
+  const headerTabStremio = document.getElementById("headerTabStremio");
+  const headerTabSettings = document.getElementById("headerTabSettings");
+  const tvGrid = document.querySelector(".tv-grid");
+  const stremioPage = document.getElementById("stremioPage");
+  const stremioHeroBackdrop = document.getElementById("stremioHeroBackdrop");
+  const stremioSidebarDock = document.getElementById("stremioSidebarDock");
+  const sideTv = document.getElementById("sideTv");
+  const sideMovies = document.getElementById("sideMovies");
+  const sideSeries = document.getElementById("sideSeries");
+  const stremioScrollContainer = document.getElementById("stremioScrollContainer");
+  const stremioSubpageMovies = document.getElementById("stremioSubpageMovies");
+  const stremioSubpageSeries = document.getElementById("stremioSubpageSeries");
+  const stremioSubpageTv = document.getElementById("stremioSubpageTv");
+  const stremioRowLive = document.getElementById("stremioRowLive");
+  const stremioGridLive = document.getElementById("stremioGridLive");
+  const stremioCountLive = document.getElementById("stremioCountLive");
+  const stremioLiveCatBar = document.getElementById("stremioLiveCatBar");
+
+  const stremioStripPopular = document.getElementById("stremioStripPopular");
+  const stremioStripNewlyAdded = document.getElementById("stremioStripNewlyAdded");
+  const stremioStripAction = document.getElementById("stremioStripAction");
+  const stremioCountAction = document.getElementById("stremioCountAction");
+  const stremioStripComedy = document.getElementById("stremioStripComedy");
+  const stremioCountComedy = document.getElementById("stremioCountComedy");
+  const stremioStripSciFi = document.getElementById("stremioStripSciFi");
+  const stremioCountSciFi = document.getElementById("stremioCountSciFi");
+
+  const stremioStripSeries = document.getElementById("stremioStripSeries");
+  const stremioStripAnimationSeries = document.getElementById("stremioStripAnimationSeries");
+  const stremioCountAnimationSeries = document.getElementById("stremioCountAnimationSeries");
+  const stremioStripCrimeSeries = document.getElementById("stremioStripCrimeSeries");
+  const stremioCountCrimeSeries = document.getElementById("stremioCountCrimeSeries");
+  const stremioStripComedySeries = document.getElementById("stremioStripComedySeries");
+  const stremioCountComedySeries = document.getElementById("stremioCountComedySeries");
+
+  const stremioCountPopular = document.getElementById("stremioCountPopular");
+  const stremioMoviePillsGrid = document.getElementById("stremioMoviePillsGrid");
+  const stremioSeriesPillsGrid = document.getElementById("stremioSeriesPillsGrid");
+  const stremioEmpty = document.getElementById("stremioEmpty");
+  const stremioGoAddonsBtn = document.getElementById("stremioGoAddonsBtn");
+  const autoResumeLastChannelToggle = document.getElementById("autoResumeLastChannelToggle");
+
+  let currentAppSection = "iptv";
+  let previousAppSection = "iptv";
+  let currentStremioSubpage = "movies";
+  let currentStremioType = "movie";
+  let currentStremioCatalogId = null;
+  let streamSelectorOpener = null;
+  let currentStremioItems = [];
+
   // Dynamic UI feedback elementen
   let toastMsg = document.getElementById("toastMsg") || createUIElement("toastMsg", "toast-msg");
   let moveBanner = document.getElementById("moveBanner") || createUIElement("moveBanner", "move-banner hidden", "🔴 VERPLAATS-MODUS ACTIEF: Gebruik ⬆/⬇ om te verplaatsen, druk ROOD om te bewaren");
@@ -107,16 +186,20 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentLoginState = "failed";
   const appTranslations = {
     en: {
-      generalTab: "General", playbackTab: "Playback", profileTab: "Source", progressCategories: "Loading categories", progressPlaylist: "Downloading playlist", progressParsing: "Reading channels", streamFailed: "Channel error: {reason}", streamTimedOut: "Channel did not start within 20 s: {reason}", streamNoData: "no data received", settings: "Settings", language: "Language", autoplayNext: "Play next episode automatically", customization: "Customization", switchProfile: "Change source", resetApp: "Reset app", close: "Close menu", back: "Back", accentColor: "Accent color", highlightColor: "Highlight color", backgroundImage: "Background image URL", apply: "Apply", removeBackground: "Remove image", done: "Done", previous: "Previous", next: "Next", playPause: "Pause / play", serverUrl: "Server URL", username: "Username", password: "Password", login: "Sign in", connecting: "Connecting to IPTV server...", loginFailed: "Login failed.", modes: "MODES", modeFavorites: "Favorites", modeLive: "Live TV", modeMovies: "Movies", modeSeries: "Series", region: "REGION", categories: "CATEGORIES", allRegions: "ALL", channels: "CHANNELS", movies: "MOVIES", series: "SERIES", liveNow: "Live TV", noNextProgram: "No upcoming program", vodHint: "Up: controls | Play/Pause: toggle | Left/Right: seek", backToSeries: "← Back to series", noEpisodes: "No episodes found", loadingEpisodes: "Loading episodes...", unableLoad: "Unable to load episodes", favoritesRemoved: "Removed from favorites", favoritesAdded: "Added to favorites", moveOnlyFavorites: "Move mode is only available in Favorites", moveStarted: "Move mode started", positionSaved: "Position saved", channelNotFound: "Channel #{number} not found", autoplay: "Autoplay next episode", colors: "Colors", backgroundApplied: "Background updated", backgroundRemoved: "Background removed", invalidBackground: "Enter a valid HTTP or HTTPS image URL", previousEpisode: "Previous episode", nextEpisode: "Next episode", profileChanged: "Profile changed", appReset: "App reset", zapped: "Playing channel #{number}: {title}", colorRed: "Red", colorBlue: "Blue", colorGreen: "Green", colorRose: "Rose", colorOrange: "Orange", colorGold: "Gold", colorTurquoise: "Turquoise", colorLime: "Lime", colorSky: "Sky blue"
+      addonsTab: "Addons",
+      generalTab: "General", playbackTab: "Playback", profileTab: "Source", progressCategories: "Loading categories", progressPlaylist: "Downloading playlist", progressParsing: "Reading channels", streamFailed: "Channel error: {reason}", streamTimedOut: "Channel did not start within 20 s: {reason}", streamNoData: "no data received", settings: "Settings", language: "Language", autoplayNext: "Play next episode automatically", customization: "Customization", switchProfile: "Change source", resetApp: "Reset app", close: "Close menu", back: "Back", accentColor: "Primary color", highlightColor: "Secondary color", bgTintLabel: "Background tint", backgroundImage: "Background image URL", apply: "Apply", removeBackground: "Remove image", done: "Done", previous: "Previous", next: "Next", playPause: "Pause / play", serverUrl: "Server URL", username: "Username", password: "Password", login: "Sign in", connecting: "Connecting to IPTV server...", loginFailed: "Login failed.", modes: "MODES", modeFavorites: "Favorites", modeLive: "Live TV", modeMovies: "Movies", modeSeries: "Series", region: "COUNTRY", categories: "CATEGORIES", allRegions: "ALL", channels: "CHANNELS", movies: "MOVIES", series: "SERIES", liveNow: "Live TV", noNextProgram: "No upcoming program", vodHint: "Up: controls | Play/Pause: toggle | Left/Right: seek", backToSeries: "← Back to series", noEpisodes: "No episodes found", loadingEpisodes: "Loading episodes...", unableLoad: "Unable to load episodes", favoritesRemoved: "Removed from favorites", favoritesAdded: "Added to favorites", moveOnlyFavorites: "Move mode is only available in Favorites", moveStarted: "Move mode started", positionSaved: "Position saved", channelNotFound: "Channel #{number} not found", autoplay: "Autoplay next episode", colors: "Colors", backgroundApplied: "Background updated", backgroundRemoved: "Background removed", invalidBackground: "Enter a valid HTTP or HTTPS image URL", previousEpisode: "Previous episode", nextEpisode: "Next episode", profileChanged: "Profile changed", appReset: "App reset", zapped: "Playing channel #{number}: {title}", colorRed: "Red", colorBlue: "Blue", colorGreen: "Green", colorRose: "Rose", colorOrange: "Orange", colorGold: "Gold", colorTurquoise: "Turquoise", colorLime: "Lime", colorSky: "Sky blue"
     },
     tr: {
-      generalTab: "Genel", playbackTab: "Oynatma", profileTab: "Kaynak", progressCategories: "Kategoriler yükleniyor", progressPlaylist: "Playlist indiriliyor", progressParsing: "Kanallar okunuyor", streamFailed: "Kanal hatası: {reason}", streamTimedOut: "Kanal 20 sn içinde açılmadı: {reason}", streamNoData: "veri alınamadı", settings: "Ayarlar", language: "Dil", autoplayNext: "Sonraki bölümü otomatik oynat", customization: "Özelleştirme", switchProfile: "Kaynağı değiştir", resetApp: "Uygulamayı sıfırla", close: "Menüyü kapat", back: "Geri", accentColor: "Vurgu rengi", highlightColor: "Öne çıkan renk", backgroundImage: "Arka plan görseli URL'si", apply: "Uygula", removeBackground: "Görseli kaldır", done: "Tamam", previous: "Önceki", next: "Sonraki", playPause: "Duraklat / oynat", serverUrl: "Sunucu URL'si", username: "Kullanıcı adı", password: "Şifre", login: "Giriş yap", connecting: "IPTV sunucusuna bağlanılıyor...", loginFailed: "Giriş başarısız.", modes: "MODLAR", modeFavorites: "Favoriler", modeLive: "Canlı TV", modeMovies: "Filmler", modeSeries: "Diziler", region: "BÖLGE", categories: "KATEGORİLER", allRegions: "ALL", channels: "KANALLAR", movies: "FİLMLER", series: "DİZİLER", liveNow: "Canlı yayın", noNextProgram: "Sonraki program yok", vodHint: "Yukarı: kontroller | Oynat/Duraklat: değiştir | Sol/Sağ: sar", backToSeries: "← Dizi listesine dön", noEpisodes: "Bölüm bulunamadı", loadingEpisodes: "Bölümler yükleniyor...", unableLoad: "Bölümler yüklenemedi", favoritesRemoved: "Favorilerden çıkarıldı", favoritesAdded: "Favorilere eklendi", moveOnlyFavorites: "Taşıma modu yalnızca Favorilerde kullanılabilir", moveStarted: "Taşıma başladı", positionSaved: "Sıralama kaydedildi", channelNotFound: "#{number} numaralı kanal bulunamadı", autoplay: "Sonraki bölümü otomatik oynat", colors: "Renkler", backgroundApplied: "Arka plan güncellendi", backgroundRemoved: "Arka plan kaldırıldı", invalidBackground: "Geçerli bir HTTP veya HTTPS görsel URL'si girin", previousEpisode: "Önceki bölüm", nextEpisode: "Sonraki bölüm", profileChanged: "Profil değiştirildi", appReset: "Uygulama sıfırlandı", zapped: "Kanal #{number} açılıyor: {title}", colorRed: "Kırmızı", colorBlue: "Mavi", colorGreen: "Yeşil", colorRose: "Pembe", colorOrange: "Turuncu", colorGold: "Altın", colorTurquoise: "Turkuaz", colorLime: "Fıstık yeşili", colorSky: "Gök mavisi"
+      addonsTab: "Eklentiler",
+      generalTab: "Genel", playbackTab: "Oynatma", profileTab: "Kaynak", progressCategories: "Kategoriler yükleniyor", progressPlaylist: "Playlist indiriliyor", progressParsing: "Kanallar okunuyor", streamFailed: "Kanal hatası: {reason}", streamTimedOut: "Kanal 20 sn içinde açılmadı: {reason}", streamNoData: "veri alınamadı", settings: "Ayarlar", language: "Dil", autoplayNext: "Sonraki bölümü otomatik oynat", customization: "Özelleştirme", switchProfile: "Kaynağı değiştir", resetApp: "Uygulamayı sıfırla", close: "Menüyü kapat", back: "Geri", accentColor: "Birincil renk", highlightColor: "İkincil renk", bgTintLabel: "Arka plan karartması", backgroundImage: "Arka plan görseli URL'si", apply: "Uygula", removeBackground: "Görseli kaldır", done: "Tamam", previous: "Önceki", next: "Sonraki", playPause: "Duraklat / oynat", serverUrl: "Sunucu URL'si", username: "Kullanıcı adı", password: "Şifre", login: "Giriş yap", connecting: "IPTV sunucusuna bağlanılıyor...", loginFailed: "Giriş başarısız.", modes: "MODLAR", modeFavorites: "Favoriler", modeLive: "Canlı TV", modeMovies: "Filmler", modeSeries: "Diziler", region: "ÜLKE", categories: "KATEGORİLER", allRegions: "TÜMÜ", channels: "KANALLAR", movies: "FİLMLER", series: "DİZİLER", liveNow: "Canlı yayın", noNextProgram: "Sonraki program yok", vodHint: "Yukarı: kontroller | Oynat/Duraklat: değiştir | Sol/Sağ: sar", backToSeries: "← Dizi listesine dön", noEpisodes: "Bölüm bulunamadı", loadingEpisodes: "Bölümler yükleniyor...", unableLoad: "Bölümler yüklenemedi", favoritesRemoved: "Favorilerden çıkarıldı", favoritesAdded: "Favorilere eklendi", moveOnlyFavorites: "Taşıma modu yalnızca Favorilerde kullanılabilir", moveStarted: "Taşıma başladı", positionSaved: "Sıralama kaydedildi", channelNotFound: "#{number} numaralı kanal bulunamadı", autoplay: "Sonraki bölümü otomatik oynat", colors: "Renkler", backgroundApplied: "Arka plan güncellendi", backgroundRemoved: "Arka plan kaldırıldı", invalidBackground: "Geçerli bir HTTP veya HTTPS görsel URL'si girin", previousEpisode: "Önceki bölüm", nextEpisode: "Sonraki bölüm", profileChanged: "Profil değiştirildi", appReset: "Uygulama sıfırlandı", zapped: "Kanal #{number} açılıyor: {title}", colorRed: "Kırmızı", colorBlue: "Mavi", colorGreen: "Yeşil", colorRose: "Pembe", colorOrange: "Turuncu", colorGold: "Altın", colorTurquoise: "Turkuaz", colorLime: "Fıstık yeşili", colorSky: "Gök mavisi"
     },
     nl: {
-      generalTab: "Algemeen", playbackTab: "Afspelen", profileTab: "Bron", settings: "Instellingen", language: "Taal", autoplayNext: "Volgende aflevering automatisch afspelen", customization: "Aanpassen", switchProfile: "Bron wijzigen", resetApp: "App resetten", close: "Menu sluiten", back: "Terug", accentColor: "Accentkleur", highlightColor: "Markeringskleur", backgroundImage: "URL van achtergrondafbeelding", apply: "Toepassen", removeBackground: "Afbeelding verwijderen", done: "Gereed", previous: "Vorige", next: "Volgende", playPause: "Pauzeren / afspelen", serverUrl: "Server-URL", username: "Gebruikersnaam", password: "Wachtwoord", login: "Inloggen", connecting: "Verbinden met IPTV-server...", loginFailed: "Inloggen mislukt.", modes: "MODI", modeFavorites: "Favorieten", modeLive: "Live-tv", modeMovies: "Films", modeSeries: "Series", region: "REGIO", categories: "CATEGORIEËN", allRegions: "ALL", channels: "KANALEN", movies: "FILMS", series: "SERIES", liveNow: "Live-uitzending", noNextProgram: "Geen volgend programma", vodHint: "Omhoog: bediening | Afspelen/Pauze: wisselen | Links/Rechts: zoeken", backToSeries: "← Terug naar series", noEpisodes: "Geen afleveringen gevonden", loadingEpisodes: "Afleveringen laden...", unableLoad: "Afleveringen laden mislukt", favoritesRemoved: "Verwijderd uit favorieten", favoritesAdded: "Toegevoegd aan favorieten", moveOnlyFavorites: "Verplaatsen kan alleen in Favorieten", moveStarted: "Verplaatsen gestart", positionSaved: "Positie opgeslagen", channelNotFound: "Kanaal #{number} niet gevonden", autoplay: "Volgende aflevering automatisch afspelen", colors: "Kleuren", backgroundApplied: "Achtergrond bijgewerkt", backgroundRemoved: "Achtergrond verwijderd", invalidBackground: "Voer een geldige HTTP- of HTTPS-afbeeldings-URL in", previousEpisode: "Vorige aflevering", nextEpisode: "Volgende aflevering", profileChanged: "Profiel gewijzigd", appReset: "App gereset", zapped: "Kanaal #{number} wordt afgespeeld: {title}", colorRed: "Rood", colorBlue: "Blauw", colorGreen: "Groen", colorRose: "Roze", colorOrange: "Oranje", colorGold: "Goud", colorTurquoise: "Turquoise", colorLime: "Limoen", colorSky: "Hemelsblauw"
+      addonsTab: "Add-ons",
+      generalTab: "Algemeen", playbackTab: "Afspelen", profileTab: "Bron", settings: "Instellingen", language: "Taal", autoplayNext: "Volgende aflevering automatisch afspelen", customization: "Aanpassen", switchProfile: "Bron wijzigen", resetApp: "App resetten", close: "Menu sluiten", back: "Terug", accentColor: "Primaire kleur", highlightColor: "Secundaire kleur", bgTintLabel: "Achtergrondtint", backgroundImage: "URL van achtergrondafbeelding", apply: "Toepassen", removeBackground: "Afbeelding verwijderen", done: "Gereed", previous: "Vorige", next: "Volgende", playPause: "Pauzeren / afspelen", serverUrl: "Server-URL", username: "Gebruikersnaam", password: "Wachtwoord", login: "Inloggen", connecting: "Verbinden met IPTV-server...", loginFailed: "Inloggen mislukt.", modes: "MODI", modeFavorites: "Favorieten", modeLive: "Live-tv", modeMovies: "Films", modeSeries: "Series", region: "LAND", categories: "CATEGORIEËN", allRegions: "ALLES", channels: "KANALEN", movies: "FILMS", series: "SERIES", liveNow: "Live-uitzending", noNextProgram: "Geen volgend programma", vodHint: "Omhoog: bediening | Afspelen/Pauze: wisselen | Links/Rechts: zoeken", backToSeries: "← Terug naar series", noEpisodes: "Geen afleveringen gevonden", loadingEpisodes: "Afleveringen laden...", unableLoad: "Afleveringen laden mislukt", favoritesRemoved: "Verwijderd uit favorieten", favoritesAdded: "Toegevoegd aan favorieten", moveOnlyFavorites: "Verplaatsen kan alleen in Favorieten", moveStarted: "Verplaatsen gestart", positionSaved: "Positie opgeslagen", channelNotFound: "Kanaal #{number} niet gevonden", autoplay: "Volgende aflevering automatisch afspelen", colors: "Kleuren", backgroundApplied: "Achtergrond bijgewerkt", backgroundRemoved: "Achtergrond verwijderd", invalidBackground: "Voer een geldige HTTP- of HTTPS-afbeeldings-URL in", previousEpisode: "Vorige aflevering", nextEpisode: "Volgende aflevering", profileChanged: "Profiel gewijzigd", appReset: "App gereset", zapped: "Kanaal #{number} wordt afgespeeld: {title}", colorRed: "Rood", colorBlue: "Blauw", colorGreen: "Groen", colorRose: "Roze", colorOrange: "Oranje", colorGold: "Goud", colorTurquoise: "Turquoise", colorLime: "Limoen", colorSky: "Hemelsblauw"
     },
     fr: {
-      generalTab: "Général", playbackTab: "Lecture", profileTab: "Source", settings: "Paramètres", language: "Langue", autoplayNext: "Lire automatiquement l’épisode suivant", customization: "Personnalisation", switchProfile: "Changer de source", resetApp: "Réinitialiser l’application", close: "Fermer le menu", back: "Retour", accentColor: "Couleur d’accentuation", highlightColor: "Couleur de surbrillance", backgroundImage: "URL de l’image d’arrière-plan", apply: "Appliquer", removeBackground: "Supprimer l’image", done: "Terminé", previous: "Précédent", next: "Suivant", playPause: "Pause / lecture", serverUrl: "URL du serveur", username: "Nom d’utilisateur", password: "Mot de passe", login: "Connexion", connecting: "Connexion au serveur IPTV...", loginFailed: "Échec de la connexion.", modes: "MODES", modeFavorites: "Favoris", modeLive: "TV en direct", modeMovies: "Films", modeSeries: "Séries", region: "RÉGION", categories: "CATÉGORIES", allRegions: "ALL", channels: "CHAÎNES", movies: "FILMS", series: "SÉRIES", liveNow: "En direct", noNextProgram: "Aucun programme suivant", vodHint: "Haut : commandes | Lecture/Pause : basculer | Gauche/Droite : avancer", backToSeries: "← Retour aux séries", noEpisodes: "Aucun épisode trouvé", loadingEpisodes: "Chargement des épisodes...", unableLoad: "Impossible de charger les épisodes", favoritesRemoved: "Retiré des favoris", favoritesAdded: "Ajouté aux favoris", moveOnlyFavorites: "Le déplacement est réservé aux Favoris", moveStarted: "Déplacement commencé", positionSaved: "Position enregistrée", channelNotFound: "Chaîne #{number} introuvable", autoplay: "Lire automatiquement l’épisode suivant", colors: "Couleurs", backgroundApplied: "Arrière-plan mis à jour", backgroundRemoved: "Arrière-plan supprimé", invalidBackground: "Saisissez une URL d’image HTTP ou HTTPS valide", previousEpisode: "Épisode précédent", nextEpisode: "Épisode suivant", profileChanged: "Profil modifié", appReset: "Application réinitialisée", zapped: "Lecture de la chaîne #{number} : {title}", colorRed: "Rouge", colorBlue: "Bleu", colorGreen: "Vert", colorRose: "Rose", colorOrange: "Orange", colorGold: "Or", colorTurquoise: "Turquoise", colorLime: "Citron vert", colorSky: "Bleu ciel"
+      addonsTab: "Extensions",
+      generalTab: "Général", playbackTab: "Lecture", profileTab: "Source", settings: "Paramètres", language: "Langue", autoplayNext: "Lire automatiquement l’épisode suivant", customization: "Personnalisation", switchProfile: "Changer de source", resetApp: "Réinitialiser l’application", close: "Fermer le menu", back: "Retour", accentColor: "Couleur primaire", highlightColor: "Couleur secondaire", bgTintLabel: "Teinte d'arrière-plan", backgroundImage: "URL de l’image d’arrière-plan", apply: "Appliquer", removeBackground: "Supprimer l’image", done: "Terminé", previous: "Précédent", next: "Suivant", playPause: "Pause / lecture", serverUrl: "URL du serveur", username: "Nom d’utilisateur", password: "Mot de passe", login: "Connexion", connecting: "Connexion au serveur IPTV...", loginFailed: "Échec de la connexion.", modes: "MODES", modeFavorites: "Favoris", modeLive: "TV en direct", modeMovies: "Films", modeSeries: "Séries", region: "PAYS", categories: "CATÉGORIES", allRegions: "TOUT", channels: "CHAÎNES", movies: "FILMS", series: "SÉRIES", liveNow: "En direct", noNextProgram: "Aucun programme suivant", vodHint: "Haut : commandes | Lecture/Pause : basculer | Gauche/Droite : avancer", backToSeries: "← Retour aux séries", noEpisodes: "Aucun épisode trouvé", loadingEpisodes: "Chargement des épisodes...", unableLoad: "Impossible de charger les épisodes", favoritesRemoved: "Retiré des favoris", favoritesAdded: "Ajouté aux favoris", moveOnlyFavorites: "Le déplacement est réservé aux Favoris", moveStarted: "Déplacement commencé", positionSaved: "Position enregistrée", channelNotFound: "Chaîne #{number} introuvable", autoplay: "Lire automatiquement l’épisode suivant", colors: "Couleurs", backgroundApplied: "Arrière-plan mis à jour", backgroundRemoved: "Arrière-plan supprimé", invalidBackground: "Saisissez une URL d’image HTTP ou HTTPS valide", previousEpisode: "Épisode précédent", nextEpisode: "Épisode suivant", profileChanged: "Profil modifié", appReset: "Application réinitialisée", zapped: "Lecture de la chaîne #{number} : {title}", colorRed: "Rouge", colorBlue: "Bleu", colorGreen: "Vert", colorRose: "Rose", colorOrange: "Orange", colorGold: "Or", colorTurquoise: "Turquoise", colorLime: "Citron vert", colorSky: "Bleu ciel"
     }
   };
 
@@ -135,12 +218,9 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.assign(appTranslations.fr, { m3uProfiles: "Playlists enregistrées", m3uProfileNew: "+ Nouvelle playlist", m3uProfileName: "Nom de la playlist", generateM3uPrompt: "Générer la playlist M3U à partir de votre connexion Xtream ?" });
   Object.assign(appTranslations.en, { showPassword: "Show", hidePassword: "Hide", accountDetails: "Account", accountStatus: "Status", accountExpires: "Expires", accountDaysLeft: "{days} days left", accountExpired: "Expired", accountUnlimited: "Unlimited", accountConnections: "Connections", accountTrial: "Trial", accountCreated: "Created", accountFormats: "Formats", testingConnection: "Testing connection...", connectionOk: "Connection OK" });
   Object.assign(appTranslations.tr, { showPassword: "Göster", hidePassword: "Gizle", accountDetails: "Hesap", accountStatus: "Durum", accountExpires: "Bitiş", accountDaysLeft: "{days} gün kaldı", accountExpired: "Süresi doldu", accountUnlimited: "Sınırsız", accountConnections: "Bağlantılar", accountTrial: "Deneme", accountCreated: "Oluşturulma", accountFormats: "Formatlar", testingConnection: "Bağlantı test ediliyor...", connectionOk: "Bağlantı tamam" });
+
   Object.assign(appTranslations.nl, { showPassword: "Tonen", hidePassword: "Verbergen", accountDetails: "Account", accountStatus: "Status", accountExpires: "Vervalt", accountDaysLeft: "{days} dagen over", accountExpired: "Verlopen", accountUnlimited: "Onbeperkt", accountConnections: "Verbindingen", accountTrial: "Proef", accountCreated: "Aangemaakt", accountFormats: "Formaten", testingConnection: "Verbinding testen...", connectionOk: "Verbinding OK" });
   Object.assign(appTranslations.fr, { showPassword: "Afficher", hidePassword: "Masquer", accountDetails: "Compte", accountStatus: "Statut", accountExpires: "Expire le", accountDaysLeft: "{days} jours restants", accountExpired: "Expiré", accountUnlimited: "Illimité", accountConnections: "Connexions", accountTrial: "Essai", accountCreated: "Créé le", accountFormats: "Formats", testingConnection: "Test de la connexion...", connectionOk: "Connexion OK" });
-  Object.assign(appTranslations.en, { testConnection: "Test connection", providerIntro: "Sign in once. Your categories open right away, and the full channel list downloads in the background.", providerStepAccount: "Checking account", providerStepCategories: "Loading movies and series", providerStepOpen: "Opening the app", providerStepPlaylist: "Channel list (background)" });
-  Object.assign(appTranslations.tr, { testConnection: "Bağlantıyı test et", providerIntro: "Bir kez giriş yapın. Kategoriler hemen açılır, tam kanal listesi arka planda indirilir.", providerStepAccount: "Hesap kontrol ediliyor", providerStepCategories: "Film ve diziler yükleniyor", providerStepOpen: "Uygulama açılıyor", providerStepPlaylist: "Kanal listesi (arka planda)" });
-  Object.assign(appTranslations.nl, { testConnection: "Verbinding testen", providerIntro: "Meld je één keer aan. Je categorieën openen meteen en de volledige zenderlijst wordt op de achtergrond gedownload.", providerStepAccount: "Account controleren", providerStepCategories: "Films en series laden", providerStepOpen: "App openen", providerStepPlaylist: "Zenderlijst (achtergrond)" });
-  Object.assign(appTranslations.fr, { testConnection: "Tester la connexion", providerIntro: "Connectez-vous une seule fois. Les catégories s’ouvrent tout de suite et la liste complète des chaînes se télécharge en arrière-plan.", providerStepAccount: "Vérification du compte", providerStepCategories: "Chargement des films et séries", providerStepOpen: "Ouverture de l’application", providerStepPlaylist: "Liste des chaînes (arrière-plan)" });
   Object.assign(appTranslations.en, { presetBackgrounds: "Presets" });
   Object.assign(appTranslations.tr, { presetBackgrounds: "Hazır arka planlar" });
   Object.assign(appTranslations.nl, { presetBackgrounds: "Voorinstellingen" });
@@ -222,10 +302,34 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let currentAuth = null;
-  Object.assign(appTranslations.en, { categoryLoadTimeout: "This category did not load within 30 s. Check the connection and try again." });
-  Object.assign(appTranslations.tr, { categoryLoadTimeout: "Bu kategori 30 sn içinde yüklenmedi. Bağlantıyı kontrol edip tekrar deneyin." });
-  Object.assign(appTranslations.nl, { categoryLoadTimeout: "Deze categorie laadde niet binnen 30 s. Controleer de verbinding en probeer het opnieuw." });
-  Object.assign(appTranslations.fr, { categoryLoadTimeout: "Cette catégorie ne s'est pas chargée en 30 s. Vérifiez la connexion et réessayez." });
+  Object.assign(appTranslations.en, {
+    categoryLoadTimeout: "This category did not load within 30 s. Check the connection and try again.",
+    vodSettings: "Audio & Subtitles", vodPlayerSettings: "Playback Settings", vodAudioTab: "Audio", vodSubtitlesTab: "Subtitles", vodVideoTab: "Video",
+    vodAudioTrackLabel: "Audio Track / Language", vodSubtitleTrackLabel: "Subtitle Track", vodSubtitleSizeLabel: "Subtitle Size",
+    vodAspectRatioLabel: "Aspect Ratio", vodSpeedLabel: "Playback Speed", sizeSmall: "Small", sizeNormal: "Normal", sizeLarge: "Large",
+    aspectFit: "Fit", aspectFill: "Fill / Crop", aspectStretch: "16:9 Stretch", off: "Off", noAudioTracks: "No additional audio tracks found", noSubTracks: "No subtitle tracks found"
+  });
+  Object.assign(appTranslations.tr, {
+    categoryLoadTimeout: "Bu kategori 30 sn içinde yüklenmedi. Bağlantıyı kontrol edip tekrar deneyin.",
+    vodSettings: "Ses ve Altyazı", vodPlayerSettings: "Oynatma Ayarları", vodAudioTab: "Ses", vodSubtitlesTab: "Altyazılar", vodVideoTab: "Video",
+    vodAudioTrackLabel: "Ses Kaynağı / Dili", vodSubtitleTrackLabel: "Altyazı Parçası", vodSubtitleSizeLabel: "Altyazı Boyutu",
+    vodAspectRatioLabel: "En Boy Oranı", vodSpeedLabel: "Oynatma Hızı", sizeSmall: "Küçük", sizeNormal: "Normal", sizeLarge: "Büyük",
+    aspectFit: "Sığdır", aspectFill: "Doldur / Kırp", aspectStretch: "16:9 Genişlet", off: "Kapalı", noAudioTracks: "Ek ses parçası bulunamadı", noSubTracks: "Altyazı parçası bulunamadı"
+  });
+  Object.assign(appTranslations.nl, {
+    categoryLoadTimeout: "Deze categorie laadde niet binnen 30 s. Controleer de verbinding en probeer het opnieuw.",
+    vodSettings: "Audio & Ondertitels", vodPlayerSettings: "Afspeelinstellingen", vodAudioTab: "Audio", vodSubtitlesTab: "Ondertitels", vodVideoTab: "Video",
+    vodAudioTrackLabel: "Audiobron / Taal", vodSubtitleTrackLabel: "Ondertitelspoor", vodSubtitleSizeLabel: "Ondertitelgrootte",
+    vodAspectRatioLabel: "Beeldverhouding", vodSpeedLabel: "Afspeelsnelheid", sizeSmall: "Klein", sizeNormal: "Normaal", sizeLarge: "Groot",
+    aspectFit: "Passend", aspectFill: "Vullend", aspectStretch: "16:9 Uitrekken", off: "Uit", noAudioTracks: "Geen extra audiosporen gevonden", noSubTracks: "Geen ondertitels gevonden"
+  });
+  Object.assign(appTranslations.fr, {
+    categoryLoadTimeout: "Cette catégorie ne s'est pas chargée en 30 s. Vérifiez la connexion et réessayez.",
+    vodSettings: "Audio & Sous-titres", vodPlayerSettings: "Paramètres de lecture", vodAudioTab: "Audio", vodSubtitlesTab: "Sous-titres", vodVideoTab: "Vidéo",
+    vodAudioTrackLabel: "Piste audio / Langue", vodSubtitleTrackLabel: "Piste de sous-titres", vodSubtitleSizeLabel: "Taille des sous-titres",
+    vodAspectRatioLabel: "Format de l'image", vodSpeedLabel: "Vitesse de lecture", sizeSmall: "Petit", sizeNormal: "Normal", sizeLarge: "Grand",
+    aspectFit: "Ajuster", aspectFill: "Remplir", aspectStretch: "Étirer 16:9", off: "Désactivé", noAudioTracks: "Aucune piste audio supplémentaire trouvée", noSubTracks: "Aucun sous-titre trouvé"
+  });
 
   const CATEGORY_LOAD_TIMEOUT_MS = 30000;
 
@@ -233,7 +337,15 @@ document.addEventListener("DOMContentLoaded", () => {
   let allStreams = [];
   let vodStreams = [];
   let vodCategories = [];
+  try {
+    const rawVod = store.getItem("iptv_vod_categories_cache");
+    if (rawVod) vodCategories = JSON.parse(rawVod);
+  } catch (e) {}
   let seriesCategories = [];
+  try {
+    const rawSeries = store.getItem("iptv_series_categories_cache");
+    if (rawSeries) seriesCategories = JSON.parse(rawSeries);
+  } catch (e) {}
   let xtreamCategoriesLoading = false;
   let seriesStreams = [];
   let selectedSeries = null;
@@ -241,6 +353,22 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentVodMovieId = null;
   let allCategories = [];
   let favoritesNs = "";
+  let streamByIdMap = {};
+  let streamsByCatMap = {};
+
+  function rebuildStreamIndexes() {
+    streamByIdMap = {};
+    streamsByCatMap = {};
+    if (!allStreams || !allStreams.length) return;
+    for (let i = 0; i < allStreams.length; i++) {
+      const s = allStreams[i];
+      const sId = String(s.stream_id);
+      streamByIdMap[sId] = s;
+      const cId = String(s.category_id || "all");
+      if (!streamsByCatMap[cId]) streamsByCatMap[cId] = [];
+      streamsByCatMap[cId].push(s);
+    }
+  }
 
   function readFavorites(key) {
     try {
@@ -305,7 +433,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let osdTimeout = null;
   let vodOsdTimeout = null;
   let isFitScreen = false;
-  let movingStreamId = null;
+  // Pick-stack move mode (favourites only): moveStack holds the picked-up channel ids, in pick order.
+  let moveMode = false;
+  let moveStack = [];
+  let moveFirstId = null;
 
   let numberBuffer = "";
   let numberTimer = null;
@@ -331,27 +462,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (state === "logged-in" && sources.length) loginStatus.textContent += " · " + sources.join(" + ");
     }
     if (state === "failed") toggleLoginPanel(true, true);
-  }
-
-  // Marks the provider intro steps as done or active; numbers update with the state.
-  function setLoginSteps(doneKeys, activeKey) {
-    document.querySelectorAll("#providerSteps li").forEach((item) => {
-      const key = item.dataset.step;
-      const isDone = doneKeys.includes(key);
-      item.classList.toggle("done", isDone);
-      item.classList.toggle("active", key === activeKey);
-      const number = item.querySelector(".provider-step-n");
-      if (!number) return;
-      const position = Array.from(item.parentNode.children).indexOf(item) + 1;
-      number.textContent = isDone ? "✓" : item.classList.contains("bg") ? "+" : String(position);
-    });
-  }
-
-  function syncMethodSegment() {
-    if (!loginMethod) return;
-    document.querySelectorAll(".method-segment [data-method]").forEach((item) => {
-      item.classList.toggle("on", item.dataset.method === loginMethod.value);
-    });
   }
 
   // A single progress bar on the main screen, visible from Settings too.
@@ -407,20 +517,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function toggleSettingsMenu(forceOpen = null) {
-    if (!settingsPanel || !settingsButton) return;
+    if (!settingsPanel) return;
     const shouldOpen = forceOpen !== null ? forceOpen : settingsPanel.classList.contains("hidden");
     if (shouldOpen && isFitScreen) {
       isFitScreen = false;
       document.body.classList.remove("speler-fit-screen");
     }
     settingsPanel.classList.toggle("hidden", !shouldOpen);
-    settingsButton.setAttribute("aria-expanded", String(shouldOpen));
+    if (settingsButton) settingsButton.setAttribute("aria-expanded", String(shouldOpen));
+    if (headerTabSettings) headerTabSettings.classList.toggle("active", shouldOpen);
     if (shouldOpen) {
       showCustomizationTab("general");
-      const firstItem = settingsPanel.querySelector(".customization-tab.active");
-      if (firstItem) setElementFocus(firstItem);
+      const firstItem = settingsPanel.querySelector(".customization-tab.active") || settingsPanel.querySelector(".customization-tab");
+      if (firstItem) {
+        setElementFocus(firstItem);
+        setTimeout(() => centerCustomizationNav(firstItem), 30);
+      }
     } else {
-      if (appPage && !appPage.classList.contains("hidden")) setElementFocus(settingsButton);
+      if (currentAppSection === "settings") {
+        switchAppSection(previousAppSection || "iptv");
+      }
+      if (favorites && favorites.length > 0) {
+        currentModus = "favorites";
+        filterChannels();
+        if (window.AeroRadial) {
+          window.AeroRadial.setMode(0); // 0: Favorites
+        }
+      }
+      document.body.classList.add("radial-active");
+      if (window.AeroRadial) window.AeroRadial.open();
     }
   }
 
@@ -505,18 +630,21 @@ document.addEventListener("DOMContentLoaded", () => {
       const backgroundImage = saved.backgroundImage === undefined
         ? DEFAULT_BACKGROUND
         : normalizeBackgroundSource(saved.backgroundImage);
+      const bgTint = typeof saved.bgTint === "number" ? Math.min(Math.max(saved.bgTint, 10), 95) : 55;
       return {
         accent: /^#[0-9a-f]{6}$/i.test(saved.accent || "") ? saved.accent : "#e50914",
         highlight: /^#[0-9a-f]{6}$/i.test(saved.highlight || "") ? saved.highlight : "#ffd700",
         focusWidth: clampFocusWidth(saved.focusWidth),
+        bgTint,
         backgroundImage
       };
     } catch (error) {
-      return { accent: "#e50914", highlight: "#ffd700", focusWidth: 5, backgroundImage: DEFAULT_BACKGROUND };
+      return { accent: "#e50914", highlight: "#ffd700", focusWidth: 5, bgTint: 55, backgroundImage: DEFAULT_BACKGROUND };
     }
   }
 
   let themeConfig = loadThemeConfig();
+  try { store.removeItem("iptv_nav_theme"); } catch (e) {}
 
   const TRAIL_STEPS = 10;
 
@@ -530,6 +658,13 @@ document.addEventListener("DOMContentLoaded", () => {
     root.style.setProperty("--focus-width", `${themeConfig.focusWidth}px`);
     if (focusWidthRange) focusWidthRange.value = String(themeConfig.focusWidth);
     if (focusWidthValue) focusWidthValue.textContent = `${themeConfig.focusWidth}px`;
+    const bgTintRange = document.getElementById("bgTintRange");
+    const bgTintValue = document.getElementById("bgTintValue");
+    const tintVal = typeof themeConfig.bgTint === "number" ? themeConfig.bgTint : 55;
+    if (bgTintRange) bgTintRange.value = String(tintVal);
+    if (bgTintValue) bgTintValue.textContent = `${tintVal}%`;
+    const tintAlpha = tintVal / 100;
+    root.style.setProperty("--settings-tint-alpha", String(tintAlpha));
     const mixColor = (from, to, amount) => {
       const start = toRgb(from).split(", ").map(Number);
       const end = toRgb(to).split(", ").map(Number);
@@ -567,8 +702,25 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.style.backgroundImage = "none";
       document.body.classList.remove("kc-has-bg");
     }
+    const bgUrl = themeConfig.backgroundImage || DEFAULT_BACKGROUND;
+    root.style.setProperty("--settings-bg", `url("${bgUrl}")`);
+    const setPage = document.getElementById("settingsPage");
+    if (setPage) {
+      setPage.style.backgroundImage = `linear-gradient(135deg, rgba(6, 8, 14, ${tintAlpha}) 0%, rgba(9, 12, 20, ${Math.min(tintAlpha + 0.15, 0.98)}) 100%), url("${bgUrl}")`;
+      setPage.style.backgroundSize = "cover";
+      setPage.style.backgroundPosition = "center";
+      setPage.style.backgroundColor = "transparent";
+    }
+
     store.setItem("iptv_theme", JSON.stringify(themeConfig));
   }
+
+  function updateBgTint(value) {
+    themeConfig.bgTint = Math.min(Math.max(Number(value) || 55, 10), 95);
+    applyThemeConfig();
+  }
+
+
 
   function updateThemeColor(role, color) {
     if ((role !== "accent" && role !== "highlight") || !/^#[0-9a-f]{6}$/i.test(color || "")) return;
@@ -677,18 +829,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const list = nav && nav.querySelector(".customization-nav-list");
     if (!item || !list) return;
     nav.scrollTop = 0;
-    const offset = nav.clientHeight / 2 - (item.offsetTop + item.offsetHeight / 2);
+    const offset = Math.round((nav.clientHeight / 2) - (item.offsetTop + item.offsetHeight / 2));
     list.style.transform = `translateY(${offset}px)`;
   }
 
   function showCustomizationTab(name) {
     if (!customizationPage) return;
+    if (name === "addons" && typeof renderInstalledAddons === "function") {
+      renderInstalledAddons();
+    }
     customizationPage.querySelectorAll(".customization-tab").forEach(tab => {
       tab.classList.toggle("active", tab.dataset.tab === name);
     });
     customizationPage.querySelectorAll(".customization-pane").forEach(pane => {
       pane.classList.toggle("hidden", pane.dataset.pane !== name);
     });
+    const custContent = customizationPage.querySelector(".customization-content");
+    if (custContent) custContent.scrollTop = 0;
   }
 
   function showCustomizationPage(show, tab = "general") {
@@ -696,7 +853,11 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleSettingsMenu(show);
     if (show) {
       showCustomizationTab(tab);
-      setElementFocus(customizationPage.querySelector(`.customization-tab[data-tab="${tab}"]`));
+      const targetTab = customizationPage.querySelector(`.customization-tab[data-tab="${tab}"]`);
+      if (targetTab) {
+        setElementFocus(targetTab);
+        setTimeout(() => centerCustomizationNav(targetTab), 30);
+      }
     }
   }
 
@@ -754,36 +915,90 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!str) return "";
     const kept = keep || [];
     const tags = TITLE_TAGS.filter((tag) => kept.indexOf(tag) === -1);
-    let text = str.replace(/\([^)]*\)/g, "").replace(/^[A-Z0-9]{2,5}\s*:\s*/i, "");
+    let text = str
+      .replace(/^\[[^\]]*\]\s*/, "")
+      .replace(/^\([A-Za-z0-9-]+\)\s*/, "")
+      .replace(/\([^)]*\)/g, "")
+      .replace(/^[A-Z0-9]{2,5}\s*[:|-]\s*/i, "");
     if (tags.length) text = text.replace(new RegExp("\\b(" + tags.join("|") + ")\\b", "gi"), "");
     return text.replace(/\s{2,}/g, " ").trim();
   }
+  window.kcCleanTitle = cleanTitle;
 
   function extractRegionFromCategory(catName, isVod) {
     if (!catName) return "";
-    if (isVod) {
-      const match = catName.match(/\(VI([A-Z0-9-]+)[|)]/i);
-      if (match && match[1]) return match[1].replace("-", "").toUpperCase();
+    let clean = catName.trim();
+
+    // 1. Check bracketed prefix like (V|PL), (V|TR), (S|TR), (V:TR), (V-TR), (VI-TR), [V|TR]
+    const bracketMatch = clean.match(/^[(\[][VS]?[|:_\-\/]([A-Z0-9-]+)[)\]|]/i);
+    if (bracketMatch && bracketMatch[1]) {
+      let r = bracketMatch[1].replace("-", "").toUpperCase();
+      if (/^[VS]([A-Z]{2,3})$/.test(r)) r = RegExp.$1;
+      else if (/^[VS][A-Z]{2,4}$/.test(r)) r = r.substring(1);
+      return r;
     }
-    const prefix = catName.split(" ")[0].replace(/[^a-zA-Z]/g, "").toUpperCase();
-    if (prefix.length >= 2 && prefix.length <= 5) return prefix;
+
+    // 2. Check (VI-TR|...) or similar legacy patterns
+    const viMatch = clean.match(/\(VI-?([A-Z0-9]+)[|)]/i);
+    if (viMatch && viMatch[1]) {
+      let r = viMatch[1].toUpperCase();
+      if (/^[VS]([A-Z]{2,3})$/.test(r)) r = RegExp.$1;
+      return r;
+    }
+
+    // 3. Clean leading symbols
+    clean = clean.replace(/^[|\[\(*•#\s]+/, "");
+    // Strip section prefix words: VOD, SERIES, MOVIES, etc.
+    clean = clean.replace(/^(VOD|SERIES|SERIE|MOVIES|MOVIE|FILMLER|FILM|CINEMA)[\s:|\-_/]+/i, "");
+    clean = clean.replace(/^[|\[\(*•#\s]+/, "");
+
+    // 4. Handle "V|TR" or "S|TR" without brackets
+    const pipePrefixMatch = clean.match(/^[VS][|:_\-\/]([A-Z0-9-]+)/i);
+    if (pipePrefixMatch && pipePrefixMatch[1]) {
+      let r = pipePrefixMatch[1].replace("-", "").toUpperCase();
+      if (/^[VS]([A-Z]{2,3})$/.test(r)) r = RegExp.$1;
+      else if (/^[VS][A-Z]{2,4}$/.test(r)) r = r.substring(1);
+      return r;
+    }
+
+    // 5. Standard country code prefix: "TR | ...", "TR: ...", "VTR | ...", "STR | ..."
+    let prefix = clean.split(/[\s:|\-/]+/)[0].replace(/[^a-zA-Z]/g, "").toUpperCase();
+    if (prefix.length >= 2 && prefix.length <= 5) {
+      if (/^[VS]([A-Z]{2,3})$/.test(prefix)) {
+        prefix = RegExp.$1;
+      } else if (/^[VS][A-Z]{2,4}$/.test(prefix)) {
+        prefix = prefix.substring(1);
+      }
+      return prefix;
+    }
     return "";
   }
 
   let clock24h = store.getItem("iptv_clock_24h") !== "0";
+  let clockSeconds = store.getItem("iptv_clock_seconds") === "1"; // Default OFF
 
   function updateClockFormatButton() {
     const button = document.getElementById("clockFormatButton");
     if (button) setIconLabel(button, "clock", `${clock24h ? "24" : "12"} h`);
+    const secBtn = document.getElementById("clockSecondsButton");
+    if (secBtn) setIconLabel(secBtn, "clock", clockSeconds ? "Saniye: Açık" : "Saniye: Kapalı");
   }
 
   const updateClocks = () => {
     const now = new Date();
-    const clockStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: !clock24h });
+    const timeOpt = { hour: "2-digit", minute: "2-digit", hour12: !clock24h };
+    if (clockSeconds) timeOpt.second = "2-digit";
+    const clockStr = now.toLocaleTimeString([], timeOpt);
     if (headerClock) headerClock.textContent = clockStr;
     if (osdClock) osdClock.textContent = clockStr;
     if (osdDate) osdDate.textContent = now.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
     if (vodOsdClock) vodOsdClock.textContent = clockStr;
+
+    // Update Radial Top Clock
+    const rTime = document.getElementById("radialClockTime");
+    const rDate = document.getElementById("radialClockDate");
+    if (rTime) rTime.textContent = clockStr;
+    if (rDate) rDate.textContent = now.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
   };
   updateClockFormatButton();
   updateClocks();
@@ -961,14 +1176,44 @@ document.addEventListener("DOMContentLoaded", () => {
       if (cachedChannels) {
         // Start from the saved playlist without downloading. The playlist only refreshes on the refresh timer.
         allStreams = cachedChannels.streams;
+        rebuildStreamIndexes();
         allCategories = cachedChannels.categories || [];
         currentLiveRegion = "ALL";
         setLoginState("logged-in");
         switchModus(favorites.length ? "favorites" : "live");
-        if (currentActiveStreams.length > 0) {
-          const first = currentActiveStreams[0];
-          playStream(first.stream_id, first.name, first.stream_icon, 0, first.url);
-          activeerFitScreen();
+
+        let resumed = false;
+        if (autoResumeLastChannel) {
+          try {
+            const raw = store.getItem("iptv_last_stream");
+            if (raw) {
+              const last = JSON.parse(raw);
+              if (last && last.section === "stremio") {
+                // User explicitly requested: Disable Stremio autoplay
+                // Do not auto-play video on boot for Stremio
+                resumed = true;
+                deactiveerFitScreen();
+              } else if (last && last.streamId) {
+                const found = allStreams.find(s => String(s.stream_id) === String(last.streamId));
+                if (found) {
+                  activeerFitScreen();
+                  const targetIdx = currentActiveStreams.findIndex(s => String(s.stream_id) === String(found.stream_id));
+                  const playIdx = targetIdx !== -1 ? targetIdx : 0;
+                  playStream(found.stream_id, found.name, found.stream_icon, playIdx, found.url || last.directUrl);
+                  resumed = true;
+                }
+              }
+            }
+          } catch (e) {}
+
+          if (!resumed && currentActiveStreams.length > 0) {
+            activeerFitScreen();
+            const first = currentActiveStreams[0];
+            playStream(first.stream_id, first.name, first.stream_icon, 0, first.url);
+          }
+        } else {
+          // Auto resume is disabled: do NOT play in background, show channels menu
+          deactiveerFitScreen();
         }
       } else {
         login(currentAuth.playlistUrl, "", "", true, "m3u", false);
@@ -992,6 +1237,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cached = loadChannelCache(sourceUrl);
     if (cached) {
       allStreams = cached.streams;
+      rebuildStreamIndexes();
       allCategories = cached.categories || [];
     } else {
       try {
@@ -1001,6 +1247,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // The download may have finished while waiting; its categories are then already in place.
         if (!Array.isArray(list) || !list.length || loadChannelCache(sourceUrl)) return;
         allStreams = [];
+        rebuildStreamIndexes();
         allCategories = list.map((cat) => ({ category_id: String(cat.category_id), category_name: cat.category_name }));
       } catch (error) {
         return;
@@ -1049,7 +1296,6 @@ document.addEventListener("DOMContentLoaded", () => {
       loginCredentialsRejected = false;
       store.setItem("iptv_xtream_profile", JSON.stringify({ server, username, password }));
       renderLoginAccount(accountInfo);
-      setLoginSteps(["account"], "categories");
       if (!background) {
         setLoginState("logged-in");
         showToast(t("loggedIn"));
@@ -1062,17 +1308,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
       vodCategories = vodCats;
       seriesCategories = seriesCats;
+      try {
+        store.setItem("iptv_vod_categories_cache", JSON.stringify(vodCats));
+        store.setItem("iptv_series_categories_cache", JSON.stringify(seriesCats));
+      } catch (e) {}
       vodStreams = [];
       seriesStreams = [];
       Object.keys(loadedCategories).forEach((key) => { delete loadedCategories[key]; });
       setLoginState("logged-in");
-      setLoginSteps(["account", "categories"], "open");
       if (background) {
-        if (currentModus === "vod" || currentModus === "series") setupRegions();
+        if (currentModus === "vod" || currentModus === "series") {
+          setupRegions();
+          var reg = (currentModus === "vod" ? currentVodRegion : currentLiveRegion) || "ALL";
+          var cList = window.kcGetCategories(reg);
+          if (cList && cList.length) currentCategoryId = cList[0].category_id;
+          filterChannels();
+          if (window.AeroRadial) window.AeroRadial.refresh();
+        }
       } else {
         // The playlist download is separate from login, so a download failure does not fail the login.
         hideLoginProgress();
-        setLoginSteps(["account", "categories", "open"], null);
         showAppPage();
         const defaultUrl = ensureDefaultXtreamPlaylist(server, username, password);
         if (defaultUrl) {
@@ -1082,7 +1337,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (error) {
       hideLoginProgress();
-      setLoginSteps([], null);
       if (error.message === t("invalidCredentials")) loginCredentialsRejected = true;
       renderLoginAccount(null);
       setLoginState(currentAuth ? "logged-in" : "failed");
@@ -1102,7 +1356,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function showAppPage() {
     if (appPage) appPage.classList.remove("hidden");
     toggleLoginPanel(false);
-    setElementFocus(document.querySelector("#modusList [data-modus='favorites']"));
+    const fav = document.querySelector("#modusList [data-modus='favorites']:not(.hidden)");
+    const live = document.querySelector("#modusList [data-modus='live']:not(.hidden)");
+    const first = fav || live || document.querySelector("#modusList .nav-item.focusable:not(.hidden)");
+    if (first) setElementFocus(first);
   }
 
   if (settingsButton && settingsPanel) {
@@ -1114,6 +1371,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const btn = e.target.closest(".settings-item");
       if (!btn) return;
       const setting = btn.dataset.setting;
+      if (!setting) return;
       const value = btn.dataset.value || null;
       handleSettingsAction(setting, value);
     });
@@ -1149,10 +1407,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (m3uLoginFields) m3uLoginFields.classList.toggle("hidden", !useM3u);
       if (xtreamLoginFields) xtreamLoginFields.classList.toggle("hidden", useM3u);
       if (useM3u) renderM3uProfileOptions(m3uUrlInput ? m3uUrlInput.value.trim() : "");
-      syncMethodSegment();
       setLoginErrorMessage("");
     });
-    syncMethodSegment();
   }
 
   if (m3uProfileSelect) {
@@ -1181,6 +1437,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  const clockSecondsButton = document.getElementById("clockSecondsButton");
+  if (clockSecondsButton) {
+    clockSecondsButton.addEventListener("click", () => {
+      clockSeconds = !clockSeconds;
+      store.setItem("iptv_clock_seconds", clockSeconds ? "1" : "0");
+      updateClockFormatButton();
+      updateClocks();
+    });
+  }
 
   if (vodPlaybackControls) {
     vodPlaybackControls.addEventListener("click", e => {
@@ -1198,6 +1463,15 @@ document.addEventListener("DOMContentLoaded", () => {
     autoplayNextToggle.addEventListener("change", () => {
       autoplayNext = autoplayNextToggle.checked;
       store.setItem("iptv_autoplay_next", String(autoplayNext));
+    });
+  }
+
+  let autoResumeLastChannel = store.getItem("iptv_auto_resume_last") === "true";
+  if (autoResumeLastChannelToggle) {
+    autoResumeLastChannelToggle.checked = autoResumeLastChannel;
+    autoResumeLastChannelToggle.addEventListener("change", () => {
+      autoResumeLastChannel = autoResumeLastChannelToggle.checked;
+      store.setItem("iptv_auto_resume_last", String(autoResumeLastChannel));
     });
   }
 
@@ -1258,6 +1532,10 @@ document.addEventListener("DOMContentLoaded", () => {
         updateFocusWidth(e.target.value);
         return;
       }
+      if (e.target.id === "bgTintRange") {
+        updateBgTint(e.target.value);
+        return;
+      }
       const slider = e.target.closest(".hue-range");
       if (!slider) return;
       applyHuePanel(slider.dataset.hueRole);
@@ -1280,7 +1558,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const settingsBack = document.getElementById("settingsBack");
   if (applyBackgroundButton) applyBackgroundButton.addEventListener("click", () => updateBackgroundImage(backgroundImageInput.value));
   if (clearBackgroundButton) clearBackgroundButton.addEventListener("click", () => updateBackgroundImage(""));
-  // Done slides the panel out, then closes it like Back. Focusing Done (Down from the last settings item) starts the same close.
+  // Done slides the panel out, then closes it like Back.
   let settingsCloseTimer = null;
   const closeSettingsAnimated = () => {
     if (!settingsPanel || settingsPanel.classList.contains("hidden") || settingsPanel.classList.contains("closing")) return;
@@ -1292,7 +1570,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 260);
   };
   if (settingsDone) {
-    settingsDone.addEventListener("focus", closeSettingsAnimated);
     settingsDone.addEventListener("click", closeSettingsAnimated);
   }
   if (settingsBack) settingsBack.addEventListener("click", () => showCustomizationPage(false));
@@ -1447,7 +1724,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return pendingCategoryLoads[key];
   }
 
-  // Temporary diagnostic: shows what the TV really receives from the Xtream API.
   async function fetchXtreamAccount(server, username, password) {
     const url = `${server.replace(/\/+$/, "")}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
     const result = await requestText(url, 15000);
@@ -1497,7 +1773,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const valueEl = document.createElement("span");
       valueEl.className = "login-account-value";
       valueEl.textContent = value;
-      row.append(labelEl, valueEl);
+      row.appendChild(labelEl);
+      row.appendChild(valueEl);
       loginAccountRows.appendChild(row);
     });
     loginAccount.classList.remove("hidden");
@@ -1549,6 +1826,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (playlist.streams.length === 0) throw new Error(t("playlistInvalid"));
 
         allStreams = playlist.streams;
+        rebuildStreamIndexes();
         allCategories = playlist.categories;
         saveChannelCache(server, playlist.streams, playlist.categories);
         setFavoritesProvider("m3u");
@@ -1571,6 +1849,7 @@ document.addEventListener("DOMContentLoaded", () => {
         else if (currentModus === "live") filterCategories();
         return;
       }
+      activeerFitScreen();
       showAppPage();
       switchModus(startMode);
 
@@ -1606,10 +1885,27 @@ document.addEventListener("DOMContentLoaded", () => {
   function deactiveerFitScreen() {
     isFitScreen = false;
     if (guideOpen) hideGuide();
-    // Collapse the skipped columns before the layout returns, so the modes list does not flash open.
-    if (currentModus === "live" || currentModus === "favorites") setColumnFocus(3);
     document.body.classList.remove("speler-fit-screen");
     if (vodPauseIcon) vodPauseIcon.classList.add("hidden");
+
+    if (currentAppSection === "stremio") {
+      stopLivePlayback();
+      destroyStreamPlayers();
+      if (tvGrid) tvGrid.classList.add("hidden");
+      setTimeout(() => {
+        const activeSub = currentStremioSubpage === "tv" ? stremioSubpageTv : (currentStremioSubpage === "series" ? stremioSubpageSeries : stremioSubpageMovies);
+        const card = activeSub ? (activeSub.querySelector(".stremio-card.focused") || activeSub.querySelector(".stremio-card.active") || activeSub.querySelector(".stremio-card.focusable")) : null;
+        if (card) setElementFocus(card);
+      }, 50);
+      return;
+    }
+
+    if (document.body.classList.contains("radial-active")) {
+      return;
+    }
+
+    // Collapse the skipped columns before the layout returns, so the modes list does not flash open.
+    if (currentModus === "live" || currentModus === "favorites") setColumnFocus(3);
     if (currentModus === "live" || currentModus === "favorites") {
       setTimeout(() => {
         const card = channelList.querySelector(`[data-stream-id="${currentPlayingStreamId}"]`)
@@ -1736,7 +2032,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     let currentActiveRegion = isVod ? currentVodRegion : currentLiveRegion;
-    if (currentActiveRegion !== "ALL" && (hideRegionColumn || !regions.has(currentActiveRegion))) {
+    if (currentActiveRegion !== "ALL" && (hideRegionColumn || (regions.size > 0 && !regions.has(currentActiveRegion)))) {
       currentActiveRegion = "ALL";
       if (isVod) currentVodRegion = currentActiveRegion;
       else currentLiveRegion = currentActiveRegion;
@@ -1767,6 +2063,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (flagObserver) flagObserver.disconnect();
+    if (document.body.classList.contains("radial-active")) {
+      if (!keepCategories) filterCategories();
+      return;
+    }
     regionList.innerHTML = `<li class="nav-item focusable${currentActiveRegion === "ALL" ? " active" : ""}" data-region="ALL" tabindex="0"><span class="region-label">${t("allRegions")}</span></li>`;
 
     visible.forEach(reg => {
@@ -1774,6 +2074,7 @@ document.addEventListener("DOMContentLoaded", () => {
       li.className = "nav-item focusable" + (reg === currentActiveRegion ? " active" : "") + (movingRegion === reg ? " moving-region" : "");
       li.dataset.region = reg;
       li.tabIndex = 0;
+
       if (regionFlagPath(reg)) {
         const underlay = document.createElement("span");
         underlay.className = "flag-underlay";
@@ -2061,6 +2362,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function filterCategories() {
     if (!categoryList) return;
+    if (document.body.classList.contains("radial-active")) return;
     categoryList.innerHTML = "";
 
     const isVod = (currentModus === "vod" || currentModus === "series");
@@ -2132,6 +2434,8 @@ document.addEventListener("DOMContentLoaded", () => {
         card.dataset.episodeId = episodeId;
         card.dataset.containerExtension = episode.container_extension || episode.container || "mp4";
         card.dataset.title = episode.title || episode.name || `Episode ${episode.episode_num || ""}`;
+        card.dataset.seasonNum = String(episode.season || season.season_number || "1");
+        card.dataset.episodeNum = String(episode.episode_num || "1");
         card.tabIndex = 0;
 
         const episodeNumber = document.createElement("span");
@@ -2149,7 +2453,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function openSeries(seriesCard) {
     const seriesId = seriesCard.dataset.seriesId;
-    if (!seriesId || !xtreamAuth) return;
+    if (!seriesId) return;
+
+    if (seriesCard.dataset.isStremio === "true" && window.StremioEngine) {
+      selectedSeries = { id: seriesId, title: seriesCard.dataset.title, seasons: [], isStremio: true, addonUrl: seriesCard.dataset.addonUrl };
+      channelList.innerHTML = "";
+      contentTitle.textContent = selectedSeries.title;
+      renderCategoryPlaceholders();
+      window.StremioEngine.getSeriesMeta(seriesId, seriesCard.dataset.addonUrl, function(meta) {
+        if (!meta || !Array.isArray(meta.videos)) {
+          showToast("Unable to load episodes");
+          return;
+        }
+        const seasonMap = {};
+        meta.videos.forEach(function(v) {
+          const sNum = v.season || 1;
+          if (!seasonMap[sNum]) {
+            seasonMap[sNum] = { name: "Season " + sNum, season_number: sNum, episodes: [] };
+          }
+          seasonMap[sNum].episodes.push({
+            id: v.id,
+            stream_id: v.id,
+            title: v.name || ("Episode " + (v.episode || "")),
+            episode_num: v.episode || 1,
+            season: sNum,
+            isStremio: true
+          });
+        });
+        const seasons = Object.keys(seasonMap).sort((a,b) => Number(a)-Number(b)).map(k => seasonMap[k]);
+        selectedSeries = { id: seriesId, title: seriesCard.dataset.title, seasons: seasons, isStremio: true };
+        renderSeriesEpisodes();
+        const firstEp = channelList.querySelector(".episode-card");
+        if (firstEp) setElementFocus(firstEp);
+      });
+      return;
+    }
+
+    if (!xtreamAuth) return;
 
     selectedSeries = { id: seriesId, title: seriesCard.dataset.title, seasons: [] };
     channelList.innerHTML = "";
@@ -2227,6 +2567,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderCategoryPlaceholders() {
+    if (currentModus === "live" || currentModus === "favorites") {
+      playerWrapper.classList.remove("hidden");
+      colContent.classList.remove("vod-mode-active");
+      channelList.className = "channel-grid";
+      channelList.innerHTML = '<div style="padding:24px;color:#94a3b8;font-size:1.3rem;">Loading channels...</div>';
+      return;
+    }
     playerWrapper.classList.add("hidden");
     colContent.classList.add("vod-mode-active");
     channelList.className = "netflix-grid";
@@ -2355,7 +2702,10 @@ document.addEventListener("DOMContentLoaded", () => {
           loadedCategories[requestKey] = true;
           showToast(t("playlistUnavailable"));
         }
-        if (isCurrentRequest()) filterChannels();
+        if (isCurrentRequest()) {
+          filterChannels();
+          if (window.AeroRadial) window.AeroRadial.refresh();
+        }
       });
       return;
     }
@@ -2411,28 +2761,48 @@ document.addEventListener("DOMContentLoaded", () => {
     channelList.className = "channel-grid";
     contentTitle.textContent = t("channels");
 
-    currentActiveStreams = currentModus === "favorites" 
-      ? favorites.map(id => allStreams.find(s => s.stream_id.toString() === id.toString())).filter(Boolean)
-      : allStreams.filter(s => s.category_id === currentCategoryId);
+    if (currentModus === "favorites") {
+      currentActiveStreams = [];
+      if (favorites && favorites.length) {
+        for (let f = 0; f < favorites.length; f++) {
+          const item = streamByIdMap[String(favorites[f])];
+          if (item) currentActiveStreams.push(item);
+        }
+      }
+    } else {
+      currentActiveStreams = streamsByCatMap[String(currentCategoryId)] || [];
+      if (!currentActiveStreams.length && allStreams.length) {
+        currentActiveStreams = allStreams.filter(s => {
+          if (currentLiveRegion === "ALL" || !currentLiveRegion) return true;
+          return extractRegionFromCategory(s.category_name || "", false) === currentLiveRegion;
+        });
+      }
+    }
 
-    currentActiveStreams.forEach((s, idx) => {
+    channelList.innerHTML = "";
+    if (document.body.classList.contains("radial-active")) {
+      if (window.AeroRadial) window.AeroRadial.refresh();
+      return;
+    }
+
+    const domBatch = currentActiveStreams.slice(0, 50);
+    domBatch.forEach((s, idx) => {
       const isFav = favorites.includes(s.stream_id.toString());
-      const isMoving = movingStreamId === s.stream_id.toString();
+      const numStr = (idx + 1).toString();
+
       const li = document.createElement("li");
-      li.className = "channel-card focusable" + (idx === currentStreamIndex ? " active" : "") + (isMoving ? " moving-card" : "");
+      li.className = "channel-card focusable" + (String(s.stream_id) === String(currentPlayingStreamId) ? " active" : "");
       li.dataset.streamId = s.stream_id;
       li.dataset.index = idx;
       li.dataset.streamIcon = s.stream_icon || "";
       li.dataset.streamUrl = s.url || "";
       li.tabIndex = 0;
-
-      const numStr = (idx + 1).toString();
       const logoHtml = s.stream_icon 
         ? `<img data-src="${s.stream_icon}" class="channel-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
            <div class="channel-logo-placeholder" style="display:none;">TV</div>`
         : `<div class="channel-logo-placeholder">TV</div>`;
 
-      const starColor = isFav ? "var(--highlight)" : "#444455";
+      const starColor = isFav ? "#ffd700" : "#444455";
       const starSvg = `<svg style="width:24px;height:24px;fill:${starColor};min-width:24px;" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
 
       li.innerHTML = `
@@ -2448,6 +2818,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (activeCard) centerInList(activeCard, true);
     loadVisiblePosters();
     applyPendingFocus();
+    if (window.AeroRadial) window.AeroRadial.refresh();
   }
 
   function switchModus(modus) {
@@ -2499,40 +2870,160 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function toggleMoveMode(streamId) {
+  // Pick-stack move (favourites only). OK picks up channels into a stack shown in a slot, Up/Down moves the slot,
+  // OK takes the channel under the gap into the stack, red drops, Back undoes. The favourites are only written on red.
+  function moveSlot() {
+    return channelList.querySelector(".pick-slot");
+  }
+
+  function resetMoveState() {
+    moveMode = false;
+    moveStack = [];
+    moveFirstId = null;
+    if (moveBanner) moveBanner.classList.add("hidden");
+  }
+
+  function toggleMoveMode() {
     if (currentModus !== "favorites") {
       showToast(`⚠️ ${t("moveOnlyFavorites")}`);
       return;
     }
-    if (!streamId) return;
-    const sId = streamId.toString();
-    if (!movingStreamId) {
-      movingStreamId = sId;
-      moveBanner.classList.remove("hidden");
-      showToast(`🔴 ${t("moveStarted")}`);
-    } else {
-      movingStreamId = null;
-      moveBanner.classList.add("hidden");
-      showToast(`✅ ${t("positionSaved")}`);
+    if (moveMode && moveStack.length) {
+      dropMove();
+      return;
     }
-    filterChannels();
+    if (moveMode) {
+      cancelMoveMode();
+      return;
+    }
+    moveMode = true;
+    if (moveBanner) moveBanner.classList.remove("hidden");
+    showToast(`🔴 ${t("moveStarted")}`);
   }
 
-  function stepMoveFavorite(delta) {
-    if (!movingStreamId || currentModus !== "favorites") return;
-    const idx = favorites.indexOf(movingStreamId);
-    if (idx < 0) return;
-    const newIdx = idx + delta;
-    if (newIdx >= 0 && newIdx < favorites.length) {
-      const temp = favorites[idx];
-      favorites[idx] = favorites[newIdx];
-      favorites[newIdx] = temp;
-      saveFavorites(favorites);
+  // Back with a held stack undoes it: favourites were never changed, so rebuilding the list restores the order.
+  function cancelMoveMode() {
+    const firstId = moveFirstId;
+    const hadStack = moveStack.length > 0;
+    resetMoveState();
+    if (hadStack) {
       filterChannels();
-      const targetCard = document.querySelector(`#channelList [data-stream-id="${movingStreamId}"]`);
-      if (targetCard) {
-        setElementFocus(targetCard);
+      const target = channelList.querySelector(`[data-stream-id="${escapeAttr(firstId)}"]`);
+      if (target) setElementFocus(target, true);
+    } else {
+      const focusedRow = channelList.querySelector(".focused");
+      if (focusedRow) centerInList(focusedRow, true);
+    }
+  }
+
+  function dropMove() {
+    const slot = moveSlot();
+    const ids = [];
+    wheelItems(channelList).forEach((el) => {
+      if (el === slot) ids.push(...moveStack);
+      else if (el.dataset.streamId) ids.push(el.dataset.streamId.toString());
+    });
+    // Favourites not shown in this list keep their place at the end.
+    favorites.forEach((id) => {
+      const key = String(id);
+      if (!ids.includes(key)) ids.push(key);
+    });
+    const firstId = moveFirstId;
+    favorites.splice(0, favorites.length, ...ids);
+    saveFavorites(favorites);
+    resetMoveState();
+    filterChannels();
+    const target = channelList.querySelector(`[data-stream-id="${escapeAttr(firstId)}"]`);
+    if (target) setElementFocus(target, true);
+    showToast(`✅ ${t("positionSaved")}`);
+  }
+
+  // The first OK turns the focused channel into the slot. Each later OK takes the channel under the gap into the stack.
+  function pickUpMove(row) {
+    if (!moveMode || currentModus !== "favorites") return;
+    let slot = moveSlot();
+    if (!slot) {
+      if (!row || !row.dataset.streamId) return;
+      moveFirstId = row.dataset.streamId.toString();
+      moveStack = [moveFirstId];
+      slot = row;
+    } else {
+      const rows = wheelItems(channelList);
+      const next = rows[(rows.indexOf(slot) + 1) % rows.length];
+      if (!next || next === slot || !next.dataset.streamId) return;
+      moveStack.push(next.dataset.streamId.toString());
+      next.remove();
+    }
+    slot.classList.add("pick-slot");
+    refreshMoveList(slot);
+    renderMoveStack(slot);
+    syncWheelCopies(channelList);
+    centerInList(slot, true);
+  }
+
+  // Moves the slot one row. The list loops, so moving past either end wraps; a wrap is instant.
+  function stepMoveSlot(delta) {
+    const slot = moveSlot();
+    const rows = wheelItems(channelList);
+    const n = rows.length;
+    if (!slot || n < 2) return;
+    const g = rows.indexOf(slot);
+    const newG = (g + delta + n) % n;
+    const others = rows.filter((el) => el !== slot);
+    channelList.insertBefore(slot, others[newG] || null);
+    refreshMoveList(slot);
+    syncWheelCopies(channelList);
+    const wrapped = (delta > 0 && g === n - 1) || (delta < 0 && g === 0);
+    centerInList(slot, wrapped);
+  }
+
+  // The stack takes one number per channel it holds. The row under the gap gets .pick-preview, so OK visibly targets it.
+  function refreshMoveList(slot) {
+    const rows = wheelItems(channelList);
+    const g = rows.indexOf(slot);
+    const K = moveStack.length;
+    const n = rows.length;
+    const next = n > 1 ? rows[(g + 1) % n] : null;
+    rows.forEach((el, i) => {
+      el.dataset.index = i;
+      const num = el.querySelector(".channel-number");
+      if (num) num.textContent = (i < g ? i + 1 : i === g ? g + 1 : i + K).toString();
+      el.classList.toggle("pick-preview", el === next);
+    });
+  }
+
+  // Draws the held channels as same-sized frames, each 3px further down-right than the one below. The last picked is the top frame.
+  function renderMoveStack(slot) {
+    slot.querySelectorAll(":scope > .pick-layer").forEach((el) => el.remove());
+    const count = moveStack.length;
+    const frames = Math.min(count, 4);
+    const byId = new Map(allStreams.map((s) => [String(s.stream_id), s]));
+    const nameOf = (id) => {
+      const s = byId.get(id);
+      return s ? cleanTitle(s.name) : id;
+    };
+    for (let i = 0; i < frames; i++) {
+      const layer = document.createElement("div");
+      const inset = 3 * (frames - 1 - i);
+      const isTop = i === frames - 1;
+      layer.className = "pick-layer" + (isTop ? " top" : "");
+      layer.style.top = `${3 * i}px`;
+      layer.style.left = `${3 * i}px`;
+      layer.style.bottom = `${inset}px`;
+      layer.style.right = `${inset}px`;
+      if (isTop) {
+        const name = document.createElement("span");
+        name.className = "pick-name";
+        name.textContent = nameOf(moveStack[count - 1]);
+        layer.appendChild(name);
+        if (count > 1) {
+          const badge = document.createElement("span");
+          badge.className = "pick-count";
+          badge.textContent = `×${count}`;
+          layer.appendChild(badge);
+        }
       }
+      slot.appendChild(layer);
     }
   }
 
@@ -2643,25 +3134,54 @@ document.addEventListener("DOMContentLoaded", () => {
       };
   }
 
-  async function fetchEPGData(streamId) {
-    resetEpgTexts();
-    if (!epgVisible) return;
-    const epgs = await getEpgListings(streamId);
-    // Ignore a late reply for a channel the user already left.
-    if (!epgs || String(currentPlayingStreamId) !== String(streamId)) return;
-    const info = nowNextFrom(epgs);
-    document.getElementById("epgCurrTitle").textContent = info.current.title;
-    document.getElementById("epgCurrTime").textContent = info.current.time;
+  let epgDebounceTimer = null;
+
+  function applyEpgInfoToUI(info) {
+    if (!info || !info.current) return;
+    const currTitleEl = document.getElementById("epgCurrTitle");
+    const currTimeEl = document.getElementById("epgCurrTime");
+    if (currTitleEl) currTitleEl.textContent = info.current.title;
+    if (currTimeEl) currTimeEl.textContent = info.current.time;
     if (osdEpgCurrTitle) osdEpgCurrTitle.textContent = info.current.title;
     if (osdEpgCurrDesc) osdEpgCurrDesc.textContent = info.current.description || "";
     if (osdEpgCurrTime) osdEpgCurrTime.textContent = info.current.time;
 
     if (info.next) {
-      document.getElementById("epgNextTitle").textContent = info.next.title;
-      document.getElementById("epgNextTime").textContent = info.next.time;
+      const nextTitleEl = document.getElementById("epgNextTitle");
+      const nextTimeEl = document.getElementById("epgNextTime");
+      if (nextTitleEl) nextTitleEl.textContent = info.next.title;
+      if (nextTimeEl) nextTimeEl.textContent = info.next.time;
       if (osdEpgNextTitle) osdEpgNextTitle.textContent = info.next.title;
       if (osdEpgNextTime) osdEpgNextTime.textContent = info.next.time;
     }
+  }
+
+  async function fetchEPGData(streamId) {
+    resetEpgTexts();
+    if (!epgVisible) return;
+    if (epgDebounceTimer) {
+      clearTimeout(epgDebounceTimer);
+      epgDebounceTimer = null;
+    }
+
+    // Instant paint if already in memory cache (zero network delay)
+    const epgId = epgStreamIdFor(streamId);
+    const cached = epgId ? epgCache[epgId] : null;
+    if (cached && Date.now() - cached.at < 300000 && cached.epgs) {
+      if (String(currentPlayingStreamId) !== String(streamId)) return;
+      const info = nowNextFrom(cached.epgs);
+      applyEpgInfoToUI(info);
+      return;
+    }
+
+    // 350ms Debounce: During rapid zapping, don't compete with video buffer network requests
+    epgDebounceTimer = setTimeout(async () => {
+      if (String(currentPlayingStreamId) !== String(streamId)) return;
+      const epgs = await getEpgListings(streamId);
+      if (!epgs || String(currentPlayingStreamId) !== String(streamId)) return;
+      const info = nowNextFrom(epgs);
+      applyEpgInfoToUI(info);
+    }, 350);
   }
 
   // GUIDE OVERLAY (opened with the Guide key while fullscreen)
@@ -2849,6 +3369,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function openGuide() {
+    if (currentAppSection !== "iptv") return;
     if (!guideOverlay || guideOpen || currentActiveStreams.length === 0) return;
     guideOpen = true;
     guideSelected = Math.max(0, Math.min(currentStreamIndex, currentActiveStreams.length - 1));
@@ -2886,13 +3407,29 @@ document.addEventListener("DOMContentLoaded", () => {
   let lastLive = null;
   let liveReconnectTimer = null;
   let liveReconnectAttempts = 0;
+  let playbackSessionId = 0;
+  let currentStageTimer = null;
+  let isPlaybackHealthy = false;
   let watchdogTime = -1;
-  let watchdogTicks = 0;
+  let watchdogStallSeconds = 0;
 
-  function scheduleLiveReconnect() {
+  function scheduleLiveReconnect(reason) {
     if (!lastLive || liveReconnectTimer) return;
+    isPlaybackHealthy = false;
     liveReconnectAttempts += 1;
-    const delay = Math.min(2000 * liveReconnectAttempts, 10000);
+    // Progressive backoff: 400ms on first retry, 1200ms on 2nd, 2500ms on 3rd, 5000ms onwards
+    let delay = 400;
+    if (liveReconnectAttempts === 2) delay = 1200;
+    else if (liveReconnectAttempts === 3) delay = 2500;
+    else if (liveReconnectAttempts > 3) delay = 5000;
+
+    if (liveReconnectAttempts > 5) {
+      // Don't kill the player permanently on IPTV hiccups!
+      // Keep a slow background retry pulse (every 7s) so stream automatically reloads when server recovers
+      console.warn("Extended reconnect active (attempt #" + liveReconnectAttempts + "). Retrying in 7s. Reason:", reason);
+      delay = 7000;
+    }
+    showPlayerLoading();
     liveReconnectTimer = setTimeout(() => {
       liveReconnectTimer = null;
       if (!lastLive) return;
@@ -2901,23 +3438,47 @@ document.addEventListener("DOMContentLoaded", () => {
     }, delay);
   }
 
-  // Live streams that freeze without raising an error are restarted after ~12s.
+  // Fast Stall & Freeze Watchdog: checks every 1 second
   setInterval(() => {
-    if (!lastLive || liveReconnectTimer || video.paused) {
-      watchdogTicks = 0;
+    if (!lastLive || liveReconnectTimer) {
+      watchdogStallSeconds = 0;
       return;
     }
-    if (video.currentTime === watchdogTime) {
-      watchdogTicks += 1;
-      if (watchdogTicks >= 3) {
-        watchdogTicks = 0;
-        scheduleLiveReconnect();
+    // If browser auto-paused due to network buffer dry-up, attempt soft kick
+    if (video.paused && !video.ended && currentAppSection !== "stremio") {
+      try {
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === "function") playPromise.catch(() => {});
+      } catch (e) {}
+    }
+    // If video is supposed to be playing live
+    if (video.currentTime === watchdogTime && video.readyState >= 2) {
+      watchdogStallSeconds += 1;
+      // At 2 seconds stall: try soft jump to live edge if buffer exists
+      if (watchdogStallSeconds === 2) {
+        try {
+          if (video.buffered && video.buffered.length > 0) {
+            const bufEnd = video.buffered.end(video.buffered.length - 1);
+            if (bufEnd > video.currentTime + 0.3) {
+              video.currentTime = bufEnd - 0.1;
+            }
+          }
+          if (hlsPlayer && typeof hlsPlayer.startLoad === "function") {
+            hlsPlayer.startLoad();
+          }
+        } catch (e) {}
+      } else if (watchdogStallSeconds >= 4) {
+        // Freeze exceeded 4 seconds: trigger instant reconnect & reload!
+        console.warn("Live stream frozen for 4s, triggering auto-reload. Current time:", video.currentTime);
+        watchdogStallSeconds = 0;
+        isPlaybackHealthy = false;
+        scheduleLiveReconnect("Stream stalled / frozen");
       }
     } else {
       watchdogTime = video.currentTime;
-      watchdogTicks = 0;
+      watchdogStallSeconds = 0;
     }
-  }, 4000);
+  }, 1000);
 
   const playerLoading = document.getElementById("playerLoading");
   function showPlayerLoading() {
@@ -2931,9 +3492,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let playbackTimer = null;
   let lastPlaybackReason = "";
+  let lastReportedErrorTime = 0;
+  let lastReportedErrorText = "";
   function reportPlaybackError(reason) {
     lastPlaybackReason = reason;
     console.error("Playback:", reason);
+    const now = Date.now();
+    if (reason === lastReportedErrorText && now - lastReportedErrorTime < 6000) {
+      return;
+    }
+    lastReportedErrorText = reason;
+    lastReportedErrorTime = now;
     showToast(t("streamFailed", { reason }));
   }
   function startPlaybackTimeout() {
@@ -2942,8 +3511,10 @@ document.addEventListener("DOMContentLoaded", () => {
     playbackTimer = setTimeout(() => {
       playbackTimer = null;
       hidePlayerLoading();
-      showToast(t("streamTimedOut", { reason: lastPlaybackReason || t("streamNoData") }));
-    }, 20000);
+      if (!isPlaybackHealthy && lastLive) {
+        scheduleLiveReconnect("Connection timed out");
+      }
+    }, 7000);
   }
   function clearPlaybackTimeout() {
     clearTimeout(playbackTimer);
@@ -2956,46 +3527,902 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   video.addEventListener("playing", () => {
+    isPlaybackHealthy = true;
     liveReconnectAttempts = 0;
+    watchdogStallSeconds = 0;
     clearPlaybackTimeout();
+    if (currentStageTimer) {
+      clearTimeout(currentStageTimer);
+      currentStageTimer = null;
+    }
+    if (liveReconnectTimer) {
+      clearTimeout(liveReconnectTimer);
+      liveReconnectTimer = null;
+    }
     hidePlayerLoading();
   });
+  video.addEventListener("timeupdate", () => {
+    if (video.currentTime > 0) {
+      isPlaybackHealthy = true;
+      if (liveReconnectTimer) {
+        clearTimeout(liveReconnectTimer);
+        liveReconnectTimer = null;
+      }
+      hidePlayerLoading();
+    }
+  });
   video.addEventListener("canplay", hidePlayerLoading);
+
+  // Fast stall detection via native HTML5 events
+  let stallTimeout = null;
+  function handleStreamStall() {
+    if (!lastLive || liveReconnectTimer) return;
+    if (stallTimeout) clearTimeout(stallTimeout);
+    stallTimeout = setTimeout(() => {
+      stallTimeout = null;
+      if (!lastLive || liveReconnectTimer) return;
+      if (video.readyState < 3) {
+        console.warn("Stream waiting/stalled event timed out, reconnecting...");
+        isPlaybackHealthy = false;
+        scheduleLiveReconnect("Buffer underrun");
+      }
+    }, 3000);
+  }
+  video.addEventListener("waiting", handleStreamStall);
+  video.addEventListener("stalled", handleStreamStall);
+
   video.addEventListener("error", () => {
     if (!lastLive) {
       hidePlayerLoading();
       return;
     }
-    reportPlaybackError(mediaErrorReason(video.error));
-    scheduleLiveReconnect();
+    isPlaybackHealthy = false;
+    console.warn("Video element error encountered:", mediaErrorReason(video.error));
+    if (typeof window.__handlePlaybackStageError === "function") {
+      window.__handlePlaybackStageError(mediaErrorReason(video.error));
+    } else {
+      scheduleLiveReconnect(mediaErrorReason(video.error));
+    }
   });
-  video.addEventListener("ended", () => { if (lastLive) scheduleLiveReconnect(); });
+  video.addEventListener("ended", () => {
+    if (lastLive) {
+      isPlaybackHealthy = false;
+      console.warn("Live stream ended event; reconnecting to live edge");
+      scheduleLiveReconnect("Live stream ended");
+    }
+  });
 
   function destroyStreamPlayers() {
-    lastLive = null;
+    isPlaybackHealthy = false;
+    window.__handlePlaybackStageError = null;
+    if (currentStageTimer) {
+      clearTimeout(currentStageTimer);
+      currentStageTimer = null;
+    }
+    if (stallTimeout) {
+      clearTimeout(stallTimeout);
+      stallTimeout = null;
+    }
     if (liveReconnectTimer) {
       clearTimeout(liveReconnectTimer);
       liveReconnectTimer = null;
     }
     if (hlsPlayer) {
-      hlsPlayer.destroy();
+      try { hlsPlayer.destroy(); } catch (e) {}
       hlsPlayer = null;
     }
     if (mpegTsPlayer) {
-      mpegTsPlayer.destroy();
+      try { mpegTsPlayer.destroy(); } catch (e) {}
       mpegTsPlayer = null;
     }
   }
 
   // Live audio must not keep playing behind the movie and series lists.
   function stopLivePlayback() {
+    lastLive = null;
     destroyStreamPlayers();
     video.pause();
     video.removeAttribute("src");
     video.load();
   }
 
-  function playVodMovie(streamId, title, ext) {
+  // =========================================================================
+  // STREMIO ADDONS & STREAM SELECTOR INTEGRATION
+  // =========================================================================
+  const addonManifestInput = document.getElementById("addonManifestInput");
+  const addonInstallBtn = document.getElementById("addonInstallBtn");
+  const addonListContainer = document.getElementById("addonListContainer");
+
+  const streamSelectorModal = document.getElementById("streamSelectorModal");
+  const streamModalTitle = document.getElementById("streamModalTitle");
+  const streamModalSubtitle = document.getElementById("streamModalSubtitle");
+  const streamModalLoading = document.getElementById("streamModalLoading");
+  const streamModalList = document.getElementById("streamModalList");
+  const streamModalClose = document.getElementById("streamModalClose");
+
+  let streamSelectorActive = false;
+  let streamSelectorResolveContext = null;
+
+  function renderInstalledAddons() {
+    if (!addonListContainer || !window.StremioEngine) return;
+    addonListContainer.innerHTML = "";
+    const list = window.StremioEngine.getAddons();
+    list.forEach(function(addon) {
+      const card = document.createElement("div");
+      card.className = "addon-card";
+
+      const info = document.createElement("div");
+      info.className = "addon-card-info";
+
+      const title = document.createElement("div");
+      title.className = "addon-card-title";
+      title.textContent = (addon.manifest && addon.manifest.name) || "Addon";
+
+      const desc = document.createElement("div");
+      desc.className = "addon-card-desc";
+      desc.textContent = (addon.manifest && addon.manifest.description) || addon.transportUrl;
+
+      info.appendChild(title);
+      info.appendChild(desc);
+      card.appendChild(info);
+
+      if (!addon.isCore) {
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "addon-remove-btn focusable";
+        removeBtn.textContent = "Remove";
+        removeBtn.tabIndex = 0;
+        removeBtn.addEventListener("click", function() {
+          window.StremioEngine.removeAddon(addon.transportUrl);
+          renderInstalledAddons();
+          if (currentAppSection === "stremio") initStremioPage();
+          showToast("Addon removed");
+        });
+        card.appendChild(removeBtn);
+      }
+      addonListContainer.appendChild(card);
+    });
+  }
+
+  if (addonInstallBtn && addonManifestInput) {
+    addonInstallBtn.addEventListener("click", function() {
+      const url = addonManifestInput.value.trim();
+      if (!url) return;
+      addonInstallBtn.textContent = "Installing...";
+      window.StremioEngine.installAddon(url, function(err, addon) {
+        addonInstallBtn.textContent = "+ Install";
+        if (err) {
+          showToast("Failed to install addon: " + err.message);
+          return;
+        }
+        addonManifestInput.value = "";
+        renderInstalledAddons();
+        if (currentAppSection === "stremio") initStremioPage();
+        showToast("Installed " + (addon.manifest.name || "Addon"));
+      });
+    });
+  }
+
+  // =========================================================================
+  // APP SECTIONS (IPTV - STREMIO - SETTINGS)
+  // =========================================================================
+  function switchAppSection(section, skipFocus = false) {
+    if (!section) section = "iptv";
+    if (section === "settings") {
+      previousAppSection = currentAppSection === "settings" ? previousAppSection : currentAppSection;
+      currentAppSection = "settings";
+      if (headerTabSettings) headerTabSettings.classList.add("active");
+      if (headerTabIptv) headerTabIptv.classList.remove("active");
+      if (headerTabStremio) headerTabStremio.classList.remove("active");
+      toggleSettingsMenu(true);
+      return;
+    }
+
+    if (settingsPanel && !settingsPanel.classList.contains("hidden")) {
+      settingsPanel.classList.add("hidden");
+    }
+
+    currentAppSection = section;
+    previousAppSection = section;
+
+    if (section === "iptv") {
+      document.body.classList.add("radial-active");
+      if (headerTabIptv) headerTabIptv.classList.add("active");
+      if (headerTabStremio) headerTabStremio.classList.remove("active");
+      if (headerTabSettings) headerTabSettings.classList.remove("active");
+      if (tvGrid) tvGrid.classList.remove("hidden");
+      if (stremioPage) stremioPage.classList.add("hidden");
+      if (!skipFocus && window.AeroRadial) {
+        window.AeroRadial.open();
+      }
+    } else if (section === "stremio") {
+      document.body.classList.remove("radial-active");
+      if (window.AeroRadial) window.AeroRadial.close();
+      stopLivePlayback();
+      if (headerTabStremio) headerTabStremio.classList.add("active");
+      if (headerTabIptv) headerTabIptv.classList.remove("active");
+      if (headerTabSettings) headerTabSettings.classList.remove("active");
+      if (tvGrid) tvGrid.classList.add("hidden");
+      if (stremioPage) stremioPage.classList.remove("hidden");
+      initStremioPage();
+      if (!skipFocus) {
+        const firstCard = stremioStripPopular ? stremioStripPopular.querySelector(".stremio-card.focusable") : null;
+        if (firstCard) setElementFocus(firstCard);
+        else if (sideMovies) setElementFocus(sideMovies);
+      }
+    }
+  }
+
+  if (headerTabIptv) {
+    headerTabIptv.addEventListener("click", () => switchAppSection("iptv"));
+  }
+  if (headerTabStremio) {
+    headerTabStremio.addEventListener("click", () => switchAppSection("stremio"));
+  }
+  if (headerTabSettings) {
+    headerTabSettings.addEventListener("click", () => switchAppSection("settings"));
+  }
+
+  function initStremioPage() {
+    if (!stremioPage || !window.StremioEngine) return;
+    renderStremioNetflixRows();
+  }
+
+  function renderRowPlaceholders(strip, count = 6, isChannel = false) {
+    if (!strip) return;
+    strip.innerHTML = "";
+    for (let i = 0; i < count; i++) {
+      const card = document.createElement("div");
+      card.className = "stremio-card stremio-skeleton-card" + (isChannel ? " stremio-channel-card" : "");
+      card.innerHTML = `
+        <div class="${isChannel ? 'stremio-channel-screen' : 'stremio-card-poster'}">
+          ${isChannel ? '<span class="stremio-channel-badge stremio-skeleton-pulse">CANLI</span>' : '<span class="stremio-card-rating stremio-skeleton-pulse">★ -.-</span>'}
+          <div class="stremio-placeholder-icon stremio-skeleton-pulse">
+            ${isChannel ? '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M8 2l4 4 4-4"/></svg>' : '<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>'}
+          </div>
+        </div>
+        <div class="stremio-card-overlay">
+          <div class="stremio-skeleton-line stremio-skeleton-pulse" style="width:75%; height:20px;"></div>
+          <div class="stremio-skeleton-line stremio-skeleton-pulse" style="width:45%; height:16px; margin-top:6px;"></div>
+        </div>
+      `;
+      strip.appendChild(card);
+    }
+  }
+
+  function switchStremioSubpage(subpage) {
+    currentStremioSubpage = subpage;
+
+    if (sideMovies) sideMovies.classList.toggle("active", subpage === "movies");
+    if (sideSeries) sideSeries.classList.toggle("active", subpage === "series");
+    if (sideTv) sideTv.classList.toggle("active", subpage === "tv");
+
+    if (stremioSubpageMovies) stremioSubpageMovies.classList.toggle("hidden", subpage !== "movies");
+    if (stremioSubpageSeries) stremioSubpageSeries.classList.toggle("hidden", subpage !== "series");
+    if (stremioSubpageTv) stremioSubpageTv.classList.toggle("hidden", subpage !== "tv");
+
+    if (stremioScrollContainer) stremioScrollContainer.scrollTop = 0;
+
+    if (subpage === "tv" && stremioGridLive && (stremioGridLive.children.length === 0 || stremioGridLive.querySelector(".stremio-skeleton-card"))) {
+      loadStremioLiveChannels();
+    }
+
+    const activeSub = subpage === "tv" ? stremioSubpageTv : (subpage === "series" ? stremioSubpageSeries : stremioSubpageMovies);
+    if (activeSub) {
+      const first = activeSub.querySelector(".focusable");
+      if (first) setElementFocus(first);
+    }
+  }
+
+  const sideBackToIptv = document.getElementById("sideBackToIptv");
+  if (sideBackToIptv) {
+    sideBackToIptv.addEventListener("click", () => switchAppSection("iptv"));
+  }
+
+  if (sideTv) {
+    sideTv.addEventListener("click", () => switchStremioSubpage("tv"));
+  }
+  if (sideMovies) {
+    sideMovies.addEventListener("click", () => switchStremioSubpage("movies"));
+  }
+  if (sideSeries) {
+    sideSeries.addEventListener("click", () => switchStremioSubpage("series"));
+  }
+
+  function createStremioChannelCard(item, idx) {
+    const div = document.createElement("div");
+    div.className = "stremio-card stremio-channel-card focusable";
+    div.tabIndex = 0;
+    const channelId = item.stream_id || item.imdb_id || item.id || "";
+    div.dataset.streamId = channelId;
+    div.dataset.title = item.name;
+    div.dataset.catalogType = item.type || "tv";
+    div.dataset.index = idx;
+
+    const iconSrc = item.stream_icon || "";
+    if (iconSrc) div.dataset.backdrop = iconSrc;
+
+    div.innerHTML = `
+      <div class="stremio-channel-screen">
+        <span class="stremio-channel-badge">CANLI</span>
+        <div class="stremio-placeholder-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M8 2l4 4 4-4"/></svg>
+        </div>
+        ${iconSrc ? `<img src="${iconSrc}" alt="${escapeAttr(item.name)}" onload="if(this.previousElementSibling)this.previousElementSibling.style.display='none';" onerror="this.style.display='none';if(this.previousElementSibling)this.previousElementSibling.style.display='flex';">` : ""}
+      </div>
+      <div class="stremio-card-overlay">
+        <div class="stremio-card-title">${escapeAttr(item.name)}</div>
+        <div class="stremio-card-meta">Canlı TV Yayını</div>
+      </div>
+    `;
+
+    div.addEventListener("click", () => {
+      playStremioLiveChannel(channelId, item.name, iconSrc, idx, item.url || item.directUrl, item.type);
+    });
+
+    return div;
+  }
+
+  function createStremioCard(item, catalogType, idx) {
+    const div = document.createElement("div");
+    div.className = "stremio-card focusable";
+    div.tabIndex = 0;
+    const imdbId = item.imdb_id || item.id || "";
+    div.dataset.imdbId = imdbId;
+    div.dataset.title = item.name;
+    div.dataset.catalogType = catalogType;
+    div.dataset.index = idx;
+
+    const metahubFallback = (imdbId && imdbId.startsWith("tt")) ? `https://images.metahub.space/poster/medium/${imdbId}/img` : "";
+    let posterSrc = item.stream_icon || "";
+    if (!posterSrc && metahubFallback) {
+      posterSrc = metahubFallback;
+    }
+    const backdropSrc = item.backdrop || (imdbId && imdbId.startsWith("tt") ? `https://images.metahub.space/background/medium/${imdbId}/img` : "") || posterSrc;
+    if (backdropSrc) {
+      div.dataset.backdrop = backdropSrc;
+    }
+
+    const rating = item.rating || "8.5";
+    const year = item.year || "";
+    const genre = catalogType === "series" ? "Dizi" : "Film";
+    const metaText = year ? `${year} · ${genre}` : genre;
+
+    div.innerHTML = `
+      <div class="stremio-card-poster">
+        <span class="stremio-card-rating">★ ${escapeAttr(rating)}</span>
+        <div class="stremio-placeholder-icon">
+          <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        ${posterSrc ? `<img src="${posterSrc}" alt="${escapeAttr(item.name)}" onload="if(this.previousElementSibling)this.previousElementSibling.style.display='none';" onerror="if('${metahubFallback}' && this.src !== '${metahubFallback}'){this.src='${metahubFallback}';}else{this.style.display='none';if(this.previousElementSibling)this.previousElementSibling.style.display='flex';}">` : ""}
+      </div>
+      <div class="stremio-card-overlay">
+        <div class="stremio-card-title">${escapeAttr(item.name)}</div>
+        <div class="stremio-card-meta">${escapeAttr(metaText)}</div>
+      </div>
+    `;
+
+    div.addEventListener("click", () => {
+      if (catalogType === "series") {
+        openStreamSelectorModal("series", imdbId, item.name, null, "1", "1", true);
+      } else {
+        openStreamSelectorModal("movie", imdbId, item.name, null, null, null, true);
+      }
+    });
+
+    return div;
+  }
+
+  const MOVIE_GENRES = [
+    { id: "Action", name: "⚡ Aksiyon" },
+    { id: "Adventure", name: "🚀 Macera" },
+    { id: "Animation", name: "🎨 Animasyon" },
+    { id: "Comedy", name: "😂 Komedi" },
+    { id: "Crime", name: "🕵️ Suç" },
+    { id: "Documentary", name: "📜 Belgesel" },
+    { id: "Drama", name: "🎭 Dram" },
+    { id: "Family", name: "👨‍👩‍👧 Aile" },
+    { id: "Fantasy", name: "🧙 Fantastik" },
+    { id: "Horror", name: "👻 Korku" },
+    { id: "Mystery", name: "🔍 Gizem" },
+    { id: "Romance", name: "❤️ Romantik" },
+    { id: "Sci-Fi", name: "🛸 Bilim Kurgu" },
+    { id: "Thriller", name: "🔪 Gerilim" },
+    { id: "War", name: "⚔️ Savaş" },
+    { id: "Western", name: "🤠 Vahşi Batı" }
+  ];
+
+  const SERIES_GENRES = [
+    { id: "Action", name: "⚡ Aksiyon & Macera" },
+    { id: "Comedy", name: "😂 Komedi" },
+    { id: "Drama", name: "🎭 Dram" },
+    { id: "Sci-Fi", name: "🛸 Bilim Kurgu" },
+    { id: "Crime", name: "🕵️ Suç & Gizem" },
+    { id: "Animation", name: "🎨 Çizgi Dizi & Anime" },
+    { id: "Documentary", name: "📜 Belgesel" },
+    { id: "Family", name: "👨‍👩‍👧 Aile" }
+  ];
+
+  function renderCategoryPills(type, container) {
+    if (!container) return;
+    container.innerHTML = "";
+    const list = type === "series" ? SERIES_GENRES : MOVIE_GENRES;
+    list.forEach(g => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "category-pill-btn focusable";
+      btn.dataset.genre = g.id;
+      btn.dataset.type = type;
+      btn.textContent = g.name;
+
+      btn.addEventListener("click", () => {
+        container.querySelectorAll(".category-pill-btn").forEach(el => el.classList.remove("active"));
+        btn.classList.add("active");
+        if (type === "series") {
+          loadGenreSeries(g.id, g.name);
+        } else {
+          loadGenreMovies(g.id, g.name);
+        }
+      });
+
+      container.appendChild(btn);
+    });
+  }
+
+  function loadGenreMovies(genreId, genreName) {
+    if (!stremioStripPopular || !window.StremioEngine) return;
+    if (stremioTitlePopular) stremioTitlePopular.textContent = `${genreName} Filmleri`;
+    renderRowPlaceholders(stremioStripPopular, 6);
+    if (stremioScrollContainer) stremioScrollContainer.scrollTop = 0;
+
+    window.StremioEngine.fetchAddonCatalog("cinemeta", "movie", "top", "genre=" + genreId, function(items) {
+      if (!stremioStripPopular) return;
+      stremioStripPopular.innerHTML = "";
+      const list = items || [];
+      if (stremioCountPopular) stremioCountPopular.textContent = `${list.length} İçerik`;
+      list.forEach((item, idx) => {
+        stremioStripPopular.appendChild(createStremioCard(item, "movie", idx));
+      });
+      const first = stremioStripPopular.querySelector(".stremio-card.focusable");
+      if (first) setElementFocus(first);
+    });
+  }
+
+  function loadGenreSeries(genreId, genreName) {
+    if (!stremioStripSeries || !window.StremioEngine) return;
+    if (stremioTitleSeries) stremioTitleSeries.textContent = `${genreName} Dizileri`;
+    renderRowPlaceholders(stremioStripSeries, 6);
+    if (stremioScrollContainer) stremioScrollContainer.scrollTop = 0;
+
+    window.StremioEngine.fetchAddonCatalog("cinemeta", "series", "top", "genre=" + genreId, function(items) {
+      if (!stremioStripSeries) return;
+      stremioStripSeries.innerHTML = "";
+      const list = items || [];
+      if (stremioCountSeries) stremioCountSeries.textContent = `${list.length} Dizi`;
+      list.forEach((item, idx) => {
+        stremioStripSeries.appendChild(createStremioCard(item, "series", idx));
+      });
+      const first = stremioStripSeries.querySelector(".stremio-card.focusable");
+      if (first) setElementFocus(first);
+    });
+  }
+
+  function renderStremioNetflixRows() {
+    if (!window.StremioEngine) return;
+    const tvCats = window.StremioEngine.getCategories("tv");
+    const movieCats = window.StremioEngine.getCategories("movie");
+    const seriesCats = window.StremioEngine.getCategories("series");
+
+    if (movieCats.length === 0 && seriesCats.length === 0 && tvCats.length === 0) {
+      if (stremioEmpty) stremioEmpty.classList.remove("hidden");
+      return;
+    }
+    if (stremioEmpty) stremioEmpty.classList.add("hidden");
+
+    // Populate Category Pills
+    renderCategoryPills("movie", stremioMoviePillsGrid);
+    renderCategoryPills("series", stremioSeriesPillsGrid);
+
+    // Initial subpage visibility
+    switchStremioSubpage(currentStremioSubpage || "movies");
+
+    // Render Skeletons for Movies
+    renderRowPlaceholders(stremioStripPopular, 6);
+    renderRowPlaceholders(stremioStripNewlyAdded, 6);
+    renderRowPlaceholders(stremioStripAction, 6);
+    renderRowPlaceholders(stremioStripComedy, 6);
+    renderRowPlaceholders(stremioStripSciFi, 6);
+
+    // Render Skeletons for Series
+    renderRowPlaceholders(stremioStripSeries, 6);
+    renderRowPlaceholders(stremioStripAnimationSeries, 6);
+    renderRowPlaceholders(stremioStripCrimeSeries, 6);
+    renderRowPlaceholders(stremioStripComedySeries, 6);
+
+    if (stremioGridLive) renderRowPlaceholders(stremioGridLive, 8, true);
+
+    function fetchAndFillShelf(strip, countEl, type, catId, genreQuery) {
+      if (!strip) return;
+      window.StremioEngine.fetchAddonCatalog("cinemeta", type, catId, genreQuery || "", function(items) {
+        if (!strip) return;
+        strip.innerHTML = "";
+        const list = items || [];
+        if (countEl) countEl.textContent = `${list.length} İçerik`;
+        list.forEach((item, idx) => {
+          const card = createStremioCard(item, type, idx);
+          strip.appendChild(card);
+        });
+
+        // Set initial backdrop if not already set
+        if (list.length > 0 && stremioHeroBackdrop) {
+          const currentBg = stremioHeroBackdrop.style.backgroundImage;
+          if (!currentBg || currentBg === "none" || currentBg.indexOf("b0PlSFdDwbyK0cf5RxwDpaOJQvQ") !== -1) {
+            const bg = list[0].backdrop || list[0].stream_icon;
+            if (bg) stremioHeroBackdrop.style.backgroundImage = `url('${bg}')`;
+          }
+        }
+
+        if (strip === stremioStripPopular && currentAppSection === "stremio" && currentStremioSubpage === "movies") {
+          const firstCard = strip.querySelector(".stremio-card.focusable");
+          if (firstCard && (!document.activeElement || !document.activeElement.classList.contains("focusable"))) {
+            setElementFocus(firstCard);
+          }
+        }
+      });
+    }
+
+    // Movies shelves
+    fetchAndFillShelf(stremioStripPopular, stremioCountPopular, "movie", "top");
+    fetchAndFillShelf(stremioStripNewlyAdded, stremioCountNewlyAdded, "movie", "top", "year=2024");
+    fetchAndFillShelf(stremioStripAction, stremioCountAction, "movie", "top", "genre=Action");
+    fetchAndFillShelf(stremioStripComedy, stremioCountComedy, "movie", "top", "genre=Comedy");
+    fetchAndFillShelf(stremioStripSciFi, stremioCountSciFi, "movie", "top", "genre=Sci-Fi");
+
+    // Series shelves
+    fetchAndFillShelf(stremioStripSeries, stremioCountSeries, "series", "top");
+    fetchAndFillShelf(stremioStripAnimationSeries, stremioCountAnimationSeries, "series", "top", "genre=Animation");
+    fetchAndFillShelf(stremioStripCrimeSeries, stremioCountCrimeSeries, "series", "top", "genre=Crime");
+    fetchAndFillShelf(stremioStripComedySeries, stremioCountComedySeries, "series", "top", "genre=Comedy");
+
+    // Live TV
+    loadStremioLiveChannels();
+  }
+
+  const STREMIO_LIVE_GENRES = [
+    { id: "ALL", name: "✨ Tümü (All)" },
+    { id: "news", name: "📰 Haberler (News)" },
+    { id: "sports", name: "⚽ Spor (Sports)" },
+    { id: "movies", name: "🎬 Sinema & Dizi (Movies)" },
+    { id: "documentary", name: "🌍 Belgesel & Doğa (Documentary)" },
+    { id: "kids", name: "🧸 Çocuk & Animasyon (Kids)" },
+    { id: "music", name: "🎵 Müzik (Music)" },
+    { id: "entertainment", name: "🍿 Eğlence (Entertainment)" }
+  ];
+
+  const DEFAULT_STREMIO_LIVE_CHANNELS = [
+    // Haberler (News)
+    { id: "stremio:live:euronews_tr", name: "Euronews Türkçe", category_id: "news", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Euronews_2016_logo.svg/320px-Euronews_2016_logo.svg.png", directUrl: "https://euronews-euronews-turkish-1-tr.samsung.wurl.tv/playlist.m3u8" },
+    { id: "stremio:live:euronews_en", name: "Euronews English", category_id: "news", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Euronews_2016_logo.svg/320px-Euronews_2016_logo.svg.png", directUrl: "https://euronews-euronews-world-1-us.rakuten.wurl.tv/playlist.m3u8" },
+    { id: "stremio:live:skynews", name: "Sky News Live", category_id: "news", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Sky_News_2018.svg/320px-Sky_News_2018.svg.png", directUrl: "https://skynewsau-live.akamaized.net/hls/live/2002689/skynewsau-extra1/master.m3u8" },
+    { id: "stremio:live:bloomberg", name: "Bloomberg TV", category_id: "news", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Bloomberg_Television_logo.svg/320px-Bloomberg_Television_logo.svg.png", directUrl: "https://liveproduseast.global.ssl.fastly.net/us/Channel-USTV-AWS-virginia-1/Source-4500-1080p_clean.m3u8" },
+    { id: "stremio:live:france24_en", name: "France 24 English", category_id: "news", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/France_24_logo.svg/320px-France_24_logo.svg.png", directUrl: "https://static.france24.com/live/F24_EN_LO_HLS/live_tv.m3u8" },
+    { id: "stremio:live:dw_en", name: "DW News", category_id: "news", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Deutsche_Welle_logo.svg/320px-Deutsche_Welle_logo.svg.png", directUrl: "https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8" },
+    { id: "stremio:live:trt_haber", name: "TRT Haber", category_id: "news", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/TRT_Haber_logo.svg/320px-TRT_Haber_logo.svg.png", directUrl: "https://tv-trthaber.live.trt.com.tr/master.m3u8" },
+    { id: "stremio:live:trt_world", name: "TRT World", category_id: "news", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/TRT_World_logo.svg/320px-TRT_World_logo.svg.png", directUrl: "https://tv-trtworld.live.trt.com.tr/master.m3u8" },
+
+    // Spor (Sports)
+    { id: "stremio:live:redbull", name: "Red Bull TV", category_id: "sports", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Red_Bull_TV_logo.svg/320px-Red_Bull_TV_logo.svg.png", directUrl: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8" },
+    { id: "stremio:live:trt_spor", name: "TRT Spor", category_id: "sports", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/TRT_Spor_logo_2021.svg/320px-TRT_Spor_logo_2021.svg.png", directUrl: "https://tv-trtspor.live.trt.com.tr/master.m3u8" },
+    { id: "stremio:live:trt_sporyildiz", name: "TRT Spor Yıldız", category_id: "sports", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/TRT_Spor_logo_2021.svg/320px-TRT_Spor_logo_2021.svg.png", directUrl: "https://tv-trtsporyildiz.live.trt.com.tr/master.m3u8" },
+    { id: "stremio:live:ftf_sports", name: "FTF Sports", category_id: "sports", stream_icon: "https://i.imgur.com/8QWv7uL.png", directUrl: "https://ftf.amagi.tv/hls/amagi_hls_ftfsports_rakuten/index.m3u8" },
+
+    // Sinema & Dizi (Movies & Series)
+    { id: "stremio:live:rakuten_movies", name: "Rakuten Action Movies", category_id: "movies", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Rakuten_TV_logo.svg/320px-Rakuten_TV_logo.svg.png", directUrl: "https://rakuten-actionmovies-1-eu.rakuten.wurl.tv/playlist.m3u8" },
+    { id: "stremio:live:filmstream", name: "Filmstream TV", category_id: "movies", stream_icon: "https://i.imgur.com/KzR79Vl.png", directUrl: "https://rakuten-filmstream-1-gb.samsung.wurl.tv/playlist.m3u8" },
+    { id: "stremio:live:dust_scifi", name: "Dust Sci-Fi", category_id: "movies", stream_icon: "https://i.imgur.com/zZ3XyYV.png", directUrl: "https://dust-samsunguk.amagi.tv/playlist.m3u8" },
+    { id: "stremio:live:trt_1", name: "TRT 1", category_id: "movies", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/TRT_1_logo_2021.svg/320px-TRT_1_logo_2021.svg.png", directUrl: "https://tv-trt1.live.trt.com.tr/master.m3u8" },
+
+    // Belgesel & Doğa (Documentary)
+    { id: "stremio:live:trt_belgesel", name: "TRT Belgesel", category_id: "documentary", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/TRT_Belgesel_logo_2021.svg/320px-TRT_Belgesel_logo_2021.svg.png", directUrl: "https://tv-trtbelgesel.live.trt.com.tr/master.m3u8" },
+    { id: "stremio:live:nasa_tv", name: "NASA TV", category_id: "documentary", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/NASA_logo.svg/320px-NASA_logo.svg.png", directUrl: "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8" },
+    { id: "stremio:live:earthx_tv", name: "EarthxTV", category_id: "documentary", stream_icon: "https://i.imgur.com/t3cEv9L.png", directUrl: "https://earthxtv-samsunguk.amagi.tv/playlist.m3u8" },
+
+    // Çocuk & Animasyon (Kids)
+    { id: "stremio:live:trt_cocuk", name: "TRT Çocuk", category_id: "kids", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/TRT_%C3%87ocuk_logo_2021.svg/320px-TRT_%C3%87ocuk_logo_2021.svg.png", directUrl: "https://tv-trtcocuk.live.trt.com.tr/master.m3u8" },
+
+    // Müzik (Music)
+    { id: "stremio:live:trt_muzik", name: "TRT Müzik", category_id: "music", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/TRT_M%C3%BCzik_logo_2021.svg/320px-TRT_M%C3%BCzik_logo_2021.svg.png", directUrl: "https://tv-trtmuzik.live.trt.com.tr/master.m3u8" },
+    { id: "stremio:live:clubbing_tv", name: "Clubbing TV", category_id: "music", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Clubbing_TV_logo.png/320px-Clubbing_TV_logo.png", directUrl: "https://rakuten-clubbingtv-1-eu.rakuten.wurl.tv/playlist.m3u8" },
+    { id: "stremio:live:deluxe_lounge", name: "Deluxe Lounge", category_id: "music", stream_icon: "https://i.imgur.com/7p4G2xN.png", directUrl: "https://deluxelounge.stream.deluxemusic.tv/deluxelounge/deluxelounge.m3u8" },
+
+    // Eğlence (Entertainment)
+    { id: "stremio:live:rakuten_comedy", name: "Rakuten Comedy", category_id: "entertainment", stream_icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Rakuten_TV_logo.svg/320px-Rakuten_TV_logo.svg.png", directUrl: "https://rakuten-comedy-1-eu.rakuten.wurl.tv/playlist.m3u8" }
+  ];
+
+  let stremioLiveCurrentCategory = "ALL";
+  let stremioAllLiveChannels = [];
+
+  function loadStremioLiveChannels() {
+    if (!stremioGridLive) return;
+    const tvCats = window.StremioEngine ? window.StremioEngine.getCategories("tv") : [];
+    const catTv = tvTvFound(tvCats);
+
+    function onChannelsLoaded(list) {
+      stremioAllLiveChannels = list || [];
+      renderStremioLiveCatBar(stremioAllLiveChannels);
+      filterAndRenderStremioLive();
+    }
+
+    if (catTv) {
+      window.StremioEngine.fetchAddonCatalog(catTv.addonTransportUrl, catTv.catalogType, catTv.catalogId, function(addonItems) {
+        const combined = (addonItems && addonItems.length > 0) ? addonItems.concat(DEFAULT_STREMIO_LIVE_CHANNELS) : DEFAULT_STREMIO_LIVE_CHANNELS;
+        onChannelsLoaded(combined);
+      });
+    } else {
+      onChannelsLoaded(DEFAULT_STREMIO_LIVE_CHANNELS);
+    }
+  }
+
+  function renderStremioLiveCatBar(channels) {
+    if (!stremioLiveCatBar) return;
+    stremioLiveCatBar.innerHTML = "";
+
+    const catMap = new Map();
+    STREMIO_LIVE_GENRES.forEach(g => {
+      catMap.set(g.id, g.name);
+    });
+
+    if (channels) {
+      channels.forEach(ch => {
+        if (ch.category_id && !catMap.has(ch.category_id)) {
+          catMap.set(ch.category_id, ch.category_name || ch.category_id);
+        }
+      });
+    }
+
+    catMap.forEach((name, id) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "stremio-live-cat-pill focusable" + (id === stremioLiveCurrentCategory ? " active" : "");
+      btn.tabIndex = 0;
+      btn.dataset.catId = id;
+      btn.textContent = name;
+      btn.addEventListener("click", () => {
+        stremioLiveCurrentCategory = id;
+        stremioLiveCatBar.querySelectorAll(".stremio-live-cat-pill").forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+        filterAndRenderStremioLive();
+      });
+      stremioLiveCatBar.appendChild(btn);
+    });
+  }
+
+  function filterAndRenderStremioLive() {
+    if (!stremioGridLive) return;
+    stremioGridLive.innerHTML = "";
+    let filtered = stremioAllLiveChannels;
+    if (stremioLiveCurrentCategory !== "ALL") {
+      filtered = stremioAllLiveChannels.filter(ch => String(ch.category_id) === String(stremioLiveCurrentCategory));
+    }
+    const displayList = filtered.slice(0, 100);
+    if (stremioCountLive) stremioCountLive.textContent = `${displayList.length} Kanal Listelendi`;
+
+    displayList.forEach((item, idx) => {
+      const card = createStremioChannelCard(item, idx);
+      stremioGridLive.appendChild(card);
+    });
+  }
+
+  function tvTvFound(cats) {
+    if (!cats || !cats.length) return null;
+    return cats.find(c => c.catalogId === "live_tv" || c.catalogType === "tv") || cats[0];
+  }
+
+  if (stremioGoAddonsBtn) {
+    stremioGoAddonsBtn.addEventListener("click", () => {
+      switchAppSection("settings");
+      showCustomizationTab("addons");
+    });
+  }
+
+  function scrollModalItemIntoView(target) {
+    if (!streamModalList || !target) return;
+    if (target === streamModalClose) {
+      streamModalList.scrollTop = streamModalList.scrollHeight;
+      return;
+    }
+    if (!target.classList.contains("stream-modal-item")) return;
+    if (target === streamModalList.firstElementChild) {
+      streamModalList.scrollTop = 0;
+      return;
+    }
+
+    const itemTop = target.offsetTop;
+    const itemHeight = target.offsetHeight;
+    const listHeight = streamModalList.clientHeight;
+    const scrollTop = streamModalList.scrollTop;
+
+    if (itemTop + itemHeight > scrollTop + listHeight) {
+      streamModalList.scrollTop = itemTop + itemHeight - listHeight + 16;
+    } else if (itemTop < scrollTop) {
+      streamModalList.scrollTop = Math.max(0, itemTop - 16);
+    }
+  }
+
+  function closeStreamSelectorModal() {
+    if (!streamSelectorModal) return;
+    streamSelectorModal.classList.add("hidden");
+    streamSelectorActive = false;
+    streamSelectorResolveContext = null;
+    if (streamSelectorOpener && document.body.contains(streamSelectorOpener)) {
+      setElementFocus(streamSelectorOpener);
+      streamSelectorOpener = null;
+    } else if (lastFocusedPoster) {
+      setElementFocus(lastFocusedPoster);
+    } else if (currentAppSection === "stremio") {
+      const first = document.querySelector("#stremioPage .stremio-card.focusable");
+      if (first) setElementFocus(first);
+    }
+  }
+
+  if (streamModalClose) {
+    streamModalClose.addEventListener("click", closeStreamSelectorModal);
+  }
+
+  function openStreamSelectorModal(type, itemId, title, ext, seasonNum, episodeNum, isStremioItem) {
+    if (!streamSelectorModal || !window.StremioEngine) return;
+    streamSelectorOpener = document.querySelector(".focused") || document.activeElement;
+    streamSelectorActive = true;
+    streamSelectorResolveContext = { type: type, itemId: itemId, title: title, ext: ext };
+
+    if (streamModalTitle) streamModalTitle.textContent = cleanTitle(title);
+    if (streamModalSubtitle) streamModalSubtitle.textContent = type === "series" ? "Series Episode" : "Movie";
+    if (streamModalList) {
+      streamModalList.innerHTML = "";
+      streamModalList.scrollTop = 0;
+    }
+
+    // 1. Primary Option: Check for Free Direct IPTV stream (matches user's IPTV catalog)
+    let iptvMatch = null;
+    if (!isStremioItem) {
+      iptvMatch = { id: itemId, title: title, ext: ext };
+    } else if (type === "movie" && Array.isArray(vodStreams) && vodStreams.length > 0) {
+      const cleanTarget = cleanTitle(title).toLowerCase().replace(/[^a-z0-9]/g, "");
+      if (cleanTarget) {
+        const found = vodStreams.find(s => {
+          const cleanS = cleanTitle(s.name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+          return cleanS && (cleanS === cleanTarget || (cleanTarget.length > 4 && cleanS.indexOf(cleanTarget) !== -1));
+        });
+        if (found) {
+          iptvMatch = { id: found.stream_id, title: found.name, ext: found.container_extension };
+        }
+      }
+    }
+
+    if (iptvMatch) {
+      const iptvLi = document.createElement("li");
+      iptvLi.className = "stream-modal-item focusable focused";
+      iptvLi.tabIndex = 0;
+      iptvLi.innerHTML =
+        '<div class="stream-item-main">' +
+          '<span class="stream-badge" style="background:#16a34a;">FREE • IPTV</span>' +
+          '<div class="stream-item-details">' +
+            '<span class="stream-item-title">' + (cleanTitle(iptvMatch.title) || "Play IPTV Stream (Direct)") + '</span>' +
+            '<span class="stream-item-sub">100% Free • Direct Stream from your IPTV Server</span>' +
+          '</div>' +
+        '</div>' +
+        '<span class="stream-item-meta">▶ Play Free</span>';
+
+      iptvLi.addEventListener("click", function() {
+        closeStreamSelectorModal();
+        if (type === "series") {
+          playSeriesEpisode(iptvMatch.id, iptvMatch.title, iptvMatch.ext);
+        } else {
+          playVodMovie(iptvMatch.id, iptvMatch.title, iptvMatch.ext);
+        }
+      });
+
+      if (streamModalList) streamModalList.appendChild(iptvLi);
+      setElementFocus(iptvLi);
+    }
+
+    streamSelectorModal.classList.remove("hidden");
+
+    // 2. Fetch Stremio streams in parallel
+    if (streamModalLoading) streamModalLoading.classList.remove("hidden");
+
+    function fetchAndRenderStreams(imdbId) {
+      if (!streamSelectorActive || !imdbId) {
+        if (streamModalLoading) streamModalLoading.classList.add("hidden");
+        return;
+      }
+      var queryId = imdbId;
+      if (type === "series") {
+        var sNum = seasonNum || "1";
+        var eNum = episodeNum || "1";
+        queryId = imdbId + ":" + sNum + ":" + eNum;
+      }
+
+      window.StremioEngine.getStreams(type, queryId, function(streams) {
+        if (!streamSelectorActive) return;
+        if (streamModalLoading) streamModalLoading.classList.add("hidden");
+
+        if (!streams || streams.length === 0) {
+          if (streamModalList && streamModalList.children.length === 0) {
+            const noStreamsLi = document.createElement("li");
+            noStreamsLi.className = "stream-modal-item focusable";
+            noStreamsLi.innerHTML = '<span class="stream-item-title">No addon streams found</span>';
+            streamModalList.appendChild(noStreamsLi);
+            setElementFocus(streamModalClose);
+          }
+          return;
+        }
+
+        const hasAnyFree = streams.some(function(s) { return !s.requiresDebrid; }) || !!iptvMatch;
+        if (!hasAnyFree && streamModalSubtitle) {
+          streamModalSubtitle.textContent = (type === "series" ? "Series Episode" : "Movie") + " • Torrents (Requires Debrid on TV)";
+        }
+
+        streams.forEach(function(stream, idx) {
+          const li = document.createElement("li");
+          const shouldFocus = !streamModalList.querySelector(".focused") && idx === 0;
+          li.className = "stream-modal-item focusable" + (shouldFocus ? " focused" : "");
+          li.tabIndex = 0;
+
+          const isDebridNeeded = !!stream.requiresDebrid;
+          let badgeText, badgeColor, metaText, subText;
+          if (isDebridNeeded) {
+            badgeText = "P2P";
+            badgeColor = "#d97706";
+            metaText = "⚠️ Needs Debrid";
+            subText = (stream.addonName || "Addon") + (stream.size ? " • " + stream.size : "") + " • Torrent (Debrid Required)";
+          } else {
+            badgeText = "FREE • " + (stream.quality || "HD");
+            badgeColor = "#16a34a";
+            metaText = "▶ Free Play";
+            subText = (stream.addonName || "Addon") + (stream.size ? " • " + stream.size : "") + " • Direct Stream (No Subscription Needed)";
+          }
+
+          li.innerHTML =
+            '<div class="stream-item-main">' +
+              '<span class="stream-badge" style="background:' + badgeColor + ';">' + badgeText + '</span>' +
+              '<div class="stream-item-details">' +
+                '<span class="stream-item-title">' + (stream.title || "Stream") + '</span>' +
+                '<span class="stream-item-sub">' + subText + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<span class="stream-item-meta">' + metaText + '</span>';
+
+          li.addEventListener("click", function() {
+            if (isDebridNeeded) {
+              showToast("P2P torrents require a Debrid service (e.g. Real-Debrid) on Smart TVs.");
+              return;
+            }
+            closeStreamSelectorModal();
+            if (type === "series") {
+              playSeriesEpisode(itemId, title, ext, stream.url);
+            } else {
+              playVodMovie(itemId, title, ext, stream.url);
+            }
+          });
+
+          if (streamModalList) streamModalList.appendChild(li);
+          if (shouldFocus) setElementFocus(li);
+        });
+      });
+    }
+
+    var knownImdbId = (itemId && String(itemId).indexOf("tt") === 0) ? String(itemId) : null;
+    if (knownImdbId) {
+      fetchAndRenderStreams(knownImdbId);
+    } else {
+      window.StremioEngine.searchImdbId(title, type, function(err, imdbId) {
+        fetchAndRenderStreams(imdbId);
+      });
+    }
+  }
+
+  function playVodMovie(streamId, title, ext, overrideUrl) {
     currentVodMovieId = String(streamId);
     currentEpisodeId = null;
     playerWrapper.classList.remove("hidden");
@@ -3010,7 +4437,7 @@ document.addEventListener("DOMContentLoaded", () => {
     video.muted = false;
     video.volume = 1.0;
 
-    const directMovieUrl = `${xtreamAuth.server}/movie/${xtreamAuth.username}/${xtreamAuth.password}/${streamId}.${ext || 'mp4'}`;
+    const directMovieUrl = overrideUrl || (xtreamAuth ? `${xtreamAuth.server}/movie/${xtreamAuth.username}/${xtreamAuth.password}/${streamId}.${ext || 'mp4'}` : "");
 
     video.pause();
     video.removeAttribute("src");
@@ -3020,7 +4447,7 @@ document.addEventListener("DOMContentLoaded", () => {
     video.play().catch(console.error);
   }
 
-  function playSeriesEpisode(episodeId, title, ext) {
+  function playSeriesEpisode(episodeId, title, ext, overrideUrl) {
     currentEpisodeId = String(episodeId);
     currentVodMovieId = null;
     playerWrapper.classList.remove("hidden");
@@ -3037,16 +4464,88 @@ document.addEventListener("DOMContentLoaded", () => {
     video.pause();
     video.removeAttribute("src");
     video.load();
-    video.src = `${xtreamAuth.server}/series/${xtreamAuth.username}/${xtreamAuth.password}/${episodeId}.${ext || "mp4"}`;
+    const directEpisodeUrl = overrideUrl || (xtreamAuth ? `${xtreamAuth.server}/series/${xtreamAuth.username}/${xtreamAuth.password}/${episodeId}.${ext || "mp4"}` : "");
+    video.src = directEpisodeUrl;
     showPlayerLoading();
     video.play().catch(console.error);
+  }
+
+  function playStremioLiveChannel(channelId, name, icon, idx, directUrl, streamType) {
+    if (!channelId && !directUrl) return;
+
+    if (tvGrid) tvGrid.classList.remove("hidden");
+    playerWrapper.classList.remove("hidden");
+    playerWrapper.classList.remove("vod-playback");
+    currentStreamIndex = idx;
+    currentPlayingStreamId = String(channelId);
+
+    activeerFitScreen();
+
+    const activeLi = document.querySelector(`#channelList [data-stream-id="${channelId}"]`);
+    if (activeLi) {
+      document.querySelectorAll("#channelList .channel-card").forEach(el => el.classList.remove("active"));
+      activeLi.classList.add("active");
+    }
+
+    const numStr = (currentStreamIndex + 1).toString();
+    updateLiveOSDData(numStr, name, icon);
+    showLiveOSD();
+    showPlayerLoading();
+    destroyStreamPlayers();
+
+    if (directUrl) {
+      playStream(channelId, name, icon, idx, directUrl);
+      return;
+    }
+
+    const auth = xtreamAuth || currentAuth;
+    if (auth && auth.server && !String(channelId).includes(":") && !String(channelId).startsWith("http")) {
+      playStream(channelId, name, icon, idx);
+      return;
+    }
+
+    if (!window.StremioEngine) {
+      reportPlaybackError("Stremio engine not available");
+      return;
+    }
+
+    const typeQuery = streamType || "tv";
+    window.StremioEngine.getStreams(typeQuery, channelId, function(streams) {
+      if (String(currentPlayingStreamId) !== String(channelId)) return;
+      if (!streams || streams.length === 0) {
+        window.StremioEngine.getStreams("events", channelId, function(eventStreams) {
+          if (String(currentPlayingStreamId) !== String(channelId)) return;
+          const direct = (eventStreams || []).find(s => !!s.url) || (eventStreams && eventStreams[0]);
+          if (direct && direct.url) {
+            playStream(channelId, name, icon, idx, direct.url);
+          } else {
+            reportPlaybackError("No live stream found for this channel");
+          }
+        });
+        return;
+      }
+      const direct = streams.find(s => !!s.url) || streams[0];
+      if (direct && direct.url) {
+        playStream(channelId, name, icon, idx, direct.url);
+      } else {
+        reportPlaybackError("Live channel requires Debrid or external stream link");
+      }
+    });
   }
 
   async function playStream(streamId, name, icon, index, directUrl = "", isReconnect = false) {
     if (window.kcLibsReady) await window.kcLibsReady;
     playerWrapper.classList.remove("vod-playback");
-    if (index !== undefined) currentStreamIndex = index;
+    
+    if (index !== undefined && index !== null) {
+      currentStreamIndex = index;
+    } else {
+      const activeIdx = currentActiveStreams.findIndex(s => String(s.stream_id) === String(streamId));
+      if (activeIdx !== -1) currentStreamIndex = activeIdx;
+    }
     currentPlayingStreamId = String(streamId);
+    window.kcCurrentStreamIndex = currentStreamIndex;
+    if (window.AeroRadial) window.AeroRadial.syncChannelIndex(currentStreamIndex);
 
     const activeLi = document.querySelector(`#channelList [data-stream-id="${streamId}"]`);
     if (activeLi) {
@@ -3062,44 +4561,232 @@ document.addEventListener("DOMContentLoaded", () => {
       liveReconnectAttempts = 0;
     }
 
-    const streamUrl = directUrl || `${currentAuth.server}/live/${currentAuth.username}/${currentAuth.password}/${streamId}.m3u8`;
-    const isTransportStream = Boolean(directUrl && /\.ts(?:$|[?#])/i.test(directUrl));
-    const hlsUrl = isTransportStream ? streamUrl.replace(/\.ts(?=([?#]|$))/i, ".m3u8") : streamUrl;
+    try {
+      store.setItem("iptv_last_stream", JSON.stringify({
+        section: currentAppSection,
+        streamId: String(streamId),
+        name: name,
+        icon: icon,
+        index: currentStreamIndex,
+        directUrl: directUrl
+      }));
+    } catch (e) {}
+
+    const auth = xtreamAuth || currentAuth;
+    const isDirect = Boolean(directUrl);
+    
+    // Construct Primary (.m3u8) and Secondary (.ts) URLs with cache buster on reconnect
+    let baseStreamUrl = directUrl || (auth && auth.server ? `${auth.server.replace(/\/+$/, "")}/live/${auth.username}/${auth.password}/${streamId}` : "");
+    const cacheParam = (isReconnect ? (baseStreamUrl.indexOf("?") === -1 ? "?_t=" : "&_t=") + Date.now() : "");
+    
+    let hlsUrl = "";
+    let tsUrl = "";
+    if (isDirect) {
+      if (/\.ts(?:$|[?#])/i.test(directUrl)) {
+        tsUrl = directUrl + cacheParam;
+        hlsUrl = directUrl.replace(/\.ts(?=([?#]|$))/i, ".m3u8") + cacheParam;
+      } else {
+        hlsUrl = directUrl + cacheParam;
+        tsUrl = directUrl.replace(/\.m3u8(?=([?#]|$))/i, ".ts") + cacheParam;
+      }
+    } else if (baseStreamUrl) {
+      hlsUrl = `${baseStreamUrl}.m3u8${cacheParam}`;
+      tsUrl = `${baseStreamUrl}.ts${cacheParam}`;
+    }
 
     destroyStreamPlayers();
-    lastLive = { streamId, name, icon, index, directUrl };
+    lastLive = { streamId, name, icon, index: currentStreamIndex, directUrl };
     showPlayerLoading();
     startPlaybackTimeout();
-    if (isTransportStream && !window.mpegts) reportPlaybackError("MPEG-TS library not loaded (CDN unreachable?)");
-    if (!isTransportStream && /\.m3u8(?:$|[?#])/i.test(hlsUrl) && !window.Hls) reportPlaybackError("HLS library not loaded (CDN unreachable?)");
-    video.volume = 1.0;
+    isPlaybackHealthy = false;
 
-    if (isTransportStream && window.mpegts && mpegts.isSupported()) {
-      mpegTsPlayer = mpegts.createPlayer({ type: "mpegts", isLive: true, url: streamUrl });
-      mpegTsPlayer.on(mpegts.Events.ERROR, (type, detail) => {
-        reportPlaybackError(`MPEG-TS ${type}: ${detail}`);
-        scheduleLiveReconnect();
-      });
-      mpegTsPlayer.attachMediaElement(video);
-      mpegTsPlayer.load();
-      Promise.resolve(mpegTsPlayer.play()).catch(error => {
-        reportPlaybackError(`play() ${error.name}: ${error.message}`);
-      });
-    } else if (window.Hls && Hls.isSupported() && /\.m3u8(?:$|[?#])/i.test(hlsUrl)) {
-      hlsPlayer = new Hls({ enableWorker: true });
-      hlsPlayer.loadSource(hlsUrl);
-      hlsPlayer.attachMedia(video);
-      hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(console.error));
-      hlsPlayer.on(Hls.Events.ERROR, (event, data) => {
-        if (data && data.fatal) {
-          reportPlaybackError(`HLS ${data.type}: ${data.details}`);
-          scheduleLiveReconnect();
+    const mySessionId = ++playbackSessionId;
+
+    // 4-Stage Resilient Playback Ladder:
+    // Stage 1: Native hardware HLS (.m3u8)
+    // Stage 2: Hls.js engine (.m3u8) with low-latency and auto-recovery
+    // Stage 3: Native hardware MPEG-TS (.ts)
+    // Stage 4: mpegts.js engine (.ts)
+
+    let currentStage = 1;
+    function tryStage(stage) {
+      if (mySessionId !== playbackSessionId) return; // Discard stale session
+      currentStage = stage;
+      let stageTransitioned = false;
+
+      if (currentStageTimer) {
+        clearTimeout(currentStageTimer);
+        currentStageTimer = null;
+      }
+
+      function nextStage(reason) {
+        if (mySessionId !== playbackSessionId) return;
+        if (stageTransitioned) return; // Prevent double-triggering nextStage for the same stage
+        stageTransitioned = true;
+        if (currentStageTimer) {
+          clearTimeout(currentStageTimer);
+          currentStageTimer = null;
         }
-      });
-    } else {
-      video.src = hlsUrl;
-      video.play().catch((error) => reportPlaybackError(`play() ${error.name}: ${error.message}`));
+        window.__handlePlaybackStageError = null;
+        if (isPlaybackHealthy) return; // Already healthy, do not advance
+
+        console.warn(`Stage ${stage} finished (${reason || "next"}), proceeding to next stage`);
+        if (stage < 4) {
+          tryStage(stage + 1);
+        } else {
+          scheduleLiveReconnect(reason || "Playback engine fallback exhausted");
+        }
+      }
+
+      // Stage timeout: if no frames render within 3.8s, advance to next engine
+      currentStageTimer = setTimeout(() => {
+        if (mySessionId !== playbackSessionId) return;
+        if (!isPlaybackHealthy) {
+          console.warn(`Stage ${stage} timed out without rendering frames, trying next stage`);
+          nextStage("timeout");
+        }
+      }, 3800);
+
+      try {
+        if (stage === 1) {
+          // Stage 1: Native webOS HLS
+          window.__handlePlaybackStageError = function(reason) {
+            nextStage(`native hls error: ${reason}`);
+          };
+          video.pause();
+          video.removeAttribute("src");
+          video.load();
+          video.src = hlsUrl;
+          video.muted = false;
+          video.volume = 1.0;
+          const p = video.play();
+          if (p && typeof p.catch === "function") {
+            p.catch(err => {
+              console.warn("Native HLS play rejected:", err);
+              nextStage("native hls rejected");
+            });
+          }
+        } else if (stage === 2) {
+          // Stage 2: Hls.js with local engine & worker disabled for webOS stability
+          window.__handlePlaybackStageError = null;
+          if (window.Hls && Hls.isSupported() && hlsUrl) {
+            video.pause();
+            video.removeAttribute("src");
+            video.load();
+            hlsPlayer = new Hls({
+              enableWorker: false,
+              lowLatencyMode: true,
+              backBufferLength: 30,
+              maxBufferLength: 8,
+              maxMaxBufferLength: 16,
+              liveSyncDurationCount: 3,
+              liveMaxLatencyDurationCount: 5,
+              fragLoadingTimeOut: 5000,
+              manifestLoadingTimeOut: 5000,
+              levelLoadingTimeOut: 5000
+            });
+            hlsPlayer.loadSource(hlsUrl);
+            hlsPlayer.attachMedia(video);
+            hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => {
+              video.play().catch(e => console.warn("HLS play catch:", e));
+            });
+            hlsPlayer.on(Hls.Events.ERROR, (event, data) => {
+              if (data && data.fatal) {
+                if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                  try { hlsPlayer.startLoad(); } catch (e) { nextStage("hls network error"); }
+                } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+                  try { hlsPlayer.recoverMediaError(); } catch (e) { nextStage("hls media error"); }
+                } else {
+                  if (hlsPlayer) { try { hlsPlayer.destroy(); } catch (e) {} hlsPlayer = null; }
+                  nextStage("hls fatal error");
+                }
+              }
+            });
+          } else {
+            nextStage("hls.js not supported or no url");
+          }
+        } else if (stage === 3) {
+          // Stage 3: Native MPEG-TS (.ts)
+          window.__handlePlaybackStageError = function(reason) {
+            nextStage(`native ts error: ${reason}`);
+          };
+          if (hlsPlayer) { try { hlsPlayer.destroy(); } catch (e) {} hlsPlayer = null; }
+          video.pause();
+          video.removeAttribute("src");
+          video.load();
+          video.src = tsUrl;
+          video.muted = false;
+          video.volume = 1.0;
+          const p = video.play();
+          if (p && typeof p.catch === "function") {
+            p.catch(err => {
+              console.warn("Native TS play rejected:", err);
+              nextStage("native ts rejected");
+            });
+          }
+        } else if (stage === 4) {
+          // Stage 4: mpegts.js local MSE player
+          window.__handlePlaybackStageError = null;
+          if (window.mpegts && mpegts.isSupported() && tsUrl) {
+            video.pause();
+            video.removeAttribute("src");
+            video.load();
+            mpegTsPlayer = mpegts.createPlayer({
+              type: "mpegts",
+              isLive: true,
+              url: tsUrl,
+              liveBufferLatencyChasing: true,
+              enableWorker: false,
+              lazyLoad: false
+            });
+            mpegTsPlayer.on(mpegts.Events.ERROR, (type, detail) => {
+              console.warn(`mpegts.js error: ${type} ${detail}`);
+              nextStage(`mpegts error: ${type}`);
+            });
+            mpegTsPlayer.attachMediaElement(video);
+            mpegTsPlayer.load();
+            Promise.resolve(mpegTsPlayer.play()).catch(e => {
+              console.warn("mpegts play catch:", e);
+              if (!isPlaybackHealthy) {
+                nextStage("mpegts play rejected");
+              }
+            });
+          } else {
+            nextStage("mpegts not supported");
+          }
+        }
+      } catch (err) {
+        console.error(`Error initiating stage ${stage}:`, err);
+        nextStage("exception in stage " + stage);
+      }
     }
+
+    // Start with Stage 1
+    tryStage(1);
+  }
+
+  function extractLogoColor(img) {
+    try {
+      const c = document.createElement("canvas");
+      c.width = 8;
+      c.height = 8;
+      const ctx = c.getContext("2d");
+      ctx.drawImage(img, 0, 0, 8, 8);
+      const data = ctx.getImageData(0, 0, 8, 8).data;
+      let r = 0, g = 0, b = 0, count = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        const a = data[i + 3];
+        const red = data[i], green = data[i + 1], blue = data[i + 2];
+        const lum = red * 0.299 + green * 0.587 + blue * 0.114;
+        if (a > 120 && lum > 35 && lum < 235) {
+          r += red; g += green; b += blue; count++;
+        }
+      }
+      if (count > 0) {
+        return `${Math.round(r / count)}, ${Math.round(g / count)}, ${Math.round(b / count)}`;
+      }
+    } catch (e) {}
+    return null;
   }
 
   function updateLiveOSDData(numStr, name, icon) {
@@ -3107,12 +4794,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const osdLogo = document.getElementById("osdLogo");
     const osdLogoFallback = document.getElementById("osdLogoFallback");
     if (osdLogo && icon) {
+      osdLogo.crossOrigin = "anonymous";
       osdLogo.src = icon;
       osdLogo.classList.remove("hidden");
       if (osdLogoFallback) osdLogoFallback.style.display = "none";
+      osdLogo.onload = () => {
+        const rgb = extractLogoColor(osdLogo);
+        if (rgb) {
+          if (osdContainer) osdContainer.style.setProperty("--osd-ambient-rgb", rgb);
+          const bubble = document.getElementById("osdClockBubble");
+          if (bubble) bubble.style.setProperty("--osd-ambient-rgb", rgb);
+        } else if (osdContainer) {
+          osdContainer.style.removeProperty("--osd-ambient-rgb");
+        }
+      };
+      osdLogo.onerror = () => {
+        if (osdContainer) osdContainer.style.removeProperty("--osd-ambient-rgb");
+      };
     } else if (osdLogoFallback) {
       if (osdLogo) osdLogo.classList.add("hidden");
       osdLogoFallback.style.display = "flex";
+      if (osdContainer) osdContainer.style.removeProperty("--osd-ambient-rgb");
     }
   }
 
@@ -3228,6 +4930,311 @@ document.addEventListener("DOMContentLoaded", () => {
     video.currentTime = targetTime;
     showVodOSD();
   }
+
+  // =========================================================================
+  // VOD PLAYBACK SETTINGS (AUDIO TRACKS, SUBTITLES, VIDEO RATIO, SPEED)
+  // =========================================================================
+  const vodSettingsBtn = document.getElementById("vodSettingsBtn");
+  const vodSettingsPopover = document.getElementById("vodSettingsPopover");
+  const vodSettingsCloseBtn = document.getElementById("vodSettingsCloseBtn");
+  const vodAudioTrackList = document.getElementById("vodAudioTrackList");
+  const vodSubtitleTrackList = document.getElementById("vodSubtitleTrackList");
+  const vodSubtitleSizeGroup = document.getElementById("vodSubtitleSizeGroup");
+  const vodAspectGroup = document.getElementById("vodAspectGroup");
+  const vodSpeedGroup = document.getElementById("vodSpeedGroup");
+
+  let vodSettingsActive = false;
+  let vodAspectRatio = "contain";
+  let vodPlaybackSpeed = 1.0;
+  let vodSubtitleSize = "normal";
+  let selectedVodAudioTrack = 0;
+  let selectedVodSubtitleTrack = -1;
+
+  function openVodSettings(initialTab) {
+    if (!vodSettingsPopover) return;
+    vodSettingsActive = true;
+    vodSettingsPopover.classList.remove("hidden");
+    if (vodOsdTimeout) clearTimeout(vodOsdTimeout);
+
+    renderVodAudioTracks();
+    renderVodSubtitleTracks();
+
+    switchVodSettingsTab(initialTab || "audio");
+    const activeTab = vodSettingsPopover.querySelector(`.vod-settings-tab[data-vod-tab="${initialTab || "audio"}"]`);
+    if (activeTab) setElementFocus(activeTab);
+  }
+
+  function closeVodSettings() {
+    if (!vodSettingsPopover) return;
+    vodSettingsPopover.classList.add("hidden");
+    vodSettingsActive = false;
+    showVodOSD();
+  }
+
+  if (vodSettingsBtn) {
+    vodSettingsBtn.addEventListener("click", () => openVodSettings("audio"));
+  }
+  if (vodSettingsCloseBtn) {
+    vodSettingsCloseBtn.addEventListener("click", closeVodSettings);
+  }
+
+  function switchVodSettingsTab(tabName) {
+    if (!vodSettingsPopover) return;
+    vodSettingsPopover.querySelectorAll(".vod-settings-tab").forEach(tab => {
+      tab.classList.toggle("active", tab.dataset.vodTab === tabName);
+    });
+    vodSettingsPopover.querySelectorAll(".vod-settings-pane").forEach(pane => {
+      pane.classList.toggle("hidden", pane.dataset.vodPane !== tabName);
+    });
+  }
+
+  if (vodSettingsPopover) {
+    vodSettingsPopover.addEventListener("click", e => {
+      const tabBtn = e.target.closest(".vod-settings-tab");
+      if (tabBtn && tabBtn.dataset.vodTab) {
+        switchVodSettingsTab(tabBtn.dataset.vodTab);
+        setElementFocus(tabBtn);
+      }
+    });
+  }
+
+  function getAvailableAudioTracks() {
+    const list = [];
+    if (video && video.audioTracks && video.audioTracks.length > 0) {
+      for (let i = 0; i < video.audioTracks.length; i++) {
+        const t = video.audioTracks[i];
+        const lang = t.language ? ` (${t.language.toUpperCase()})` : "";
+        list.push({
+          index: i,
+          id: t.id || String(i),
+          label: (t.label || `Track ${i + 1}`) + lang,
+          enabled: !!t.enabled,
+          source: "html5"
+        });
+      }
+    } else if (hlsPlayer && hlsPlayer.audioTracks && hlsPlayer.audioTracks.length > 0) {
+      const curIdx = hlsPlayer.audioTrack;
+      hlsPlayer.audioTracks.forEach((t, i) => {
+        const lang = t.lang ? ` (${t.lang.toUpperCase()})` : "";
+        list.push({
+          index: i,
+          id: String(t.id !== undefined ? t.id : i),
+          label: (t.name || `Track ${i + 1}`) + lang,
+          enabled: (curIdx === i),
+          source: "hls"
+        });
+      });
+    }
+    return list;
+  }
+
+  function renderVodAudioTracks() {
+    if (!vodAudioTrackList) return;
+    vodAudioTrackList.innerHTML = "";
+
+    const tracks = getAvailableAudioTracks();
+    if (tracks.length === 0) {
+      const defaultItem = document.createElement("button");
+      defaultItem.type = "button";
+      defaultItem.className = "vod-track-item active focusable";
+      defaultItem.tabIndex = 0;
+      defaultItem.innerHTML = `<span>Default Audio (Stereo / Main)</span><span style="color:#22c55e;font-size:1.3rem;">✓</span>`;
+      vodAudioTrackList.appendChild(defaultItem);
+
+      const hint = document.createElement("div");
+      hint.style.cssText = "font-size:1.1rem;color:#94a3b8;padding:8px 0;";
+      hint.textContent = t("noAudioTracks") || "Single audio track stream.";
+      vodAudioTrackList.appendChild(hint);
+      return;
+    }
+
+    tracks.forEach((track, i) => {
+      const isSelected = track.enabled;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "vod-track-item focusable" + (isSelected ? " active" : "");
+      btn.tabIndex = 0;
+      btn.innerHTML = `<span>${escapeAttr(track.label)}</span>${isSelected ? '<span style="color:#22c55e;font-size:1.3rem;">✓</span>' : ''}`;
+      btn.addEventListener("click", () => {
+        if (track.source === "html5" && video && video.audioTracks) {
+          for (let j = 0; j < video.audioTracks.length; j++) {
+            video.audioTracks[j].enabled = (j === track.index);
+          }
+        } else if (track.source === "hls" && hlsPlayer) {
+          hlsPlayer.audioTrack = track.index;
+        }
+        selectedVodAudioTrack = track.index;
+        showToast("Audio: " + track.label);
+        renderVodAudioTracks();
+      });
+      vodAudioTrackList.appendChild(btn);
+    });
+  }
+
+  function getAvailableSubtitleTracks() {
+    const list = [];
+    if (video && video.textTracks && video.textTracks.length > 0) {
+      for (let i = 0; i < video.textTracks.length; i++) {
+        const t = video.textTracks[i];
+        if (t.kind === "subtitles" || t.kind === "captions" || !t.kind) {
+          const lang = t.language ? ` (${t.language.toUpperCase()})` : "";
+          list.push({
+            index: i,
+            id: t.id || String(i),
+            label: (t.label || `Subtitle ${i + 1}`) + lang,
+            enabled: (t.mode === "showing"),
+            source: "html5"
+          });
+        }
+      }
+    } else if (hlsPlayer && hlsPlayer.subtitleTracks && hlsPlayer.subtitleTracks.length > 0) {
+      const curIdx = hlsPlayer.subtitleTrack;
+      hlsPlayer.subtitleTracks.forEach((t, i) => {
+        const lang = t.lang ? ` (${t.lang.toUpperCase()})` : "";
+        list.push({
+          index: i,
+          id: String(t.id !== undefined ? t.id : i),
+          label: (t.name || `Subtitle ${i + 1}`) + lang,
+          enabled: (curIdx === i),
+          source: "hls"
+        });
+      });
+    }
+    return list;
+  }
+
+  function renderVodSubtitleTracks() {
+    if (!vodSubtitleTrackList) return;
+    vodSubtitleTrackList.innerHTML = "";
+
+    const tracks = getAvailableSubtitleTracks();
+    const anyShowing = tracks.some(t => t.enabled);
+
+    // Off option
+    const offBtn = document.createElement("button");
+    offBtn.type = "button";
+    offBtn.className = "vod-track-item focusable" + (!anyShowing ? " active" : "");
+    offBtn.tabIndex = 0;
+    offBtn.innerHTML = `<span>${t("off") || "Off"}</span>${!anyShowing ? '<span style="color:#22c55e;font-size:1.3rem;">✓</span>' : ''}`;
+    offBtn.addEventListener("click", () => {
+      selectedVodSubtitleTrack = -1;
+      if (video && video.textTracks) {
+        for (let j = 0; j < video.textTracks.length; j++) {
+          video.textTracks[j].mode = "disabled";
+        }
+      }
+      if (hlsPlayer) {
+        hlsPlayer.subtitleTrack = -1;
+      }
+      showToast("Subtitles: Off");
+      renderVodSubtitleTracks();
+    });
+    vodSubtitleTrackList.appendChild(offBtn);
+
+    tracks.forEach(track => {
+      const isSelected = track.enabled;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "vod-track-item focusable" + (isSelected ? " active" : "");
+      btn.tabIndex = 0;
+      btn.innerHTML = `<span>${escapeAttr(track.label)}</span>${isSelected ? '<span style="color:#22c55e;font-size:1.3rem;">✓</span>' : ''}`;
+      btn.addEventListener("click", () => {
+        selectedVodSubtitleTrack = track.index;
+        if (track.source === "html5" && video && video.textTracks) {
+          for (let j = 0; j < video.textTracks.length; j++) {
+            video.textTracks[j].mode = (j === track.index) ? "showing" : "disabled";
+          }
+        } else if (track.source === "hls" && hlsPlayer) {
+          hlsPlayer.subtitleTrack = track.index;
+        }
+        showToast("Subtitles: " + track.label);
+        renderVodSubtitleTracks();
+      });
+      vodSubtitleTrackList.appendChild(btn);
+    });
+
+    if (tracks.length === 0) {
+      const hint = document.createElement("div");
+      hint.style.cssText = "font-size:1.1rem;color:#94a3b8;padding:8px 0;";
+      hint.textContent = t("noSubTracks") || "No subtitle tracks embedded in this stream.";
+      vodSubtitleTrackList.appendChild(hint);
+    }
+  }
+
+  function applyVodAspectRatio(aspect) {
+    vodAspectRatio = aspect || "contain";
+    if (!video) return;
+    if (vodAspectRatio === "contain") {
+      video.style.objectFit = "contain";
+      video.style.transform = "none";
+    } else if (vodAspectRatio === "cover") {
+      video.style.objectFit = "cover";
+      video.style.transform = "none";
+    } else if (vodAspectRatio === "fill") {
+      video.style.objectFit = "fill";
+      video.style.transform = "none";
+    }
+    if (vodAspectGroup) {
+      vodAspectGroup.querySelectorAll(".vod-option-chip").forEach(chip => {
+        chip.classList.toggle("active", chip.dataset.aspect === vodAspectRatio);
+      });
+    }
+    showToast("Aspect: " + vodAspectRatio);
+  }
+
+  function applyVodPlaybackSpeed(speed) {
+    vodPlaybackSpeed = parseFloat(speed) || 1.0;
+    if (video) {
+      try { video.playbackRate = vodPlaybackSpeed; } catch (_) {}
+    }
+    if (vodSpeedGroup) {
+      vodSpeedGroup.querySelectorAll(".vod-option-chip").forEach(chip => {
+        chip.classList.toggle("active", parseFloat(chip.dataset.speed) === vodPlaybackSpeed);
+      });
+    }
+    showToast("Speed: " + vodPlaybackSpeed + "x");
+  }
+
+  function applyVodSubtitleSize(size) {
+    vodSubtitleSize = size || "normal";
+    if (playerWrapper) {
+      playerWrapper.classList.remove("sub-size-small", "sub-size-normal", "sub-size-large");
+      playerWrapper.classList.add("sub-size-" + vodSubtitleSize);
+    }
+    if (vodSubtitleSizeGroup) {
+      vodSubtitleSizeGroup.querySelectorAll(".vod-option-chip").forEach(chip => {
+        chip.classList.toggle("active", chip.dataset.subSize === vodSubtitleSize);
+      });
+    }
+  }
+
+  if (vodAspectGroup) {
+    vodAspectGroup.addEventListener("click", e => {
+      const chip = e.target.closest(".vod-option-chip");
+      if (chip && chip.dataset.aspect) applyVodAspectRatio(chip.dataset.aspect);
+    });
+  }
+
+  if (vodSpeedGroup) {
+    vodSpeedGroup.addEventListener("click", e => {
+      const chip = e.target.closest(".vod-option-chip");
+      if (chip && chip.dataset.speed) applyVodPlaybackSpeed(chip.dataset.speed);
+    });
+  }
+
+  if (vodSubtitleSizeGroup) {
+    vodSubtitleSizeGroup.addEventListener("click", e => {
+      const chip = e.target.closest(".vod-option-chip");
+      if (chip && chip.dataset.subSize) applyVodSubtitleSize(chip.dataset.subSize);
+    });
+  }
+
+  video.addEventListener("loadedmetadata", () => {
+    if (vodSettingsActive) {
+      renderVodAudioTracks();
+      renderVodSubtitleTracks();
+    }
+  });
 
   function zapToNumber(num) {
     if (currentActiveStreams.length === 0) return;
@@ -3345,41 +5352,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (offset) animateScroll(container, container.scrollTop + offset, false, 260);
   }
 
-  function markWheel(container, element) {
-    (container._wheelItems || []).forEach((item) => item.classList.remove("wheel-0", "wheel-1", "wheel-2", "wheel-3"));
-    (container._wheelCopies || []).forEach((copy) => copy.el.classList.remove("wheel-0", "wheel-1", "wheel-2", "wheel-3"));
-    const items = wheelItems(container);
-    const focusIndex = items.indexOf(element);
-    if (wheelHasCopies(items.length) && focusIndex >= 0) {
-      // Distance runs around the loop, so the last rows fade as neighbours of the first rows, and ghost copies fade too.
-      const count = items.length;
-      const distanceOf = (i) => Math.min(Math.abs(i - focusIndex), count - Math.abs(i - focusIndex));
-      const marked = [];
-      items.forEach((item, i) => {
-        const d = distanceOf(i);
-        if (d <= 3) { item.classList.add("wheel-" + d); marked.push(item); }
-      });
-      (container._wheelCopies || []).forEach((copy) => {
-        const d = distanceOf(copy.row);
-        if (d <= 3) copy.el.classList.add("wheel-" + d);
-      });
-      container._wheelItems = marked;
-      return;
-    }
-    const marked = [element];
-    element.classList.add("wheel-0");
-    let before = element;
-    let after = element;
-    for (let distance = 1; distance <= 3; distance++) {
-      before = before && before.previousElementSibling;
-      after = after && after.nextElementSibling;
-      if (after && after.classList.contains("wheel-ghost")) after = null;
-      if (before) { before.classList.add("wheel-" + distance); marked.push(before); }
-      if (after) { after.classList.add("wheel-" + distance); marked.push(after); }
-    }
-    container._wheelItems = marked;
-  }
-
   function wheelAnchor(container) {
     const column = container.closest(".col-nav") || container;
     const listRect = container.getBoundingClientRect();
@@ -3415,9 +5387,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (edges.first) edges.first.style.marginTop = padTop + "px";
     if (edges.last) edges.last.style.marginBottom = padBottom + "px";
     container.classList.add("wheel", "wheel-detent");
-    markWheel(container, element);
     syncWheelCopies(container);
-    animateScroll(container, wheelScrollTop(container, element), instant);
+    animateScroll(container, wheelScrollTop(container, element), !!instant);
   }
 
   function isWheelList(container) {
@@ -3440,6 +5411,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const items = wheelItems(container);
     const count = items.length;
     const layerOk = !!container._wheelLayer && container._wheelLayer.parentElement === container;
+    // Move mode edits the rows in place, so the ghost layer follows the same rows as the list.
     if (!wheelHasCopies(count)) {
       if (layerOk) container._wheelLayer.remove();
       container._wheelLayer = null;
@@ -3451,11 +5423,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const gap = items[1].offsetTop - (first.offsetTop + first.offsetHeight);
     const period = last.offsetTop + last.offsetHeight + gap - first.offsetTop;
     const copyEach = Math.min(60, Math.ceil(container.clientHeight / (period / count)) + 2);
-    const same = layerOk
+    // Copies depend only on the row count and copy count, so the layer is rebuilt only when those change.
+    // Otherwise each copy's content is refreshed in place, which keeps numbers and order right after a reorder.
+    const sameLayer = layerOk
       && container._wheelCount === copyEach
-      && container._wheelSources.length === count
-      && container._wheelSources.every((el, i) => el === items[i]);
-    if (!same) {
+      && container._wheelRows === count
+      && container._wheelCopies.length > 0;
+    if (!sameLayer) {
       if (layerOk) container._wheelLayer.remove();
       const layer = document.createElement("div");
       layer.className = "wheel-ghost";
@@ -3465,20 +5439,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (m >= 0 && m < count) continue;
         const row = ((m % count) + count) % count;
         const el = items[row].cloneNode(true);
-        el.removeAttribute("id");
-        el.removeAttribute("tabindex");
-        el.querySelectorAll("[id]").forEach(node => node.removeAttribute("id"));
-        el.querySelectorAll(".flag-underlay").forEach(underlay => {
-          if (!underlay.style.backgroundImage) loadRegionFlag(underlay);
-        });
+        prepareCopy(el);
         layer.appendChild(el);
-        copies.push({ el, m, row, cycle: Math.floor(m / count) });
+        copies.push({ el, m, row, cycle: Math.floor(m / count), html: items[row].innerHTML });
       }
       container.appendChild(layer);
       container._wheelLayer = layer;
       container._wheelCopies = copies;
-      container._wheelSources = items.slice();
       container._wheelCount = copyEach;
+      container._wheelRows = count;
     }
     container._wheelCopies.forEach(copy => {
       const src = items[copy.row];
@@ -3486,6 +5455,24 @@ document.addEventListener("DOMContentLoaded", () => {
       copy.el.style.left = src.offsetLeft + "px";
       copy.el.style.width = src.offsetWidth + "px";
       copy.el.className = ("wheel-copy " + src.className.replace(/\b(focused|focusable)\b/g, "")).replace(/\s+/g, " ").trim();
+      const html = src.innerHTML;
+      if (html !== copy.html) {
+        copy.el.innerHTML = html;
+        copy.html = html;
+        copy.el.querySelectorAll(".flag-underlay").forEach(underlay => {
+          if (!underlay.style.backgroundImage) loadRegionFlag(underlay);
+        });
+      }
+    });
+  }
+
+  // Copies are visual only: no ids, tab stops or focus classes.
+  function prepareCopy(el) {
+    el.removeAttribute("id");
+    el.removeAttribute("tabindex");
+    el.querySelectorAll("[id]").forEach(node => node.removeAttribute("id"));
+    el.querySelectorAll(".flag-underlay").forEach(underlay => {
+      if (!underlay.style.backgroundImage) loadRegionFlag(underlay);
     });
   }
 
@@ -3497,7 +5484,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const copy = (container._wheelCopies || []).find(c => c.m === (forward ? count : -1));
     if (!copy) return false;
     const origin = document.activeElement;
-    markWheel(container, target);
     syncWheelCopies(container);
     clearTimeout(container._wrapTimer);
     animateScroll(container, wheelScrollTop(container, copy.el), false);
@@ -3590,6 +5576,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function isElementInHeader(el) {
+    if (!el) return false;
+    if (el.classList && el.classList.contains("header-nav-tab")) return true;
+    let curr = el;
+    while (curr && curr !== document.body) {
+      if (curr.classList && curr.classList.contains("app-header")) return true;
+      if (curr.id === "headerNavSelector" || curr.id === "headerClock") return true;
+      curr = curr.parentElement;
+    }
+    return false;
+  }
+
+  function isElementInSidebar(el) {
+    if (!el) return false;
+    if (el.id === "sideBackToIptv" || el.id === "sideTv" || el.id === "sideMovies" || el.id === "sideSeries") return true;
+    let curr = el;
+    while (curr && curr !== document.body) {
+      if (curr.id === "stremioSidebarDock" || (curr.classList && curr.classList.contains("stremio-sidebar-dock"))) return true;
+      curr = curr.parentElement;
+    }
+    return false;
+  }
+
   function setElementFocus(element, instant) {
     if (!element) return;
     lastNavigationAt = Date.now();
@@ -3609,10 +5618,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     // Centre the list before focusing so the focus box never paints at the old position.
-    centerInList(element, !!instant);
+    centerInList(element, instant);
     const container = element.parentElement;
     if (container && container.classList.contains("wheel") && element.offsetHeight > 0) {
-      showWheelWindow(container, element);
+      if (element.classList.contains("pick-slot")) {
+        // The held stack is not a focus target: its box stays out of the way of the stack frames.
+        hideWheelWindow();
+      } else {
+        showWheelWindow(container, element);
+      }
       if (previous && previous !== element && previous.parentElement === container) playTick();
     } else {
       hideWheelWindow();
@@ -3620,6 +5634,52 @@ document.addEventListener("DOMContentLoaded", () => {
       if (previous && previous !== element && !element.classList.contains("grid-item")) playTick(2200, 0.1);
     }
     element.focus({ preventScroll: true });
+
+    if (element && (element.classList.contains("stream-modal-item") || element === streamModalClose)) {
+      if (typeof scrollModalItemIntoView === "function") scrollModalItemIntoView(element);
+    }
+
+    if (element && (element.classList.contains("stremio-card") || element.classList.contains("stremio-live-cat-pill") || element.classList.contains("category-pill-btn"))) {
+      element.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+      if (element.dataset.backdrop && stremioHeroBackdrop) {
+        stremioHeroBackdrop.style.backgroundImage = `url('${element.dataset.backdrop}')`;
+      }
+    }
+
+    // Settings panel auto-scrolling
+    const custContent = element && element.closest(".customization-content");
+    if (custContent) {
+      const targetCard = element.closest(".customization-section, .settings-row, .settings-toggle, .settings-item, .hue-panel") || element;
+      const cRect = custContent.getBoundingClientRect();
+      const tRect = targetCard.getBoundingClientRect();
+      const topPad = 60;
+      const botPad = 60;
+      if (tRect.top < cRect.top + topPad) {
+        custContent.scrollTop = Math.max(0, custContent.scrollTop + (tRect.top - (cRect.top + topPad)));
+      } else if (tRect.bottom > cRect.bottom - botPad) {
+        custContent.scrollTop += (tRect.bottom - (cRect.bottom - botPad));
+      }
+    }
+
+    // Top Bar auto-overlap visibility (hidden unless focused/active)
+    const appHeader = document.querySelector(".app-header");
+    if (appHeader) {
+      if (isElementInHeader(element)) {
+        appHeader.classList.add("is-active");
+      } else {
+        appHeader.classList.remove("is-active");
+      }
+    }
+
+    // Stremio Left Sidebar Dock visibility (invisible unless focused)
+    const stremioSidebarDock = document.getElementById("stremioSidebarDock");
+    if (stremioSidebarDock) {
+      if (isElementInSidebar(element)) {
+        stremioSidebarDock.classList.add("is-focused");
+      } else {
+        stremioSidebarDock.classList.remove("is-focused");
+      }
+    }
 
     if (element.classList.contains("grid-item")) {
       lastFocusedPoster = element;
@@ -3789,7 +5849,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (li.dataset.episodeId && currentModus === "series") {
         lastFocusedPoster = li;
-        playSeriesEpisode(li.dataset.episodeId, li.dataset.title, li.dataset.containerExtension);
+        const isStremio = !!(selectedSeries && selectedSeries.isStremio) || li.dataset.isStremio === "true";
+        if (isStremio || (window.StremioEngine && window.StremioEngine.hasStreamAddons())) {
+          openStreamSelectorModal("series", li.dataset.episodeId, li.dataset.title, li.dataset.containerExtension, li.dataset.seasonNum, li.dataset.episodeNum, isStremio);
+        } else {
+          playSeriesEpisode(li.dataset.episodeId, li.dataset.title, li.dataset.containerExtension);
+        }
         return;
       }
 
@@ -3802,7 +5867,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!li.dataset.streamId) return;
       if (currentModus === "vod") {
         lastFocusedPoster = li;
-        playVodMovie(li.dataset.streamId, li.dataset.title, li.dataset.containerExtension);
+        const isStremio = li.dataset.isStremio === "true";
+        if (isStremio || (window.StremioEngine && window.StremioEngine.hasStreamAddons())) {
+          openStreamSelectorModal("movie", li.dataset.streamId, li.dataset.title, li.dataset.containerExtension, null, null, isStremio);
+        } else {
+          playVodMovie(li.dataset.streamId, li.dataset.title, li.dataset.containerExtension);
+        }
       } else {
         const selectedStreamId = String(li.dataset.streamId);
         if ((currentModus === "live" || currentModus === "favorites") && !isFitScreen && currentPlayingStreamId === selectedStreamId) {
@@ -3811,7 +5881,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         const nameEl = li.querySelector(".channel-name");
         const idx = parseInt(li.dataset.index || "0", 10);
-        playStream(li.dataset.streamId, nameEl ? nameEl.textContent : li.textContent, li.dataset.streamIcon, idx, li.dataset.streamUrl);
+        if (li.dataset.isStremio === "true") {
+          playStremioLiveChannel(li.dataset.streamId, nameEl ? nameEl.textContent : li.textContent, li.dataset.streamIcon, idx);
+        } else {
+          playStream(li.dataset.streamId, nameEl ? nameEl.textContent : li.textContent, li.dataset.streamIcon, idx, li.dataset.streamUrl);
+        }
       }
     });
   }
@@ -3828,10 +5902,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const isEnter = key === 13 || e.key === "Enter";
 
     // KNOPPEN MET VOLLEDIGE KEYCODE & ALIAS DETECTIE
-    const isRed = key === 403 || e.key === "F1" || e.key === "Red" || e.code === "F1";
-    const isGreen = key === 404 || e.key === "F2" || e.key === "Green" || e.code === "F2";
-    const isYellow = key === 405 || e.key === "F3" || e.key === "Yellow" || e.code === "F3";
-    const isBlue = key === 406 || e.key === "F4" || e.key === "Blue" || e.code === "F4";
+    const isRed = key === 403 || e.key === "F1" || e.key === "Red" || e.code === "F1" || e.key === "ColorF0Red";
+    const isGreen = key === 404 || e.key === "F2" || e.key === "Green" || e.code === "F2" || e.key === "ColorF1Green";
+    const isYellow = key === 405 || e.key === "F3" || e.key === "Yellow" || e.code === "F3" || e.key === "ColorF2Yellow";
+    const isBlue = key === 406 || e.key === "F4" || e.key === "Blue" || e.code === "F4" || e.key === "ColorF3Blue";
 
     const isPageUp = key === 33 || e.key === "PageUp" || key === 427 || e.key === "ChannelUp";
     const isPageDown = key === 34 || e.key === "PageDown" || key === 428 || e.key === "ChannelDown";
@@ -3842,15 +5916,167 @@ document.addEventListener("DOMContentLoaded", () => {
     const isFastForward = key === 417 || e.key === "MediaFastForward" || e.key === "FastForward";
     const isRewind = key === 412 || e.key === "MediaRewind" || e.key === "Rewind";
 
-    let focused = document.activeElement;
+    let focused = document.querySelector(".focused") || document.activeElement;
 
-    // Guide key: fullscreen first, then the overlay. Ignored for movies and series.
-    const isGuideKey = key === 458 || e.key === "Guide";
-    if (isGuideKey && (currentModus === "live" || currentModus === "favorites")) {
+    // If EPG Guide is open, let Guide handle keys
+    if (guideOpen) {
+      // Guide handler below processes navigation
+    } else if (window.AeroRadial && window.AeroRadial.isOpen()) {
+      if (window.AeroRadial.handleKey(e, key)) {
+        return;
+      }
+    }
+
+    // Toggle Radial Overlay with 'M' key
+    if (e.key === "m" || e.key === "M") {
       e.preventDefault();
-      if (!isFitScreen) activeerFitScreen();
-      else if (guideOpen) closeGuide();
-      else openGuide();
+      if (window.AeroRadial) window.AeroRadial.toggle();
+      return;
+    }
+
+    // Stream Selector Modal D-Pad Navigation
+    if (streamSelectorActive && streamSelectorModal && !streamSelectorModal.classList.contains("hidden")) {
+      if (isBack) {
+        e.preventDefault();
+        closeStreamSelectorModal();
+        return;
+      }
+      const streamItems = Array.from(streamSelectorModal.querySelectorAll(".focusable, .stream-modal-item, .stream-modal-btn")).filter(el => el.offsetParent !== null);
+      if (streamItems.length > 0) {
+        const curIdx = streamItems.indexOf(document.querySelector("#streamSelectorModal .focused") || document.activeElement);
+        if (isUp || isDown) {
+          e.preventDefault();
+          const step = isDown ? 1 : -1;
+          const nextIdx = Math.max(0, Math.min(streamItems.length - 1, (curIdx >= 0 ? curIdx : 0) + step));
+          const target = streamItems[nextIdx];
+          setElementFocus(target);
+          if (typeof scrollModalItemIntoView === "function") scrollModalItemIntoView(target);
+          return;
+        }
+        if (isPageUp || isPageDown) {
+          e.preventDefault();
+          const step = isPageDown ? 4 : -4;
+          const nextIdx = Math.max(0, Math.min(streamItems.length - 1, (curIdx >= 0 ? curIdx : 0) + step));
+          const target = streamItems[nextIdx];
+          setElementFocus(target);
+          if (typeof scrollModalItemIntoView === "function") scrollModalItemIntoView(target);
+          return;
+        }
+        if (isEnter || isOk) {
+          e.preventDefault();
+          const target = streamItems[curIdx >= 0 ? curIdx : 0];
+          if (target) target.click();
+          return;
+        }
+      }
+      return;
+    }
+
+    // VOD Playback Settings Popover D-Pad Navigation
+    if (vodSettingsActive && vodSettingsPopover && !vodSettingsPopover.classList.contains("hidden")) {
+      if (isBack) {
+        e.preventDefault();
+        closeVodSettings();
+        return;
+      }
+      const tabs = Array.from(vodSettingsPopover.querySelectorAll(".vod-settings-tab"));
+      const curTab = vodSettingsPopover.querySelector(".vod-settings-tab.active");
+      const activePane = vodSettingsPopover.querySelector(".vod-settings-pane:not(.hidden)");
+      const paneItems = activePane ? Array.from(activePane.querySelectorAll(".focusable, .vod-track-item, .vod-option-chip")).filter(el => el.offsetParent !== null) : [];
+      const curFocused = vodSettingsPopover.querySelector(".focused") || document.activeElement;
+
+      // If focused on tabs:
+      if (tabs.indexOf(curFocused) >= 0) {
+        const tabIdx = tabs.indexOf(curFocused);
+        if (isUp) {
+          e.preventDefault();
+          if (vodSettingsCloseBtn) setElementFocus(vodSettingsCloseBtn);
+          return;
+        }
+        if (isLeft || isRight) {
+          e.preventDefault();
+          const nextTabIdx = (tabIdx + (isRight ? 1 : -1) + tabs.length) % tabs.length;
+          const targetTab = tabs[nextTabIdx];
+          switchVodSettingsTab(targetTab.dataset.vodTab);
+          setElementFocus(targetTab);
+          return;
+        }
+        if (isDown) {
+          e.preventDefault();
+          if (paneItems.length > 0) {
+            setElementFocus(paneItems[0]);
+          }
+          return;
+        }
+        if (isEnter || isOk) {
+          e.preventDefault();
+          switchVodSettingsTab(curFocused.dataset.vodTab);
+          return;
+        }
+      }
+
+      // If focused inside pane items:
+      if (paneItems.indexOf(curFocused) >= 0) {
+        const itemIdx = paneItems.indexOf(curFocused);
+        if (isUp) {
+          e.preventDefault();
+          if (itemIdx === 0) {
+            setElementFocus(curTab || tabs[0]);
+          } else {
+            setElementFocus(paneItems[itemIdx - 1]);
+          }
+          return;
+        }
+        if (isDown) {
+          e.preventDefault();
+          if (itemIdx < paneItems.length - 1) {
+            setElementFocus(paneItems[itemIdx + 1]);
+          }
+          return;
+        }
+        if (isLeft || isRight) {
+          if (curFocused.classList.contains("vod-option-chip")) {
+            e.preventDefault();
+            const chipGroup = curFocused.parentElement;
+            const chips = Array.from(chipGroup.querySelectorAll(".vod-option-chip"));
+            const cIdx = chips.indexOf(curFocused);
+            const nextC = chips[cIdx + (isRight ? 1 : -1)];
+            if (nextC) setElementFocus(nextC);
+            return;
+          }
+        }
+        if (isEnter || isOk) {
+          e.preventDefault();
+          curFocused.click();
+          return;
+        }
+      }
+
+      if (curFocused === vodSettingsCloseBtn) {
+        if (isDown || isLeft) {
+          e.preventDefault();
+          setElementFocus(curTab || tabs[0]);
+          return;
+        }
+        if (isEnter || isOk) {
+          e.preventDefault();
+          closeVodSettings();
+          return;
+        }
+      }
+      return;
+    }
+
+    // Guide key: fullscreen first, then the overlay. Ignored for movies and series, and blocked in Stremio.
+    const isGuideKey = key === 458 || e.key === "Guide";
+    if (isGuideKey) {
+      e.preventDefault();
+      if (currentAppSection !== "iptv") return;
+      if (currentModus === "live" || currentModus === "favorites") {
+        if (!isFitScreen) activeerFitScreen();
+        else if (guideOpen) closeGuide();
+        else openGuide();
+      }
       return;
     }
 
@@ -3972,13 +6198,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         const idx = paneItems.findIndex((item) => unitOf(item) === unitOf(focused));
         const next = paneItems[Math.min(Math.max(idx + step, 0), paneItems.length - 1)];
-        if (next) setElementFocus(next);
+        if (next) {
+          setElementFocus(next);
+          const contentEl = settingsPanel.querySelector(".customization-content");
+          if (contentEl) {
+            const target = next.closest(".customization-section, .settings-row, .settings-toggle, .settings-item, .hue-panel") || next;
+            const cRect = contentEl.getBoundingClientRect();
+            const tRect = target.getBoundingClientRect();
+            const topPad = 60;
+            const botPad = 60;
+            if (tRect.top < cRect.top + topPad) {
+              contentEl.scrollTop = Math.max(0, contentEl.scrollTop + (tRect.top - (cRect.top + topPad)));
+            } else if (tRect.bottom > cRect.bottom - botPad) {
+              contentEl.scrollTop += (tRect.bottom - (cRect.bottom - botPad));
+            }
+          }
+        }
         return;
       }
       if (isLeft || isRight) {
         const step = isRight ? 1 : -1;
+        const isRangeInput = focused && focused.tagName === "INPUT" && focused.type === "range";
+        if (isRangeInput) {
+          return;
+        }
         const isTextInput = focused && focused.tagName === "INPUT" && focused.type !== "checkbox";
-        if (isTextInput && focused.type === "range") return;
         if (!isTextInput) {
           const group = focused && focused.closest(GROUP_SELECTOR);
           if (group) {
@@ -4001,13 +6245,25 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
         }
+        // Left/Right inside settings MUST NEVER escape to the rest of the app or open the Aero Radial wheel
+        e.preventDefault();
+        return;
       }
       if (isEnter && focused) {
         e.preventDefault();
+        if (focused.classList.contains("customization-tab")) {
+          showCustomizationTab(focused.dataset.tab);
+          if (paneItems.length > 0) {
+            setElementFocus(paneItems[0]);
+          }
+          return;
+        }
         if (focused === backgroundImageInput) updateBackgroundImage(backgroundImageInput.value);
         else focused.click();
         return;
       }
+      // Swallow any other key so settings panel isolates all navigation events
+      return;
     }
 
     const isVodMode = currentModus === "vod" || currentModus === "series";
@@ -4081,7 +6337,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else if (currentActiveStreams[currentStreamIndex]) {
         targetStreamId = currentActiveStreams[currentStreamIndex].stream_id;
       }
-      if (targetStreamId) toggleMoveMode(targetStreamId);
+      if (targetStreamId || moveMode) toggleMoveMode();
       return;
     }
 
@@ -4146,6 +6402,392 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (focused && focused.classList.contains("header-nav-tab")) {
+      const tabs = [headerTabIptv, headerTabStremio, headerTabSettings].filter(Boolean);
+      const tIdx = tabs.indexOf(focused);
+      if (isLeft && tIdx > 0) {
+        e.preventDefault();
+        setElementFocus(tabs[tIdx - 1]);
+        return;
+      }
+      if (isRight && tIdx < tabs.length - 1) {
+        e.preventDefault();
+        setElementFocus(tabs[tIdx + 1]);
+        return;
+      }
+      if (isDown) {
+        e.preventDefault();
+        if (focused === headerTabIptv) {
+          const firstMode = document.querySelector("#modusList .nav-item.active:not(.hidden)") || document.querySelector("#modusList .nav-item.focusable:not(.hidden)");
+          if (firstMode) setElementFocus(firstMode);
+        } else if (focused === headerTabStremio) {
+          const targetCard = (stremioStripLive && stremioStripLive.offsetParent !== null ? stremioStripLive.querySelector(".stremio-card.focusable") : null) || (stremioStripPopular ? stremioStripPopular.querySelector(".stremio-card.focusable") : null);
+          if (targetCard) setElementFocus(targetCard);
+          else if (sideTv) setElementFocus(sideTv);
+          else if (sideMovies) setElementFocus(sideMovies);
+        } else if (focused === headerTabSettings) {
+          const firstTab = document.querySelector(".customization-tab.active") || document.querySelector(".customization-tab.focusable");
+          if (firstTab) setElementFocus(firstTab);
+        }
+        return;
+      }
+      if (isEnter) {
+        e.preventDefault();
+        focused.click();
+        return;
+      }
+      if (isBack) {
+        e.preventDefault();
+        if (currentAppSection === "settings") {
+          switchAppSection(previousAppSection || "iptv");
+        } else if (currentAppSection === "stremio") {
+          switchAppSection("iptv");
+        } else {
+          const firstMode = document.querySelector("#modusList .nav-item.active:not(.hidden)") || document.querySelector("#modusList .nav-item.focusable:not(.hidden)");
+          if (firstMode) setElementFocus(firstMode);
+        }
+        return;
+      }
+    }
+
+    if (currentAppSection === "stremio" && stremioPage && !stremioPage.classList.contains("hidden")) {
+      const inSideDock = isElementInSidebar(focused);
+      const inPillsGrid = Boolean(focused && (focused.classList.contains("category-pill-btn") || (focused.closest && focused.closest(".category-pills-grid"))));
+      const inLiveCatBar = Boolean(focused && (focused.classList.contains("stremio-live-cat-pill") || (focused.closest && focused.closest(".stremio-live-cat-bar"))));
+      const inTvGrid = Boolean(focused && (focused.closest ? focused.closest("#stremioGridLive") : (focused.parentElement && focused.parentElement.id === "stremioGridLive")));
+
+      let inStrip = null;
+      if (!inPillsGrid && !inTvGrid && !inLiveCatBar && !inSideDock) {
+        let currStripEl = focused;
+        while (currStripEl && currStripEl !== document.body) {
+          if (currStripEl.classList && currStripEl.classList.contains("stremio-cards-strip")) {
+            inStrip = currStripEl;
+            break;
+          }
+          currStripEl = currStripEl.parentElement;
+        }
+      }
+
+      if (isBack) {
+        e.preventDefault();
+        if (inStrip || inPillsGrid || inTvGrid || inLiveCatBar) {
+          const targetSide = currentStremioSubpage === "tv" ? sideTv : (currentStremioSubpage === "series" ? sideSeries : sideMovies);
+          if (targetSide) setElementFocus(targetSide);
+        } else {
+          switchAppSection("iptv");
+        }
+        return;
+      }
+
+      // 1. Navigation in Pill-shaped Categories Grid
+      if (inPillsGrid) {
+        const grid = (focused.closest && focused.closest(".category-pills-grid")) || focused.parentElement;
+        const pills = Array.from(grid.querySelectorAll(".category-pill-btn.focusable"));
+        const pIdx = pills.indexOf(focused);
+
+        function getPillsCols() {
+          if (!pills || pills.length < 2) return 1;
+          const firstTop = pills[0].offsetTop;
+          for (let i = 1; i < pills.length; i++) {
+            if (pills[i].offsetTop > firstTop + 15) return i;
+          }
+          return pills.length;
+        }
+        const pCols = getPillsCols();
+
+        if (isLeft) {
+          e.preventDefault();
+          if (pIdx % pCols === 0 || pIdx === 0) {
+            const targetSide = currentStremioSubpage === "series" ? sideSeries : sideMovies;
+            if (targetSide) setElementFocus(targetSide);
+          } else if (pIdx > 0) {
+            setElementFocus(pills[pIdx - 1]);
+          }
+          return;
+        }
+
+        if (isRight) {
+          e.preventDefault();
+          if ((pIdx + 1) % pCols !== 0 && pIdx < pills.length - 1) {
+            setElementFocus(pills[pIdx + 1]);
+          }
+          return;
+        }
+
+        if (isUp) {
+          e.preventDefault();
+          if (pIdx >= pCols) {
+            setElementFocus(pills[pIdx - pCols]);
+          } else {
+            const currentStrips = currentStremioSubpage === "series" 
+              ? [stremioStripSeries, stremioStripAnimationSeries, stremioStripCrimeSeries, stremioStripComedySeries].filter(Boolean)
+              : [stremioStripPopular, stremioStripNewlyAdded, stremioStripAction, stremioStripComedy, stremioStripSciFi].filter(Boolean);
+            const lastStrip = currentStrips[currentStrips.length - 1];
+            const targetCard = lastStrip ? lastStrip.querySelector(".stremio-card.focusable") : null;
+            if (targetCard) setElementFocus(targetCard);
+          }
+          return;
+        }
+
+        if (isDown) {
+          e.preventDefault();
+          if (pIdx + pCols < pills.length) {
+            setElementFocus(pills[pIdx + pCols]);
+          } else if (pIdx < pills.length - 1) {
+            setElementFocus(pills[pills.length - 1]);
+          }
+          return;
+        }
+
+        if (isEnter) {
+          e.preventDefault();
+          focused.click();
+          return;
+        }
+      }
+
+      // 2. Navigation in Live TV Category Bar
+      if (inLiveCatBar) {
+        const catBar = document.getElementById("stremioLiveCatBar");
+        const pills = Array.from(catBar.querySelectorAll(".stremio-live-cat-pill.focusable"));
+        const pIdx = pills.indexOf(focused);
+
+        if (isLeft) {
+          e.preventDefault();
+          if (pIdx > 0) {
+            setElementFocus(pills[pIdx - 1]);
+          } else if (sideTv) {
+            setElementFocus(sideTv);
+          }
+          return;
+        }
+
+        if (isRight) {
+          e.preventDefault();
+          if (pIdx < pills.length - 1) {
+            setElementFocus(pills[pIdx + 1]);
+          }
+          return;
+        }
+
+        if (isUp) {
+          e.preventDefault();
+          if (headerTabStremio) setElementFocus(headerTabStremio);
+          return;
+        }
+
+        if (isDown) {
+          e.preventDefault();
+          const firstCard = stremioGridLive ? stremioGridLive.querySelector(".stremio-card.focusable") : null;
+          if (firstCard) setElementFocus(firstCard);
+          return;
+        }
+
+        if (isEnter) {
+          e.preventDefault();
+          focused.click();
+          return;
+        }
+      }
+
+      // 3. Navigation in Live TV Channel Grid (Dedicated Separate Page)
+      if (inTvGrid) {
+        const grid = document.getElementById("stremioGridLive");
+        const cards = Array.from(grid.querySelectorAll(".stremio-card.focusable"));
+        const currentCard = (focused.closest && focused.closest(".stremio-card")) || focused;
+        const cIdx = cards.indexOf(currentCard);
+
+        function getGridCols() {
+          if (!cards || cards.length < 2) return 1;
+          const firstTop = cards[0].offsetTop;
+          for (let i = 1; i < cards.length; i++) {
+            if (cards[i].offsetTop > firstTop + 15) return i;
+          }
+          return cards.length;
+        }
+        const cols = getGridCols();
+
+        if (isLeft) {
+          e.preventDefault();
+          if (cIdx % cols === 0 || cIdx === 0) {
+            if (sideTv) setElementFocus(sideTv);
+          } else if (cIdx > 0) {
+            setElementFocus(cards[cIdx - 1]);
+          }
+          return;
+        }
+
+        if (isRight) {
+          e.preventDefault();
+          if ((cIdx + 1) % cols !== 0 && cIdx < cards.length - 1) {
+            setElementFocus(cards[cIdx + 1]);
+          }
+          return;
+        }
+
+        if (isUp) {
+          e.preventDefault();
+          const currentRect = currentCard.getBoundingClientRect();
+          // Find all cards strictly in a row above the current card
+          const cardsAbove = cards.filter(c => c.getBoundingClientRect().bottom <= currentRect.top + 30);
+          if (cardsAbove.length > 0) {
+            const curCenterX = currentRect.left + currentRect.width / 2;
+            let bestCard = cardsAbove[0];
+            let minDiff = Infinity;
+            cardsAbove.forEach(c => {
+              const r = c.getBoundingClientRect();
+              const diff = Math.abs((r.left + r.width / 2) - curCenterX);
+              if (diff < minDiff) {
+                minDiff = diff;
+                bestCard = c;
+              }
+            });
+            setElementFocus(bestCard);
+          } else {
+            // First row of channels! Move UP to category selection bar!
+            const activeCatPill = stremioLiveCatBar ? (stremioLiveCatBar.querySelector(".stremio-live-cat-pill.active") || stremioLiveCatBar.querySelector(".stremio-live-cat-pill.focusable")) : null;
+            if (activeCatPill) {
+              setElementFocus(activeCatPill);
+              if (stremioScrollContainer) stremioScrollContainer.scrollTop = 0;
+            } else if (headerTabStremio) {
+              setElementFocus(headerTabStremio);
+            }
+          }
+          return;
+        }
+
+        if (isDown) {
+          e.preventDefault();
+          const currentRect = currentCard.getBoundingClientRect();
+          // Find all cards strictly in a row below the current card
+          const cardsBelow = cards.filter(c => c.getBoundingClientRect().top >= currentRect.bottom - 30);
+          if (cardsBelow.length > 0) {
+            const curCenterX = currentRect.left + currentRect.width / 2;
+            let bestCard = cardsBelow[0];
+            let minDiff = Infinity;
+            cardsBelow.forEach(c => {
+              const r = c.getBoundingClientRect();
+              const diff = Math.abs((r.left + r.width / 2) - curCenterX);
+              if (diff < minDiff) {
+                minDiff = diff;
+                bestCard = c;
+              }
+            });
+            setElementFocus(bestCard);
+          }
+          return;
+        }
+
+        if (isEnter) {
+          e.preventDefault();
+          currentCard.click();
+          return;
+        }
+      }
+
+      // 4. Navigation within Horizontal Cards Strips
+      if (inStrip) {
+        const strip = inStrip;
+        const cards = Array.from(strip.querySelectorAll(".stremio-card.focusable"));
+        const idx = cards.indexOf(focused);
+
+        const movieStrips = [stremioStripPopular, stremioStripNewlyAdded, stremioStripAction, stremioStripComedy, stremioStripSciFi].filter(Boolean);
+        const seriesStrips = [stremioStripSeries, stremioStripAnimationSeries, stremioStripCrimeSeries, stremioStripComedySeries].filter(Boolean);
+        const currentStrips = currentStremioSubpage === "series" ? seriesStrips : movieStrips;
+        const sIdx = currentStrips.indexOf(strip);
+
+        if (isLeft) {
+          e.preventDefault();
+          if (idx > 0) {
+            setElementFocus(cards[idx - 1]);
+          } else {
+            const targetSide = currentStremioSubpage === "series" ? sideSeries : sideMovies;
+            if (targetSide) setElementFocus(targetSide);
+          }
+          return;
+        }
+
+        if (isRight) {
+          e.preventDefault();
+          if (idx < cards.length - 1) {
+            setElementFocus(cards[idx + 1]);
+          }
+          return;
+        }
+
+        if (isUp) {
+          e.preventDefault();
+          if (sIdx > 0) {
+            const prevCards = Array.from(currentStrips[sIdx - 1].querySelectorAll(".stremio-card.focusable"));
+            const target = prevCards[Math.min(idx, prevCards.length - 1)] || prevCards[0];
+            if (target) setElementFocus(target);
+          } else {
+            if (headerTabStremio) setElementFocus(headerTabStremio);
+          }
+          return;
+        }
+
+        if (isDown) {
+          e.preventDefault();
+          if (sIdx >= 0 && sIdx < currentStrips.length - 1) {
+            const nextCards = Array.from(currentStrips[sIdx + 1].querySelectorAll(".stremio-card.focusable"));
+            const target = nextCards[Math.min(idx, nextCards.length - 1)] || nextCards[0];
+            if (target) setElementFocus(target);
+          } else {
+            const targetGrid = currentStremioSubpage === "series" ? stremioSeriesPillsGrid : stremioMoviePillsGrid;
+            const firstPill = targetGrid ? targetGrid.querySelector(".category-pill-btn.focusable") : null;
+            if (firstPill) setElementFocus(firstPill);
+          }
+          return;
+        }
+      }
+
+      // 4. Navigation in 3-Icon Left Sidebar Dock (Live TV, Movies, Series)
+      if (inSideDock) {
+        const dockBtns = [document.getElementById("sideBackToIptv"), sideTv, sideMovies, sideSeries].filter(Boolean);
+        const bIdx = dockBtns.indexOf(focused);
+
+        if (isRight) {
+          e.preventDefault();
+          let targetCard = null;
+          if (focused === sideTv) {
+            targetCard = stremioGridLive ? stremioGridLive.querySelector(".stremio-card.focusable") : null;
+          } else if (focused === sideSeries) {
+            targetCard = stremioStripSeries ? stremioStripSeries.querySelector(".stremio-card.focusable") : null;
+          } else {
+            targetCard = stremioStripPopular ? stremioStripPopular.querySelector(".stremio-card.focusable") : null;
+          }
+          if (!targetCard) targetCard = document.querySelector("#stremioPage .stremio-card.focusable, #stremioPage .category-pill-btn.focusable");
+          if (targetCard) setElementFocus(targetCard);
+          return;
+        }
+
+        if (isUp) {
+          e.preventDefault();
+          if (bIdx > 0) {
+            setElementFocus(dockBtns[bIdx - 1]);
+          } else {
+            if (headerTabStremio) setElementFocus(headerTabStremio);
+          }
+          return;
+        }
+
+        if (isDown) {
+          e.preventDefault();
+          if (bIdx < dockBtns.length - 1) {
+            setElementFocus(dockBtns[bIdx + 1]);
+          }
+          return;
+        }
+
+        if (isEnter) {
+          e.preventDefault();
+          focused.click();
+          return;
+        }
+      }
+    }
+
     if (isDown && focused === settingsButton) {
       e.preventDefault();
       const firstMode = document.querySelector("#modusList .nav-item.focusable:not(.hidden)");
@@ -4153,43 +6795,124 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (isUp && focused && focused.dataset.modus === "favorites" && !movingStreamId) {
-      e.preventDefault();
-      toggleSettingsMenu(true);
-      return;
+    if (isUp && focused && focused.dataset && focused.dataset.modus && !moveMode) {
+      let prev = focused.previousElementSibling;
+      while (prev && (!prev.classList.contains("focusable") || prev.classList.contains("hidden"))) {
+        prev = prev.previousElementSibling;
+      }
+      if (!prev) {
+        e.preventDefault();
+        if (headerTabIptv) setElementFocus(headerTabIptv);
+        return;
+      }
     }
 
     // FULLSCREEN SPELER HANDLING
-    if (isFitScreen) {
+    const isRadialOpen = window.AeroRadial && window.AeroRadial.isOpen();
+    if (isFitScreen || !isRadialOpen) {
+      if (currentAppSection === "stremio") {
+        if (isUp || isPageUp) {
+          e.preventDefault();
+          if (stremioAllLiveChannels && stremioAllLiveChannels.length > 0) {
+            currentStreamIndex = (currentStreamIndex + 1) % stremioAllLiveChannels.length;
+            const target = stremioAllLiveChannels[currentStreamIndex];
+            playStremioLiveChannel(target.id || target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.directUrl || target.url);
+          }
+          return;
+        } else if (isDown || isPageDown) {
+          e.preventDefault();
+          if (stremioAllLiveChannels && stremioAllLiveChannels.length > 0) {
+            currentStreamIndex = (currentStreamIndex - 1 + stremioAllLiveChannels.length) % stremioAllLiveChannels.length;
+            const target = stremioAllLiveChannels[currentStreamIndex];
+            playStremioLiveChannel(target.id || target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.directUrl || target.url);
+          }
+          return;
+        } else if (isLeft || isEnter || isBack || key === 461 || key === 10009 || key === 27) {
+          e.preventDefault();
+          deactiveerFitScreen();
+          return;
+        }
+        return;
+      }
+
       if (currentModus === "vod" || currentModus === "series") {
         if (isUp) {
           e.preventDefault();
-          showVodControls(true);
+          openVodSettings("audio");
+          return;
         } else if (isRight) {
           e.preventDefault();
           queueVodSeek(1);
+          return;
         } else if (isLeft) {
           e.preventDefault();
           queueVodSeek(-1);
-        } else if (isEnter || isBack) {
+          return;
+        } else if (isEnter) {
           e.preventDefault();
-          video.pause();
+          togglePlayPauseVod();
+          return;
+        } else if (isDown) {
+          e.preventDefault();
+          if (window.AeroRadial && !window.AeroRadial.isOpen()) {
+            window.AeroRadial.open();
+          } else {
+            showVodOSD();
+          }
+          return;
+        } else if (isBack) {
+          e.preventDefault();
+          destroyStreamPlayers();
+          try {
+            video.pause();
+            video.removeAttribute("src");
+            video.load();
+          } catch (e) {}
+          playerWrapper.classList.add("hidden");
+          playerWrapper.classList.remove("vod-playback");
           deactiveerFitScreen();
+          if (window.AeroRadial) {
+            window.AeroRadial.open();
+          }
+          return;
         }
       } else {
-        if (isUp || isPageUp) {
+        if (isPageUp || isUp) {
           e.preventDefault();
-          currentStreamIndex = (currentStreamIndex + 1) % currentActiveStreams.length;
-          const target = currentActiveStreams[currentStreamIndex];
-          playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.url);
-        } else if (isDown || isPageDown) {
+          if (currentActiveStreams && currentActiveStreams.length > 0) {
+            currentStreamIndex = (currentStreamIndex + 1) % currentActiveStreams.length;
+            const target = currentActiveStreams[currentStreamIndex];
+            playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.url);
+          }
+        } else if (isPageDown || isDown) {
           e.preventDefault();
-          currentStreamIndex = (currentStreamIndex - 1 + currentActiveStreams.length) % currentActiveStreams.length;
-          const target = currentActiveStreams[currentStreamIndex];
-          playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.url);
-        } else if (isLeft || isEnter || isBack) {
+          if (currentActiveStreams && currentActiveStreams.length > 0) {
+            currentStreamIndex = (currentStreamIndex - 1 + currentActiveStreams.length) % currentActiveStreams.length;
+            const target = currentActiveStreams[currentStreamIndex];
+            playStream(target.stream_id, target.name, target.stream_icon, currentStreamIndex, target.url);
+          }
+        } else if (isRight || isGuideKey) {
           e.preventDefault();
-          deactiveerFitScreen();
+          openGuide();
+        } else if (isYellow) {
+          e.preventDefault();
+          if (currentActiveStreams && currentActiveStreams[currentStreamIndex]) {
+            toggleFavorite(currentActiveStreams[currentStreamIndex].stream_id);
+          }
+        } else if (isLeft || isEnter) {
+          e.preventDefault();
+          if (window.AeroRadial) {
+            window.AeroRadial.open();
+          } else {
+            showLiveOSD();
+          }
+        } else if (isBack) {
+          e.preventDefault();
+          if (window.AeroRadial && !window.AeroRadial.isOpen()) {
+            window.AeroRadial.open();
+          } else {
+            deactiveerFitScreen();
+          }
         }
       }
       return;
@@ -4211,6 +6934,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // BACK: step out one level at a time, and leave the app from the first column
     if (isBack) {
       e.preventDefault();
+      if (currentAppSection === "settings" || (settingsPanel && !settingsPanel.classList.contains("hidden"))) {
+        switchAppSection(previousAppSection || "iptv");
+        return;
+      }
       if (movingRegion) {
         const done = movingRegion;
         movingRegion = null;
@@ -4218,8 +6945,8 @@ document.addEventListener("DOMContentLoaded", () => {
         focusRegion(done);
         return;
       }
-      if (movingStreamId) {
-        toggleMoveMode(movingStreamId);
+      if (moveMode) {
+        cancelMoveMode();
         return;
       }
       if (selectedSeries) {
@@ -4233,6 +6960,10 @@ document.addEventListener("DOMContentLoaded", () => {
         setElementFocus(document.querySelector("#modusList [data-modus='favorites']"));
       } else if (column.id !== "colModus") {
         navigateColumn(focused, "left");
+      } else if (window.webOS && typeof webOS.platformBack === "function") {
+        webOS.platformBack();
+      } else if (window.webOSSystem && typeof webOSSystem.platformBack === "function") {
+        webOSSystem.platformBack();
       } else if (window.tizen && window.tizen.application && typeof window.tizen.application.getCurrentApplication === "function") {
         window.tizen.application.getCurrentApplication().exit();
       } else {
@@ -4241,15 +6972,16 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // VERPLAATS MODUS IN FAVORİETEN
-    if (movingStreamId && currentModus === "favorites") {
-      if (isUp) {
+    // VERPLAATS MODUS IN FAVORİETEN: OK picks up, Up/Down move the held stack.
+    if (moveMode && currentModus === "favorites") {
+      if (isEnter) {
         e.preventDefault();
-        stepMoveFavorite(-1);
+        pickUpMove(focused);
         return;
-      } else if (isDown) {
+      }
+      if (moveStack.length && (isUp || isDown)) {
         e.preventDefault();
-        stepMoveFavorite(1);
+        stepMoveSlot(isUp ? -1 : 1);
         return;
       }
     }
@@ -4321,8 +7053,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (prev) {
         setElementFocus(prev);
-      } else if (focused.closest("#modusList") && settingsButton) {
-        setElementFocus(settingsButton);
+      } else if (focused.closest("#modusList") && headerTabIptv) {
+        setElementFocus(headerTabIptv);
       } else if (focused.closest("#regionList, #categoryList, #channelList.channel-grid")) {
         const container = focused.parentElement;
         const items = wheelItems(container);
@@ -4381,11 +7113,269 @@ document.addEventListener("DOMContentLoaded", () => {
     commitVodSeek();
   });
 
-  // Welcome screen: first start only, skipped when credentials.local.js is present (testing builds)
+  // ==================== AERO RADIAL WHEEL BRIDGES ====================
+  window.kcGetModes = function() {
+    return [
+      { id: "favorites", title: "Favoriler", icon: "⭐" },
+      { id: "live", title: "Canlı TV", icon: "📺" },
+      { id: "vod", title: "Filmler", icon: "🎬" },
+      { id: "series", title: "Diziler", icon: "🍿" }
+    ];
+  };
+
+  window.kcGetRegions = function() {
+    var isVod = (currentModus === "vod" || currentModus === "series");
+    var cats = currentModus === "series" ? (seriesCategories.length ? seriesCategories : vodCategories) : (isVod ? vodCategories : allCategories);
+    var regMap = {};
+    var regList = ["ALL"];
+    if (cats && cats.length) {
+      for (var i = 0; i < cats.length; i++) {
+        var r = extractRegionFromCategory(cats[i].category_name, isVod);
+        if (r && !regMap[r]) {
+          regMap[r] = true;
+          regList.push(r);
+        }
+      }
+    }
+    return regList;
+  };
+
+  window.kcGetCategories = function(reg) {
+    var isVod = (currentModus === "vod" || currentModus === "series");
+    var cats = currentModus === "series" ? (seriesCategories.length ? seriesCategories : vodCategories) : (isVod ? vodCategories : allCategories);
+    if (!cats || !cats.length) return [{ category_id: "all", category_name: "Tüm Kanallar" }];
+    var hidden = hiddenCategories[categoryKind()] || [];
+    var result = [];
+    for (var i = 0; i < cats.length; i++) {
+      var c = cats[i];
+      if (hidden.indexOf(String(c.category_id)) !== -1) continue;
+      if (reg && reg !== "ALL" && extractRegionFromCategory(c.category_name, isVod) !== reg) continue;
+      result.push(c);
+    }
+    return result.length ? result : [{ category_id: "all", category_name: "Tüm Kanallar" }];
+  };
+
+  window.kcGetModus = function() {
+    return currentModus;
+  };
+
+  window.kcGetChannels = function() {
+    if (currentModus === "favorites") {
+      var favStreams = [];
+      if (favorites && favorites.length) {
+        for (var f = 0; f < favorites.length; f++) {
+          var item = streamByIdMap[String(favorites[f])];
+          if (item) favStreams.push(item);
+        }
+      }
+      return favStreams;
+    }
+    if (currentModus === "vod") {
+      var vStreams = (typeof vodStreams !== "undefined" && vodStreams) ? vodStreams : [];
+      var filteredV = vStreams.filter(function(s) { return String(s.category_id) === String(currentCategoryId); });
+      if (!filteredV.length) filteredV = vStreams.slice(0, 60);
+      return filteredV;
+    }
+    if (currentModus === "series") {
+      var sStreams = (typeof seriesStreams !== "undefined" && seriesStreams) ? seriesStreams : [];
+      var filteredS = sStreams.filter(function(s) { return String(s.category_id) === String(currentCategoryId); });
+      if (!filteredS.length) filteredS = sStreams.slice(0, 60);
+      return filteredS;
+    }
+    if (currentActiveStreams && currentActiveStreams.length) {
+      return currentActiveStreams;
+    }
+    return allStreams || [];
+  };
+
+  window.kcGetCurrentPlayingStreamId = function() {
+    return currentPlayingStreamId;
+  };
+
+  window.kcPlayStream = function(id, name, icon, idx, url, ext) {
+    if (currentModus === "vod") {
+      playVodMovie(id, name, ext || "mp4");
+    } else if (currentModus === "series") {
+      playSeriesEpisode(id, name, ext || "mp4");
+    } else {
+      playStream(id, name, icon, idx, url);
+    }
+  };
+
+  window.kcOpenSettings = function() {
+    switchAppSection("settings");
+  };
+
+  window.kcActivateFitScreen = function() {
+    activeerFitScreen();
+  };
+
+  window.kcDeactivateFitScreen = function() {
+    deactiveerFitScreen();
+  };
+
+  window.kcSwitchModus = function(m) {
+    switchModus(m);
+    setupRegions();
+    if (m === "live") {
+      var savedReg = store.getItem("iptv_last_live_region");
+      if (savedReg) currentLiveRegion = savedReg;
+      var cats = window.kcGetCategories(currentLiveRegion);
+      var savedCat = store.getItem("iptv_last_live_cat");
+      if (savedCat) {
+        var foundSaved = cats.find(function(c) { return String(c.category_id) === String(savedCat); });
+        if (foundSaved) currentCategoryId = savedCat;
+      }
+      if (cats && cats.length) {
+        var foundCurrent = cats.find(function(c) { return String(c.category_id) === String(currentCategoryId); });
+        if (!foundCurrent) currentCategoryId = cats[0].category_id;
+      }
+    } else if (m === "vod" || m === "series") {
+      var savedVodReg = store.getItem("iptv_last_vod_region");
+      if (savedVodReg) currentVodRegion = savedVodReg;
+      if (currentModus !== "favorites") filterCategories();
+      var activeReg = currentVodRegion || "ALL";
+      var cats = window.kcGetCategories(activeReg);
+      var savedVodCat = store.getItem("iptv_last_vod_cat");
+      if (savedVodCat) {
+        var foundSavedVod = cats.find(function(c) { return String(c.category_id) === String(savedVodCat); });
+        if (foundSavedVod) currentCategoryId = savedVodCat;
+      }
+      if (cats && cats.length) {
+        var foundCurrentVod = cats.find(function(c) { return String(c.category_id) === String(currentCategoryId); });
+        if (!foundCurrentVod) currentCategoryId = cats[0].category_id;
+      }
+    } else {
+      if (currentModus !== "favorites") filterCategories();
+      var cats = window.kcGetCategories("ALL");
+      if (cats && cats.length) {
+        currentCategoryId = cats[0].category_id;
+      }
+    }
+    filterChannels();
+    if (window.AeroRadial) window.AeroRadial.refresh();
+  };
+
+  window.kcSetRegion = function(r) {
+    var isVod = (currentModus === "vod" || currentModus === "series");
+    if (isVod) {
+      currentVodRegion = r;
+      try { store.setItem("iptv_last_vod_region", r); } catch (e) {}
+    } else {
+      currentLiveRegion = r;
+      try { store.setItem("iptv_last_live_region", r); } catch (e) {}
+    }
+    if (currentModus !== "favorites") filterCategories();
+    var cats = window.kcGetCategories(r);
+    var savedCat = isVod ? store.getItem("iptv_last_vod_cat") : store.getItem("iptv_last_live_cat");
+    var foundSaved = savedCat ? cats.find(function(c) { return String(c.category_id) === String(savedCat); }) : null;
+    if (foundSaved) {
+      currentCategoryId = savedCat;
+    } else if (cats && cats.length) {
+      currentCategoryId = cats[0].category_id;
+    }
+    filterChannels();
+    if (window.AeroRadial) window.AeroRadial.refresh();
+  };
+
+  window.kcSetCategory = function(catId) {
+    currentCategoryId = catId;
+    var isVod = (currentModus === "vod" || currentModus === "series");
+    try {
+      if (isVod) store.setItem("iptv_last_vod_cat", String(catId));
+      else store.setItem("iptv_last_live_cat", String(catId));
+    } catch (e) {}
+    filterChannels();
+    if (window.AeroRadial) window.AeroRadial.refresh();
+  };
+
+  window.kcToggleFavorite = function(id) {
+    toggleFavorite(id);
+    if (window.AeroRadial) window.AeroRadial.refresh();
+  };
+
+  window.kcMoveFavorite = function(dir) {
+    if (!favorites || favorites.length < 2) return 0;
+    var total = favorites.length;
+    var fromIdx = ((currentStreamIndex % total) + total) % total;
+    var toIdx = ((fromIdx + dir) % total + total) % total;
+    var item = favorites.splice(fromIdx, 1)[0];
+    favorites.splice(toIdx, 0, item);
+    saveFavorites(favorites);
+    currentStreamIndex = toIdx;
+    filterChannels();
+    return toIdx;
+  };
+
+  window.kcCommitMoveStack = function(stackIds, targetIdx) {
+    if (!favorites || !favorites.length || !stackIds || !stackIds.length) return;
+    var remaining = favorites.filter(function(id) {
+      return stackIds.indexOf(String(id)) === -1;
+    });
+    var insertAt = Math.max(0, Math.min(remaining.length, targetIdx));
+    remaining.splice.apply(remaining, [insertAt, 0].concat(stackIds));
+    favorites.splice(0, favorites.length);
+    for (var i = 0; i < remaining.length; i++) {
+      favorites.push(remaining[i]);
+    }
+    saveFavorites(favorites);
+    filterChannels();
+    if (window.AeroRadial) window.AeroRadial.refresh();
+  };
+
+  window.kcOpenStremio = function() {
+    switchAppSection("stremio");
+  };
+
+  window.kcOpenGuide = function() {
+    openGuide();
+  };
+
+  window.kcFetchSeriesInfo = async function(seriesId) {
+    if (!xtreamAuth) return null;
+    try {
+      const url = `${xtreamAuth.server}/player_api.php?username=${xtreamAuth.username}&password=${xtreamAuth.password}&action=get_series_info&series_id=${encodeURIComponent(seriesId)}`;
+      const response = await requestText(url);
+      if (response.status !== 200 || !response.body.trim()) return null;
+      const info = JSON.parse(response.body);
+      const episodes = info.episodes || {};
+      const seasonKeys = Array.isArray(episodes) ? ["1"] : Object.keys(episodes).sort((a, b) => Number(a) - Number(b));
+      return {
+        info: info.info || {},
+        seasons: seasonKeys.map(seasonKey => {
+          const seasonEpisodes = Array.isArray(episodes) ? episodes : episodes[seasonKey];
+          return {
+            number: seasonKey,
+            name: `Sezon ${seasonKey}`,
+            episodes: (Array.isArray(seasonEpisodes) ? seasonEpisodes : []).map(ep => ({
+              id: ep.id || ep.stream_id,
+              title: ep.title || ep.name || `Bölüm ${ep.episode_num || ""}`,
+              episode_num: ep.episode_num || 1,
+              container_extension: ep.container_extension || "mp4",
+              info: ep.info || {}
+            }))
+          };
+        }).filter(s => s.episodes.length > 0)
+      };
+    } catch (e) {
+      console.error("kcFetchSeriesInfo error:", e);
+      return null;
+    }
+  };
+
+  window.kcPlaySeriesEpisode = function(episodeId, title, ext) {
+    if (window.AeroRadial) window.AeroRadial.close();
+    playSeriesEpisode(episodeId, title, ext);
+  };
+
+  window.kcShowToast = function(msg) {
+    showToast(msg);
+  };
+
+  // FIRST LAUNCH WELCOME SCREEN FOR TIZEN
   const welcomeScreen = document.getElementById("welcomeScreen");
-  const welcomeFlickerLayer = document.getElementById("wcFlicker");
-  const welcomeScreenEl = document.getElementById("wcScreen");
   const welcomePrompt = document.getElementById("wcPrompt");
+  const welcomeFlickerLayer = document.getElementById("wcFlicker");
   const welcomeTop = document.getElementById("wcTop");
   const welcomeBottom = document.getElementById("wcBottom");
   const welcomeLine = document.getElementById("wcLine");
@@ -4432,18 +7422,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function welcomeRevealSettings() {
     welcomeBlack.classList.add("wc-show");
-    appPageEl.style.visibility = "";
+    if (appPageEl) appPageEl.style.visibility = "";
     toggleSettingsMenu(true);
     showCustomizationTab("source");
-    const sourceTab = settingsPanel.querySelector(".customization-tab[data-tab='source']");
+    const sourceTab = settingsPanel ? settingsPanel.querySelector(".customization-tab[data-tab='source']") : null;
     if (sourceTab) setElementFocus(sourceTab);
-    // Only the black layer is left, so the fade doesn't repaint the animated welcome on the TV
     welcomeScreen.classList.add("wc-slim");
     welcomeScreen.classList.add("wc-fade");
     welcomeLater(welcomeFinish, 750);
   }
 
-  // Original sounds, synthesized with Web Audio so no licensed asset is needed.
   let welcomeAudio = null;
   function welcomeGetAudio() {
     if (welcomeAudio) return welcomeAudio;
@@ -4475,11 +7463,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!ctx) return;
     if (ctx.state === "suspended") ctx.resume().catch(() => {});
     const t = ctx.currentTime + 0.05;
-    // Two low notes that ring out like a piano with the sustain pedal down
     welcomePianoNote(ctx, 130.81, t, 5.0, 0.6);
     welcomePianoNote(ctx, 98.0, t + 0.9, 6.0, 0.6);
   }
-  // Struck-string tone: higher partials die away faster, so the note softens into a long tail
   function welcomePianoNote(ctx, freq, start, dur, gain) {
     const partials = [
       { mult: 1, level: 1.0, decay: 1.0 },
@@ -4509,9 +7495,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!ctx) return;
     if (ctx.state === "suspended") ctx.resume().catch(() => {});
     const t = ctx.currentTime + 0.01;
-    // Downward sweep, like a CRT losing its high voltage
     welcomeTone(ctx, "sawtooth", 900, t, 0.28, 0.5, 40);
-    // Short click at the moment the line collapses
     const len = Math.floor(ctx.sampleRate * 0.02);
     const buf = ctx.createBuffer(1, len, ctx.sampleRate);
     const data = buf.getChannelData(0);
@@ -4541,7 +7525,6 @@ document.addEventListener("DOMContentLoaded", () => {
     welcomeLater(welcomeRevealSettings, 900);
   }
 
-  // Capture phase so the welcome screen consumes every key before the app handles it.
   window.addEventListener("keydown", (e) => {
     if (!welcomeActive) return;
     e.preventDefault();
@@ -4556,14 +7539,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const texts = welcomeTexts[currentLang] || welcomeTexts.en;
     welcomePrompt.textContent = texts.prompt;
     welcomeActive = true;
-    // The main menu stays hidden until OK, so it can't cover the welcome
-    appPageEl.style.visibility = "hidden";
-    // The welcome is artwork, so it animates even when the Animations setting is off.
+    if (appPageEl) appPageEl.style.visibility = "hidden";
     document.body.classList.remove("no-animations");
     welcomeScreen.classList.remove("wc-hidden");
     welcomeFlickerLoop();
-    // Start the intro after the welcome's first paint so the sound and the screen begin together
     requestAnimationFrame(() => requestAnimationFrame(welcomePlayIntro));
+  }
+
+  if (window.AeroRadial) {
+    window.AeroRadial.init();
   }
 
   initProfile();

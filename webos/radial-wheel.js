@@ -1085,8 +1085,8 @@
     var isPageUp = key === 33 || e.key === "PageUp" || key === 427 || e.key === "ChannelUp";
     var isPageDown = key === 34 || e.key === "PageDown" || key === 428 || e.key === "ChannelDown";
 
-    var isYellow = key === 405 || e.key === "F3" || e.key === "Yellow";
-    var isRed = key === 403 || e.key === "F1" || e.key === "Red";
+    var isYellow = key === 405 || e.key === "F3" || e.key === "Yellow" || e.key === "ColorF2Yellow";
+    var isRed = key === 403 || e.key === "F1" || e.key === "Red" || e.key === "ColorF0Red";
     var isGuideKey = key === 458 || e.key === "Guide";
 
     // Handle Series Picker Mode if active

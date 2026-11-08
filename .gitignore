@@ -39,6 +39,11 @@ tizen/.buildResult/
 tizen/.manifest.tmp
 tizen/author-signature.xml
 tizen/signature1.xml
+tizen/.sign/
+tizen/.settings/
+tizen/.project
+tizen/.tproject
+tizen/Tizen README.md
 
 # Logs
 *.log

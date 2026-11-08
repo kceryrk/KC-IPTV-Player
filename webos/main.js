@@ -5902,10 +5902,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const isEnter = key === 13 || e.key === "Enter";
 
     // KNOPPEN MET VOLLEDIGE KEYCODE & ALIAS DETECTIE
-    const isRed = key === 403 || e.key === "F1" || e.key === "Red" || e.code === "F1";
-    const isGreen = key === 404 || e.key === "F2" || e.key === "Green" || e.code === "F2";
-    const isYellow = key === 405 || e.key === "F3" || e.key === "Yellow" || e.code === "F3";
-    const isBlue = key === 406 || e.key === "F4" || e.key === "Blue" || e.code === "F4";
+    const isRed = key === 403 || e.key === "F1" || e.key === "Red" || e.code === "F1" || e.key === "ColorF0Red";
+    const isGreen = key === 404 || e.key === "F2" || e.key === "Green" || e.code === "F2" || e.key === "ColorF1Green";
+    const isYellow = key === 405 || e.key === "F3" || e.key === "Yellow" || e.code === "F3" || e.key === "ColorF2Yellow";
+    const isBlue = key === 406 || e.key === "F4" || e.key === "Blue" || e.code === "F4" || e.key === "ColorF3Blue";
 
     const isPageUp = key === 33 || e.key === "PageUp" || key === 427 || e.key === "ChannelUp";
     const isPageDown = key === 34 || e.key === "PageDown" || key === 428 || e.key === "ChannelDown";
@@ -6964,6 +6964,8 @@ document.addEventListener("DOMContentLoaded", () => {
         webOS.platformBack();
       } else if (window.webOSSystem && typeof webOSSystem.platformBack === "function") {
         webOSSystem.platformBack();
+      } else if (window.tizen && window.tizen.application && typeof window.tizen.application.getCurrentApplication === "function") {
+        window.tizen.application.getCurrentApplication().exit();
       } else {
         window.close();
       }

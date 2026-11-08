@@ -27,7 +27,7 @@ Open items to fix later.
 - [x] Background wallpaper visibility with user-adjustable tint slider (10% - 95%)
 
 ## Guide (EPG)
-- [ ] EPG and OSD blur
+- [ ] EPG blur (Live TV & VOD OSD optical frosted glass completed in v1.2.101)
 - [ ] Channel name column is too narrow; make it wider
 - [ ] Long channel names scroll to the right after 1 second, in a loop
 - [ ] Localize the date in the guide
