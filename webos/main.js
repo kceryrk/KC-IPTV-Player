@@ -4765,17 +4765,56 @@ document.addEventListener("DOMContentLoaded", () => {
     tryStage(1);
   }
 
+  function extractLogoColor(img) {
+    try {
+      const c = document.createElement("canvas");
+      c.width = 8;
+      c.height = 8;
+      const ctx = c.getContext("2d");
+      ctx.drawImage(img, 0, 0, 8, 8);
+      const data = ctx.getImageData(0, 0, 8, 8).data;
+      let r = 0, g = 0, b = 0, count = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        const a = data[i + 3];
+        const red = data[i], green = data[i + 1], blue = data[i + 2];
+        const lum = red * 0.299 + green * 0.587 + blue * 0.114;
+        if (a > 120 && lum > 35 && lum < 235) {
+          r += red; g += green; b += blue; count++;
+        }
+      }
+      if (count > 0) {
+        return `${Math.round(r / count)}, ${Math.round(g / count)}, ${Math.round(b / count)}`;
+      }
+    } catch (e) {}
+    return null;
+  }
+
   function updateLiveOSDData(numStr, name, icon) {
     if (osdChannelTitle) osdChannelTitle.textContent = `${numStr}. ${cleanTitle(name)}`;
     const osdLogo = document.getElementById("osdLogo");
     const osdLogoFallback = document.getElementById("osdLogoFallback");
     if (osdLogo && icon) {
+      osdLogo.crossOrigin = "anonymous";
       osdLogo.src = icon;
       osdLogo.classList.remove("hidden");
       if (osdLogoFallback) osdLogoFallback.style.display = "none";
+      osdLogo.onload = () => {
+        const rgb = extractLogoColor(osdLogo);
+        if (rgb) {
+          if (osdContainer) osdContainer.style.setProperty("--osd-ambient-rgb", rgb);
+          const bubble = document.getElementById("osdClockBubble");
+          if (bubble) bubble.style.setProperty("--osd-ambient-rgb", rgb);
+        } else if (osdContainer) {
+          osdContainer.style.removeProperty("--osd-ambient-rgb");
+        }
+      };
+      osdLogo.onerror = () => {
+        if (osdContainer) osdContainer.style.removeProperty("--osd-ambient-rgb");
+      };
     } else if (osdLogoFallback) {
       if (osdLogo) osdLogo.classList.add("hidden");
       osdLogoFallback.style.display = "flex";
+      if (osdContainer) osdContainer.style.removeProperty("--osd-ambient-rgb");
     }
   }
 
