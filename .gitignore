@@ -22,6 +22,8 @@ Thumbs.db
 # Local editor files
 .vscode/
 .idea/
+demo_layout.html
+android/KCIPTVPLAYER.apk
 
 # Android build artifacts
 android/.gradle/
