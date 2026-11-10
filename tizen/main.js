@@ -264,6 +264,78 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.assign(appTranslations.tr, {"showEpg": "EPG bilgisini göster", "epgOffset": "EPG saat farkı"});
   Object.assign(appTranslations.nl, {"showEpg": "EPG-info tonen", "epgOffset": "EPG-tijdverschil"});
   Object.assign(appTranslations.fr, {"showEpg": "Afficher les infos EPG", "epgOffset": "Décalage horaire EPG"});
+
+  Object.assign(appTranslations.en, {
+    aboutTab: "About",
+    aboutAppDesc: "High-performance IPTV & Stremio streaming player built for Smart TVs and modern mobile devices.",
+    aboutUpdatesHeading: "Updates & Releases",
+    aboutUpdatesDesc: "Check GitHub for new features, bug fixes, and download packages for all supported platforms.",
+    checkForUpdates: "Check for Updates",
+    supportDevHeading: "Support the Developer",
+    supportDevDesc: "KC IPTV Player is free and open-source without ads. If you enjoy using this app, a coffee goes a long way!",
+    scanQrHint: "📱 Scan with phone camera",
+    updateModalTitle: "Software Updates & Releases",
+    upToDate: "Up to date",
+    updateAvailable: "Update available",
+    installedVersion: "Installed",
+    latestVersion: "Latest",
+    checkingUpdates: "Checking for updates...",
+    updateCheckFailed: "Could not fetch updates from GitHub."
+  });
+
+  Object.assign(appTranslations.tr, {
+    aboutTab: "Hakkında",
+    aboutAppDesc: "Smart TV'ler ve modern mobil cihazlar için geliştirilmiş yüksek performanslı IPTV ve Stremio oynatıcısı.",
+    aboutUpdatesHeading: "Güncellemeler ve Sürümler",
+    aboutUpdatesDesc: "Yeni özellikler, hata düzeltmeleri ve tüm desteklenen platform paketleri için GitHub'ı kontrol edin.",
+    checkForUpdates: "Güncellemeleri Kontrol Et",
+    supportDevHeading: "Geliştiriciye Destek Ol",
+    supportDevDesc: "KC IPTV Player reklamsız ve açık kaynaklıdır. Uygulamayı beğeniyorsanız, bir kahve ısmarlayarak destek olabilirsiniz!",
+    scanQrHint: "📱 Telefon kamerasıyla okutun",
+    updateModalTitle: "Yazılım Güncellemeleri ve Sürümler",
+    upToDate: "Güncel",
+    updateAvailable: "Yeni sürüm mevcut",
+    installedVersion: "Yüklü",
+    latestVersion: "En son",
+    checkingUpdates: "Güncellemeler kontrol ediliyor...",
+    updateCheckFailed: "GitHub güncellemeleri alınamadı."
+  });
+
+  Object.assign(appTranslations.nl, {
+    aboutTab: "Over",
+    aboutAppDesc: "Hoogwaardige IPTV- en Stremio-speler gebouwd voor Smart TV's en moderne mobiele apparaten.",
+    aboutUpdatesHeading: "Updates & Versies",
+    aboutUpdatesDesc: "Controleer GitHub voor nieuwe functies, bugfixes en downloadpakketten voor alle platforms.",
+    checkForUpdates: "Controleren op updates",
+    supportDevHeading: "Ondersteun de ontwikkelaar",
+    supportDevDesc: "KC IPTV Player is gratis en open source zonder advertenties. Als je de app waardeert, is een kopje koffie van harte welkom!",
+    scanQrHint: "📱 Scan met je telefooncamera",
+    updateModalTitle: "Software-updates & Versies",
+    upToDate: "Up-to-date",
+    updateAvailable: "Update beschikbaar",
+    installedVersion: "Geïnstalleerd",
+    latestVersion: "Nieuwste",
+    checkingUpdates: "Updates controleren...",
+    updateCheckFailed: "Kon geen updates ophalen van GitHub."
+  });
+
+  Object.assign(appTranslations.fr, {
+    aboutTab: "À propos",
+    aboutAppDesc: "Lecteur IPTV et Stremio haute performance conçu pour les Smart TV et appareils mobiles modernes.",
+    aboutUpdatesHeading: "Mises à jour et versions",
+    aboutUpdatesDesc: "Consultez GitHub pour les nouvelles fonctionnalités et packages pour toutes les plateformes.",
+    checkForUpdates: "Vérifier les mises à jour",
+    supportDevHeading: "Soutenir le développeur",
+    supportDevDesc: "KC IPTV Player est gratuit, open source et sans publicité. Si vous appréciez l'application, un café fait très plaisir !",
+    scanQrHint: "📱 Scannez avec votre téléphone",
+    updateModalTitle: "Mises à jour logicielles",
+    upToDate: "À jour",
+    updateAvailable: "Mise à jour disponible",
+    installedVersion: "Installée",
+    latestVersion: "Dernière",
+    checkingUpdates: "Recherche de mises à jour...",
+    updateCheckFailed: "Impossible de récupérer les mises à jour de GitHub."
+  });
   let autoplayNext = store.getItem("iptv_autoplay_next") === "true";
   let epgVisible = store.getItem("iptv_epg_show") !== "false";
   let epgOffsetHours = Math.max(-2, Math.min(2, Number(store.getItem("iptv_epg_offset")) || 0));
@@ -839,6 +911,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!customizationPage) return;
     if (name === "addons" && typeof renderAddonsSection === "function") {
       renderAddonsSection();
+    }
+    if (name === "about" && typeof renderAboutSection === "function") {
+      renderAboutSection();
     }
     customizationPage.querySelectorAll(".customization-tab").forEach(tab => {
       tab.classList.toggle("active", tab.dataset.tab === name);
@@ -3792,6 +3867,339 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================================================================
+  // ABOUT TAB & GITHUB RELEASES UPDATE CHECKER
+  // =========================================================================
+  const APP_VERSION = "1.2.114";
+  const GITHUB_RELEASES_URL = "https://api.github.com/repos/kceryrk/KC-IPTV-Player/releases";
+  const KOFI_URL = "https://ko-fi.com/kaecr";
+
+  function getAppPlatform() {
+    if (typeof tizen !== "undefined" || (navigator.userAgent && /Tizen/i.test(navigator.userAgent))) {
+      return "Samsung Tizen";
+    }
+    if (typeof webOS !== "undefined" || (navigator.userAgent && /webOS|NetCast/i.test(navigator.userAgent))) {
+      return "LG webOS";
+    }
+    if (navigator.userAgent && /Android/i.test(navigator.userAgent)) {
+      return "Android TV";
+    }
+    return "Smart TV";
+  }
+
+  function parseVersion(tag) {
+    if (!tag) return [0, 0, 0];
+    const cleaned = String(tag).replace(/^v/i, "").trim();
+    const parts = cleaned.split(/[-_+]/)[0].split(".").map(num => parseInt(num, 10) || 0);
+    while (parts.length < 3) parts.push(0);
+    return parts;
+  }
+
+  function compareVersions(vA, vB) {
+    const pA = parseVersion(vA);
+    const pB = parseVersion(vB);
+    for (let i = 0; i < Math.max(pA.length, pB.length); i++) {
+      const a = pA[i] || 0;
+      const b = pB[i] || 0;
+      if (a !== b) return a - b;
+    }
+    return 0;
+  }
+
+  function formatInlineMd(str) {
+    if (!str) return "";
+    let s = str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    s = s.replace(/`([^`]+)`/g, "<code class=\"md-code\">$1</code>");
+    s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    s = s.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "<a class=\"md-link\" href=\"$2\" target=\"_blank\">$1</a>");
+    return s;
+  }
+
+  function renderMarkdownNotes(text) {
+    if (!text) return "<p class=\"md-p\">(No release notes provided)</p>";
+    const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+    let html = "";
+    let inList = false;
+
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
+
+      if (/^---{2,}$/.test(line.trim())) {
+        if (inList) { html += "</ul>"; inList = false; }
+        html += "<hr class=\"md-hr\" />";
+        continue;
+      }
+
+      if (line.trim().startsWith(">")) {
+        if (inList) { html += "</ul>"; inList = false; }
+        const alertContent = line.trim().replace(/^>\s*/, "");
+        html += `<div class="md-alert">${formatInlineMd(alertContent)}</div>`;
+        continue;
+      }
+
+      if (line.startsWith("### ")) {
+        if (inList) { html += "</ul>"; inList = false; }
+        html += `<h3 class="md-h3">${formatInlineMd(line.slice(4))}</h3>`;
+        continue;
+      }
+      if (line.startsWith("## ") || line.startsWith("# ")) {
+        if (inList) { html += "</ul>"; inList = false; }
+        const title = line.replace(/^#+\s*/, "");
+        html += `<h2 class="md-h2">${formatInlineMd(title)}</h2>`;
+        continue;
+      }
+
+      const listMatch = line.match(/^(\s*)([-*]|\d+\.)\s+(.+)$/);
+      if (listMatch) {
+        if (!inList) {
+          html += "<ul class=\"md-ul\">";
+          inList = true;
+        }
+        html += `<li class="md-li">${formatInlineMd(listMatch[3])}</li>`;
+        continue;
+      } else if (inList && line.trim() === "") {
+        html += "</ul>";
+        inList = false;
+        continue;
+      }
+
+      const trimmed = line.trim();
+      if (trimmed.length > 0) {
+        if (inList) { html += "</ul>"; inList = false; }
+        html += `<p class="md-p">${formatInlineMd(trimmed)}</p>`;
+      }
+    }
+
+    if (inList) html += "</ul>";
+    return html;
+  }
+
+  function renderAboutSection() {
+    const aboutVersionEl = document.getElementById("aboutAppVersion");
+    const aboutPlatformEl = document.getElementById("aboutPlatformBadge");
+    if (aboutVersionEl) aboutVersionEl.textContent = `v${APP_VERSION}`;
+    if (aboutPlatformEl) aboutPlatformEl.textContent = getAppPlatform();
+  }
+
+  function closeUpdateReleaseModal() {
+    const modal = document.getElementById("updateReleaseModal");
+    if (modal) modal.classList.add("hidden");
+    const checkBtn = document.getElementById("btnCheckForUpdates");
+    if (checkBtn) setElementFocus(checkBtn);
+  }
+
+  function openExternalUrl(url) {
+    if (!url) return;
+    if (typeof tizen !== "undefined" && tizen.application) {
+      try {
+        const appControl = new tizen.ApplicationControl("http://tizen.org/appcontrol/operation/view", url);
+        tizen.application.launchAppControl(appControl);
+        return;
+      } catch (err) {
+        console.warn("Tizen launchAppControl failed:", err);
+      }
+    }
+    window.open(url, "_blank");
+  }
+
+  function checkForGitHubUpdates(isManual = true) {
+    const modal = document.getElementById("updateReleaseModal");
+    const currentVerEl = document.getElementById("updateModalCurrentVer");
+    const latestVerEl = document.getElementById("updateModalLatestVer");
+    const statusEl = document.getElementById("updateModalStatus");
+    const scrollBody = document.getElementById("updateNotesScrollBody");
+    const statusText = document.getElementById("aboutUpdateStatusText");
+
+    const dlAndroid = document.getElementById("downloadAndroidBtn");
+    const dlTizen = document.getElementById("downloadTizenBtn");
+    const dlWebos = document.getElementById("downloadWebosBtn");
+
+    if (currentVerEl) currentVerEl.textContent = `${t("installedVersion")}: v${APP_VERSION}`;
+    if (latestVerEl) latestVerEl.textContent = `${t("latestVersion")}: ...`;
+    if (statusEl) {
+      statusEl.textContent = t("checkingUpdates");
+      statusEl.className = "update-pill update-pill-status";
+    }
+    if (statusText) statusText.textContent = t("checkingUpdates");
+
+    if (scrollBody) {
+      scrollBody.innerHTML = `
+        <div class="update-loading-spinner" id="updateNotesLoading">
+          <svg class="ui-icon spin" style="width:36px; height:36px; color:#38bdf8;" aria-hidden="true"><use xlink:href="#i-refresh"/></svg>
+          <span>${t("checkingUpdates")}</span>
+        </div>
+      `;
+    }
+
+    if (modal) modal.classList.remove("hidden");
+
+    const closeBtn = document.getElementById("updateNotesCloseBtn");
+    if (closeBtn) setElementFocus(closeBtn);
+
+    fetch(GITHUB_RELEASES_URL, { cache: "no-store" })
+      .then(res => {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then(releases => {
+        if (!Array.isArray(releases) || releases.length === 0) {
+          throw new Error("No releases found");
+        }
+        const latestRelease = releases[0];
+        const latestTag = latestRelease.tag_name || "v1.2.60";
+
+        if (latestVerEl) latestVerEl.textContent = `${t("latestVersion")}: ${latestTag}`;
+
+        // Find platform download assets across available releases
+        let apkUrl = "https://github.com/kceryrk/KC-IPTV-Player/releases/latest";
+        let wgtUrl = "https://github.com/kceryrk/KC-IPTV-Player/releases/latest";
+        let ipkUrl = "https://github.com/kceryrk/KC-IPTV-Player/releases/latest";
+
+        for (let i = 0; i < releases.length; i++) {
+          const rel = releases[i];
+          if (rel.assets && Array.isArray(rel.assets)) {
+            for (let j = 0; j < rel.assets.length; j++) {
+              const asset = rel.assets[j];
+              const name = (asset.name || "").toLowerCase();
+              if (name.endsWith(".apk") && apkUrl.includes("/latest")) apkUrl = asset.browser_download_url;
+              if (name.endsWith(".wgt") && wgtUrl.includes("/latest")) wgtUrl = asset.browser_download_url;
+              if (name.endsWith(".ipk") && ipkUrl.includes("/latest")) ipkUrl = asset.browser_download_url;
+            }
+          }
+        }
+
+        if (dlAndroid) dlAndroid.href = apkUrl;
+        if (dlTizen) dlTizen.href = wgtUrl;
+        if (dlWebos) dlWebos.href = ipkUrl;
+
+        // Version comparison
+        const cmp = compareVersions(latestTag, APP_VERSION);
+        if (cmp > 0) {
+          if (statusEl) {
+            statusEl.textContent = `⚡ ${t("updateAvailable")} (${latestTag})`;
+            statusEl.className = "update-pill update-pill-status update-avail";
+          }
+          if (statusText) statusText.textContent = `⚡ ${t("updateAvailable")}: ${latestTag}`;
+        } else {
+          if (statusEl) {
+            statusEl.textContent = `✓ ${t("upToDate")} (v${APP_VERSION})`;
+            statusEl.className = "update-pill update-pill-status update-uptodate";
+          }
+          if (statusText) statusText.textContent = `✓ ${t("upToDate")}`;
+        }
+
+        // Show releases from latest down to installed version (newest on top)
+        let relevant = releases.filter(r => compareVersions(r.tag_name, APP_VERSION) >= 0);
+        if (relevant.length === 0) {
+          relevant = releases.slice(0, 3);
+        }
+
+        let notesHtml = "";
+        if (cmp <= 0) {
+          notesHtml += `
+            <div class="update-uptodate-banner">
+              <span class="uptodate-icon">✓</span>
+              <div class="uptodate-text">
+                <strong>${t("upToDate")}!</strong>
+                <span>KC IPTV Player v${APP_VERSION} is installed. Release notes and platform packages:</span>
+              </div>
+            </div>
+          `;
+        }
+
+        relevant.forEach(rel => {
+          const relDate = rel.published_at ? new Date(rel.published_at).toLocaleDateString() : "";
+          const bodyHtml = renderMarkdownNotes(rel.body);
+          notesHtml += `
+            <div class="update-release-item">
+              <div class="update-release-header">
+                <div class="update-release-tag-group">
+                  <span class="update-release-tag">${rel.tag_name}</span>
+                  <span class="update-release-title">${rel.name || rel.tag_name}</span>
+                </div>
+                <span class="update-release-date">${relDate}</span>
+              </div>
+              <div class="update-release-notes">
+                ${bodyHtml}
+              </div>
+            </div>
+          `;
+        });
+
+        if (scrollBody) scrollBody.innerHTML = notesHtml;
+
+        // Auto-focus current platform's download button
+        const platform = getAppPlatform();
+        if (platform === "Samsung Tizen" && dlTizen) {
+          setElementFocus(dlTizen);
+        } else if (platform === "LG webOS" && dlWebos) {
+          setElementFocus(dlWebos);
+        } else if (dlAndroid) {
+          setElementFocus(dlAndroid);
+        }
+      })
+      .catch(err => {
+        console.warn("GitHub releases check error:", err);
+        if (statusEl) {
+          statusEl.textContent = "Check Failed";
+          statusEl.className = "update-pill update-pill-status";
+        }
+        if (statusText) statusText.textContent = t("updateCheckFailed");
+        if (scrollBody) {
+          scrollBody.innerHTML = `
+            <div class="update-error-box">
+              <p>${t("updateCheckFailed")}</p>
+              <a class="platform-download-card focusable" href="https://github.com/kceryrk/KC-IPTV-Player/releases" target="_blank" style="margin-top:16px;">
+                <span class="platform-dl-icon">🌐</span>
+                <div class="platform-dl-meta">
+                  <span class="platform-dl-title">GitHub Releases</span>
+                  <span class="platform-dl-ext">github.com/kceryrk/KC-IPTV-Player</span>
+                </div>
+              </a>
+            </div>
+          `;
+        }
+      });
+  }
+
+  // Wire About & Updates interactive elements
+  const btnCheckForUpdates = document.getElementById("btnCheckForUpdates");
+  if (btnCheckForUpdates) {
+    btnCheckForUpdates.addEventListener("click", () => checkForGitHubUpdates(true));
+  }
+
+  const btnOpenKofi = document.getElementById("btnOpenKofi");
+  if (btnOpenKofi) {
+    btnOpenKofi.addEventListener("click", () => {
+      openExternalUrl(KOFI_URL);
+      showToast("Ko-fi: https://ko-fi.com/kaecr — Scan the QR code with your phone!");
+    });
+  }
+
+  const updateNotesCloseBtn = document.getElementById("updateNotesCloseBtn");
+  if (updateNotesCloseBtn) {
+    updateNotesCloseBtn.addEventListener("click", closeUpdateReleaseModal);
+  }
+
+  const dlAndroidBtn = document.getElementById("downloadAndroidBtn");
+  const dlTizenBtn = document.getElementById("downloadTizenBtn");
+  const dlWebosBtn = document.getElementById("downloadWebosBtn");
+  [dlAndroidBtn, dlTizenBtn, dlWebosBtn].forEach(btn => {
+    if (btn) {
+      btn.addEventListener("click", (e) => {
+        const url = btn.getAttribute("href");
+        if (url && url !== "#") {
+          openExternalUrl(url);
+          showToast("Download started: " + url.split("/").pop());
+        }
+      });
+    }
+  });
+
+  // =========================================================================
   // APP SECTIONS (IPTV - STREMIO - SETTINGS)
   // =========================================================================
   function switchAppSection(section, skipFocus = false) {
@@ -6030,6 +6438,79 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "m" || e.key === "M") {
       e.preventDefault();
       if (window.AeroRadial) window.AeroRadial.toggle();
+      return;
+    }
+
+    // Update & Release Notes Modal D-Pad Navigation
+    const updateReleaseModal = document.getElementById("updateReleaseModal");
+    if (updateReleaseModal && !updateReleaseModal.classList.contains("hidden")) {
+      if (isBack) {
+        e.preventDefault();
+        closeUpdateReleaseModal();
+        return;
+      }
+      const modalCloseBtn = document.getElementById("updateNotesCloseBtn");
+      const dlAndroid = document.getElementById("downloadAndroidBtn");
+      const dlTizen = document.getElementById("downloadTizenBtn");
+      const dlWebos = document.getElementById("downloadWebosBtn");
+      const scrollBody = document.getElementById("updateNotesScrollBody");
+
+      const curFocused = document.querySelector("#updateReleaseModal .focused") || document.activeElement;
+
+      if (curFocused === modalCloseBtn) {
+        if (isDown) {
+          e.preventDefault();
+          setElementFocus(dlAndroid);
+          return;
+        }
+        if (isEnter) {
+          e.preventDefault();
+          closeUpdateReleaseModal();
+          return;
+        }
+      } else if (curFocused === dlAndroid || curFocused === dlTizen || curFocused === dlWebos) {
+        if (isUp) {
+          e.preventDefault();
+          setElementFocus(modalCloseBtn);
+          return;
+        }
+        if (isLeft) {
+          e.preventDefault();
+          if (curFocused === dlWebos) setElementFocus(dlTizen);
+          else if (curFocused === dlTizen) setElementFocus(dlAndroid);
+          return;
+        }
+        if (isRight) {
+          e.preventDefault();
+          if (curFocused === dlAndroid) setElementFocus(dlTizen);
+          else if (curFocused === dlTizen) setElementFocus(dlWebos);
+          return;
+        }
+        if (isDown) {
+          e.preventDefault();
+          if (scrollBody) scrollBody.scrollTop += 140;
+          return;
+        }
+        if (isEnter) {
+          curFocused.click();
+          return;
+        }
+      } else {
+        if (isUp) {
+          e.preventDefault();
+          if (scrollBody && scrollBody.scrollTop > 0) {
+            scrollBody.scrollTop = Math.max(0, scrollBody.scrollTop - 140);
+          } else {
+            setElementFocus(dlAndroid);
+          }
+          return;
+        }
+        if (isDown) {
+          e.preventDefault();
+          if (scrollBody) scrollBody.scrollTop += 140;
+          return;
+        }
+      }
       return;
     }
 

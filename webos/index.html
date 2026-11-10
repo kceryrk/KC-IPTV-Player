@@ -32,6 +32,8 @@
     <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3 2 8l10 5 10-5zM2 13l10 5 10-5M2 17.5l10 5 10-5"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
     <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20zM12 10v4M12 17.5v.5"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></symbol>
   </svg>
 
   <!-- VISUELE NUMMER ZAP OVERLAY IN HET MIDDEN VAN HET SCHERM -->
@@ -86,6 +88,7 @@
               <button class="settings-item focusable customization-tab active" data-tab="general" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-globe"/></svg><span data-i18n="generalTab">General</span></button>
               <button class="settings-item focusable customization-tab" data-tab="playback" type="button" tabindex="0"><svg class="ui-icon fill-icon" aria-hidden="true"><use xlink:href="#i-play"/></svg><span data-i18n="playbackTab">Playback</span></button>
               <button class="settings-item focusable customization-tab" data-tab="customization" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-palette"/></svg><span data-i18n="customization">Customization</span></button>
+              <button class="settings-item focusable customization-tab" data-tab="about" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-info"/></svg><span data-i18n="aboutTab">About</span></button>
               <button id="settingsDone" class="settings-item focusable" type="button" tabindex="0"><svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-check"/></svg><span data-i18n="done">Done</span></button>
             </div>
           </nav>
@@ -301,6 +304,96 @@
               <div class="addon-install-row">
                 <input type="url" id="addonManifestInput" class="focusable addon-url-input" placeholder="https://.../manifest.json" autocomplete="off" tabindex="0">
                 <button type="button" id="addonInstallBtn" class="settings-item focusable" tabindex="0">+ Install</button>
+              </div>
+            </section>
+          </div>
+
+          <!-- ABOUT TAB (App Info, Version, Ko-fi Support & GitHub Releases Update Check) -->
+          <div class="customization-pane hidden" data-pane="about">
+            <!-- HERO / VERSION CARD -->
+            <section class="customization-section about-card-section">
+              <div class="about-hero-box">
+                <div class="about-hero-logo">
+                  <span class="about-logo-kc">KC</span>
+                  <span class="about-logo-iptv">IPTV</span>
+                  <span class="about-logo-player">PLAYER</span>
+                </div>
+                <div class="about-version-chips">
+                  <span class="about-chip about-chip-version" id="aboutAppVersion">v1.2.114</span>
+                  <span class="about-chip about-chip-platform" id="aboutPlatformBadge">Smart TV</span>
+                </div>
+                <p class="about-app-desc" data-i18n="aboutAppDesc">
+                  High-performance IPTV & Stremio streaming player built for Smart TVs and modern mobile devices.
+                </p>
+              </div>
+            </section>
+
+            <!-- CHECK FOR UPDATES CARD (All 3 platforms) -->
+            <section class="customization-section about-card-section">
+              <h2 data-i18n="aboutUpdatesHeading">Updates & Releases</h2>
+              <p class="about-section-desc" data-i18n="aboutUpdatesDesc">
+                Check GitHub for new features, bug fixes, and download packages for all supported platforms.
+              </p>
+              
+              <div class="about-action-row">
+                <button id="btnCheckForUpdates" class="settings-item focusable about-primary-btn" type="button" tabindex="0">
+                  <svg class="ui-icon" aria-hidden="true"><use xlink:href="#i-refresh"/></svg>
+                  <span id="btnCheckForUpdatesLabel" data-i18n="checkForUpdates">Check for Updates</span>
+                </button>
+                <span id="aboutUpdateStatusText" class="about-update-status-text"></span>
+              </div>
+
+              <div class="about-platform-tags">
+                <div class="about-platform-tag">
+                  <span class="platform-tag-icon">🤖</span>
+                  <span class="platform-tag-title">Android</span>
+                  <span class="platform-tag-format">.apk</span>
+                </div>
+                <div class="about-platform-tag">
+                  <span class="platform-tag-icon">📺</span>
+                  <span class="platform-tag-title">Samsung Tizen</span>
+                  <span class="platform-tag-format">.wgt</span>
+                </div>
+                <div class="about-platform-tag">
+                  <span class="platform-tag-icon">🪐</span>
+                  <span class="platform-tag-title">LG webOS</span>
+                  <span class="platform-tag-format">.ipk</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- SUPPORT ME (KO-FI) CARD -->
+            <section class="customization-section about-card-section about-kofi-card">
+              <div class="about-kofi-header">
+                <div class="kofi-heart-icon">
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="#ff5e5b">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h2 data-i18n="supportDevHeading">Support the Developer</h2>
+                  <span class="about-kofi-badge">Ko-fi / kaecr</span>
+                </div>
+              </div>
+              <p class="about-section-desc" data-i18n="supportDevDesc">
+                KC IPTV Player is free and open-source without ads. If you enjoy using this app and want to support ongoing maintenance and new features, a coffee goes a long way!
+              </p>
+
+              <div class="about-kofi-body">
+                <div class="about-kofi-actions">
+                  <button id="btnOpenKofi" class="settings-item focusable kofi-donate-btn" type="button" tabindex="0">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <span>ko-fi.com/kaecr</span>
+                  </button>
+                  <div class="about-kofi-url-sub">https://ko-fi.com/kaecr</div>
+                </div>
+
+                <div class="about-qr-box">
+                  <img class="about-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fko-fi.com%2Fkaecr" alt="Ko-fi QR Code" />
+                  <span class="about-qr-hint" data-i18n="scanQrHint">📱 Scan with phone camera</span>
+                </div>
               </div>
             </section>
           </div>
@@ -819,6 +912,58 @@
         <span class="r-key r-key-move">KIRMIZI</span><span>Sırala</span>
         <span class="r-sep">|</span>
         <span class="r-key">BACK / M</span><span>Tam Ekran</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GITHUB RELEASES & UPDATE NOTES MODAL -->
+  <div id="updateReleaseModal" class="update-notes-overlay hidden" tabindex="-1">
+    <div class="update-notes-dialog">
+      <div class="update-notes-header">
+        <div class="update-notes-title-box">
+          <svg class="ui-icon" style="color:#38bdf8; width:28px; height:28px;" aria-hidden="true"><use xlink:href="#i-refresh"/></svg>
+          <h2 id="updateModalHeading" data-i18n="updateModalTitle">Software Updates & Releases</h2>
+        </div>
+        <button type="button" class="update-notes-close-btn focusable" id="updateNotesCloseBtn" tabindex="0">✕ Kapat (Back)</button>
+      </div>
+
+      <div class="update-notes-subbar">
+        <span class="update-pill update-pill-current" id="updateModalCurrentVer">Yüklü: v1.2.114</span>
+        <span class="update-pill update-pill-latest" id="updateModalLatestVer">En Son: v1.2.114</span>
+        <span class="update-pill update-pill-status" id="updateModalStatus">✓ Güncel</span>
+      </div>
+
+      <!-- ALL 3 VERSIONS DOWNLOAD ROW -->
+      <div class="update-platforms-download-row">
+        <a class="platform-download-card focusable" id="downloadAndroidBtn" href="#" target="_blank" tabindex="0">
+          <span class="platform-dl-icon">🤖</span>
+          <div class="platform-dl-meta">
+            <span class="platform-dl-title">Android</span>
+            <span class="platform-dl-ext">.APK İndir</span>
+          </div>
+        </a>
+        <a class="platform-download-card focusable" id="downloadTizenBtn" href="#" target="_blank" tabindex="0">
+          <span class="platform-dl-icon">📺</span>
+          <div class="platform-dl-meta">
+            <span class="platform-dl-title">Samsung Tizen</span>
+            <span class="platform-dl-ext">.WGT İndir</span>
+          </div>
+        </a>
+        <a class="platform-download-card focusable" id="downloadWebosBtn" href="#" target="_blank" tabindex="0">
+          <span class="platform-dl-icon">🪐</span>
+          <div class="platform-dl-meta">
+            <span class="platform-dl-title">LG webOS</span>
+            <span class="platform-dl-ext">.IPK İndir</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- RELEASE NOTES CONTENT (Newest on top) -->
+      <div class="update-notes-scroll-body" id="updateNotesScrollBody">
+        <div class="update-loading-spinner" id="updateNotesLoading">
+          <svg class="ui-icon spin" style="width:36px; height:36px; color:#38bdf8;" aria-hidden="true"><use xlink:href="#i-refresh"/></svg>
+          <span>GitHub sürümleri kontrol ediliyor...</span>
+        </div>
       </div>
     </div>
   </div>
